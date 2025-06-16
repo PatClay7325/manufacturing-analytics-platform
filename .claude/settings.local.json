@@ -37,7 +37,10 @@
       "Bash(npm run typecheck:*)",
       "Bash(sed:*)",
       "Bash(npx kill-port:*)",
-      "Bash(true)"
+      "Bash(true)",
+      "Bash(curl:*)",
+      "Bash(npx msw init:*)",
+      "Bash(pkill:*)"
     ],
     "deny": []
   },

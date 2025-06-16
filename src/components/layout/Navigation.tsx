@@ -37,6 +37,7 @@ export default function Navigation() {
     { name: 'Equipment', href: '/equipment', icon: '⚙️' },
     { name: 'Alerts', href: '/alerts', icon: '🔔' },
     { name: 'AI Chat', href: '/manufacturing-chat', icon: '🤖' },
+    { name: 'Documentation', href: '/documentation', icon: '📚' },
   ];
   
   const isActivePath = (path: string): boolean => {
@@ -52,8 +53,8 @@ export default function Navigation() {
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <h1 className="text-xl font-bold">
-              <Link href="/">
-                Manufacturing Intelligence Platform
+              <Link href="/" className="text-blue-100 hover:text-white transition duration-150 ease-in-out">
+                Adaptive Factory AI Solutions, Inc.
               </Link>
             </h1>
           </div>

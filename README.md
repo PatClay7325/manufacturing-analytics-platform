@@ -1,4 +1,4 @@
-# Manufacturing Intelligence Platform
+# Adaptive Factory AI Solutions, Inc.
 
 A clean, modern web application for manufacturing intelligence and analytics built with Next.js, React, TypeScript, and Tailwind CSS.
 

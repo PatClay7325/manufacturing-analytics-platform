@@ -325,7 +325,7 @@ export class RouteRegistryImpl extends AbstractBaseService implements RouteRegis
     const documentation = {
       openapi: '3.0.0',
       info: {
-        title: 'Manufacturing Intelligence Platform API',
+        title: 'Adaptive Factory AI Solutions API',
         version: '1.0.0',
         description: 'API for the Hybrid Manufacturing Intelligence Platform',
       },
@@ -371,7 +371,7 @@ ${jsonDoc}`;
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Manufacturing Intelligence Platform API</title>
+  <title>Adaptive Factory AI Solutions API</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
     h1 { color: #333; }

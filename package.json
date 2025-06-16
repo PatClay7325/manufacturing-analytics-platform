@@ -1,7 +1,7 @@
 {
-  "name": "manufacturing-intelligence-platform",
+  "name": "adaptive-factory-ai-solutions",
   "version": "1.0.0",
-  "description": "Manufacturing Intelligence Platform",
+  "description": "Adaptive Factory AI Solutions, Inc.",
   "private": true,
   "scripts": {
     "dev": "next dev",

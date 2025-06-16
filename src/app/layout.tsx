@@ -9,7 +9,7 @@ import MockServerProvider from '@/components/providers/MockServerProvider';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Manufacturing Intelligence Platform',
+  title: 'Adaptive Factory AI Solutions, Inc.',
   description: 'Advanced manufacturing intelligence and analytics',
 };
 

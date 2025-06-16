@@ -8,7 +8,7 @@ export default function Home() {
         <div className="md:flex">
           <div className="p-8 md:p-12 md:w-1/2">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Manufacturing Intelligence Platform
+              Adaptive Factory AI Solutions, Inc.
             </h1>
             <p className="text-lg text-gray-600 mb-6">
               Optimize your manufacturing operations with real-time insights, 
@@ -138,6 +138,44 @@ export default function Home() {
               <h3 className="font-semibold text-gray-800 mb-1">Cost Reduction</h3>
               <p className="text-gray-600">Lower maintenance costs and optimize resource utilization.</p>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Documentation & Resources Section */}
+      <div className="mb-12">
+        <h2 className="text-2xl font-bold text-gray-900 mb-8">Documentation & Resources</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition duration-150">
+            <div className="text-4xl mb-4 text-blue-600">📚</div>
+            <h3 className="mb-3 text-xl font-semibold text-gray-800">
+              Comprehensive Documentation
+            </h3>
+            <p className="text-gray-600 mb-4">
+              Access detailed guides, tutorials, and reference materials to help you get the most out of the platform.
+            </p>
+            <Link 
+              href="/documentation" 
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              View Documentation
+            </Link>
+          </div>
+
+          <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition duration-150">
+            <div className="text-4xl mb-4 text-blue-600">🔌</div>
+            <h3 className="mb-3 text-xl font-semibold text-gray-800">
+              API Reference
+            </h3>
+            <p className="text-gray-600 mb-4">
+              Integrate with our platform using our comprehensive API documentation with examples in multiple languages.
+            </p>
+            <Link 
+              href="/documentation/api-reference" 
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Explore API Reference
+            </Link>
           </div>
         </div>
       </div>

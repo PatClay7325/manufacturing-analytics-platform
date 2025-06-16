@@ -100,4 +100,4 @@ This framework is proprietary and confidential. Unauthorized copying, distributi
 
 ---
 
-© 2025 Manufacturing Analytics Platform
+© 2025 Adaptive Factory AI Solutions, Inc.

@@ -98,7 +98,7 @@ export class ApiGatewayServiceImpl extends BaseModularService implements ApiGate
     docs: {
       enabled: true,
       path: '/docs',
-      title: 'Manufacturing Intelligence Platform API',
+      title: 'Adaptive Factory AI Solutions API',
       description: 'API for the Hybrid Manufacturing Intelligence Platform',
       version: '1.0.0',
     },

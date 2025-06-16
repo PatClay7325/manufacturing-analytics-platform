@@ -9,12 +9,12 @@ export default function Footer() {
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
-            <h3 className="text-lg font-semibold mb-4">Manufacturing Intelligence Platform</h3>
+            <h3 className="text-lg font-semibold mb-4">Adaptive Factory AI Solutions, Inc.</h3>
             <p className="text-gray-300 mb-4">
               Advanced analytics and AI-driven insights for modern manufacturing operations.
             </p>
             <p className="text-gray-400 text-sm">
-              © {currentYear} Manufacturing Intelligence Platform. All rights reserved.
+              © {currentYear} Adaptive Factory AI Solutions, Inc. All rights reserved.
             </p>
           </div>
           
@@ -48,22 +48,22 @@ export default function Footer() {
             <h4 className="text-base font-semibold mb-4">Resources</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="#" className="text-gray-300 hover:text-white transition duration-150">
+                <Link href="/documentation" className="text-gray-300 hover:text-white transition duration-150">
                   Documentation
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-gray-300 hover:text-white transition duration-150">
+                <Link href="/documentation/api-reference" className="text-gray-300 hover:text-white transition duration-150">
                   API Reference
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-gray-300 hover:text-white transition duration-150">
+                <Link href="/support" className="text-gray-300 hover:text-white transition duration-150">
                   Support
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-gray-300 hover:text-white transition duration-150">
+                <Link href="/status" className="text-gray-300 hover:text-white transition duration-150">
                   Status
                 </Link>
               </li>
@@ -76,13 +76,13 @@ export default function Footer() {
             Designed for industrial excellence
           </div>
           <div className="flex space-x-6">
-            <Link href="#" className="text-gray-400 hover:text-white transition duration-150">
+            <Link href="/privacy-policy" className="text-gray-400 hover:text-white transition duration-150">
               Privacy Policy
             </Link>
-            <Link href="#" className="text-gray-400 hover:text-white transition duration-150">
+            <Link href="/terms-of-service" className="text-gray-400 hover:text-white transition duration-150">
               Terms of Service
             </Link>
-            <Link href="#" className="text-gray-400 hover:text-white transition duration-150">
+            <Link href="/cookie-policy" className="text-gray-400 hover:text-white transition duration-150">
               Cookie Policy
             </Link>
           </div>
