@@ -1,0 +1,89 @@
+{
+  "timestamp": "2025-06-16T22:08:58.159Z",
+  "baseUrl": "http://localhost:3000",
+  "pages": [
+    {
+      "name": "Home",
+      "path": "/",
+      "status": 200,
+      "loadTime": 262,
+      "issues": []
+    },
+    {
+      "name": "Dashboard",
+      "path": "/dashboard",
+      "status": 200,
+      "loadTime": 12359,
+      "issues": [
+        {
+          "type": "Performance",
+          "severity": "warning",
+          "message": "Slow load time: 12359ms"
+        }
+      ]
+    },
+    {
+      "name": "Equipment",
+      "path": "/equipment",
+      "status": 200,
+      "loadTime": 849,
+      "issues": []
+    },
+    {
+      "name": "Alerts",
+      "path": "/alerts",
+      "status": 200,
+      "loadTime": 1339,
+      "issues": []
+    },
+    {
+      "name": "Manufacturing Chat",
+      "path": "/manufacturing-chat",
+      "status": 200,
+      "loadTime": 977,
+      "issues": []
+    },
+    {
+      "name": "Support",
+      "path": "/support",
+      "status": 200,
+      "loadTime": 943,
+      "issues": []
+    },
+    {
+      "name": "Status",
+      "path": "/status",
+      "status": 200,
+      "loadTime": 716,
+      "issues": []
+    },
+    {
+      "name": "Privacy Policy",
+      "path": "/privacy-policy",
+      "status": 200,
+      "loadTime": 687,
+      "issues": []
+    },
+    {
+      "name": "Terms of Service",
+      "path": "/terms-of-service",
+      "status": 200,
+      "loadTime": 857,
+      "issues": []
+    },
+    {
+      "name": "Cookie Policy",
+      "path": "/cookie-policy",
+      "status": 200,
+      "loadTime": 891,
+      "issues": []
+    }
+  ],
+  "summary": {
+    "totalPages": 10,
+    "pagesChecked": 10,
+    "totalIssues": 1,
+    "criticalIssues": 4,
+    "warnings": 1
+  }
+}

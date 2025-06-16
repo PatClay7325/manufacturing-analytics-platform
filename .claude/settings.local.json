@@ -40,7 +40,13 @@
       "Bash(true)",
       "Bash(curl:*)",
       "Bash(npx msw init:*)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(./run-audit.sh:*)",
+      "Bash(for file in audit-tests/*.audit.ts)",
+      "Bash(do mv \"$file\" \"$file%.audit.ts.spec.ts\")",
+      "Bash(done)",
+      "Bash(sudo apt-get:*)",
+      "Bash(sudo apt-get install:*)"
     ],
     "deny": []
   },
