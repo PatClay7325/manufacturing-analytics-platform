@@ -1,0 +1,28 @@
+# Manufacturing Intelligence Platform - Prometheus Configuration
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+  # Add job for Next.js metrics (when implemented)
+  - job_name: 'nextjs'
+    metrics_path: '/api/metrics'
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['host.docker.internal:3000']
+    
+  # Add manufacturing-specific jobs here
+  - job_name: 'manufacturing-equipment'
+    static_configs:
+      - targets: ['host.docker.internal:3001']
+
+remote_write:
+  - url: "http://prometheus:9090/api/v1/write"

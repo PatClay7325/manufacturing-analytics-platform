@@ -1,0 +1,262 @@
+// Manufacturing Intelligence Platform - Prisma Schema
+// This schema defines the data model for the Manufacturing Intelligence Platform
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+}
+
+// Comprehensive Equipment Model
+model Equipment {
+  id                String    @id @default(cuid())
+  name              String
+  type              String
+  manufacturerCode  String
+  serialNumber      String    @unique
+  installationDate  DateTime
+  status            String    @default("operational") // operational, maintenance, offline, error
+  location          String?
+  description       String?
+  model             String?
+  lastMaintenanceAt DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Comprehensive Relationships
+  productionLines     ProductionLine[]
+  maintenanceRecords  MaintenanceRecord[]
+  performanceMetrics  PerformanceMetric[]
+  qualityMetrics      QualityMetric[]
+  alerts              Alert[]
+
+  // Performance Optimization
+  @@index([serialNumber])
+  @@index([type])
+  @@index([status])
+}
+
+// Production Line Model
+model ProductionLine {
+  id          String   @id @default(cuid())
+  name        String
+  department  String
+  description String?
+  status      String   @default("active") // active, inactive, maintenance
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  equipment        Equipment[]
+  productionOrders ProductionOrder[]
+  performanceMetrics PerformanceMetric[]
+
+  // Optimization
+  @@index([department])
+  @@index([status])
+}
+
+// Production Order Model
+model ProductionOrder {
+  id               String   @id @default(cuid())
+  orderNumber      String   @unique
+  productionLineId String
+  product          String
+  quantity         Int
+  targetStartDate  DateTime
+  targetEndDate    DateTime
+  actualStartDate  DateTime?
+  actualEndDate    DateTime?
+  status           String   @default("scheduled") // scheduled, in-progress, completed, cancelled
+  priority         Int      @default(3) // 1-5 scale, 1 highest
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relationships
+  productionLine ProductionLine @relation(fields: [productionLineId], references: [id])
+  qualityChecks  QualityCheck[]
+
+  // Optimization
+  @@index([productionLineId])
+  @@index([status])
+  @@index([orderNumber])
+}
+
+// Maintenance Record Model
+model MaintenanceRecord {
+  id            String   @id @default(cuid())
+  equipmentId   String
+  maintenanceType String  // preventive, corrective, predictive
+  description   String
+  technician    String
+  startTime     DateTime
+  endTime       DateTime?
+  status        String   @default("scheduled") // scheduled, in-progress, completed
+  notes         String?
+  parts         String[] // List of parts used
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relationships
+  equipment Equipment @relation(fields: [equipmentId], references: [id])
+
+  // Optimization
+  @@index([equipmentId])
+  @@index([status])
+  @@index([maintenanceType])
+}
+
+// Performance Metrics Model
+model PerformanceMetric {
+  id              String   @id @default(cuid())
+  equipmentId     String?
+  productionLineId String?
+  timestamp       DateTime @default(now())
+  
+  // Comprehensive OEE Metrics
+  availability    Float?   // 0-1 scale
+  performance     Float?   // 0-1 scale
+  quality         Float?   // 0-1 scale
+  oeeScore        Float?   // Calculated OEE
+  
+  // Detailed metrics
+  runTime         Float?   // In minutes
+  plannedDowntime Float?   // In minutes
+  unplannedDowntime Float? // In minutes
+  idealCycleTime  Float?   // In seconds
+  actualCycleTime Float?   // In seconds
+  totalParts      Int?
+  goodParts       Int?
+  
+  // Additional meta
+  shift           String?  // morning, afternoon, night
+  operator        String?
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relationships
+  equipment       Equipment? @relation(fields: [equipmentId], references: [id])
+  productionLine  ProductionLine? @relation(fields: [productionLineId], references: [id])
+
+  // Performance Optimization Indexes
+  @@index([equipmentId, timestamp])
+  @@index([productionLineId, timestamp])
+  @@index([timestamp])
+}
+
+// Quality Metrics Model
+model QualityMetric {
+  id            String   @id @default(cuid())
+  equipmentId   String
+  timestamp     DateTime @default(now())
+  
+  // Quality parameters
+  parameter     String   // dimension, weight, appearance, etc.
+  value         Float
+  uom           String   // unit of measure
+  lowerLimit    Float?
+  upperLimit    Float?
+  nominal       Float?
+  isWithinSpec  Boolean
+  deviation     Float?   // deviation from nominal
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relationships
+  equipment     Equipment @relation(fields: [equipmentId], references: [id])
+
+  // Optimization
+  @@index([equipmentId, timestamp])
+  @@index([parameter])
+  @@index([isWithinSpec])
+}
+
+// Quality Check Model
+model QualityCheck {
+  id                String   @id @default(cuid())
+  productionOrderId String
+  checkType         String   // in-process, final, pre-delivery
+  inspector         String
+  timestamp         DateTime @default(now())
+  result            String   // pass, fail, conditional
+  notes             String?
+  defectTypes       String[] // List of defect types if any
+  defectCounts      Int[]    // Counts corresponding to defect types
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relationships
+  productionOrder   ProductionOrder @relation(fields: [productionOrderId], references: [id])
+
+  // Optimization
+  @@index([productionOrderId])
+  @@index([result])
+  @@index([checkType])
+}
+
+// Alert Model
+model Alert {
+  id          String   @id @default(cuid())
+  equipmentId String?
+  alertType   String   // maintenance, quality, performance, safety
+  severity    String   // low, medium, high, critical
+  message     String
+  status      String   @default("active") // active, acknowledged, resolved, false-alarm
+  timestamp   DateTime @default(now())
+  acknowledgedBy String?
+  acknowledgedAt DateTime?
+  resolvedBy    String?
+  resolvedAt    DateTime?
+  notes         String?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relationships
+  equipment     Equipment? @relation(fields: [equipmentId], references: [id])
+
+  // Optimization
+  @@index([equipmentId])
+  @@index([alertType])
+  @@index([severity])
+  @@index([status])
+  @@index([timestamp])
+}
+
+// User Model (for authentication)
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  role          String    @default("user") // admin, manager, engineer, operator
+  department    String?
+  passwordHash  String
+  lastLogin     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Optimization
+  @@index([email])
+  @@index([role])
+}
+
+// Settings Model (for application settings)
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  category  String   // system, user, notification, integration
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Optimization
+  @@index([key])
+  @@index([category])
+}

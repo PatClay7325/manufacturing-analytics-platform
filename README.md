@@ -64,14 +64,34 @@ clean-project/
    yarn install
    ```
 
-3. Start the development server:
+3. Initialize the Mock Service Worker:
+   ```bash
+   npm run msw:init
+   # or
+   yarn msw:init
+   ```
+
+4. Start the development server:
    ```bash
    npm run dev
    # or
    yarn dev
    ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### Mock API Server
+
+The project includes a mock API server that intercepts API requests during development and returns mock data. This allows for frontend development without requiring a backend server.
+
+- Mock data files are located in `src/mocks/data/`
+- API handlers are defined in `src/mocks/handlers.ts`
+- The mock server is automatically initialized in development mode
+
+To add new mock endpoints:
+1. Add mock data in `src/mocks/data/`
+2. Add handlers in `src/mocks/handlers.ts`
+3. No restart is needed - changes will be reflected automatically
 
 ## Design Principles
 

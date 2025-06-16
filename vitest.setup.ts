@@ -1,0 +1,66 @@
+import '@testing-library/jest-dom/vitest';
+import { expect, afterEach, vi } from 'vitest';
+import { cleanup } from '@testing-library/react';
+import * as matchers from '@testing-library/jest-dom/matchers';
+import React from 'react';
+
+// Extend Vitest's expect method with jest-dom matchers
+expect.extend(matchers);
+
+// Clean up after each test
+afterEach(() => {
+  cleanup();
+});
+
+// Make vi available globally for mocks
+(globalThis as any).vi = vi;
+
+// Mock Next.js router
+vi.mock('next/router', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+    back: vi.fn(),
+    pathname: '/',
+    query: {},
+  }),
+}));
+
+// Mock next/navigation
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+    back: vi.fn(),
+    pathname: '/',
+  }),
+  usePathname: () => '/',
+  useSearchParams: () => new URLSearchParams(),
+}));
+
+// Mock next/image
+vi.mock('next/image', () => ({
+  __esModule: true,
+  default: (props: any) => {
+    return React.createElement('img', { 
+      ...props, 
+      src: props.src || '', 
+      alt: props.alt || '',
+      'data-testid': 'next-image' 
+    });
+  },
+}));
+
+// Mock next/link
+vi.mock('next/link', () => ({
+  __esModule: true,
+  default: (props: any) => {
+    return React.createElement('a', { 
+      ...props, 
+      href: props.href || '#',
+      'data-testid': 'next-link'
+    }, props.children);
+  },
+}));

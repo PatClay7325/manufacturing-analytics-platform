@@ -1,189 +1,195 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import PageLayout from '@/components/layout/PageLayout';
+import ChatHistory from '@/components/chat/ChatHistory';
+import SampleQuestions from '@/components/chat/SampleQuestions';
+import ChatInfo from '@/components/chat/ChatInfo';
+import { ChatSession } from '@/models/chat';
+import chatService from '@/services/chatService';
 
-interface Message {
-  content: string;
-  isUser: boolean;
-}
+export default function ManufacturingChatPage() {
+  const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
-export default function ManufacturingChat() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState('');
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  // Scroll to bottom when messages change
+  // Fetch chat sessions
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
-  // Initialize with welcome message
-  useEffect(() => {
-    setMessages([
-      {
-        content:
-          'Welcome to Manufacturing Chat. How can I assist you with your manufacturing operations today?',
-        isUser: false,
-      },
-    ]);
+    const fetchSessions = async () => {
+      setIsLoading(true);
+      setError(null);
+      
+      try {
+        const sessions = await chatService.getAllSessions();
+        setChatSessions(sessions);
+      } catch (err) {
+        setError('Failed to load chat sessions');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchSessions();
   }, []);
 
-  // Handle form submission
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!input.trim()) return;
-
-    // Add user message
-    const userMessage = { content: input, isUser: true };
-    setMessages((prev) => [...prev, userMessage]);
-    setInput('');
-
-    // Generate response based on input
-    const response = generateResponse(input);
-    
-    // Add a slight delay to simulate processing
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        { content: response, isUser: false },
-      ]);
-    }, 500);
-  }
-
-  // Sample question handler
-  function handleSampleQuestion(question: string) {
-    setInput(question);
-    
-    // Submit the form programmatically
-    const form = document.querySelector('form');
-    if (form) {
-      const event = new Event('submit', { cancelable: true });
-      form.dispatchEvent(event);
+  // Handle creating a new chat
+  const handleNewChat = async () => {
+    try {
+      const newSession = await chatService.createSession();
+      router.push(`/manufacturing-chat/${newSession.id}`);
+    } catch (err) {
+      setError('Failed to create new chat session');
     }
-  }
+  };
+
+  // Handle selecting a sample question
+  const handleSampleQuestion = async (question: string) => {
+    try {
+      // Create a new session with the question as the title
+      const newSession = await chatService.createSession(question);
+      
+      // Add the question as a user message
+      await chatService.addMessage(newSession.id, {
+        role: 'user',
+        content: question
+      });
+      
+      // Navigate to the new session
+      router.push(`/manufacturing-chat/${newSession.id}`);
+    } catch (err) {
+      setError('Failed to create new chat session');
+    }
+  };
+
+  // Handle deleting a chat session
+  const handleDeleteSession = async (sessionId: string) => {
+    try {
+      await chatService.deleteSession(sessionId);
+      setChatSessions(prev => prev.filter(session => session.id !== sessionId));
+    } catch (err) {
+      setError('Failed to delete chat session');
+    }
+  };
+
+  // Handle renaming a chat session
+  const handleRenameSession = async (sessionId: string, title: string) => {
+    try {
+      const updatedSession = await chatService.renameSession(sessionId, title);
+      if (updatedSession) {
+        setChatSessions(prev => prev.map(session => 
+          session.id === sessionId ? updatedSession : session
+        ));
+      }
+    } catch (err) {
+      setError('Failed to rename chat session');
+    }
+  };
+
+  // Action button for new chat
+  const actionButton = (
+    <button
+      onClick={handleNewChat}
+      className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      data-testid="new-chat-button"
+    >
+      <svg className="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+        <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+      </svg>
+      New Chat
+    </button>
+  );
 
   return (
-    <div className="container py-8">
-      <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Manufacturing Chat</h1>
-      </div>
-
-      <div className="mb-8 overflow-hidden rounded-lg bg-white shadow">
-        <div 
-          className="h-96 overflow-y-auto p-4" 
-          style={{ maxHeight: '500px' }}
-        >
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`mb-4 flex ${
-                msg.isUser ? 'justify-end' : 'justify-start'
-              }`}
-            >
-              <div
-                className={`max-w-3/4 rounded-lg px-4 py-2 ${
-                  msg.isUser
-                    ? 'bg-primary-600 text-white'
-                    : 'bg-gray-100 text-gray-800'
-                }`}
-              >
-                {msg.content}
-              </div>
+    <PageLayout
+      title="Manufacturing Intelligence Chat"
+      actionButton={actionButton}
+    >
+      {error && (
+        <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded mb-6">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
             </div>
-          ))}
-          <div ref={messagesEndRef} />
+            <div className="ml-3">
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Chat History */}
+        <div className="lg:col-span-1">
+          <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="p-4 border-b border-gray-200">
+              <button
+                onClick={handleNewChat}
+                className="w-full flex justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                <svg className="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                </svg>
+                Start New Chat
+              </button>
+            </div>
+            
+            {isLoading ? (
+              <div className="p-4 text-center text-gray-500">
+                <div className="inline-block animate-spin h-8 w-8 border-4 border-gray-200 rounded-full border-t-blue-600 mb-2" role="status">
+                  <span className="sr-only">Loading...</span>
+                </div>
+                <p>Loading chat history...</p>
+              </div>
+            ) : (
+              <ChatHistory
+                sessions={chatSessions}
+                onDeleteSession={handleDeleteSession}
+                onRenameSession={handleRenameSession}
+                className="h-[calc(100vh-16rem)]"
+              />
+            )}
+          </div>
         </div>
 
-        <div className="border-t border-gray-200 p-4">
-          <form onSubmit={handleSubmit} className="flex gap-2">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              className="input flex-1"
-              placeholder="Type your message here..."
+        {/* Main Content */}
+        <div className="lg:col-span-2">
+          <div className="grid grid-cols-1 gap-6">
+            {/* Welcome Banner */}
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                Welcome to Manufacturing Chat
+              </h2>
+              <p className="text-gray-700 mb-4">
+                Start a new conversation or select a previous chat from the history. 
+                The Manufacturing Assistant is connected to your manufacturing systems 
+                and can provide insights and answers to your questions.
+              </p>
+              <button
+                onClick={handleNewChat}
+                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                <svg className="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                </svg>
+                Start New Chat
+              </button>
+            </div>
+
+            {/* Sample Questions */}
+            <SampleQuestions
+              onSelectQuestion={handleSampleQuestion}
+              isDisabled={isLoading}
             />
-            <button type="submit" className="button-primary">
-              Send
-            </button>
-          </form>
+            
+            {/* Chat Info */}
+            <ChatInfo />
+          </div>
         </div>
       </div>
-
-      <div className="rounded-lg bg-blue-50 p-6">
-        <h2 className="mb-4 text-xl font-semibold text-blue-900">
-          Sample Questions:
-        </h2>
-        <ul className="space-y-2 text-gray-600">
-          <li>
-            <button
-              onClick={() => handleSampleQuestion("What's the current OEE for production line 3?")}
-              className="text-left hover:text-blue-700 hover:underline"
-            >
-              What's the current OEE for production line 3?
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => handleSampleQuestion("Show me the top 5 downtime reasons this week")}
-              className="text-left hover:text-blue-700 hover:underline"
-            >
-              Show me the top 5 downtime reasons this week
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => handleSampleQuestion("When is the next scheduled maintenance for the injection molding machine?")}
-              className="text-left hover:text-blue-700 hover:underline"
-            >
-              When is the next scheduled maintenance for the injection molding machine?
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => handleSampleQuestion("What's our quality reject rate trend for the past month?")}
-              className="text-left hover:text-blue-700 hover:underline"
-            >
-              What's our quality reject rate trend for the past month?
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => handleSampleQuestion("Generate a Pareto chart of quality defects")}
-              className="text-left hover:text-blue-700 hover:underline"
-            >
-              Generate a Pareto chart of quality defects
-            </button>
-          </li>
-        </ul>
-      </div>
-    </div>
+    </PageLayout>
   );
-}
-
-// Simple response generation function
-function generateResponse(query: string): string {
-  const queryLower = query.toLowerCase();
-  
-  if (queryLower.includes('oee')) {
-    return "The current OEE for production line 3 is 85%, which is above the target of 80%. The main contributors are improved availability and reduced minor stops.";
-  }
-  
-  if (queryLower.includes('downtime') || queryLower.includes('reasons')) {
-    return "Based on this week's data, the top 5 downtime reasons are: 1) Material changeover, 2) Equipment failure, 3) Operator breaks, 4) Quality inspections, and 5) Setup time.";
-  }
-  
-  if (queryLower.includes('maintenance') || queryLower.includes('scheduled')) {
-    return "The next scheduled maintenance for the injection molding machine is on Friday at 8:00 AM. It's a preventive maintenance with an estimated duration of 3 hours.";
-  }
-  
-  if (queryLower.includes('quality') || queryLower.includes('reject')) {
-    return "The quality reject rate trend shows a decrease from 2.7% to 1.9% over the past month, which is a positive improvement of approximately 30%.";
-  }
-  
-  if (queryLower.includes('pareto') || queryLower.includes('chart')) {
-    return "I've generated a Pareto chart of quality defects. The top issues are: Surface scratches (40%), Dimensional variance (25%), Color inconsistency (15%), Material contamination (12%), and Others (8%).";
-  }
-  
-  return "I can help with manufacturing metrics like OEE, downtime analysis, maintenance schedules, quality data, and visualization. Please try asking about one of these topics.";
 }

@@ -1,0 +1,16 @@
+# Manufacturing Intelligence Platform - Grafana Datasources
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    orgId: 1
+    url: http://prometheus:9090
+    basicAuth: false
+    isDefault: true
+    editable: true
+    jsonData:
+      timeInterval: 15s
+      queryTimeout: 120s
+      httpMethod: POST

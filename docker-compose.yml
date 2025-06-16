@@ -1,0 +1,144 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:14
+    container_name: manufacturing-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=manufacturing
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - manufacturing-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Ollama for AI LLM inference
+  ollama:
+    image: ollama/ollama:latest
+    container_name: manufacturing-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 8g
+        reservations:
+          memory: 2g
+    networks:
+      - manufacturing-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  # Prometheus for metrics collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: manufacturing-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus:/etc/prometheus
+      - prometheus-data:/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.console.libraries=/usr/share/prometheus/console_libraries
+      - --web.console.templates=/usr/share/prometheus/consoles
+      - --web.enable-lifecycle
+      - --web.cors.origin=.*
+    networks:
+      - manufacturing-network
+
+  # Grafana for visualization
+  grafana:
+    image: grafana/grafana:10.0.3
+    container_name: manufacturing-grafana
+    ports:
+      - "3003:3000"
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=http://localhost:3003
+      # Enable embedding without requiring authentication
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_SECURITY_COOKIE_SAMESITE=none
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+      # CORS settings for Next.js app
+      - GF_HTTP_CORS_ENABLED=true
+      - GF_HTTP_CORS_ALLOW_ORIGIN=http://localhost:3000,http://localhost:3003,http://localhost,https://*.domain.com
+      - GF_HTTP_CORS_ALLOW_HEADERS=Authorization,Content-Type,X-CSRF-Token,X-Requested-With,Accept,X-XSRF-TOKEN
+      - GF_HTTP_CORS_ALLOW_METHODS=GET,POST,PUT,DELETE,OPTIONS,HEAD
+      - GF_HTTP_CORS_ALLOW_CREDENTIALS=true
+      # Disable X-Frame-Options header to allow embedding in iframes
+      - GF_SECURITY_X_FRAME_OPTIONS_ENABLED=false
+      # Disable CSP to allow embedding in iframes
+      - GF_SECURITY_CONTENT_SECURITY_POLICY=false
+    depends_on:
+      - prometheus
+    networks:
+      - manufacturing-network
+
+  # Node exporter for host metrics
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: manufacturing-node-exporter
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)
+    networks:
+      - manufacturing-network
+
+  # Manufacturing metrics simulator
+  metrics-simulator:
+    image: node:18
+    container_name: manufacturing-metrics-simulator
+    working_dir: /app
+    volumes:
+      - ./scripts:/app
+    command: node /app/simulate-manufacturing-metrics.js
+    environment:
+      - PROMETHEUS_URL=http://prometheus:9090/api/v1/write
+      - SIMULATION_INTERVAL_MS=5000
+    depends_on:
+      - prometheus
+    networks:
+      - manufacturing-network
+
+volumes:
+  postgres-data:
+  ollama-data:
+  prometheus-data:
+  grafana-data:
+
+networks:
+  manufacturing-network:
+    name: manufacturing-network
+    driver: bridge
