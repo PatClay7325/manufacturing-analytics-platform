@@ -6,7 +6,9 @@
 
 // Export types and interfaces
 export * from './types';
-export * from './interfaces';
+// Re-export interfaces with explicit names to avoid naming conflicts
+import { AIProvider as AIProviderInterface } from './interfaces';
+export type { AIProvider as AIProviderInterface } from './interfaces';
 
 // Export Ollama provider
 export * from './OllamaProvider';
@@ -20,6 +22,7 @@ export * from './ManufacturingAssistantImpl';
 // Export a function to initialize the AI system
 import { AIServiceImpl } from './AIServiceImpl';
 import { ManufacturingAssistantImpl } from './ManufacturingAssistantImpl';
+import { DeploymentEnvironment, LogLevel } from '../architecture/types';
 
 /**
  * Initialize the AI system
@@ -35,9 +38,9 @@ export async function initializeAISystem(
   try {
     // Initialize AI service
     await aiService.initialize({
-      environment: 'development',
+      environment: DeploymentEnvironment.DEVELOPMENT,
       debug: true,
-      logLevel: 'info',
+      logLevel: LogLevel.INFO,
       tracing: false,
       ...config,
     });

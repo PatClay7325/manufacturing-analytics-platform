@@ -74,16 +74,16 @@ describe('AlertItem', () => {
     onResolve: vi.fn(),
   };
 
-  vi.beforeEach(() => {
-    vi.clearAllMocks();
+  beforeEach(() => {
+    vi.resetAllMocks();
   });
 
   it('renders alert information correctly', () => {
     const alert = createAlert();
     render(<AlertItem alert={alert} {...mockHandlers} />);
 
-    expect(screen.getByTestId('alert-message')).toHaveTextContent(alert.message);
-    expect(screen.getByTestId('alert-equipment')).toHaveTextContent(alert.equipment);
+    expect(screen.getByTestId('alert-message')).toHaveTextContent(alert.message || '');
+    expect(screen.getByTestId('alert-equipment')).toHaveTextContent(alert.equipment || '');
     expect(screen.getByTestId('alert-severity')).toHaveTextContent(alert.severity);
     expect(screen.getByTestId('alert-status')).toHaveTextContent(alert.status);
   });

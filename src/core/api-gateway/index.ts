@@ -28,6 +28,7 @@ export * from './ApiGatewayService';
 
 // Export a function to initialize the API gateway
 import { ApiGatewayServiceImpl } from './ApiGatewayService';
+import { DeploymentEnvironment, LogLevel } from '../architecture/types';
 
 /**
  * Initialize the API gateway
@@ -43,9 +44,9 @@ export async function initializeApiGateway(
   try {
     // Initialize API gateway service
     await apiGatewayService.initialize({
-      environment: 'development',
+      environment: DeploymentEnvironment.DEVELOPMENT,
       debug: true,
-      logLevel: 'info',
+      logLevel: LogLevel.INFO,
       tracing: false,
       ...config,
     });
