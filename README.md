@@ -1,5 +1,8 @@
 # Adaptive Factory AI Solutions, Inc.
 
+![CI](https://github.com/PatClay7325/manufacturing-analytics-platform/actions/workflows/ci.yml/badge.svg)
+![CD](https://github.com/PatClay7325/manufacturing-analytics-platform/actions/workflows/cd.yml/badge.svg)
+
 A clean, modern web application for manufacturing intelligence and analytics built with Next.js, React, TypeScript, and Tailwind CSS.
 
 ## Features
@@ -15,6 +18,7 @@ A clean, modern web application for manufacturing intelligence and analytics bui
 - **Styling**: Tailwind CSS
 - **Data Visualization**: Highcharts
 - **Database**: Prisma with PostgreSQL
+- **CI/CD**: GitHub Actions
 - **Authentication**: (To be implemented)
 
 ## Project Structure
@@ -93,6 +97,28 @@ To add new mock endpoints:
 2. Add handlers in `src/mocks/handlers.ts`
 3. No restart is needed - changes will be reflected automatically
 
+## Development Workflow
+
+This project follows a structured development workflow:
+
+1. **Branch Strategy**:
+   - `main-Production-ready-code`: Production-ready code
+   - `develop-Integration-branch`: Integration branch for completed features
+   - `feature/*`: New feature development
+   - `bugfix/*`: Bug corrections
+   - `hotfix/*`: Critical production fixes
+
+2. **CI/CD Pipeline**:
+   - Automated testing and building on all branches
+   - Automated deployment to staging from `develop-Integration-branch`
+   - Automated deployment to production from `main-Production-ready-code`
+   - See [CICD-GUIDE.md](CICD-GUIDE.md) for details
+
+3. **Pull Request Process**:
+   - Create feature branches from `develop-Integration-branch`
+   - Submit PRs back to `develop-Integration-branch`
+   - After testing in staging, create PR from `develop-Integration-branch` to `main-Production-ready-code`
+
 ## Design Principles
 
 This project follows these key design principles:
@@ -140,4 +166,4 @@ This project was built from scratch with a focus on simplicity and maintainabili
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the LICENSE file for details
