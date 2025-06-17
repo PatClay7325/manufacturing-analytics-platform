@@ -13,7 +13,8 @@ export interface ChatSession {
   title: string;
   createdAt: string;
   updatedAt: string;
-  messages: ChatMessage[];
+  messages?: ChatMessage[];
+  messageCount?: number;
 }
 
 export interface ChatFunctionParameter {

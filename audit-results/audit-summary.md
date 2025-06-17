@@ -1,68 +1,94 @@
 # Manufacturing Analytics Platform - Comprehensive Audit Report
 
-**Generated:** 2025-06-16T22:17:46.646Z
+**Generated:** 2025-06-17T09:08:29.639Z
 
 ## Executive Summary
 
-- **Total Checks:** 120
-- **Passed:** 92 (77%)
-- **Failed:** 6
-- **Warnings:** 19
-- **Critical Issues:** 0
+- **Total Checks:** 79
+- **Passed:** 45 (57%)
+- **Failed:** 16
+- **Warnings:** 15
+- **Critical Issues:** 15
 
-## Health Score: 32/100
+## Health Score: 0/100
+
+## 🔴 Critical Issues
+
+### PAGES
+- **Home - Availability**: Status: 404
+- **Equipment - Availability**: Status: 500
+- **Alerts - Availability**: Status: 500
+- **Manufacturing Chat - Availability**: Status: 500
+- **Support - Availability**: Status: 500
+- **Status - Availability**: Status: 500
+- **Privacy Policy - Availability**: Status: 500
+- **Terms of Service - Availability**: Status: 500
+- **Cookie Policy - Availability**: Status: 500
+
+### API
+- **GET /api/equipment/1**: Unexpected status: 500
+- **GET /api/alerts/active**: Unexpected status: 500
+- **GET /api/metrics/performance**: Unexpected status: 500
+- **GET /api/chat/history**: Unexpected status: 500
+- **GET /api/health**: Unexpected status: 500
+- **GET /api/auth/status**: Unexpected status: 500
 
 ## Detailed Results by Category
 
 ### Pages
 
-- Passed: 50
-- Failed: 0
-- Warnings: 10
-
-**Issues:**
-- ⚠️ **Home - Expected Elements**: Missing: hero, features
-- ⚠️ **Dashboard - Expected Elements**: Missing: metrics, filters
-- ⚠️ **Equipment - Expected Elements**: Missing: equipment-list, status-indicators
-- ⚠️ **Alerts - Expected Elements**: Missing: alert-list, severity-badges, filters
-- ⚠️ **Manufacturing Chat - Expected Elements**: Missing: message-input
-- ⚠️ **Support - Expected Elements**: Missing: contact-form, faq
-- ⚠️ **Status - Expected Elements**: Missing: system-health, uptime-metrics
-- ⚠️ **Privacy Policy - Expected Elements**: Missing: policy-content, sections
-- ⚠️ **Terms of Service - Expected Elements**: Missing: terms-content, sections
-- ⚠️ **Cookie Policy - Expected Elements**: Missing: cookie-content, consent-info
-
-### Api
-
-- Passed: 10
-- Failed: 0
+- Passed: 6
+- Failed: 9
 - Warnings: 0
 
 **Issues:**
+- ❌ **Home - Availability**: Status: 404
+- ❌ **Equipment - Availability**: Status: 500
+- ❌ **Alerts - Availability**: Status: 500
+- ❌ **Manufacturing Chat - Availability**: Status: 500
+- ❌ **Support - Availability**: Status: 500
+- ❌ **Status - Availability**: Status: 500
+- ❌ **Privacy Policy - Availability**: Status: 500
+- ❌ **Terms of Service - Availability**: Status: 500
+- ❌ **Cookie Policy - Availability**: Status: 500
+
+### Api
+
+- Passed: 4
+- Failed: 6
+- Warnings: 10
+
+**Issues:**
 - ⚠️ **GET /api/equipment**
-- ⚠️ **GET /api/equipment/1**
+- ⚠️ **/api/equipment - Performance**: Slow API response: 642ms
+- ❌ **GET /api/equipment/1**: Unexpected status: 500
+- ⚠️ **/api/equipment/1 - Performance**: Slow API response: 338ms
 - ⚠️ **GET /api/alerts**
-- ⚠️ **GET /api/alerts/active**
+- ⚠️ **/api/alerts - Performance**: Slow API response: 562ms
+- ❌ **GET /api/alerts/active**: Unexpected status: 500
+- ⚠️ **/api/alerts/active - Performance**: Slow API response: 323ms
 - ⚠️ **GET /api/metrics**
-- ⚠️ **GET /api/metrics/performance**
+- ⚠️ **/api/metrics - Performance**: Slow API response: 586ms
+- ❌ **GET /api/metrics/performance**: Unexpected status: 500
+- ⚠️ **/api/metrics/performance - Performance**: Slow API response: 333ms
 - ⚠️ **GET /api/chat**
-- ⚠️ **GET /api/chat/history**
-- ⚠️ **GET /api/health**
-- ⚠️ **GET /api/auth/status**
+- ⚠️ **/api/chat - Performance**: Slow API response: 608ms
+- ❌ **GET /api/chat/history**: Unexpected status: 500
+- ⚠️ **/api/chat/history - Performance**: Slow API response: 334ms
+- ❌ **GET /api/health**: Unexpected status: 500
+- ⚠️ **/api/health - Performance**: Slow API response: 317ms
+- ❌ **GET /api/auth/status**: Unexpected status: 500
+- ⚠️ **/api/auth/status - Performance**: Slow API response: 286ms
 
 ### Components
 
-- Passed: 1
-- Failed: 3
-- Warnings: 3
+- Passed: 5
+- Failed: 0
+- Warnings: 2
 
 **Issues:**
-- ❌ **Static: /favicon.ico**: Required resource missing (404)
-- ⚠️ **Static: /robots.txt**: Optional resource missing (404)
-- ⚠️ **Static: /sitemap.xml**: Optional resource missing (404)
-- ⚠️ **Static: /manifest.json**: Optional resource missing (404)
-- ❌ **Static: /_next/static/css**: Required resource missing (404)
-- ❌ **Static: /_next/static/chunks**: Required resource missing (404)
+- ⚠️ **Static: /_next/static/css**: Optional resource missing (500)
+- ⚠️ **Static: /_next/static/chunks**: Optional resource missing (500)
 
 ### Performance
 
@@ -71,47 +97,41 @@
 - Warnings: 1
 
 **Issues:**
-- ⚠️ **Bundle Sizes**: 6 large bundles found (>500KB)
+- ⚠️ **Bundle Sizes**: 3 large bundles found (>500KB)
 
 ### Security
 
-- Passed: 5
-- Failed: 2
-- Warnings: 3
-
-**Issues:**
-- ❌ **Security Header: x-frame-options**: Required security header missing
-- ❌ **Security Header: x-content-type-options**: Required security header missing
-- ⚠️ **Security Header: x-xss-protection**: Recommended security header missing
-- ⚠️ **Security Header: strict-transport-security**: Recommended security header missing
-- ⚠️ **Security Header: content-security-policy**: Recommended security header missing
+- Passed: 10
+- Failed: 0
+- Warnings: 0
 
 ### Integration
+
+- Passed: 2
+- Failed: 0
+- Warnings: 2
+
+**Issues:**
+- ⚠️ **Navigation: / → /dashboard**: Navigation link may be missing or broken
+- ⚠️ **Navigation: /equipment → /alerts**: Navigation link may be missing or broken
+
+### Database
 
 - Passed: 4
 - Failed: 0
 - Warnings: 0
 
-### Database
-
-- Passed: 3
-- Failed: 0
-- Warnings: 1
-
-**Issues:**
-- ⚠️ **Database Migrations**: No migrations found - database may not be initialized
-
 ### Configuration
 
-- Passed: 7
+- Passed: 8
 - Failed: 1
-- Warnings: 1
+- Warnings: 0
 
 **Issues:**
-- ⚠️ **Config File: .env.example**: Recommended file missing
-- ❌ **TypeScript Compilation**: 567 TypeScript errors found
+- ❌ **TypeScript Compilation**: 283 TypeScript errors found
 
 ## Recommendations
 
-3. **Enhance security headers** - Add CSP, HSTS, and other security headers
+1. **Address critical issues immediately** - These are blocking production readiness
+2. **Implement API endpoints** - Most API routes are returning 404
 4. **Optimize performance** - Address slow response times and bundle sizes

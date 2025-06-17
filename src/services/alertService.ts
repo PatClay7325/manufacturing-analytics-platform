@@ -4,9 +4,6 @@ import {
   AlertStatistics, 
   AlertRule,
   AlertResponse,
-  AlertStatus,
-  AlertSeverity,
-  AlertSource,
   AlertSummary
 } from '@/models/alert';
 
@@ -15,157 +12,163 @@ const generateMockAlerts = (): Alert[] => {
   const alerts: Alert[] = [
     {
       id: 'alert-1',
-      title: 'Machine temperature exceeding threshold',
-      description: 'CNC Machine XYZ-1000 temperature reached 78°C, exceeding the warning threshold of 75°C.',
+      message: 'Machine temperature exceeding threshold - CNC Machine XYZ-1000 temperature reached 78°C, exceeding the warning threshold of 75°C.',
       severity: 'high',
       status: 'active',
-      source: 'equipment',
-      sourceId: 'equip-1',
-      sourceName: 'CNC Machine XYZ-1000',
-      createdAt: new Date(Date.now() - 45 * 60000).toISOString(), // 45 minutes ago
-      updatedAt: new Date(Date.now() - 45 * 60000).toISOString(),
-      dueBy: new Date(Date.now() + 30 * 60000).toISOString(), // Due in 30 minutes
-      category: 'temperature',
-      tags: ['temperature', 'maintenance-required', 'cnc']
+      alertType: 'performance',
+      equipmentId: 'equip-1',
+      timestamp: new Date(Date.now() - 45 * 60000).toISOString(), // 45 minutes ago
+      acknowledgedBy: null,
+      acknowledgedAt: null,
+      resolvedBy: null,
+      resolvedAt: null,
+      notes: 'Regular quarterly maintenance',
+      createdAt: new Date(Date.now() - 45 * 60000).toISOString(),
+      updatedAt: new Date(Date.now() - 45 * 60000).toISOString()
     },
     {
       id: 'alert-2',
-      title: 'Preventive maintenance required',
-      description: 'Robot Arm RX-200 is due for scheduled maintenance. Please schedule maintenance within 48 hours.',
+      message: 'Preventive maintenance required - Robot Arm RX-200 is due for scheduled maintenance. Please schedule maintenance within 48 hours.',
       severity: 'medium',
       status: 'acknowledged',
-      source: 'maintenance',
-      sourceId: 'equip-2',
-      sourceName: 'Robot Arm RX-200',
-      createdAt: new Date(Date.now() - 12 * 3600000).toISOString(), // 12 hours ago
-      updatedAt: new Date(Date.now() - 10 * 3600000).toISOString(), // 10 hours ago
-      acknowledgedAt: new Date(Date.now() - 10 * 3600000).toISOString(),
+      alertType: 'maintenance',
+      equipmentId: 'equip-2',
+      timestamp: new Date(Date.now() - 12 * 3600000).toISOString(), // 12 hours ago
       acknowledgedBy: 'john.doe',
-      dueBy: new Date(Date.now() + 48 * 3600000).toISOString(), // Due in 48 hours
-      assignedTo: 'maintenance-team',
-      category: 'maintenance',
-      tags: ['scheduled-maintenance', 'robot', 'preventive']
+      acknowledgedAt: new Date(Date.now() - 10 * 3600000).toISOString(), // 10 hours ago
+      resolvedBy: null,
+      resolvedAt: null,
+      notes: null,
+      createdAt: new Date(Date.now() - 12 * 3600000).toISOString(),
+      updatedAt: new Date(Date.now() - 10 * 3600000).toISOString()
     },
     {
       id: 'alert-3',
-      title: 'Conveyor belt stopped unexpectedly',
-      description: 'Conveyor Belt System CB-500 stopped unexpectedly. Error code: E-STOP-221. Immediate attention required.',
+      message: 'Conveyor belt stopped unexpectedly - Conveyor Belt System CB-500 stopped unexpectedly. Error code: E-STOP-221. Immediate attention required.',
       severity: 'critical',
       status: 'active',
-      source: 'equipment',
-      sourceId: 'equip-3',
-      sourceName: 'Conveyor Belt System CB-500',
-      createdAt: new Date(Date.now() - 20 * 60000).toISOString(), // 20 minutes ago
-      updatedAt: new Date(Date.now() - 20 * 60000).toISOString(),
-      category: 'equipment-failure',
-      tags: ['emergency', 'downtime', 'conveyor']
+      alertType: 'equipment',
+      equipmentId: 'equip-3',
+      timestamp: new Date(Date.now() - 20 * 60000).toISOString(), // 20 minutes ago
+      acknowledgedBy: null,
+      acknowledgedAt: null,
+      resolvedBy: null,
+      resolvedAt: null,
+      notes: null,
+      createdAt: new Date(Date.now() - 20 * 60000).toISOString(),
+      updatedAt: new Date(Date.now() - 20 * 60000).toISOString()
     },
     {
       id: 'alert-4',
-      title: 'Production rate below target',
-      description: 'Current production rate is 42 units/hour, below the target of 50 units/hour. Please check for bottlenecks.',
+      message: 'Production rate below target - Current production rate is 42 units/hour, below the target of 50 units/hour. Please check for bottlenecks.',
       severity: 'medium',
       status: 'active',
-      source: 'process',
-      sourceName: 'Production Line A',
-      createdAt: new Date(Date.now() - 3 * 3600000).toISOString(), // 3 hours ago
-      updatedAt: new Date(Date.now() - 3 * 3600000).toISOString(),
-      category: 'performance',
-      tags: ['production', 'efficiency', 'bottleneck']
+      alertType: 'production',
+      equipmentId: null,
+      timestamp: new Date(Date.now() - 3 * 3600000).toISOString(), // 3 hours ago
+      acknowledgedBy: null,
+      acknowledgedAt: null,
+      resolvedBy: null,
+      resolvedAt: null,
+      notes: null,
+      createdAt: new Date(Date.now() - 3 * 3600000).toISOString(),
+      updatedAt: new Date(Date.now() - 3 * 3600000).toISOString()
     },
     {
       id: 'alert-5',
-      title: 'Quality check failure rate increased',
-      description: 'Defect rate has increased to 4.8%, exceeding the threshold of 3%. Most common defect: surface scratches.',
+      message: 'Quality check failure rate increased - Defect rate has increased to 4.8%, exceeding the threshold of 3%. Most common defect: surface scratches.',
       severity: 'high',
       status: 'active',
-      source: 'quality',
-      sourceName: 'Quality Station 2',
-      createdAt: new Date(Date.now() - 5 * 3600000).toISOString(), // 5 hours ago
-      updatedAt: new Date(Date.now() - 5 * 3600000).toISOString(),
-      category: 'quality',
-      tags: ['defects', 'quality-control', 'surface-finish']
+      alertType: 'quality',
+      equipmentId: null,
+      timestamp: new Date(Date.now() - 5 * 3600000).toISOString(), // 5 hours ago
+      acknowledgedBy: null,
+      acknowledgedAt: null,
+      resolvedBy: null,
+      resolvedAt: null,
+      notes: null,
+      createdAt: new Date(Date.now() - 5 * 3600000).toISOString(),
+      updatedAt: new Date(Date.now() - 5 * 3600000).toISOString()
     },
     {
       id: 'alert-6',
-      title: 'Low inventory for raw material',
-      description: 'Aluminum sheets (1.5mm) inventory is below reorder point. Current stock: 120 units, Reorder point: 200 units.',
+      message: 'Low inventory for raw material - Aluminum sheets (1.5mm) inventory is below reorder point. Current stock: 120 units, Reorder point: 200 units.',
       severity: 'medium',
       status: 'acknowledged',
-      source: 'inventory',
-      sourceName: 'Warehouse A',
-      createdAt: new Date(Date.now() - 2 * 24 * 3600000).toISOString(), // 2 days ago
-      updatedAt: new Date(Date.now() - 1.5 * 24 * 3600000).toISOString(), // 1.5 days ago
-      acknowledgedAt: new Date(Date.now() - 1.5 * 24 * 3600000).toISOString(),
+      alertType: 'inventory',
+      equipmentId: null,
+      timestamp: new Date(Date.now() - 2 * 24 * 3600000).toISOString(), // 2 days ago
       acknowledgedBy: 'jane.smith',
-      assignedTo: 'procurement-team',
-      category: 'inventory',
-      tags: ['inventory', 'raw-materials', 'reorder']
+      acknowledgedAt: new Date(Date.now() - 1.5 * 24 * 3600000).toISOString(), // 1.5 days ago
+      resolvedBy: null,
+      resolvedAt: null,
+      notes: null,
+      createdAt: new Date(Date.now() - 2 * 24 * 3600000).toISOString(),
+      updatedAt: new Date(Date.now() - 1.5 * 24 * 3600000).toISOString()
     },
     {
       id: 'alert-7',
-      title: 'Safety guard interlock triggered',
-      description: 'Safety interlock on Injection Molding Machine IM-800 was triggered. Machine has been automatically stopped. Please check and reset.',
+      message: 'Safety guard interlock triggered - Safety interlock on Injection Molding Machine IM-800 was triggered. Machine has been automatically stopped. Please check and reset.',
       severity: 'critical',
       status: 'resolved',
-      source: 'safety',
-      sourceId: 'equip-4',
-      sourceName: 'Injection Molding Machine IM-800',
-      createdAt: new Date(Date.now() - 25 * 3600000).toISOString(), // 25 hours ago
-      updatedAt: new Date(Date.now() - 24 * 3600000).toISOString(), // 24 hours ago
-      acknowledgedAt: new Date(Date.now() - 24.8 * 3600000).toISOString(),
+      alertType: 'safety',
+      equipmentId: 'equip-4',
+      timestamp: new Date(Date.now() - 25 * 3600000).toISOString(), // 25 hours ago
       acknowledgedBy: 'operator-team',
-      resolvedAt: new Date(Date.now() - 24 * 3600000).toISOString(),
+      acknowledgedAt: new Date(Date.now() - 24.8 * 3600000).toISOString(),
       resolvedBy: 'maintenance-team',
-      category: 'safety',
-      tags: ['safety', 'interlock', 'molding-machine']
+      resolvedAt: new Date(Date.now() - 24 * 3600000).toISOString(),
+      notes: null,
+      createdAt: new Date(Date.now() - 25 * 3600000).toISOString(),
+      updatedAt: new Date(Date.now() - 24 * 3600000).toISOString()
     },
     {
       id: 'alert-8',
-      title: 'Network connectivity issues',
-      description: 'Intermittent network connectivity issues detected on factory floor network segment B. Some equipment may report delayed data.',
+      message: 'Network connectivity issues - Intermittent network connectivity issues detected on factory floor network segment B. Some equipment may report delayed data.',
       severity: 'low',
       status: 'resolved',
-      source: 'system',
-      sourceName: 'Network Segment B',
-      createdAt: new Date(Date.now() - 36 * 3600000).toISOString(), // 36 hours ago
-      updatedAt: new Date(Date.now() - 30 * 3600000).toISOString(), // 30 hours ago
-      acknowledgedAt: new Date(Date.now() - 35 * 3600000).toISOString(),
+      alertType: 'network',
+      equipmentId: null,
+      timestamp: new Date(Date.now() - 36 * 3600000).toISOString(), // 36 hours ago
       acknowledgedBy: 'it-support',
-      resolvedAt: new Date(Date.now() - 30 * 3600000).toISOString(),
+      acknowledgedAt: new Date(Date.now() - 35 * 3600000).toISOString(),
       resolvedBy: 'it-support',
-      category: 'network',
-      tags: ['network', 'connectivity', 'data-delay']
+      resolvedAt: new Date(Date.now() - 30 * 3600000).toISOString(),
+      notes: null,
+      createdAt: new Date(Date.now() - 36 * 3600000).toISOString(),
+      updatedAt: new Date(Date.now() - 30 * 3600000).toISOString()
     },
     {
       id: 'alert-9',
-      title: 'Laser power output unstable',
-      description: 'Laser Cutting Machine LC-2000 is showing unstable power output fluctuations. Current variation: ±12%, Acceptable: ±5%.',
+      message: 'Laser power output unstable - Laser Cutting Machine LC-2000 is showing unstable power output fluctuations. Current variation: ±12%, Acceptable: ±5%.',
       severity: 'high',
       status: 'acknowledged',
-      source: 'equipment',
-      sourceId: 'equip-5',
-      sourceName: 'Laser Cutting Machine LC-2000',
-      createdAt: new Date(Date.now() - 8 * 3600000).toISOString(), // 8 hours ago
-      updatedAt: new Date(Date.now() - 7 * 3600000).toISOString(), // 7 hours ago
-      acknowledgedAt: new Date(Date.now() - 7 * 3600000).toISOString(),
+      alertType: 'equipment',
+      equipmentId: 'equip-5',
+      timestamp: new Date(Date.now() - 8 * 3600000).toISOString(), // 8 hours ago
       acknowledgedBy: 'engineer-team',
-      assignedTo: 'maintenance-team',
-      category: 'equipment-performance',
-      tags: ['laser', 'calibration', 'power-fluctuation']
+      acknowledgedAt: new Date(Date.now() - 7 * 3600000).toISOString(),
+      resolvedBy: null,
+      resolvedAt: null,
+      notes: null,
+      createdAt: new Date(Date.now() - 8 * 3600000).toISOString(),
+      updatedAt: new Date(Date.now() - 7 * 3600000).toISOString()
     },
     {
       id: 'alert-10',
-      title: 'Software update available',
-      description: 'A critical security update is available for the Manufacturing Execution System. Schedule update during next maintenance window.',
+      message: 'Software update available - A critical security update is available for the Manufacturing Execution System. Schedule update during next maintenance window.',
       severity: 'info',
       status: 'active',
-      source: 'system',
-      sourceName: 'Manufacturing Execution System',
-      createdAt: new Date(Date.now() - 48 * 3600000).toISOString(), // 48 hours ago
-      updatedAt: new Date(Date.now() - 48 * 3600000).toISOString(),
-      category: 'software',
-      tags: ['update', 'security', 'mes']
+      alertType: 'system',
+      equipmentId: null,
+      timestamp: new Date(Date.now() - 48 * 3600000).toISOString(), // 48 hours ago
+      acknowledgedBy: null,
+      acknowledgedAt: null,
+      resolvedBy: null,
+      resolvedAt: null,
+      notes: null,
+      createdAt: new Date(Date.now() - 48 * 3600000).toISOString(),
+      updatedAt: new Date(Date.now() - 48 * 3600000).toISOString()
     }
   ];
   
@@ -313,11 +316,11 @@ export const alertService = {
     
     return mockAlerts.map(alert => ({
       id: alert.id,
-      title: alert.title,
+      message: alert.message,
       severity: alert.severity,
       status: alert.status,
-      source: alert.source,
-      sourceName: alert.sourceName,
+      alertType: alert.alertType,
+      equipmentId: alert.equipmentId,
       createdAt: alert.createdAt
     }));
   },
@@ -348,19 +351,16 @@ export const alertService = {
       filteredAlerts = filteredAlerts.filter(a => filter.status?.includes(a.status));
     }
     
-    // Apply source filter
-    if (filter.source && filter.source.length > 0) {
-      filteredAlerts = filteredAlerts.filter(a => filter.source?.includes(a.source));
+    // Apply alertType filter
+    if (filter.alertType && filter.alertType.length > 0) {
+      filteredAlerts = filteredAlerts.filter(a => filter.alertType?.includes(a.alertType));
     }
     
     // Apply search filter
     if (filter.search) {
       const searchLower = filter.search.toLowerCase();
       filteredAlerts = filteredAlerts.filter(a => 
-        a.title.toLowerCase().includes(searchLower) ||
-        a.description.toLowerCase().includes(searchLower) ||
-        a.sourceName?.toLowerCase().includes(searchLower) ||
-        a.tags?.some(tag => tag.toLowerCase().includes(searchLower))
+        a.message.toLowerCase().includes(searchLower)
       );
     }
     
@@ -376,9 +376,9 @@ export const alertService = {
       }
     }
     
-    // Apply assigned to filter
-    if (filter.assignedTo) {
-      filteredAlerts = filteredAlerts.filter(a => a.assignedTo === filter.assignedTo);
+    // Apply equipmentId filter
+    if (filter.equipmentId) {
+      filteredAlerts = filteredAlerts.filter(a => a.equipmentId === filter.equipmentId);
     }
     
     return filteredAlerts;
@@ -390,38 +390,19 @@ export const alertService = {
     await new Promise(resolve => setTimeout(resolve, 300));
     
     // Count alerts by severity
-    const bySeverity: Record<AlertSeverity, number> = {
-      critical: 0,
-      high: 0,
-      medium: 0,
-      low: 0,
-      info: 0
-    };
+    const bySeverity: Record<string, number> = {};
     
     // Count alerts by status
-    const byStatus: Record<AlertStatus, number> = {
-      active: 0,
-      acknowledged: 0,
-      resolved: 0,
-      muted: 0
-    };
+    const byStatus: Record<string, number> = {};
     
-    // Count alerts by source
-    const bySource: Record<AlertSource, number> = {
-      equipment: 0,
-      process: 0,
-      quality: 0,
-      maintenance: 0,
-      inventory: 0,
-      safety: 0,
-      system: 0
-    };
+    // Count alerts by alert type
+    const byAlertType: Record<string, number> = {};
     
     // Count alerts
     mockAlerts.forEach(alert => {
-      bySeverity[alert.severity]++;
-      byStatus[alert.status]++;
-      bySource[alert.source]++;
+      bySeverity[alert.severity] = (bySeverity[alert.severity] || 0) + 1;
+      byStatus[alert.status] = (byStatus[alert.status] || 0) + 1;
+      byAlertType[alert.alertType] = (byAlertType[alert.alertType] || 0) + 1;
     });
     
     // Generate trend data (last 7 days)
@@ -450,7 +431,7 @@ export const alertService = {
       total: mockAlerts.length,
       bySeverity,
       byStatus,
-      bySource,
+      byAlertType,
       trend
     };
   },
@@ -594,42 +575,6 @@ export const alertService = {
       timestamp: now,
       userId,
       userName,
-      comment
-    };
-    
-    // In a real application, these would be server calls
-    mockAlerts[index] = updatedAlert;
-    mockAlertResponses.push(response);
-    
-    return updatedAlert;
-  },
-  
-  // Assign alert
-  assignAlert: async (alertId: string, userId: string, userName: string, assignedTo: string, comment?: string): Promise<Alert | null> => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 400));
-    
-    const index = mockAlerts.findIndex(a => a.id === alertId);
-    if (index === -1) return null;
-    
-    const now = new Date().toISOString();
-    
-    // Update alert
-    const updatedAlert: Alert = {
-      ...mockAlerts[index],
-      assignedTo,
-      updatedAt: now
-    };
-    
-    // Create response
-    const response: AlertResponse = {
-      id: `response-${mockAlertResponses.length + 1}`,
-      alertId,
-      type: 'assign',
-      timestamp: now,
-      userId,
-      userName,
-      assignedTo,
       comment
     };
     

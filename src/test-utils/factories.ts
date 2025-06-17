@@ -16,15 +16,16 @@ export interface Equipment {
   location?: string;
 }
 
-export interface Alert {
-  id: string;
-  severity: 'info' | 'warning' | 'critical';
-  message: string;
-  timestamp: string;
-  equipmentId: string;
-  acknowledged: boolean;
+import { Alert as ModelAlert } from '@/models/alert';
+
+export interface TestAlert extends ModelAlert {
+  equipment?: string;
+  type?: 'error' | 'warning' | 'info';
+  acknowledged?: boolean;
   category?: string;
 }
+
+export interface Alert extends TestAlert {}
 
 export interface KPI {
   id: string;
@@ -60,14 +61,25 @@ export const createEquipment = (overrides: Partial<Equipment> = {}): Equipment =
 /**
  * Creates an alert object with default values
  */
-export const createAlert = (overrides: Partial<Alert> = {}): Alert => ({
+export const createAlert = (overrides: Partial<TestAlert> = {}): TestAlert => ({
   id: 'alert-1',
   severity: 'warning',
   message: 'Temperature above normal range',
   timestamp: '2023-06-10T14:30:00Z',
   equipmentId: 'equip-1',
+  equipment: 'CNC Machine 1',
+  type: 'warning',
   acknowledged: false,
   category: 'temperature',
+  alertType: 'performance',
+  status: 'active',
+  acknowledgedBy: null,
+  acknowledgedAt: null,
+  resolvedBy: null,
+  resolvedAt: null,
+  notes: null,
+  createdAt: '2023-06-10T14:30:00Z',
+  updatedAt: '2023-06-10T14:30:00Z',
   ...overrides,
 });
 

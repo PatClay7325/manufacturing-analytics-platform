@@ -47,6 +47,24 @@ export default function Navigation() {
     return pathname?.startsWith(path) ?? false;
   };
   
+  // Handle redirection from home to dashboard when appropriate
+  useEffect(() => {
+    // If user is at the root path and they've visited before, nudge them to the dashboard
+    if (pathname === '/' && typeof window !== 'undefined') {
+      const hasVisitedBefore = localStorage.getItem('hasVisitedBefore');
+      if (hasVisitedBefore === 'true') {
+        // We'll use client-side navigation after a short delay
+        const timer = setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 100);
+        return () => clearTimeout(timer);
+      } else {
+        // Mark that the user has visited before
+        localStorage.setItem('hasVisitedBefore', 'true');
+      }
+    }
+  }, [pathname]);
+  
   return (
     <nav className="bg-primary-700 text-white" aria-label="Main navigation">
       <div className="container mx-auto px-4 py-4">

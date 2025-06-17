@@ -1,8 +1,5 @@
 # Adaptive Factory AI Solutions, Inc.
 
-![CI](https://github.com/PatClay7325/manufacturing-analytics-platform/actions/workflows/ci.yml/badge.svg)
-![CD](https://github.com/PatClay7325/manufacturing-analytics-platform/actions/workflows/cd.yml/badge.svg)
-
 A clean, modern web application for manufacturing intelligence and analytics built with Next.js, React, TypeScript, and Tailwind CSS.
 
 ## Features
@@ -18,7 +15,6 @@ A clean, modern web application for manufacturing intelligence and analytics bui
 - **Styling**: Tailwind CSS
 - **Data Visualization**: Highcharts
 - **Database**: Prisma with PostgreSQL
-- **CI/CD**: GitHub Actions
 - **Authentication**: (To be implemented)
 
 ## Project Structure
@@ -84,6 +80,29 @@ clean-project/
 
 5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+### Running Verification and Audit Tools
+
+The project includes several tools to verify application health and compliance:
+
+1. **Page Verification**: Check that all pages are working correctly
+   ```bash
+   node page-verification.js
+   ```
+
+2. **Audit Script**: Run a comprehensive audit of the application
+   ```bash
+   npm run audit
+   # or
+   node audit-port-3001.js
+   ```
+
+   Note: If your server is running on a different port, update the PORT variable in the audit script.
+
+3. **TypeScript Type Checking**: Verify TypeScript types
+   ```bash
+   npm run typecheck
+   ```
+
 ### Mock API Server
 
 The project includes a mock API server that intercepts API requests during development and returns mock data. This allows for frontend development without requiring a backend server.
@@ -99,25 +118,13 @@ To add new mock endpoints:
 
 ## Development Workflow
 
-This project follows a structured development workflow:
+This project follows a structured development workflow with branches organized for different purposes:
 
-1. **Branch Strategy**:
-   - `main-Production-ready-code`: Production-ready code
-   - `develop-Integration-branch`: Integration branch for completed features
-   - `feature/*`: New feature development
-   - `bugfix/*`: Bug corrections
-   - `hotfix/*`: Critical production fixes
-
-2. **CI/CD Pipeline**:
-   - Automated testing and building on all branches
-   - Automated deployment to staging from `develop-Integration-branch`
-   - Automated deployment to production from `main-Production-ready-code`
-   - See [CICD-GUIDE.md](CICD-GUIDE.md) for details
-
-3. **Pull Request Process**:
-   - Create feature branches from `develop-Integration-branch`
-   - Submit PRs back to `develop-Integration-branch`
-   - After testing in staging, create PR from `develop-Integration-branch` to `main-Production-ready-code`
+- `main-Production-ready-code`: Production-ready code
+- `develop-Integration-branch`: Integration branch for completed features
+- `feature/*`: New feature development
+- `bugfix/*`: Bug corrections
+- `hotfix/*`: Critical production fixes
 
 ## Design Principles
 

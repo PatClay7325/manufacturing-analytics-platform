@@ -4,12 +4,5 @@ import { handlers } from './handlers';
 // This configures a request mocking server with the given request handlers.
 export const server = setupServer(...handlers);
 
-// Establish API mocking before all tests.
-beforeAll(() => server.listen({ onUnhandledRequest: 'bypass' }));
-
-// Reset any request handlers that we may add during the tests,
-// so they don't affect other tests.
-afterEach(() => server.resetHandlers());
-
-// Clean up after the tests are finished.
-afterAll(() => server.close());
+// NOTE: The test setup for beforeAll, afterEach, and afterAll has been moved to setupTests.ts
+// to avoid TypeScript errors. Please see setupTests.ts for the setup code.

@@ -520,7 +520,7 @@ export class AIServiceImpl extends BaseModularService implements AIService {
    * Get provider for model
    * @param modelId Model ID
    */
-  private getProviderForModel(modelId?: string): AIProvider | null {
+  private getProviderForModel(modelId: string = ''): AIProvider | null {
     if (!modelId) {
       // Default to Ollama if no model specified
       return this.providers.get('ollama') || null;
@@ -541,7 +541,7 @@ export class AIServiceImpl extends BaseModularService implements AIService {
    * Get cache key for request
    * @param request AI request
    */
-  private getCacheKey(request: any): string {
+  private getCacheKey(request: Record<string, any>): string {
     // Normalize request for consistent cache keys
     const normalizedRequest = {
       type: request.type,
@@ -591,8 +591,11 @@ export class AIServiceImpl extends BaseModularService implements AIService {
     // Enforce cache size limit
     if (this.cache.size >= this.cacheOptions.maxEntries) {
       // Remove oldest entry
-      const oldestKey = this.cache.keys().next().value;
-      this.cache.delete(oldestKey);
+      const keys = this.cache.keys();
+      const firstKey = keys.next();
+      if (!firstKey.done && firstKey.value) {
+        this.cache.delete(firstKey.value);
+      }
     }
     
     // Add new entry
@@ -625,7 +628,7 @@ export class AIServiceImpl extends BaseModularService implements AIService {
     }
     
     let lastError: Error | null = null;
-    let delay = this.retryOptions.initialDelay;
+    let delay = this.retryOptions.initialDelay || 1000;
     
     for (let attempt = 0; attempt <= this.retryOptions.maxRetries; attempt++) {
       try {

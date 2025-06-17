@@ -31,7 +31,11 @@ export default function ChatSessionPage() {
         const sessionData = await chatService.getSessionById(sessionId);
         if (sessionData) {
           setSession(sessionData);
-          setMessages(sessionData.messages);
+          if (sessionData.messages) {
+            setMessages(sessionData.messages);
+          } else {
+            setMessages([]);
+          }
         } else {
           setError('Chat session not found');
         }
@@ -78,11 +82,11 @@ export default function ChatSessionPage() {
       // Get AI response
       const aiResponse = await chatService.getAIResponse(
         session.id,
-        updatedSession.messages.map(msg => ({
+        updatedSession.messages?.map(msg => ({
           role: msg.role,
           content: msg.content,
           name: msg.name
-        }))
+        })) || []
       );
 
       // Add AI response to session
@@ -92,7 +96,9 @@ export default function ChatSessionPage() {
       const finalSession = await chatService.getSessionById(session.id);
       if (finalSession) {
         setSession(finalSession);
-        setMessages(finalSession.messages);
+        if (finalSession.messages) {
+          setMessages(finalSession.messages);
+        }
       }
     } catch (error) {
       // Add error message
@@ -188,7 +194,7 @@ export default function ChatSessionPage() {
             
             {isLoadingResponse && (
               <ChatMessage
-                message={{ role: 'assistant', content: '' }}
+                message={{ role: 'assistant', content: '' } as ChatMessageType}
                 isLoading={true}
               />
             )}

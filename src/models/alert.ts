@@ -1,39 +1,34 @@
 export type AlertSeverity = 'critical' | 'high' | 'medium' | 'low' | 'info';
 export type AlertStatus = 'active' | 'acknowledged' | 'resolved' | 'muted';
-export type AlertSource = 'equipment' | 'process' | 'quality' | 'maintenance' | 'inventory' | 'safety' | 'system';
+export type AlertType = 'maintenance' | 'performance' | 'quality' | 'safety' | 'system' | 'equipment' | 'process' | 'inventory' | 'production' | 'network';
 
 export interface Alert {
   id: string;
-  title: string;
-  description: string;
-  severity: AlertSeverity;
-  status: AlertStatus;
-  source: AlertSource;
-  sourceId?: string;
-  sourceName?: string;
+  equipmentId: string | null;
+  alertType: string;
+  severity: string;
+  message: string;
+  status: string;
+  timestamp: string;
+  acknowledgedBy: string | null;
+  acknowledgedAt: string | null;
+  resolvedBy: string | null;
+  resolvedAt: string | null;
+  notes: string | null;
   createdAt: string;
   updatedAt: string;
-  acknowledgedAt?: string;
-  acknowledgedBy?: string;
-  resolvedAt?: string;
-  resolvedBy?: string;
-  dueBy?: string;
-  assignedTo?: string;
-  category?: string;
-  tags?: string[];
-  metadata?: Record<string, unknown>;
 }
 
 export interface AlertFilter {
-  severity?: AlertSeverity[];
-  status?: AlertStatus[];
-  source?: AlertSource[];
+  severity?: string[];
+  status?: string[];
+  alertType?: string[];
   search?: string;
   dateRange?: {
     start?: string;
     end?: string;
   };
-  assignedTo?: string;
+  equipmentId?: string;
 }
 
 export interface AlertNotificationSettings {
@@ -50,9 +45,9 @@ export interface AlertNotificationSettings {
 
 export interface AlertStatistics {
   total: number;
-  bySeverity: Record<AlertSeverity, number>;
-  byStatus: Record<AlertStatus, number>;
-  bySource: Record<AlertSource, number>;
+  bySeverity: Record<string, number>;
+  byStatus: Record<string, number>;
+  byAlertType: Record<string, number>;
   trend: {
     date: string;
     count: number;
@@ -64,7 +59,7 @@ export interface AlertRule {
   name: string;
   description?: string;
   condition: AlertRuleCondition;
-  severity: AlertSeverity;
+  severity: string;
   enabled: boolean;
   notifyUsers?: string[];
   autoResolve?: boolean;
@@ -77,7 +72,7 @@ export interface AlertRule {
 
 export interface AlertRuleCondition {
   type: 'threshold' | 'deviation' | 'rate_of_change' | 'anomaly' | 'pattern' | 'composite';
-  source: AlertSource;
+  source: string;
   sourceId?: string;
   metric?: string;
   operator?: '>' | '>=' | '<' | '<=' | '==' | '!=' | 'contains' | 'not_contains';
@@ -103,10 +98,10 @@ export interface AlertResponse {
 
 export interface AlertSummary {
   id: string;
-  title: string;
-  severity: AlertSeverity;
-  status: AlertStatus;
-  source: AlertSource;
-  sourceName?: string;
+  message: string;
+  severity: string;
+  status: string;
+  alertType: string;
+  equipmentId?: string | null;
   createdAt: string;
 }

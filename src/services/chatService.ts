@@ -547,6 +547,9 @@ export const chatService = {
     };
     
     // In a real application, this would be a server call
+    if (!session.messages) {
+      session.messages = [];
+    }
     session.messages.push(newMessage);
     session.updatedAt = new Date().toISOString();
     
@@ -760,7 +763,7 @@ async function simulateAIResponse(request: ChatCompletionRequest): Promise<ChatC
   // Handle function responses
   if (request.messages.some(msg => msg.role === 'function')) {
     const functionMessage = [...request.messages].reverse().find(msg => msg.role === 'function');
-    if (functionMessage) {
+    if (functionMessage && functionMessage.name && functionMessage.content) {
       const functionName = functionMessage.name;
       const functionResult = JSON.parse(functionMessage.content);
       

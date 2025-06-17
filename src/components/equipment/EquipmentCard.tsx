@@ -141,12 +141,19 @@ export default function EquipmentCard({ equipment, className = '' }: EquipmentCa
         </div>
       </div>
       
-      <div className="bg-gray-50 px-5 py-3 border-t border-gray-200">
+      <div className="bg-gray-50 px-5 py-3 border-t border-gray-200 flex justify-between">
         <Link 
           href={`/equipment/${equipment.id}`}
           className="text-sm font-medium text-blue-600 hover:text-blue-800 transition"
         >
           View Details &rarr;
+        </Link>
+        <Link 
+          href={`/alerts?equipment=${equipment.id}`}
+          className="text-sm font-medium text-blue-600 hover:text-blue-800 transition"
+          data-testid="equipment-alerts-link"
+        >
+          View Alerts
         </Link>
       </div>
     </div>
