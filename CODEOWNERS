@@ -1,0 +1,11 @@
+# These owners will be the default owners for everything in
+# the repo. Unless a later match takes precedence,
+# @PatClay7325 will be requested for review when someone 
+# opens a pull request.
+*       @PatClay7325
+
+# Main branch protection
+/src/   @PatClay7325
+/public/ @PatClay7325
+/scripts/ @PatClay7325
+*.md    @PatClay7325
