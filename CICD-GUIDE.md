@@ -100,6 +100,22 @@ Common deployment options:
 - AWS Amplify
 - Custom server deployment
 
+## Setting Up Environments in GitHub
+
+To properly set up the CD workflow:
+
+1. Go to your GitHub repository
+2. Click on "Settings"
+3. In the left sidebar, click on "Environments"
+4. Click on "New environment"
+5. Create two environments:
+   - `staging`
+   - `production`
+6. For each environment, you can configure:
+   - Environment protection rules
+   - Deployment secrets (like API keys)
+   - Required reviewers before deployment
+
 ## Setting Up Secrets
 
 For deployments and other sensitive operations, you'll need to set up secrets in GitHub:
@@ -131,7 +147,12 @@ If a workflow fails:
 
 ## Next Steps
 
-1. **Set up deployment**: Update the CD workflow with your actual deployment method
+1. **Customize deployment**: Update the CD workflow with your actual deployment method
 2. **Configure branch protection**: Require CI checks to pass before merging
 3. **Add code coverage thresholds**: Enforce minimum test coverage
 4. **Set up status badges**: Add workflow status badges to your README
+
+```markdown
+![CI](https://github.com/PatClay7325/manufacturing-analytics-platform/actions/workflows/ci.yml/badge.svg)
+![CD](https://github.com/PatClay7325/manufacturing-analytics-platform/actions/workflows/cd.yml/badge.svg)
+```
