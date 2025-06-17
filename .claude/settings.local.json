@@ -46,7 +46,17 @@
       "Bash(do mv \"$file\" \"$file%.audit.ts.spec.ts\")",
       "Bash(done)",
       "Bash(sudo apt-get:*)",
-      "Bash(sudo apt-get install:*)"
+      "Bash(sudo apt-get install:*)",
+      "Bash(git checkout:*)",
+      "Bash(git push:*)",
+      "Bash(git branch:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git reset:*)",
+      "Bash(git fetch:*)",
+      "Bash(git remote set-head:*)",
+      "Bash(git remote:*)",
+      "Bash(git pull:*)"
     ],
     "deny": []
   },
