@@ -1,6 +1,19 @@
 import React from 'react';
+import dynamic from 'next/dynamic';
+
+// Import PageFallback with error handling
+const PageFallback = dynamic(
+  () => import('@/components/common/PageFallback'),
+  { 
+    ssr: true,
+    loading: () => <div className="p-8 text-center">Loading...</div>
+  }
+);
 
 export default function CookiePolicyPage() {
+  // Uncomment to use fallback for testing
+  // return <PageFallback title="Cookie Policy Coming Soon" message="Our cookie policy page is currently being updated." />;
+  
   return (
     <div className="container mx-auto px-4 py-12 max-w-4xl">
       {/* Header */}

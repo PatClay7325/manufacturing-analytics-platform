@@ -1,89 +1,193 @@
 {
-  "timestamp": "2025-06-16T22:08:58.159Z",
+  "timestamp": "2025-06-17T08:32:26.038Z",
   "baseUrl": "http://localhost:3000",
   "pages": [
     {
       "name": "Home",
       "path": "/",
-      "status": 200,
-      "loadTime": 262,
-      "issues": []
+      "status": 404,
+      "loadTime": 94,
+      "issues": [
+        {
+          "type": "HTTP Error",
+          "severity": "critical",
+          "message": "Page returned status 404"
+        },
+        {
+          "type": "SEO",
+          "severity": "warning",
+          "message": "Missing or short page title"
+        }
+      ]
     },
     {
       "name": "Dashboard",
       "path": "/dashboard",
-      "status": 200,
-      "loadTime": 12359,
+      "status": 404,
+      "loadTime": 146,
       "issues": [
         {
-          "type": "Performance",
+          "type": "HTTP Error",
+          "severity": "critical",
+          "message": "Page returned status 404"
+        },
+        {
+          "type": "SEO",
           "severity": "warning",
-          "message": "Slow load time: 12359ms"
+          "message": "Missing or short page title"
         }
       ]
     },
     {
       "name": "Equipment",
       "path": "/equipment",
-      "status": 200,
-      "loadTime": 849,
-      "issues": []
+      "status": 404,
+      "loadTime": 107,
+      "issues": [
+        {
+          "type": "HTTP Error",
+          "severity": "critical",
+          "message": "Page returned status 404"
+        },
+        {
+          "type": "SEO",
+          "severity": "warning",
+          "message": "Missing or short page title"
+        }
+      ]
     },
     {
       "name": "Alerts",
       "path": "/alerts",
-      "status": 200,
-      "loadTime": 1339,
-      "issues": []
+      "status": 404,
+      "loadTime": 103,
+      "issues": [
+        {
+          "type": "HTTP Error",
+          "severity": "critical",
+          "message": "Page returned status 404"
+        },
+        {
+          "type": "SEO",
+          "severity": "warning",
+          "message": "Missing or short page title"
+        }
+      ]
     },
     {
       "name": "Manufacturing Chat",
       "path": "/manufacturing-chat",
-      "status": 200,
-      "loadTime": 977,
-      "issues": []
+      "status": 404,
+      "loadTime": 109,
+      "issues": [
+        {
+          "type": "HTTP Error",
+          "severity": "critical",
+          "message": "Page returned status 404"
+        },
+        {
+          "type": "SEO",
+          "severity": "warning",
+          "message": "Missing or short page title"
+        }
+      ]
     },
     {
       "name": "Support",
       "path": "/support",
-      "status": 200,
-      "loadTime": 943,
-      "issues": []
+      "status": 404,
+      "loadTime": 105,
+      "issues": [
+        {
+          "type": "HTTP Error",
+          "severity": "critical",
+          "message": "Page returned status 404"
+        },
+        {
+          "type": "SEO",
+          "severity": "warning",
+          "message": "Missing or short page title"
+        }
+      ]
     },
     {
       "name": "Status",
       "path": "/status",
-      "status": 200,
-      "loadTime": 716,
-      "issues": []
+      "status": 404,
+      "loadTime": 115,
+      "issues": [
+        {
+          "type": "HTTP Error",
+          "severity": "critical",
+          "message": "Page returned status 404"
+        },
+        {
+          "type": "SEO",
+          "severity": "warning",
+          "message": "Missing or short page title"
+        }
+      ]
     },
     {
       "name": "Privacy Policy",
       "path": "/privacy-policy",
-      "status": 200,
-      "loadTime": 687,
-      "issues": []
+      "status": 404,
+      "loadTime": 109,
+      "issues": [
+        {
+          "type": "HTTP Error",
+          "severity": "critical",
+          "message": "Page returned status 404"
+        },
+        {
+          "type": "SEO",
+          "severity": "warning",
+          "message": "Missing or short page title"
+        }
+      ]
     },
     {
       "name": "Terms of Service",
       "path": "/terms-of-service",
-      "status": 200,
-      "loadTime": 857,
-      "issues": []
+      "status": 404,
+      "loadTime": 123,
+      "issues": [
+        {
+          "type": "HTTP Error",
+          "severity": "critical",
+          "message": "Page returned status 404"
+        },
+        {
+          "type": "SEO",
+          "severity": "warning",
+          "message": "Missing or short page title"
+        }
+      ]
     },
     {
       "name": "Cookie Policy",
       "path": "/cookie-policy",
-      "status": 200,
-      "loadTime": 891,
-      "issues": []
+      "status": 404,
+      "loadTime": 99,
+      "issues": [
+        {
+          "type": "HTTP Error",
+          "severity": "critical",
+          "message": "Page returned status 404"
+        },
+        {
+          "type": "SEO",
+          "severity": "warning",
+          "message": "Missing or short page title"
+        }
+      ]
     }
   ],
   "summary": {
     "totalPages": 10,
     "pagesChecked": 10,
-    "totalIssues": 1,
-    "criticalIssues": 4,
-    "warnings": 1
+    "totalIssues": 20,
+    "criticalIssues": 14,
+    "warnings": 10
   }
 }

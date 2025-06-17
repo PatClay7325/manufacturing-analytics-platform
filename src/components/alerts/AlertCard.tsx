@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Alert, AlertSummary } from '@/models/alert';
+import { Alert, AlertSummary, AlertSeverity, AlertStatus } from '@/models/alert';
 import AlertBadge from './AlertBadge';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -20,9 +20,9 @@ export default function AlertCard({ alert, className = '', compact = false }: Al
     }
   };
 
-  // Get source icon
-  const getSourceIcon = () => {
-    switch (alert.source) {
+  // Get alert type icon
+  const getAlertTypeIcon = () => {
+    switch (alert.alertType) {
       case 'equipment':
         return (
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -30,10 +30,10 @@ export default function AlertCard({ alert, className = '', compact = false }: Al
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
         );
-      case 'process':
+      case 'production':
         return (
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
           </svg>
         );
       case 'quality':
@@ -61,9 +61,10 @@ export default function AlertCard({ alert, className = '', compact = false }: Al
           </svg>
         );
       case 'system':
+      case 'network':
         return (
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
           </svg>
         );
       default:
@@ -84,15 +85,17 @@ export default function AlertCard({ alert, className = '', compact = false }: Al
       >
         <div className="p-4">
           <div className="flex items-center justify-between mb-2">
-            <AlertBadge type="severity" value={alert.severity} />
+            <AlertBadge type="severity" value={alert.severity as AlertSeverity} />
             <span className="text-xs text-gray-500">
               {getRelativeTime(alert.createdAt)}
             </span>
           </div>
-          <h3 className="text-sm font-medium text-gray-900 truncate mb-1">{alert.title}</h3>
+          <h3 className="text-sm font-medium text-gray-900 truncate mb-1">
+            {alert.message.split(' - ')[0]}
+          </h3>
           <div className="flex items-center text-xs text-gray-500">
-            {getSourceIcon()}
-            <span className="ml-1">{alert.sourceName || alert.source}</span>
+            {getAlertTypeIcon()}
+            <span className="ml-1">{alert.alertType}</span>
           </div>
         </div>
         <div className="bg-gray-50 px-4 py-2 border-t border-gray-200">
@@ -120,12 +123,12 @@ export default function AlertCard({ alert, className = '', compact = false }: Al
               className="text-lg font-medium text-gray-900 mb-1" 
               data-testid="alert-title"
             >
-              {alert.title}
+              {alert.message.split(' - ')[0]}
             </h3>
             <div className="flex items-center mb-3">
               <div className="flex items-center text-sm text-gray-500 mr-4">
-                {getSourceIcon()}
-                <span className="ml-1">{alert.sourceName || alert.source}</span>
+                {getAlertTypeIcon()}
+                <span className="ml-1">{alert.alertType}</span>
               </div>
               <span className="text-sm text-gray-500">
                 {getRelativeTime(alert.createdAt)}
@@ -133,25 +136,19 @@ export default function AlertCard({ alert, className = '', compact = false }: Al
             </div>
           </div>
           <div className="flex space-x-2">
-            <AlertBadge type="severity" value={alert.severity} />
-            <AlertBadge type="status" value={alert.status} />
+            <AlertBadge type="severity" value={alert.severity as AlertSeverity} />
+            <AlertBadge type="status" value={alert.status as AlertStatus} />
           </div>
         </div>
 
-        {'description' in alert && (
-          <p className="text-sm text-gray-600 mb-4">{alert.description}</p>
-        )}
+        <p className="text-sm text-gray-600 mb-4">{alert.message}</p>
 
-        {'tags' in alert && alert.tags && alert.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-3">
-            {alert.tags.map((tag) => (
-              <span
-                key={tag}
-                className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800"
-              >
-                {tag}
-              </span>
-            ))}
+        {alert.equipmentId && (
+          <div className="text-sm text-gray-600">
+            <span className="font-medium">Equipment:</span>{' '}
+            <Link href={`/equipment/${alert.equipmentId}`} className="text-blue-600 hover:text-blue-800">
+              {alert.equipmentId}
+            </Link>
           </div>
         )}
       </div>

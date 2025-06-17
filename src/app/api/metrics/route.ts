@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { withCache } from '@/lib/apiCache';
 
 // Sample metrics data structure
 interface Metric {
@@ -14,8 +15,8 @@ interface Metric {
   notes?: string;
 }
 
-// Sample data
-const metricsData: Metric[] = [
+// Sample data - exported to share with dynamic route handler
+export const metricsData: Metric[] = [
   {
     id: '1',
     equipmentId: '1',
@@ -103,40 +104,45 @@ export async function GET(request: NextRequest) {
   const equipmentId = request.nextUrl.searchParams.get('equipmentId');
   const productionLineId = request.nextUrl.searchParams.get('productionLineId');
   
-  // Return single metric if ID is provided
-  if (id) {
-    const metric = metricsData.find(m => m.id === id);
-    
-    if (!metric) {
-      return NextResponse.json(
-        { error: 'Metric not found' },
-        { status: 404 }
-      );
+  // Generate a cache key based on the query parameters
+  const cacheKey = `metrics-${id || ''}-${type || ''}-${equipmentId || ''}-${productionLineId || ''}`;
+  
+  return withCache(cacheKey, async () => {
+    // Return single metric if ID is provided
+    if (id) {
+      const metric = metricsData.find(m => m.id === id);
+      
+      if (!metric) {
+        return NextResponse.json(
+          { error: 'Metric not found' },
+          { status: 404 }
+        );
+      }
+      
+      return NextResponse.json(metric);
     }
     
-    return NextResponse.json(metric);
-  }
-  
-  // Filter by type if provided
-  if (type) {
-    const metrics = getMetricsByType(type);
-    return NextResponse.json(metrics);
-  }
-  
-  // Filter by equipment ID if provided
-  if (equipmentId) {
-    const metrics = getMetricsByEquipment(equipmentId);
-    return NextResponse.json(metrics);
-  }
-  
-  // Filter by production line ID if provided
-  if (productionLineId) {
-    const metrics = getMetricsByProductionLine(productionLineId);
-    return NextResponse.json(metrics);
-  }
-  
-  // Return all metrics if no filters are provided
-  return NextResponse.json(metricsData);
+    // Filter by type if provided
+    if (type) {
+      const metrics = getMetricsByType(type);
+      return NextResponse.json(metrics);
+    }
+    
+    // Filter by equipment ID if provided
+    if (equipmentId) {
+      const metrics = getMetricsByEquipment(equipmentId);
+      return NextResponse.json(metrics);
+    }
+    
+    // Filter by production line ID if provided
+    if (productionLineId) {
+      const metrics = getMetricsByProductionLine(productionLineId);
+      return NextResponse.json(metrics);
+    }
+    
+    // Return all metrics if no filters are provided
+    return NextResponse.json(metricsData);
+  });
 }
 
 export async function POST(request: NextRequest) {
@@ -165,8 +171,8 @@ export async function POST(request: NextRequest) {
       notes: data.notes
     };
     
-    // In a real app, this would save to a database
-    // metricsData.push(newMetric);
+    // Actually save to our mock data for the session
+    metricsData.push(newMetric);
     
     return NextResponse.json(newMetric, { status: 201 });
   } catch (error) {

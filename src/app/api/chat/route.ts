@@ -1,25 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { ChatMessage, ChatSession } from '@/models/chat';
 
-// Chat message interface
-interface ChatMessage {
-  id: string;
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-  timestamp: string;
-  name?: string;
-}
-
-// Chat session interface
-interface ChatSession {
-  id: string;
-  title: string;
-  createdAt: string;
-  updatedAt: string;
-  messages: ChatMessage[];
-}
-
-// Sample data for chat sessions
-const chatSessions: ChatSession[] = [
+// Sample data for chat sessions - exported to share with dynamic route handler
+export const chatSessions: ChatSession[] = [
   {
     id: '1',
     title: 'Equipment Maintenance Inquiry',
@@ -112,12 +95,12 @@ export async function GET(request: NextRequest) {
   }
   
   // Return all chat sessions without messages content to reduce payload size
-  const sessionsOverview = chatSessions.map(({ id, title, createdAt, updatedAt }) => ({
+  const sessionsOverview = chatSessions.map(({ id, title, createdAt, updatedAt, messages }) => ({
     id,
     title,
     createdAt,
     updatedAt,
-    messageCount: chatSessions.find(s => s.id === id)?.messages.length || 0
+    messageCount: messages?.length || 0
   }));
   
   return NextResponse.json(sessionsOverview);
@@ -137,8 +120,8 @@ export async function POST(request: NextRequest) {
         messages: []
       };
       
-      // In a real app, this would save to a database
-      // chatSessions.push(newSession);
+      // Actually save to our mock data for the session
+      chatSessions.push(newSession);
       
       return NextResponse.json(newSession, { status: 201 });
     }
@@ -155,22 +138,25 @@ export async function POST(request: NextRequest) {
       }
       
       const newMessage: ChatMessage = {
-        id: `${data.sessionId}-${chatSessions[sessionIndex].messages.length + 1}`,
+        id: `${data.sessionId}-${chatSessions[sessionIndex].messages?.length ?? 0 + 1}`,
         role: data.message.role,
         content: data.message.content,
         timestamp: new Date().toISOString(),
         name: data.message.name
       };
       
-      // In a real app, this would update the database
-      // chatSessions[sessionIndex].messages.push(newMessage);
-      // chatSessions[sessionIndex].updatedAt = new Date().toISOString();
+      // Actually update our mock data for the session
+      if (!chatSessions[sessionIndex].messages) {
+        chatSessions[sessionIndex].messages = [];
+      }
+      chatSessions[sessionIndex].messages!.push(newMessage);
+      chatSessions[sessionIndex].updatedAt = new Date().toISOString();
       
       // If user message, generate AI response
-      let aiResponse = null;
+      let aiResponse: ChatMessage | null = null;
       if (data.message.role === 'user') {
         aiResponse = {
-          id: `${data.sessionId}-${chatSessions[sessionIndex].messages.length + 2}`,
+          id: `${data.sessionId}-${(chatSessions[sessionIndex].messages?.length ?? 0) + 1}`,
           role: 'assistant',
           content: 'I\'m analyzing your query about manufacturing operations. Let me check our systems for the most up-to-date information...',
           timestamp: new Date().toISOString()
@@ -214,8 +200,8 @@ export async function DELETE(request: NextRequest) {
     );
   }
   
-  // In a real app, this would delete from the database
-  // chatSessions.splice(sessionIndex, 1);
+  // Actually delete from our mock data for the session
+  chatSessions.splice(sessionIndex, 1);
   
   return NextResponse.json({ success: true });
 }

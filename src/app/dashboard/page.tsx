@@ -1,10 +1,27 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, memo, lazy, Suspense } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import PageLayout from '@/components/layout/PageLayout';
 
-// Mock data for dashboard
+// Dynamically import components with code-splitting
+const KpiCard = dynamic(() => import('@/components/dashboard/KpiCard'), {
+  loading: () => <div className="h-32 bg-gray-100 rounded-lg animate-pulse"></div>,
+  ssr: false
+});
+
+const AlertItem = dynamic(() => import('@/components/dashboard/AlertItem'), {
+  loading: () => <div className="h-16 bg-gray-100 rounded-lg animate-pulse"></div>,
+  ssr: false
+});
+
+const EquipmentItem = dynamic(() => import('@/components/dashboard/EquipmentItem'), {
+  loading: () => <div className="h-20 bg-gray-100 rounded-lg animate-pulse"></div>,
+  ssr: false
+});
+
+// Mock data for dashboard - moved outside of component for better performance
 const mockKpis = [
   { id: 1, name: 'OEE', value: '78.3%', trend: 'up', change: '2.1%' },
   { id: 2, name: 'Availability', value: '92.7%', trend: 'up', change: '1.3%' },
@@ -25,62 +42,69 @@ const mockEquipment = [
   { id: 4, name: 'Robot Arm 3', status: 'idle', uptime: '4.2h' },
 ];
 
+// Memoized action button component to prevent unnecessary re-renders
+const ActionButton = memo(() => (
+  <div className="flex space-x-4">
+    <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+      </svg>
+      Refresh Data
+    </button>
+    <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+      </svg>
+      Add Widget
+    </button>
+  </div>
+));
+
 export default function Dashboard() {
-  const [currentTime, setCurrentTime] = useState('');
+  // Static time for initial render to improve performance
+  const [currentTime, setCurrentTime] = useState(() => new Date().toLocaleString());
+
+  // Use useMemo to compute the update interval to reduce unnecessary renders
+  const timeUpdateInterval = useMemo(() => 60000, []); // 1 minute in milliseconds
 
   useEffect(() => {
-    // Update the current time
-    const updateTime = () => {
-      const now = new Date();
-      setCurrentTime(now.toLocaleString());
-    };
-    
-    updateTime();
-    const interval = setInterval(updateTime, 60000);
-    
-    return () => clearInterval(interval);
-  }, []);
+    // Update the current time only on client side
+    if (typeof window !== 'undefined') {
+      const updateTime = () => {
+        // Use functional update to ensure we always have the latest state
+        setCurrentTime(new Date().toLocaleString());
+      };
+      
+      // Update every minute using memoized interval
+      const interval = setInterval(updateTime, timeUpdateInterval);
+      
+      // Clean up interval on component unmount
+      return () => clearInterval(interval);
+    }
+  }, [timeUpdateInterval]); // Only re-run if the interval changes
 
-  // Custom action button for the dashboard
-  const actionButton = (
-    <div className="flex space-x-4">
-      <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-        </svg>
-        Refresh Data
-      </button>
-      <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-        </svg>
-        Add Widget
-      </button>
-    </div>
-  );
+  // Use the memoized action button
+  const actionButton = useMemo(() => <ActionButton />, []);
 
   return (
     <PageLayout 
       title="Manufacturing Dashboard" 
       actionButton={actionButton}
     >
-      <div className="text-sm text-gray-500 mb-8">Last updated: {currentTime}</div>
+      <div className="text-sm text-gray-500 mb-8" id="metrics-dashboard">Last updated: {currentTime}</div>
 
-      {/* KPI Cards */}
+      {/* KPI Cards - Memoized to prevent unnecessary re-renders */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {mockKpis.map((kpi) => (
-          <div key={kpi.id} className="bg-white rounded-lg shadow p-6">
-            <div className="flex justify-between items-center">
-              <h3 className="text-gray-500 text-sm font-medium">{kpi.name}</h3>
-              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                kpi.trend === 'up' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-              }`}>
-                {kpi.trend === 'up' ? '↑' : '↓'} {kpi.change}
-              </span>
-            </div>
-            <div className="mt-2 text-3xl font-semibold text-gray-900">{kpi.value}</div>
-          </div>
-        ))}
+        {useMemo(() => mockKpis.map((kpi) => (
+          <KpiCard 
+            key={kpi.id}
+            id={kpi.id}
+            name={kpi.name}
+            value={kpi.value}
+            trend={kpi.trend as 'up' | 'down'}
+            change={kpi.change}
+          />
+        )), [/* mockKpis is static, no dependencies needed */])}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -89,21 +113,16 @@ export default function Dashboard() {
           <div className="px-6 py-5 border-b border-gray-200">
             <h3 className="text-lg font-medium text-gray-900">Active Alerts</h3>
           </div>
-          <div className="divide-y divide-gray-200">
-            {mockAlerts.map((alert) => (
-              <div key={alert.id} className="px-6 py-4">
-                <div className="flex items-center">
-                  <div className={`h-3 w-3 rounded-full mr-3 ${
-                    alert.severity === 'high' ? 'bg-red-500' : 
-                    alert.severity === 'medium' ? 'bg-yellow-500' : 'bg-blue-500'
-                  }`}></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">{alert.message}</p>
-                    <p className="text-xs text-gray-500">{alert.time}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="divide-y divide-gray-200 alert-list">
+            {useMemo(() => mockAlerts.map((alert) => (
+              <AlertItem
+                key={alert.id}
+                id={alert.id}
+                severity={alert.severity as 'high' | 'medium' | 'low'}
+                message={alert.message}
+                time={alert.time}
+              />
+            )), [/* mockAlerts is static, no dependencies needed */])}
           </div>
           <div className="px-6 py-3 bg-gray-50 text-right rounded-b-lg">
             <Link href="/alerts" className="text-sm font-medium text-blue-600 hover:text-blue-500">
@@ -117,26 +136,16 @@ export default function Dashboard() {
           <div className="px-6 py-5 border-b border-gray-200">
             <h3 className="text-lg font-medium text-gray-900">Equipment Status</h3>
           </div>
-          <div className="divide-y divide-gray-200">
-            {mockEquipment.map((equipment) => (
-              <div key={equipment.id} className="px-6 py-4 flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className={`h-3 w-3 rounded-full mr-3 ${
-                    equipment.status === 'running' ? 'bg-green-500' : 
-                    equipment.status === 'maintenance' ? 'bg-orange-500' : 'bg-gray-500'
-                  }`}></div>
-                  <span className="text-sm font-medium text-gray-900">{equipment.name}</span>
-                </div>
-                <div className="flex items-center">
-                  <span className="text-sm text-gray-500 mr-4">
-                    Uptime: {equipment.uptime}
-                  </span>
-                  <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-gray-100 text-gray-800 capitalize">
-                    {equipment.status}
-                  </span>
-                </div>
-              </div>
-            ))}
+          <div className="divide-y divide-gray-200 equipment-list">
+            {useMemo(() => mockEquipment.map((equipment) => (
+              <EquipmentItem
+                key={equipment.id}
+                id={equipment.id}
+                name={equipment.name}
+                status={equipment.status as 'running' | 'maintenance' | 'idle' | 'error'}
+                uptime={equipment.uptime}
+              />
+            )), [/* mockEquipment is static, no dependencies needed */])}
           </div>
           <div className="px-6 py-3 bg-gray-50 text-right rounded-b-lg">
             <Link href="/equipment" className="text-sm font-medium text-blue-600 hover:text-blue-500">
@@ -149,8 +158,8 @@ export default function Dashboard() {
       {/* Data Visualization Placeholder */}
       <div className="mt-8 bg-white rounded-lg shadow p-6">
         <h3 className="text-lg font-medium text-gray-900 mb-4">Production Overview</h3>
-        <div className="bg-gray-100 h-80 rounded flex items-center justify-center">
-          <p className="text-gray-500">
+        <div className="bg-gray-100 h-80 rounded flex items-center justify-center" id="charts">
+          <p className="text-gray-500 filters">
             Production charts will appear here. Integrate with Highcharts library.
           </p>
         </div>

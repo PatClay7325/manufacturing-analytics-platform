@@ -1,21 +1,62 @@
 import { http, HttpResponse, delay } from 'msw';
-import { mockEquipmentData } from './data/equipment';
-import { mockAlertData } from './data/alerts';
-import { mockChatData } from './data/chat';
-import { mockMetricsData } from './data/metrics';
-import { mockUserData } from './data/users';
+import { mockAlertData, mockKPIData, mockEquipmentData } from '../test-utils/mocks';
+import { createAlert } from '../test-utils/factories';
 
-// Helper to simulate network delay (between 100-300ms)
-const simulateNetworkDelay = () => delay(Math.floor(Math.random() * 200) + 100);
+// Type definitions for request body data
+interface AcknowledgeAlertRequest {
+  userId: string;
+  userName: string;
+  notes?: string;
+}
+
+interface ResolveAlertRequest {
+  userId: string;
+  userName: string;
+  notes?: string;
+}
+
+interface CreateChatRequest {
+  title: string;
+}
+
+interface AddChatMessageRequest {
+  content: string;
+}
+
+interface LoginRequest {
+  username: string;
+  password: string;
+}
+
+interface RefreshTokenRequest {
+  refreshToken: string;
+}
+
+interface RegisterRequest {
+  username: string;
+  email: string;
+  password: string;
+  name?: string;
+}
+
+interface ChangePasswordRequest {
+  password: string;
+}
+
+// Simulate network delay
+const simulateNetworkDelay = async () => {
+  await delay(300);
+};
 
 export const handlers = [
+  http.get('/api/ping', () => {
+    return HttpResponse.json({ status: 'ok' });
+  }),
+
   // Equipment endpoints
   http.get('/api/equipment', async () => {
     await simulateNetworkDelay();
-    return HttpResponse.json({
-      equipment: mockEquipmentData,
-      total: mockEquipmentData.length,
-    });
+    return HttpResponse.json(mockEquipmentData);
   }),
 
   http.get('/api/equipment/:id', async ({ params }) => {
@@ -33,26 +74,42 @@ export const handlers = [
     return HttpResponse.json(equipment);
   }),
 
+  http.get('/api/equipment/:id/alerts', async ({ params }) => {
+    await simulateNetworkDelay();
+    const { id } = params;
+    const alerts = mockAlertData.filter(item => item.equipmentId === id);
+    
+    return HttpResponse.json({
+      alerts,
+      total: alerts.length,
+    });
+  }),
+
   // Alert endpoints
   http.get('/api/alerts', async ({ request }) => {
     await simulateNetworkDelay();
     const url = new URL(request.url);
-    const status = url.searchParams.get('status');
     const severity = url.searchParams.get('severity');
-    const source = url.searchParams.get('source');
+    const alertType = url.searchParams.get('alertType');
+    const status = url.searchParams.get('status');
+    const equipmentId = url.searchParams.get('equipmentId');
     
-    let filteredAlerts = [...mockAlertData.alerts];
-    
-    if (status) {
-      filteredAlerts = filteredAlerts.filter(alert => alert.status === status);
-    }
+    let filteredAlerts = [...mockAlertData];
     
     if (severity) {
       filteredAlerts = filteredAlerts.filter(alert => alert.severity === severity);
     }
     
-    if (source) {
-      filteredAlerts = filteredAlerts.filter(alert => alert.source === source);
+    if (alertType) {
+      filteredAlerts = filteredAlerts.filter(alert => alert.alertType === alertType);
+    }
+
+    if (status) {
+      filteredAlerts = filteredAlerts.filter(alert => alert.status === status);
+    }
+
+    if (equipmentId) {
+      filteredAlerts = filteredAlerts.filter(alert => alert.equipmentId === equipmentId);
     }
     
     return HttpResponse.json({
@@ -64,7 +121,7 @@ export const handlers = [
   http.get('/api/alerts/:id', async ({ params }) => {
     await simulateNetworkDelay();
     const { id } = params;
-    const alert = mockAlertData.alerts.find(item => item.id === id);
+    const alert = mockAlertData.find(item => item.id === id);
     
     if (!alert) {
       return new HttpResponse(null, { 
@@ -76,394 +133,319 @@ export const handlers = [
     return HttpResponse.json(alert);
   }),
 
-  http.post('/api/alerts/:id/acknowledge', async ({ params }) => {
+  http.post('/api/alerts/:id/acknowledge', async ({ params, request }) => {
     await simulateNetworkDelay();
     const { id } = params;
-    const alert = mockAlertData.alerts.find(item => item.id === id);
+    const alertIndex = mockAlertData.findIndex(item => item.id === id);
     
-    if (!alert) {
+    if (alertIndex === -1) {
       return new HttpResponse(null, { 
         status: 404,
         statusText: 'Alert not found'
       });
     }
     
-    return HttpResponse.json({
-      id,
+    const data = await request.json() as AcknowledgeAlertRequest;
+    const userId = data?.userId || 'unknown';
+    const userName = data?.userName || 'Unknown User';
+    const notes = data?.notes;
+    
+    const now = new Date().toISOString();
+    
+    // Create a copy and update
+    const updatedAlert = {
+      ...mockAlertData[alertIndex],
       status: 'acknowledged',
-      acknowledgedAt: new Date().toISOString(),
-    });
+      acknowledgedBy: userId,
+      acknowledgedAt: now,
+      updatedAt: now,
+      notes: notes || mockAlertData[alertIndex].notes,
+    };
+    
+    // Update in the mock data array
+    mockAlertData[alertIndex] = updatedAlert;
+    
+    return HttpResponse.json(updatedAlert);
   }),
 
-  http.post('/api/alerts/:id/resolve', async ({ params }) => {
+  http.post('/api/alerts/:id/resolve', async ({ params, request }) => {
     await simulateNetworkDelay();
     const { id } = params;
-    const alert = mockAlertData.alerts.find(item => item.id === id);
+    const alertIndex = mockAlertData.findIndex(item => item.id === id);
     
-    if (!alert) {
+    if (alertIndex === -1) {
       return new HttpResponse(null, { 
         status: 404,
         statusText: 'Alert not found'
       });
     }
     
-    return HttpResponse.json({
-      id,
+    const data = await request.json() as ResolveAlertRequest;
+    const userId = data?.userId || 'unknown';
+    const userName = data?.userName || 'Unknown User';
+    const notes = data?.notes;
+    
+    const now = new Date().toISOString();
+    
+    // Create a copy and update
+    const updatedAlert = {
+      ...mockAlertData[alertIndex],
       status: 'resolved',
-      resolvedAt: new Date().toISOString(),
-    });
+      resolvedBy: userId,
+      resolvedAt: now,
+      updatedAt: now,
+      notes: notes || mockAlertData[alertIndex].notes,
+    };
+    
+    // Update in the mock data array
+    mockAlertData[alertIndex] = updatedAlert;
+    
+    return HttpResponse.json(updatedAlert);
   }),
 
-  http.get('/api/alerts/statistics', async () => {
+  // KPI endpoints
+  http.get('/api/kpis', async () => {
     await simulateNetworkDelay();
-    return HttpResponse.json(mockAlertData.statistics);
+    return HttpResponse.json(mockKPIData);
   }),
 
-  http.get('/api/alerts/rules', async () => {
+  http.get('/api/kpis/:id', async ({ params }) => {
     await simulateNetworkDelay();
-    return HttpResponse.json({
-      rules: mockAlertData.rules,
-      total: mockAlertData.rules.length
-    });
+    const { id } = params;
+    const kpi = mockKPIData.find(item => item.id === id);
+    
+    if (!kpi) {
+      return new HttpResponse(null, { 
+        status: 404,
+        statusText: 'KPI not found'
+      });
+    }
+    
+    return HttpResponse.json(kpi);
   }),
 
   // Chat endpoints
-  http.get('/api/chat/sessions', async () => {
+  http.get('/api/chat', async () => {
     await simulateNetworkDelay();
+    
     return HttpResponse.json({
-      sessions: mockChatData.sessions,
-      total: mockChatData.sessions.length
+      sessions: [
+        {
+          id: 'chat-1',
+          title: 'Equipment Troubleshooting',
+          createdAt: '2023-06-01T10:15:00Z',
+          updatedAt: '2023-06-01T10:45:00Z',
+          messageCount: 8
+        },
+        {
+          id: 'chat-2',
+          title: 'Maintenance Scheduling',
+          createdAt: '2023-06-02T14:30:00Z',
+          updatedAt: '2023-06-02T15:00:00Z',
+          messageCount: 6
+        },
+        {
+          id: 'chat-3',
+          title: 'Production Planning',
+          createdAt: '2023-06-03T09:00:00Z',
+          updatedAt: '2023-06-03T09:20:00Z',
+          messageCount: 4
+        }
+      ]
     });
   }),
 
-  http.get('/api/chat/sessions/:id', async ({ params }) => {
+  http.post('/api/chat', async ({ request }) => {
     await simulateNetworkDelay();
-    const { id } = params;
-    const session = mockChatData.sessions.find(s => s.id === id);
     
-    if (!session) {
+    const data = await request.json() as CreateChatRequest;
+    
+    if (!data || !data.title) {
       return new HttpResponse(null, { 
-        status: 404,
-        statusText: 'Chat session not found'
+        status: 400,
+        statusText: 'Title is required'
       });
     }
     
-    return HttpResponse.json(session);
-  }),
-
-  http.get('/api/chat/sessions/:id/messages', async ({ params }) => {
-    await simulateNetworkDelay();
-    const { id } = params;
-    const messages = mockChatData.messages[id];
-    
-    if (!messages) {
-      return new HttpResponse(null, { 
-        status: 404,
-        statusText: 'Chat session not found'
-      });
-    }
-    
-    return HttpResponse.json({
-      messages,
-      total: messages.length
-    });
-  }),
-
-  http.post('/api/chat/sessions', async ({ request }) => {
-    await simulateNetworkDelay();
-    const data = await request.json();
-    
+    const now = new Date().toISOString();
     const newSession = {
-      id: `session-${Date.now()}`,
-      title: data.title || 'New Conversation',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      messageCount: 0
+      id: `chat-${Date.now()}`,
+      title: data.title,
+      createdAt: now,
+      updatedAt: now,
+      messages: [
+        {
+          id: `msg-${Date.now()}`,
+          role: 'system',
+          content: 'Hello! How can I help you with manufacturing analytics today?',
+          timestamp: now
+        }
+      ]
     };
     
     return HttpResponse.json(newSession);
   }),
 
-  http.post('/api/chat/sessions/:id/messages', async ({ params, request }) => {
+  http.get('/api/chat/:id', async ({ params }) => {
     await simulateNetworkDelay();
     const { id } = params;
-    const data = await request.json();
     
-    const newMessage = {
-      id: `msg-${Date.now()}`,
-      timestamp: new Date().toISOString(),
-      ...data
-    };
-    
-    return HttpResponse.json(newMessage);
-  }),
-
-  http.post('/api/chat/completions', async ({ request }) => {
-    await simulateNetworkDelay();
-    // Add extra delay to simulate AI processing
-    await delay(500);
-    
-    const data = await request.json();
-    const messages = data.messages;
-    
-    // Get the last user message
-    const lastUserMessage = messages
-      .filter(msg => msg.role === 'user')
-      .pop()?.content.toLowerCase() || '';
-    
-    // Find an appropriate response based on keywords
-    let responseContent = mockChatData.completionResponses.default;
-    
-    for (const [keyword, response] of Object.entries(mockChatData.completionResponses)) {
-      if (keyword !== 'default' && lastUserMessage.includes(keyword)) {
-        responseContent = response;
-        break;
-      }
-    }
-    
-    return HttpResponse.json({
-      id: `chatcmpl-${Date.now()}`,
-      object: 'chat.completion',
-      created: Math.floor(Date.now() / 1000),
-      model: 'manufacturing-assistant-1',
-      choices: [
-        {
-          index: 0,
-          message: {
-            role: 'assistant',
-            content: responseContent
+    // Return a mock chat session
+    if (id === 'chat-1') {
+      return HttpResponse.json({
+        id: 'chat-1',
+        title: 'Equipment Troubleshooting',
+        createdAt: '2023-06-01T10:15:00Z',
+        updatedAt: '2023-06-01T10:45:00Z',
+        messages: [
+          {
+            id: 'msg-1',
+            role: 'system',
+            content: 'Hello! How can I help you with manufacturing analytics today?',
+            timestamp: '2023-06-01T10:15:00Z'
           },
-          finish_reason: 'stop'
-        }
-      ],
-      usage: {
-        prompt_tokens: messages.reduce((acc, msg) => acc + msg.content.length / 4, 0),
-        completion_tokens: responseContent.length / 4,
-        total_tokens: messages.reduce((acc, msg) => acc + msg.content.length / 4, 0) + responseContent.length / 4
-      }
-    });
-  }),
-
-  http.get('/api/chat/sample-questions', async () => {
-    await simulateNetworkDelay();
-    return HttpResponse.json({
-      questions: mockChatData.sampleQuestions
-    });
-  }),
-
-  // Metrics endpoints
-  http.get('/api/metrics/production', async ({ request }) => {
-    await simulateNetworkDelay();
-    const url = new URL(request.url);
-    const lineId = url.searchParams.get('lineId');
-    const period = url.searchParams.get('period');
-    
-    let filteredMetrics = [...mockMetricsData.productionMetrics];
-    
-    if (lineId) {
-      filteredMetrics = filteredMetrics.filter(metric => metric.lineId === lineId);
-    }
-    
-    if (period) {
-      filteredMetrics = filteredMetrics.filter(metric => !metric.period || metric.period === period);
-    }
-    
-    return HttpResponse.json(filteredMetrics);
-  }),
-
-  http.get('/api/metrics/downtime', async ({ request }) => {
-    await simulateNetworkDelay();
-    const url = new URL(request.url);
-    const count = url.searchParams.get('count');
-    
-    let downtimeData = [...mockMetricsData.downtimeReasons];
-    
-    if (count) {
-      downtimeData = downtimeData.slice(0, parseInt(count));
-    }
-    
-    return HttpResponse.json(downtimeData);
-  }),
-
-  http.get('/api/metrics/quality', async () => {
-    await simulateNetworkDelay();
-    return HttpResponse.json(mockMetricsData.qualityMetrics);
-  }),
-
-  http.get('/api/metrics/dashboard', async () => {
-    await simulateNetworkDelay();
-    return HttpResponse.json(mockMetricsData.dashboardMetrics);
-  }),
-
-  http.get('/api/metrics/oee/trend', async ({ request }) => {
-    await simulateNetworkDelay();
-    const url = new URL(request.url);
-    const days = url.searchParams.get('days');
-    
-    return HttpResponse.json(
-      days ? mockMetricsData.oeeTrend.slice(-parseInt(days)) : mockMetricsData.oeeTrend
-    );
-  }),
-
-  http.get('/api/metrics/production/trend', async ({ request }) => {
-    await simulateNetworkDelay();
-    const url = new URL(request.url);
-    const days = url.searchParams.get('days');
-    
-    return HttpResponse.json(
-      days ? mockMetricsData.productionTrend.slice(-parseInt(days)) : mockMetricsData.productionTrend
-    );
-  }),
-
-  http.get('/api/metrics/quality/trend', async ({ request }) => {
-    await simulateNetworkDelay();
-    const url = new URL(request.url);
-    const days = url.searchParams.get('days');
-    
-    return HttpResponse.json(
-      days ? mockMetricsData.qualityTrend.slice(-parseInt(days)) : mockMetricsData.qualityTrend
-    );
-  }),
-
-  http.get('/api/metrics/equipment/:id/performance', async ({ params }) => {
-    await simulateNetworkDelay();
-    const { id } = params;
-    const performance = mockMetricsData.equipmentPerformance[id];
-    
-    if (!performance) {
-      return new HttpResponse(null, { 
-        status: 404,
-        statusText: 'Equipment performance data not found'
+          {
+            id: 'msg-2',
+            role: 'user',
+            content: 'I\'m seeing high temperature alerts on CNC Machine 1. What could be causing this?',
+            timestamp: '2023-06-01T10:16:00Z'
+          },
+          {
+            id: 'msg-3',
+            role: 'assistant',
+            content: 'High temperatures in CNC machines can be caused by several factors: 1) Insufficient coolant, 2) Blocked coolant lines, 3) Excessive cutting speed or feed rate, or 4) Dull tooling. I recommend checking the coolant level and flow first, as that\'s the most common cause.',
+            timestamp: '2023-06-01T10:17:00Z'
+          }
+        ]
       });
     }
     
-    return HttpResponse.json(performance);
-  }),
-
-  // Authentication endpoints
-  http.post('/api/auth/login', async ({ request }) => {
-    await simulateNetworkDelay();
-    const { username, password } = await request.json();
-    
-    // Simple validation - in real app, would verify password hash
-    if (password !== 'password') {
-      return new HttpResponse(
-        JSON.stringify({ error: 'Invalid credentials' }),
-        { status: 401 }
-      );
-    }
-    
-    const loginResponse = mockUserData.loginResponses[username];
-    
-    if (!loginResponse) {
-      return new HttpResponse(
-        JSON.stringify({ error: 'User not found' }),
-        { status: 401 }
-      );
-    }
-    
-    return HttpResponse.json(loginResponse);
-  }),
-
-  http.post('/api/auth/logout', async () => {
-    await simulateNetworkDelay();
-    return HttpResponse.json({ success: true });
-  }),
-
-  http.get('/api/auth/me', async ({ request }) => {
-    await simulateNetworkDelay();
-    const authHeader = request.headers.get('Authorization');
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return new HttpResponse(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401 }
-      );
-    }
-    
-    // In a real implementation, we would verify the JWT token
-    // For mock purposes, just return the admin user
-    return HttpResponse.json({
-      user: mockUserData.users.find(u => u.username === 'admin')
+    return new HttpResponse(null, { 
+      status: 404,
+      statusText: 'Chat session not found'
     });
   }),
 
-  http.post('/api/auth/refresh-token', async ({ request }) => {
+  http.post('/api/chat/:id/messages', async ({ params, request }) => {
     await simulateNetworkDelay();
-    const { refreshToken } = await request.json();
+    const { id } = params;
     
-    // In a real implementation, we would verify the refresh token
-    // For mock purposes, just generate a new token
+    const data = await request.json() as AddChatMessageRequest;
+    
+    if (!data || !data.content) {
+      return new HttpResponse(null, { 
+        status: 400,
+        statusText: 'Message content is required'
+      });
+    }
+    
+    const now = new Date().toISOString();
+    
+    // Mock user message
+    const userMessage = {
+      id: `msg-user-${Date.now()}`,
+      role: 'user',
+      content: data.content,
+      timestamp: now
+    };
+    
+    // Mock assistant response
+    const assistantMessage = {
+      id: `msg-assistant-${Date.now()}`,
+      role: 'assistant',
+      content: 'I\'ve analyzed your request. Based on the manufacturing data, I would recommend checking the equipment calibration and ensuring all preventive maintenance is up to date.',
+      timestamp: new Date(Date.now() + 1000).toISOString()
+    };
+    
     return HttpResponse.json({
-      token: `new-jwt-token-${Date.now()}`,
-      expiresAt: Date.now() + 3600000, // 1 hour from now
+      messages: [userMessage, assistantMessage]
+    });
+  }),
+
+  // Auth endpoints
+  http.post('/api/auth/login', async ({ request }) => {
+    await simulateNetworkDelay();
+    
+    const data = await request.json() as LoginRequest;
+    const username = data?.username;
+    const password = data?.password;
+    
+    if (username === 'demo' && password === 'demo123') {
+      return HttpResponse.json({
+        user: {
+          id: 'user-1',
+          username: 'demo',
+          name: 'Demo User',
+          email: 'demo@example.com',
+          role: 'operator'
+        },
+        token: 'mock-jwt-token',
+        refreshToken: 'mock-refresh-token'
+      });
+    }
+    
+    return new HttpResponse(null, { 
+      status: 401,
+      statusText: 'Invalid credentials'
+    });
+  }),
+
+  http.post('/api/auth/refresh', async ({ request }) => {
+    await simulateNetworkDelay();
+    
+    const data = await request.json() as RefreshTokenRequest;
+    const refreshToken = data?.refreshToken;
+    
+    if (refreshToken === 'mock-refresh-token') {
+      return HttpResponse.json({
+        token: 'new-mock-jwt-token',
+        refreshToken: 'new-mock-refresh-token'
+      });
+    }
+    
+    return new HttpResponse(null, { 
+      status: 401,
+      statusText: 'Invalid refresh token'
     });
   }),
 
   http.post('/api/auth/register', async ({ request }) => {
     await simulateNetworkDelay();
-    const userData = await request.json();
     
-    // Simple validation
-    if (!userData.username || !userData.email || !userData.password) {
-      return new HttpResponse(
-        JSON.stringify({ error: 'Missing required fields' }),
-        { status: 400 }
-      );
+    const userData = await request.json() as RegisterRequest;
+    
+    if (userData && userData.username && userData.email && userData.password) {
+      return HttpResponse.json({
+        user: {
+          id: `user-${Date.now()}`,
+          username: userData.username,
+          name: userData.name || userData.username,
+          email: userData.email,
+          role: 'operator'
+        },
+        token: 'mock-jwt-token',
+        refreshToken: 'mock-refresh-token'
+      });
     }
     
-    // Check if user already exists
-    if (mockUserData.users.some(u => u.username === userData.username || u.email === userData.email)) {
-      return new HttpResponse(
-        JSON.stringify({ error: 'User already exists' }),
-        { status: 409 }
-      );
-    }
-    
-    // Create new user (without returning password)
-    const { password, ...userWithoutPassword } = userData;
-    const newUser = {
-      id: `user-${Date.now()}`,
-      ...userWithoutPassword,
-      role: 'user',
-      permissions: ['view:equipment', 'view:alerts'],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    
-    return HttpResponse.json(newUser);
-  }),
-
-  // WebSocket simulation endpoint (for real-time updates)
-  http.get('/api/ws/info', async () => {
-    await simulateNetworkDelay();
-    return HttpResponse.json({
-      wsUrl: 'ws://localhost:3000/ws',
-      reconnectInterval: 5000,
+    return new HttpResponse(null, { 
+      status: 400,
+      statusText: 'Invalid user data'
     });
   }),
-];
 
-// Error simulation handlers for testing error states
-export const errorHandlers = [
-  http.get('/api/equipment', () => {
-    return HttpResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }),
-  
-  http.get('/api/alerts', () => {
-    return HttpResponse.json(
-      { error: 'Service unavailable' },
-      { status: 503 }
-    );
-  }),
-  
-  http.post('/api/auth/login', () => {
-    return HttpResponse.json(
-      { error: 'Authentication service temporarily unavailable' },
-      { status: 503 }
-    );
-  }),
+  http.post('/api/auth/change-password', async ({ request }) => {
+    await simulateNetworkDelay();
+    
+    const data = await request.json() as ChangePasswordRequest;
+    
+    if (!data || !data.password) {
+      return new HttpResponse(null, { 
+        status: 400,
+        statusText: 'Password is required'
+      });
+    }
+    
+    return HttpResponse.json({ success: true });
+  })
 ];

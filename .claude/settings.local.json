@@ -56,7 +56,17 @@
       "Bash(git fetch:*)",
       "Bash(git remote set-head:*)",
       "Bash(git remote:*)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "Bash(tsc --noEmit)",
+      "Bash(npm run audit:*)",
+      "Bash(npx kill-port:*)",
+      "Bash(npm run dev:*)",
+      "Bash(AUDIT_BASE_URL=http://localhost:3001 npm run audit)",
+      "Bash(curl:*)",
+      "Bash(pkill:*)",
+      "Bash(npx tsc:*)",
+      "Bash(grep:*)",
+      "Bash(npm run typecheck:*)"
     ],
     "deny": []
   },

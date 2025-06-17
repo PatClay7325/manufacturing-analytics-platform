@@ -8,11 +8,17 @@
 const initMockServer = async () => {
   // Only initialize in development mode and in the browser
   if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
-    // Use dynamic import to avoid bundling MSW in production
-    const { startMockServiceWorker } = await import('./browser');
-    await startMockServiceWorker();
-    
-    console.log('✅ Mock API server initialized');
+    try {
+      // Use dynamic import to avoid bundling MSW in production
+      const { startMockServiceWorker } = await import('./browser');
+      await startMockServiceWorker();
+      
+      console.log('✅ Mock API server initialized');
+    } catch (error) {
+      console.error('❌ Failed to initialize mock API server:', error);
+      // Return a resolved promise to prevent the error from bubbling up
+      return Promise.resolve();
+    }
   }
 };
 

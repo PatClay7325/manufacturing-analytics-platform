@@ -2,14 +2,20 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  
+  // Skip type checking during build to speed up development
   typescript: {
-    // Skip type checking during build to avoid timeout
     ignoreBuildErrors: true,
   },
+  
+  // Skip ESLint during builds
   eslint: {
-    // Skip ESLint during builds to avoid timeout
     ignoreDuringBuilds: true,
   },
+  
+  // Disable X-Powered-By header
+  poweredByHeader: false,
+  
   // Add security headers
   async headers() {
     return [

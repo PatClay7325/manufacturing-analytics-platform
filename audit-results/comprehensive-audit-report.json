@@ -1,667 +1,433 @@
 {
-  "timestamp": "2025-06-16T22:17:22.540Z",
+  "timestamp": "2025-06-17T09:07:50.532Z",
   "environment": {
     "node": "v22.12.0",
     "platform": "linux",
     "baseUrl": "http://localhost:3000"
   },
   "summary": {
-    "totalChecks": 120,
-    "passed": 92,
-    "failed": 6,
-    "warnings": 19,
-    "critical": 0
+    "totalChecks": 79,
+    "passed": 45,
+    "failed": 16,
+    "warnings": 15,
+    "critical": 15
   },
   "categories": {
     "pages": [
       {
         "test": "Home - Availability",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:22.723Z",
-        "responseTime": 67,
+        "status": "fail",
+        "timestamp": "2025-06-17T09:07:55.355Z",
+        "message": "Status: 404",
+        "severity": "critical",
         "path": "/"
-      },
-      {
-        "test": "Home - Response Time",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:22.723Z",
-        "responseTime": 67
-      },
-      {
-        "test": "Home - Content Present",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:22.723Z",
-        "contentLength": 31121
-      },
-      {
-        "test": "Home - No Runtime Errors",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:22.723Z"
-      },
-      {
-        "test": "Home - Expected Elements",
-        "status": "warn",
-        "timestamp": "2025-06-16T22:17:22.723Z",
-        "message": "Missing: hero, features"
-      },
-      {
-        "test": "Home - Page Title",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:22.723Z",
-        "title": "Adaptive Factory AI Solutions, Inc."
       },
       {
         "test": "Dashboard - Availability",
         "status": "pass",
-        "timestamp": "2025-06-16T22:17:22.806Z",
-        "responseTime": 83,
+        "timestamp": "2025-06-17T09:07:56.281Z",
+        "responseTime": 926,
         "path": "/dashboard"
       },
       {
         "test": "Dashboard - Response Time",
         "status": "pass",
-        "timestamp": "2025-06-16T22:17:22.806Z",
-        "responseTime": 83
+        "timestamp": "2025-06-17T09:07:56.281Z",
+        "responseTime": 926
       },
       {
         "test": "Dashboard - Content Present",
         "status": "pass",
-        "timestamp": "2025-06-16T22:17:22.806Z",
-        "contentLength": 23908
+        "timestamp": "2025-06-17T09:07:56.281Z",
+        "contentLength": 24090
       },
       {
         "test": "Dashboard - No Runtime Errors",
         "status": "pass",
-        "timestamp": "2025-06-16T22:17:22.806Z"
+        "timestamp": "2025-06-17T09:07:56.281Z"
       },
       {
         "test": "Dashboard - Expected Elements",
-        "status": "warn",
-        "timestamp": "2025-06-16T22:17:22.806Z",
-        "message": "Missing: metrics, filters"
+        "status": "pass",
+        "timestamp": "2025-06-17T09:07:56.281Z"
       },
       {
         "test": "Dashboard - Page Title",
         "status": "pass",
-        "timestamp": "2025-06-16T22:17:22.806Z",
+        "timestamp": "2025-06-17T09:07:56.282Z",
         "title": "Adaptive Factory AI Solutions, Inc."
       },
       {
         "test": "Equipment - Availability",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:22.891Z",
-        "responseTime": 85,
+        "status": "fail",
+        "timestamp": "2025-06-17T09:07:56.863Z",
+        "message": "Status: 500",
+        "severity": "critical",
         "path": "/equipment"
       },
       {
-        "test": "Equipment - Response Time",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:22.891Z",
-        "responseTime": 85
-      },
-      {
-        "test": "Equipment - Content Present",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:22.891Z",
-        "contentLength": 18183
-      },
-      {
-        "test": "Equipment - No Runtime Errors",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:22.891Z"
-      },
-      {
-        "test": "Equipment - Expected Elements",
-        "status": "warn",
-        "timestamp": "2025-06-16T22:17:22.891Z",
-        "message": "Missing: equipment-list, status-indicators"
-      },
-      {
-        "test": "Equipment - Page Title",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:22.892Z",
-        "title": "Adaptive Factory AI Solutions, Inc."
-      },
-      {
         "test": "Alerts - Availability",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:22.982Z",
-        "responseTime": 90,
+        "status": "fail",
+        "timestamp": "2025-06-17T09:07:57.603Z",
+        "message": "Status: 500",
+        "severity": "critical",
         "path": "/alerts"
       },
       {
-        "test": "Alerts - Response Time",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:22.982Z",
-        "responseTime": 90
-      },
-      {
-        "test": "Alerts - Content Present",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:22.982Z",
-        "contentLength": 19774
-      },
-      {
-        "test": "Alerts - No Runtime Errors",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:22.982Z"
-      },
-      {
-        "test": "Alerts - Expected Elements",
-        "status": "warn",
-        "timestamp": "2025-06-16T22:17:22.982Z",
-        "message": "Missing: alert-list, severity-badges, filters"
-      },
-      {
-        "test": "Alerts - Page Title",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:22.982Z",
-        "title": "Adaptive Factory AI Solutions, Inc."
-      },
-      {
         "test": "Manufacturing Chat - Availability",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.073Z",
-        "responseTime": 91,
+        "status": "fail",
+        "timestamp": "2025-06-17T09:07:58.238Z",
+        "message": "Status: 500",
+        "severity": "critical",
         "path": "/manufacturing-chat"
       },
       {
-        "test": "Manufacturing Chat - Response Time",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.073Z",
-        "responseTime": 91
-      },
-      {
-        "test": "Manufacturing Chat - Content Present",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.073Z",
-        "contentLength": 24364
-      },
-      {
-        "test": "Manufacturing Chat - No Runtime Errors",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.073Z"
-      },
-      {
-        "test": "Manufacturing Chat - Expected Elements",
-        "status": "warn",
-        "timestamp": "2025-06-16T22:17:23.073Z",
-        "message": "Missing: message-input"
-      },
-      {
-        "test": "Manufacturing Chat - Page Title",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.073Z",
-        "title": "Adaptive Factory AI Solutions, Inc."
-      },
-      {
         "test": "Support - Availability",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.160Z",
-        "responseTime": 87,
+        "status": "fail",
+        "timestamp": "2025-06-17T09:07:58.864Z",
+        "message": "Status: 500",
+        "severity": "critical",
         "path": "/support"
       },
       {
-        "test": "Support - Response Time",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.160Z",
-        "responseTime": 87
-      },
-      {
-        "test": "Support - Content Present",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.160Z",
-        "contentLength": 32260
-      },
-      {
-        "test": "Support - No Runtime Errors",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.160Z"
-      },
-      {
-        "test": "Support - Expected Elements",
-        "status": "warn",
-        "timestamp": "2025-06-16T22:17:23.160Z",
-        "message": "Missing: contact-form, faq"
-      },
-      {
-        "test": "Support - Page Title",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.160Z",
-        "title": "Adaptive Factory AI Solutions, Inc."
-      },
-      {
         "test": "Status - Availability",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.251Z",
-        "responseTime": 90,
+        "status": "fail",
+        "timestamp": "2025-06-17T09:07:59.524Z",
+        "message": "Status: 500",
+        "severity": "critical",
         "path": "/status"
       },
       {
-        "test": "Status - Response Time",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.251Z",
-        "responseTime": 90
-      },
-      {
-        "test": "Status - Content Present",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.251Z",
-        "contentLength": 40236
-      },
-      {
-        "test": "Status - No Runtime Errors",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.251Z"
-      },
-      {
-        "test": "Status - Expected Elements",
-        "status": "warn",
-        "timestamp": "2025-06-16T22:17:23.251Z",
-        "message": "Missing: system-health, uptime-metrics"
-      },
-      {
-        "test": "Status - Page Title",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.251Z",
-        "title": "Adaptive Factory AI Solutions, Inc."
-      },
-      {
         "test": "Privacy Policy - Availability",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.333Z",
-        "responseTime": 81,
+        "status": "fail",
+        "timestamp": "2025-06-17T09:08:00.176Z",
+        "message": "Status: 500",
+        "severity": "critical",
         "path": "/privacy-policy"
       },
       {
-        "test": "Privacy Policy - Response Time",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.333Z",
-        "responseTime": 81
-      },
-      {
-        "test": "Privacy Policy - Content Present",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.333Z",
-        "contentLength": 34066
-      },
-      {
-        "test": "Privacy Policy - No Runtime Errors",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.333Z"
-      },
-      {
-        "test": "Privacy Policy - Expected Elements",
-        "status": "warn",
-        "timestamp": "2025-06-16T22:17:23.333Z",
-        "message": "Missing: policy-content, sections"
-      },
-      {
-        "test": "Privacy Policy - Page Title",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.333Z",
-        "title": "Adaptive Factory AI Solutions, Inc."
-      },
-      {
         "test": "Terms of Service - Availability",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.426Z",
-        "responseTime": 93,
+        "status": "fail",
+        "timestamp": "2025-06-17T09:08:00.873Z",
+        "message": "Status: 500",
+        "severity": "critical",
         "path": "/terms-of-service"
       },
       {
-        "test": "Terms of Service - Response Time",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.426Z",
-        "responseTime": 93
-      },
-      {
-        "test": "Terms of Service - Content Present",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.426Z",
-        "contentLength": 47134
-      },
-      {
-        "test": "Terms of Service - No Runtime Errors",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.426Z"
-      },
-      {
-        "test": "Terms of Service - Expected Elements",
-        "status": "warn",
-        "timestamp": "2025-06-16T22:17:23.427Z",
-        "message": "Missing: terms-content, sections"
-      },
-      {
-        "test": "Terms of Service - Page Title",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.427Z",
-        "title": "Adaptive Factory AI Solutions, Inc."
-      },
-      {
         "test": "Cookie Policy - Availability",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.511Z",
-        "responseTime": 84,
+        "status": "fail",
+        "timestamp": "2025-06-17T09:08:01.709Z",
+        "message": "Status: 500",
+        "severity": "critical",
         "path": "/cookie-policy"
-      },
-      {
-        "test": "Cookie Policy - Response Time",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.511Z",
-        "responseTime": 84
-      },
-      {
-        "test": "Cookie Policy - Content Present",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.511Z",
-        "contentLength": 38751
-      },
-      {
-        "test": "Cookie Policy - No Runtime Errors",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.511Z"
-      },
-      {
-        "test": "Cookie Policy - Expected Elements",
-        "status": "warn",
-        "timestamp": "2025-06-16T22:17:23.511Z",
-        "message": "Missing: cookie-content, consent-info"
-      },
-      {
-        "test": "Cookie Policy - Page Title",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.511Z",
-        "title": "Adaptive Factory AI Solutions, Inc."
       }
     ],
     "api": [
       {
         "test": "GET /api/equipment",
-        "status": 404,
-        "timestamp": "2025-06-16T22:17:23.574Z",
-        "responseTime": 62
+        "status": 200,
+        "timestamp": "2025-06-17T09:08:02.352Z",
+        "responseTime": 642
+      },
+      {
+        "test": "/api/equipment - Valid JSON",
+        "status": "pass",
+        "timestamp": "2025-06-17T09:08:02.352Z"
       },
       {
         "test": "/api/equipment - Performance",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.574Z",
-        "responseTime": 62
+        "status": "warn",
+        "timestamp": "2025-06-17T09:08:02.352Z",
+        "message": "Slow API response: 642ms"
       },
       {
         "test": "GET /api/equipment/1",
-        "status": 404,
-        "timestamp": "2025-06-16T22:17:23.636Z",
-        "responseTime": 61
+        "status": "fail",
+        "timestamp": "2025-06-17T09:08:02.690Z",
+        "message": "Unexpected status: 500",
+        "severity": "critical"
       },
       {
         "test": "/api/equipment/1 - Performance",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.636Z",
-        "responseTime": 61
+        "status": "warn",
+        "timestamp": "2025-06-17T09:08:02.690Z",
+        "message": "Slow API response: 338ms"
       },
       {
         "test": "GET /api/alerts",
-        "status": 404,
-        "timestamp": "2025-06-16T22:17:23.696Z",
-        "responseTime": 60
+        "status": 200,
+        "timestamp": "2025-06-17T09:08:03.252Z",
+        "responseTime": 562
+      },
+      {
+        "test": "/api/alerts - Valid JSON",
+        "status": "pass",
+        "timestamp": "2025-06-17T09:08:03.252Z"
       },
       {
         "test": "/api/alerts - Performance",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.696Z",
-        "responseTime": 60
+        "status": "warn",
+        "timestamp": "2025-06-17T09:08:03.252Z",
+        "message": "Slow API response: 562ms"
       },
       {
         "test": "GET /api/alerts/active",
-        "status": 404,
-        "timestamp": "2025-06-16T22:17:23.747Z",
-        "responseTime": 51
+        "status": "fail",
+        "timestamp": "2025-06-17T09:08:03.575Z",
+        "message": "Unexpected status: 500",
+        "severity": "critical"
       },
       {
         "test": "/api/alerts/active - Performance",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.747Z",
-        "responseTime": 51
+        "status": "warn",
+        "timestamp": "2025-06-17T09:08:03.575Z",
+        "message": "Slow API response: 323ms"
       },
       {
         "test": "GET /api/metrics",
-        "status": 404,
-        "timestamp": "2025-06-16T22:17:23.804Z",
-        "responseTime": 57
+        "status": 200,
+        "timestamp": "2025-06-17T09:08:04.161Z",
+        "responseTime": 586
+      },
+      {
+        "test": "/api/metrics - Valid JSON",
+        "status": "pass",
+        "timestamp": "2025-06-17T09:08:04.161Z"
       },
       {
         "test": "/api/metrics - Performance",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.804Z",
-        "responseTime": 57
+        "status": "warn",
+        "timestamp": "2025-06-17T09:08:04.161Z",
+        "message": "Slow API response: 586ms"
       },
       {
         "test": "GET /api/metrics/performance",
-        "status": 404,
-        "timestamp": "2025-06-16T22:17:23.860Z",
-        "responseTime": 56
+        "status": "fail",
+        "timestamp": "2025-06-17T09:08:04.494Z",
+        "message": "Unexpected status: 500",
+        "severity": "critical"
       },
       {
         "test": "/api/metrics/performance - Performance",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.860Z",
-        "responseTime": 56
+        "status": "warn",
+        "timestamp": "2025-06-17T09:08:04.494Z",
+        "message": "Slow API response: 333ms"
       },
       {
         "test": "GET /api/chat",
-        "status": 404,
-        "timestamp": "2025-06-16T22:17:23.916Z",
-        "responseTime": 56
+        "status": 200,
+        "timestamp": "2025-06-17T09:08:05.102Z",
+        "responseTime": 608
+      },
+      {
+        "test": "/api/chat - Valid JSON",
+        "status": "pass",
+        "timestamp": "2025-06-17T09:08:05.102Z"
       },
       {
         "test": "/api/chat - Performance",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.916Z",
-        "responseTime": 56
+        "status": "warn",
+        "timestamp": "2025-06-17T09:08:05.102Z",
+        "message": "Slow API response: 608ms"
       },
       {
         "test": "GET /api/chat/history",
-        "status": 404,
-        "timestamp": "2025-06-16T22:17:23.976Z",
-        "responseTime": 60
+        "status": "fail",
+        "timestamp": "2025-06-17T09:08:05.436Z",
+        "message": "Unexpected status: 500",
+        "severity": "critical"
       },
       {
         "test": "/api/chat/history - Performance",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:23.976Z",
-        "responseTime": 60
+        "status": "warn",
+        "timestamp": "2025-06-17T09:08:05.436Z",
+        "message": "Slow API response: 334ms"
       },
       {
         "test": "GET /api/health",
-        "status": 404,
-        "timestamp": "2025-06-16T22:17:24.037Z",
-        "responseTime": 61
+        "status": "fail",
+        "timestamp": "2025-06-17T09:08:05.753Z",
+        "message": "Unexpected status: 500",
+        "severity": "critical"
       },
       {
         "test": "/api/health - Performance",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:24.037Z",
-        "responseTime": 61
+        "status": "warn",
+        "timestamp": "2025-06-17T09:08:05.753Z",
+        "message": "Slow API response: 317ms"
       },
       {
         "test": "GET /api/auth/status",
-        "status": 404,
-        "timestamp": "2025-06-16T22:17:24.097Z",
-        "responseTime": 59
+        "status": "fail",
+        "timestamp": "2025-06-17T09:08:06.039Z",
+        "message": "Unexpected status: 500",
+        "severity": "critical"
       },
       {
         "test": "/api/auth/status - Performance",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:24.097Z",
-        "responseTime": 59
+        "status": "warn",
+        "timestamp": "2025-06-17T09:08:06.039Z",
+        "message": "Slow API response: 286ms"
       }
     ],
     "components": [
       {
         "test": "Static: /favicon.ico",
-        "status": "fail",
-        "timestamp": "2025-06-16T22:17:24.115Z",
-        "message": "Required resource missing (404)",
-        "severity": "high"
+        "status": "pass",
+        "timestamp": "2025-06-17T09:08:06.044Z"
       },
       {
         "test": "Static: /robots.txt",
-        "status": "warn",
-        "timestamp": "2025-06-16T22:17:24.197Z",
-        "message": "Optional resource missing (404)"
+        "status": "pass",
+        "timestamp": "2025-06-17T09:08:06.048Z"
       },
       {
         "test": "Static: /sitemap.xml",
-        "status": "warn",
-        "timestamp": "2025-06-16T22:17:24.254Z",
-        "message": "Optional resource missing (404)"
+        "status": "pass",
+        "timestamp": "2025-06-17T09:08:06.051Z"
       },
       {
         "test": "Static: /manifest.json",
-        "status": "warn",
-        "timestamp": "2025-06-16T22:17:24.307Z",
-        "message": "Optional resource missing (404)"
+        "status": "pass",
+        "timestamp": "2025-06-17T09:08:06.055Z"
       },
       {
         "test": "Static: /mockServiceWorker.js",
         "status": "pass",
-        "timestamp": "2025-06-16T22:17:24.313Z"
+        "timestamp": "2025-06-17T09:08:06.059Z"
       },
       {
         "test": "Static: /_next/static/css",
-        "status": "fail",
-        "timestamp": "2025-06-16T22:17:24.375Z",
-        "message": "Required resource missing (404)",
-        "severity": "high"
+        "status": "warn",
+        "timestamp": "2025-06-17T09:08:06.342Z",
+        "message": "Optional resource missing (500)"
       },
       {
         "test": "Static: /_next/static/chunks",
-        "status": "fail",
-        "timestamp": "2025-06-16T22:17:24.439Z",
-        "message": "Required resource missing (404)",
-        "severity": "high"
+        "status": "warn",
+        "timestamp": "2025-06-17T09:08:06.631Z",
+        "message": "Optional resource missing (500)"
       }
     ],
     "performance": [
       {
         "test": "Build Output",
         "status": "pass",
-        "timestamp": "2025-06-16T22:17:46.085Z"
+        "timestamp": "2025-06-17T09:08:28.229Z"
       },
       {
         "test": "Bundle Sizes",
         "status": "warn",
-        "timestamp": "2025-06-16T22:17:46.215Z",
-        "message": "6 large bundles found (>500KB)",
+        "timestamp": "2025-06-17T09:08:28.337Z",
+        "message": "3 large bundles found (>500KB)",
         "severity": "medium"
       },
       {
         "test": "Memory Usage",
         "status": "info",
-        "timestamp": "2025-06-16T22:17:46.215Z",
-        "heapUsed": "7MB",
-        "heapTotal": "8MB"
+        "timestamp": "2025-06-17T09:08:28.337Z",
+        "heapUsed": "6MB",
+        "heapTotal": "7MB"
       },
       {
         "test": "Concurrent Request Handling",
         "status": "pass",
-        "timestamp": "2025-06-16T22:17:46.422Z",
+        "timestamp": "2025-06-17T09:08:28.696Z",
         "message": "10 concurrent requests handled successfully",
-        "avgResponseTime": "21ms"
+        "avgResponseTime": "36ms"
       }
     ],
     "security": [
       {
         "test": "Security Header: x-frame-options",
-        "status": "fail",
-        "timestamp": "2025-06-16T22:17:24.499Z",
-        "message": "Required security header missing",
-        "severity": "high"
+        "status": "pass",
+        "timestamp": "2025-06-17T09:08:07.160Z",
+        "value": "SAMEORIGIN"
       },
       {
         "test": "Security Header: x-content-type-options",
-        "status": "fail",
-        "timestamp": "2025-06-16T22:17:24.499Z",
-        "message": "Required security header missing",
-        "severity": "high"
+        "status": "pass",
+        "timestamp": "2025-06-17T09:08:07.160Z",
+        "value": "nosniff"
       },
       {
         "test": "Security Header: x-xss-protection",
-        "status": "warn",
-        "timestamp": "2025-06-16T22:17:24.499Z",
-        "message": "Recommended security header missing"
+        "status": "pass",
+        "timestamp": "2025-06-17T09:08:07.160Z",
+        "value": "1; mode=block"
       },
       {
         "test": "Security Header: strict-transport-security",
-        "status": "warn",
-        "timestamp": "2025-06-16T22:17:24.499Z",
-        "message": "Recommended security header missing"
+        "status": "pass",
+        "timestamp": "2025-06-17T09:08:07.160Z",
+        "value": "max-age=63072000; includeSubDomains; preload"
       },
       {
         "test": "Security Header: content-security-policy",
-        "status": "warn",
-        "timestamp": "2025-06-16T22:17:24.499Z",
-        "message": "Recommended security header missing"
+        "status": "pass",
+        "timestamp": "2025-06-17T09:08:07.160Z",
+        "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'"
       },
       {
         "test": "No exposed API Keys",
         "status": "pass",
-        "timestamp": "2025-06-16T22:17:24.561Z"
+        "timestamp": "2025-06-17T09:08:07.688Z"
       },
       {
         "test": "No exposed Passwords",
         "status": "pass",
-        "timestamp": "2025-06-16T22:17:24.561Z"
+        "timestamp": "2025-06-17T09:08:07.688Z"
       },
       {
         "test": "No exposed Secrets",
         "status": "pass",
-        "timestamp": "2025-06-16T22:17:24.561Z"
+        "timestamp": "2025-06-17T09:08:07.688Z"
       },
       {
         "test": "No exposed Tokens",
         "status": "pass",
-        "timestamp": "2025-06-16T22:17:24.561Z"
+        "timestamp": "2025-06-17T09:08:07.688Z"
       },
       {
         "test": "No exposed Localhost URLs",
         "status": "pass",
-        "timestamp": "2025-06-16T22:17:24.561Z"
+        "timestamp": "2025-06-17T09:08:07.688Z"
       },
       {
         "test": "HTTPS Configuration",
         "status": "info",
-        "timestamp": "2025-06-16T22:17:24.561Z",
+        "timestamp": "2025-06-17T09:08:07.688Z",
         "message": "HTTPS should be configured in production"
       }
     ],
     "integration": [
       {
         "test": "Navigation: / → /dashboard",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:46.499Z"
+        "status": "warn",
+        "timestamp": "2025-06-17T09:08:29.229Z",
+        "message": "Navigation link may be missing or broken"
       },
       {
         "test": "Navigation: /dashboard → /equipment",
         "status": "pass",
-        "timestamp": "2025-06-16T22:17:46.571Z"
+        "timestamp": "2025-06-17T09:08:29.311Z"
       },
       {
         "test": "Navigation: /equipment → /alerts",
-        "status": "pass",
-        "timestamp": "2025-06-16T22:17:46.641Z"
+        "status": "warn",
+        "timestamp": "2025-06-17T09:08:29.633Z",
+        "message": "Navigation link may be missing or broken"
       },
       {
         "test": "Component Data Flow",
         "status": "info",
-        "timestamp": "2025-06-16T22:17:46.641Z",
+        "timestamp": "2025-06-17T09:08:29.633Z",
         "message": "Manual testing required for full component interaction verification"
       },
       {
         "test": "Mock Service Worker",
         "status": "pass",
-        "timestamp": "2025-06-16T22:17:46.642Z",
+        "timestamp": "2025-06-17T09:08:29.634Z",
         "message": "API mocking capability available"
       }
     ],
@@ -669,24 +435,23 @@
       {
         "test": "Prisma Schema",
         "status": "pass",
-        "timestamp": "2025-06-16T22:17:45.946Z"
+        "timestamp": "2025-06-17T09:08:28.011Z"
       },
       {
         "test": "Database Migrations",
-        "status": "warn",
-        "timestamp": "2025-06-16T22:17:45.947Z",
-        "message": "No migrations found - database may not be initialized"
+        "status": "pass",
+        "timestamp": "2025-06-17T09:08:28.012Z"
       },
       {
         "test": "Database Connection (/api/equipment)",
         "status": "pass",
-        "timestamp": "2025-06-16T22:17:46.009Z",
+        "timestamp": "2025-06-17T09:08:28.118Z",
         "message": "No database errors detected"
       },
       {
         "test": "Database Connection (/api/alerts)",
         "status": "pass",
-        "timestamp": "2025-06-16T22:17:46.085Z",
+        "timestamp": "2025-06-17T09:08:28.229Z",
         "message": "No database errors detected"
       }
     ],
@@ -694,51 +459,50 @@
       {
         "test": "Config File: package.json",
         "status": "pass",
-        "timestamp": "2025-06-16T22:17:24.562Z"
+        "timestamp": "2025-06-17T09:08:07.689Z"
       },
       {
         "test": "Config File: package-lock.json",
         "status": "pass",
-        "timestamp": "2025-06-16T22:17:24.563Z"
+        "timestamp": "2025-06-17T09:08:07.689Z"
       },
       {
         "test": "Config File: tsconfig.json",
         "status": "pass",
-        "timestamp": "2025-06-16T22:17:24.563Z"
+        "timestamp": "2025-06-17T09:08:07.690Z"
       },
       {
         "test": "Config File: next.config.js",
         "status": "pass",
-        "timestamp": "2025-06-16T22:17:24.563Z"
+        "timestamp": "2025-06-17T09:08:07.690Z"
       },
       {
         "test": "Config File: .env.local",
         "status": "pass",
-        "timestamp": "2025-06-16T22:17:24.564Z"
+        "timestamp": "2025-06-17T09:08:07.690Z"
       },
       {
         "test": "Config File: .env.example",
-        "status": "warn",
-        "timestamp": "2025-06-16T22:17:24.564Z",
-        "message": "Recommended file missing"
+        "status": "pass",
+        "timestamp": "2025-06-17T09:08:07.691Z"
       },
       {
         "test": "Config File: README.md",
         "status": "pass",
-        "timestamp": "2025-06-16T22:17:24.565Z"
+        "timestamp": "2025-06-17T09:08:07.691Z"
       },
       {
         "test": "Node Modules",
         "status": "pass",
-        "timestamp": "2025-06-16T22:17:24.565Z"
+        "timestamp": "2025-06-17T09:08:07.691Z"
       },
       {
         "test": "TypeScript Compilation",
         "status": "fail",
-        "timestamp": "2025-06-16T22:17:45.945Z",
-        "message": "567 TypeScript errors found",
+        "timestamp": "2025-06-17T09:08:28.010Z",
+        "message": "283 TypeScript errors found",
         "severity": "high",
-        "errors": "audit-tests/01-page-accessibility.spec.ts(150,20): error TS18046: 'error' is of type 'unknown'.\naudit-tests/02-navigation-links.spec.ts(18,20): error TS2339: Property 'href' does not exist on type 'SVGElement | HTMLElement'.\n  Property 'href' does not exist on type 'SVGElement'.\naudit-tests/02-navigation-links.spec.ts(20,27): error TS2339: Property 'href' does not exist on type 'SVGElement | HTMLElement'.\n  Property 'href' does not exist on type 'SVGElement'.\naudit-tests/02-navigation-links.spec"
+        "errors": "prisma/seed.ts(265,22): error TS2345: Argument of type '{ equipmentId: any; timestamp: Date; availability: number; performance: number; quality: number; oeeScore: number; runTime: number; plannedDowntime: number; unplannedDowntime: number; ... 5 more ...; operator: string; }' is not assignable to parameter of type 'never'.\nprisma/seed.ts(299,22): error TS2345: Argument of type '{ productionLineId: any; timestamp: Date; availability: number; performance: number; quality: number; oeeScore: number;"
       }
     ]
   },

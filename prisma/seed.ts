@@ -262,22 +262,25 @@ async function seedPerformanceMetrics() {
         const quality = 0.95 + (Math.random() * 0.05);
         const oeeScore = availability * performance * quality;
         
-        metrics.push({
-          equipmentId: equip.id,
-          timestamp: date,
-          availability,
-          performance,
-          quality,
-          oeeScore,
-          runTime: 480 - (Math.random() * 50),  // Out of 8 hours (480 minutes)
-          plannedDowntime: 30 + (Math.random() * 20),
-          unplannedDowntime: Math.random() * 30,
-          idealCycleTime: 30,
-          actualCycleTime: 30 + (Math.random() * 5),
-          totalParts: 500 + Math.floor(Math.random() * 100),
-          goodParts: 485 + Math.floor(Math.random() * 15),
-          shift: i % 3 === 0 ? 'morning' : i % 3 === 1 ? 'afternoon' : 'night',
-          operator: `Operator ${(i % 5) + 1}`
+        // Create individual metric - avoid using createMany since the schema requires proper typing
+        await prisma.performanceMetric.create({
+          data: {
+            equipmentId: equip.id,
+            timestamp: date,
+            availability,
+            performance,
+            quality,
+            oeeScore,
+            runTime: 480 - (Math.random() * 50),  // Out of 8 hours (480 minutes)
+            plannedDowntime: 30 + (Math.random() * 20),
+            unplannedDowntime: Math.random() * 30,
+            idealCycleTime: 30,
+            actualCycleTime: 30 + (Math.random() * 5),
+            totalParts: 500 + Math.floor(Math.random() * 100),
+            goodParts: 485 + Math.floor(Math.random() * 15),
+            shift: i % 3 === 0 ? 'morning' : i % 3 === 1 ? 'afternoon' : 'night',
+            operator: `Operator ${(i % 5) + 1}`
+          }
         });
       }
     }
@@ -296,28 +299,26 @@ async function seedPerformanceMetrics() {
         const quality = 0.9 + (Math.random() * 0.09);
         const oeeScore = availability * performance * quality;
         
-        metrics.push({
-          productionLineId: line.id,
-          timestamp: date,
-          availability,
-          performance,
-          quality,
-          oeeScore,
-          runTime: 460 - (Math.random() * 60),
-          plannedDowntime: 40 + (Math.random() * 20),
-          unplannedDowntime: 10 + (Math.random() * 40),
-          shift: i % 3 === 0 ? 'morning' : i % 3 === 1 ? 'afternoon' : 'night'
+        // Create individual metric
+        await prisma.performanceMetric.create({
+          data: {
+            productionLineId: line.id,
+            timestamp: date,
+            availability,
+            performance,
+            quality,
+            oeeScore,
+            runTime: 460 - (Math.random() * 60),
+            plannedDowntime: 40 + (Math.random() * 20),
+            unplannedDowntime: 10 + (Math.random() * 40),
+            shift: i % 3 === 0 ? 'morning' : i % 3 === 1 ? 'afternoon' : 'night'
+          }
         });
       }
     }
   }
   
-  // Create all metrics
-  await prisma.performanceMetric.createMany({
-    data: metrics
-  });
-  
-  console.log(`Created ${metrics.length} performance metrics.`);
+  console.log(`Created performance metrics.`);
 }
 
 /**
@@ -327,7 +328,7 @@ async function seedMaintenanceRecords() {
   console.log('Seeding maintenance records...');
   
   const equipment = await prisma.equipment.findMany();
-  const maintenanceRecords = [];
+  let recordCount = 0;
   
   // Generate past maintenance records
   for (const equip of equipment) {
@@ -340,57 +341,61 @@ async function seedMaintenanceRecords() {
       const endTime = new Date(date);
       endTime.setHours(endTime.getHours() + 2 + Math.floor(Math.random() * 3));
       
-      maintenanceRecords.push({
-        equipmentId: equip.id,
-        maintenanceType: i % 3 === 0 ? 'preventive' : i % 3 === 1 ? 'corrective' : 'predictive',
-        description: `${i % 3 === 0 ? 'Regular' : i % 3 === 1 ? 'Emergency' : 'Scheduled'} maintenance for ${equip.name}`,
-        technician: `Technician ${(i % 3) + 1}`,
-        startTime,
-        endTime,
-        status: 'completed',
-        notes: 'Maintenance completed successfully',
-        parts: i % 2 === 0 ? ['Filter', 'Lubricant'] : ['Belt', 'Bearing', 'Sensor']
+      await prisma.maintenanceRecord.create({
+        data: {
+          equipmentId: equip.id,
+          maintenanceType: i % 3 === 0 ? 'preventive' : i % 3 === 1 ? 'corrective' : 'predictive',
+          description: `${i % 3 === 0 ? 'Regular' : i % 3 === 1 ? 'Emergency' : 'Scheduled'} maintenance for ${equip.name}`,
+          technician: `Technician ${(i % 3) + 1}`,
+          startTime,
+          endTime,
+          status: 'completed',
+          notes: 'Maintenance completed successfully',
+          parts: i % 2 === 0 ? ['Filter', 'Lubricant'] : ['Belt', 'Bearing', 'Sensor']
+        }
       });
+      recordCount++;
     }
     
     // Create one scheduled maintenance for the future
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + 7 + Math.floor(Math.random() * 14));
     
-    maintenanceRecords.push({
-      equipmentId: equip.id,
-      maintenanceType: 'preventive',
-      description: `Scheduled maintenance for ${equip.name}`,
-      technician: `Technician ${Math.floor(Math.random() * 3) + 1}`,
-      startTime: futureDate,
-      status: 'scheduled',
-      notes: 'Regular preventive maintenance',
-      parts: ['Filter', 'Lubricant', 'Seals']
+    await prisma.maintenanceRecord.create({
+      data: {
+        equipmentId: equip.id,
+        maintenanceType: 'preventive',
+        description: `Scheduled maintenance for ${equip.name}`,
+        technician: `Technician ${Math.floor(Math.random() * 3) + 1}`,
+        startTime: futureDate,
+        status: 'scheduled',
+        notes: 'Regular preventive maintenance',
+        parts: ['Filter', 'Lubricant', 'Seals']
+      }
     });
+    recordCount++;
     
     // If equipment is currently in maintenance, add an in-progress record
     if (equip.status === 'maintenance') {
       const today = new Date();
       
-      maintenanceRecords.push({
-        equipmentId: equip.id,
-        maintenanceType: 'corrective',
-        description: `Urgent repair for ${equip.name}`,
-        technician: `Technician ${Math.floor(Math.random() * 3) + 1}`,
-        startTime: today,
-        status: 'in-progress',
-        notes: 'Addressing unexpected issues with the equipment',
-        parts: ['Controller', 'Motor', 'Wiring']
+      await prisma.maintenanceRecord.create({
+        data: {
+          equipmentId: equip.id,
+          maintenanceType: 'corrective',
+          description: `Urgent repair for ${equip.name}`,
+          technician: `Technician ${Math.floor(Math.random() * 3) + 1}`,
+          startTime: today,
+          status: 'in-progress',
+          notes: 'Addressing unexpected issues with the equipment',
+          parts: ['Controller', 'Motor', 'Wiring']
+        }
       });
+      recordCount++;
     }
   }
   
-  // Create all maintenance records
-  await prisma.maintenanceRecord.createMany({
-    data: maintenanceRecords
-  });
-  
-  console.log(`Created ${maintenanceRecords.length} maintenance records.`);
+  console.log(`Created ${recordCount} maintenance records.`);
 }
 
 /**
@@ -400,7 +405,7 @@ async function seedQualityMetrics() {
   console.log('Seeding quality metrics...');
   
   const equipment = await prisma.equipment.findMany();
-  const qualityMetrics = [];
+  let qualityMetricsCount = 0;
   
   // Parameters to measure
   const parameters = [
@@ -444,31 +449,30 @@ async function seedQualityMetrics() {
       const date = new Date();
       date.setDate(date.getDate() - Math.floor(Math.random() * 30));
       
-      qualityMetrics.push({
-        equipmentId: equip.id,
-        timestamp: date,
-        parameter: param.name,
-        value,
-        uom: param.uom,
-        lowerLimit: param.lowerLimit,
-        upperLimit: param.upperLimit,
-        nominal: param.nominal,
-        isWithinSpec: value >= param.lowerLimit && value <= param.upperLimit,
-        deviation
+      await prisma.qualityMetric.create({
+        data: {
+          equipmentId: equip.id,
+          timestamp: date,
+          parameter: param.name,
+          value,
+          uom: param.uom,
+          lowerLimit: param.lowerLimit,
+          upperLimit: param.upperLimit,
+          nominal: param.nominal,
+          isWithinSpec: value >= param.lowerLimit && value <= param.upperLimit,
+          deviation
+        }
       });
+      
+      qualityMetricsCount++;
     }
   }
   
-  // Create all quality metrics
-  await prisma.qualityMetric.createMany({
-    data: qualityMetrics
-  });
-  
-  console.log(`Created ${qualityMetrics.length} quality metrics.`);
+  console.log(`Created ${qualityMetricsCount} quality metrics.`);
   
   // Create some quality checks for production orders
   const productionOrders = await prisma.productionOrder.findMany();
-  const qualityChecks = [];
+  let qualityChecksCount = 0;
   
   for (const order of productionOrders) {
     // Only create checks for in-progress or completed orders
@@ -480,41 +484,45 @@ async function seedQualityMetrics() {
         
         const passed = Math.random() < 0.9; // 90% pass rate
         
-        qualityChecks.push({
-          productionOrderId: order.id,
-          checkType: 'in-process',
-          inspector: `Inspector ${(i % 3) + 1}`,
-          timestamp: date,
-          result: passed ? 'pass' : 'fail',
-          notes: passed ? 'All specifications met' : 'Issues found during inspection',
-          defectTypes: passed ? [] : ['Dimensional', 'Surface finish'],
-          defectCounts: passed ? [] : [2, 1]
+        await prisma.qualityCheck.create({
+          data: {
+            productionOrderId: order.id,
+            checkType: 'in-process',
+            inspector: `Inspector ${(i % 3) + 1}`,
+            timestamp: date,
+            result: passed ? 'pass' : 'fail',
+            notes: passed ? 'All specifications met' : 'Issues found during inspection',
+            defectTypes: passed ? [] : ['Dimensional', 'Surface finish'],
+            defectCounts: passed ? [] : [2, 1]
+          }
         });
+        
+        qualityChecksCount++;
       }
       
       // Create final check for completed orders
-      if (order.status === 'completed') {
-        const date = new Date(order.actualEndDate!);
+      if (order.status === 'completed' && order.actualEndDate) {
+        const date = new Date(order.actualEndDate);
         
-        qualityChecks.push({
-          productionOrderId: order.id,
-          checkType: 'final',
-          inspector: 'QA Manager',
-          timestamp: date,
-          result: 'pass', // Completed orders always passed final QC
-          notes: 'Final quality check passed. Product approved for shipment.',
-          defectTypes: [],
-          defectCounts: []
+        await prisma.qualityCheck.create({
+          data: {
+            productionOrderId: order.id,
+            checkType: 'final',
+            inspector: 'QA Manager',
+            timestamp: date,
+            result: 'pass', // Completed orders always passed final QC
+            notes: 'Final quality check passed. Product approved for shipment.',
+            defectTypes: [],
+            defectCounts: []
+          }
         });
+        
+        qualityChecksCount++;
       }
     }
   }
   
-  await prisma.qualityCheck.createMany({
-    data: qualityChecks
-  });
-  
-  console.log(`Created ${qualityChecks.length} quality checks.`);
+  console.log(`Created ${qualityChecksCount} quality checks.`);
 }
 
 /**
@@ -524,7 +532,7 @@ async function seedAlerts() {
   console.log('Seeding alerts...');
   
   const equipment = await prisma.equipment.findMany();
-  const alerts = [];
+  let alertCount = 0;
   
   // Alert types and messages
   const alertTypes = [
@@ -540,9 +548,9 @@ async function seedAlerts() {
   // For each equipment, create some alerts
   for (const equip of equipment) {
     // Create 1-3 alerts per equipment
-    const alertCount = Math.floor(Math.random() * 3) + 1;
+    const alertsPerEquipment = Math.floor(Math.random() * 3) + 1;
     
-    for (let i = 0; i < alertCount; i++) {
+    for (let i = 0; i < alertsPerEquipment; i++) {
       // Pick a random alert type
       const alertInfo = alertTypes[Math.floor(Math.random() * alertTypes.length)];
       
@@ -563,7 +571,10 @@ async function seedAlerts() {
       }
       
       // For acknowledged and resolved alerts, add the relevant information
-      let acknowledgedBy, acknowledgedAt, resolvedBy, resolvedAt;
+      let acknowledgedBy = null;
+      let acknowledgedAt = null;
+      let resolvedBy = null;
+      let resolvedAt = null;
       
       if (status === 'acknowledged' || status === 'resolved') {
         acknowledgedBy = `User ${Math.floor(Math.random() * 3) + 1}`;
@@ -572,43 +583,46 @@ async function seedAlerts() {
       
       if (status === 'resolved') {
         resolvedBy = `User ${Math.floor(Math.random() * 3) + 1}`;
-        resolvedAt = new Date(acknowledgedAt!.getTime() + 1000 * 60 * (Math.floor(Math.random() * 120) + 30));
+        resolvedAt = new Date(acknowledgedAt.getTime() + 1000 * 60 * (Math.floor(Math.random() * 120) + 30));
       }
       
-      alerts.push({
-        equipmentId: equip.id,
-        alertType: alertInfo.type,
-        severity: alertInfo.severity,
-        message: `${alertInfo.message} for ${equip.name}`,
-        status,
-        timestamp: date,
-        acknowledgedBy,
-        acknowledgedAt,
-        resolvedBy,
-        resolvedAt,
-        notes: status === 'resolved' ? 'Issue has been addressed' : undefined
+      await prisma.alert.create({
+        data: {
+          equipmentId: equip.id,
+          alertType: alertInfo.type,
+          severity: alertInfo.severity,
+          message: `${alertInfo.message} for ${equip.name}`,
+          status,
+          timestamp: date,
+          acknowledgedBy,
+          acknowledgedAt,
+          resolvedBy,
+          resolvedAt,
+          notes: status === 'resolved' ? 'Issue has been addressed' : null
+        }
       });
+      
+      alertCount++;
     }
     
     // If equipment is in error status, add a critical active alert
     if (equip.status === 'error') {
-      alerts.push({
-        equipmentId: equip.id,
-        alertType: 'maintenance',
-        severity: 'critical',
-        message: `Equipment failure detected on ${equip.name}`,
-        status: 'active',
-        timestamp: new Date(new Date().getTime() - 1000 * 60 * 30) // 30 minutes ago
+      await prisma.alert.create({
+        data: {
+          equipmentId: equip.id,
+          alertType: 'maintenance',
+          severity: 'critical',
+          message: `Equipment failure detected on ${equip.name}`,
+          status: 'active',
+          timestamp: new Date(new Date().getTime() - 1000 * 60 * 30) // 30 minutes ago
+        }
       });
+      
+      alertCount++;
     }
   }
   
-  // Create all alerts
-  await prisma.alert.createMany({
-    data: alerts
-  });
-  
-  console.log(`Created ${alerts.length} alerts.`);
+  console.log(`Created ${alertCount} alerts.`);
 }
 
 /**
@@ -655,9 +669,11 @@ async function seedUsers() {
     }
   ];
   
-  await prisma.user.createMany({
-    data: usersData
-  });
+  for (const userData of usersData) {
+    await prisma.user.create({
+      data: userData
+    });
+  }
   
   console.log(`Created ${usersData.length} users.`);
 }
@@ -706,9 +722,11 @@ async function seedSettings() {
     }
   ];
   
-  await prisma.setting.createMany({
-    data: settingsData
-  });
+  for (const setting of settingsData) {
+    await prisma.setting.create({
+      data: setting
+    });
+  }
   
   console.log(`Created ${settingsData.length} settings.`);
 }

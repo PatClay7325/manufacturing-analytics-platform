@@ -1,20 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Equipment } from '@/models/equipment';
+import { withCache } from '@/lib/apiCache';
 
-// Sample data
-const equipmentData: Equipment[] = [
+// Sample data - exported to share with dynamic route handler
+export const equipmentData: Equipment[] = [
   {
     id: '1',
     name: 'Assembly Line A',
     type: 'Assembly',
-    manufacturerCode: 'AL-2023-001',
+    manufacturer: 'AL Industries',
     serialNumber: 'SN123456789',
     installationDate: new Date('2023-01-15').toISOString(),
     status: 'operational',
     location: 'Building 3, Floor 1',
-    description: 'Main assembly line for product series X',
+    notes: 'Main assembly line for product series X',
     model: 'AL-5000',
-    lastMaintenanceAt: new Date('2024-05-01').toISOString(),
+    lastMaintenanceDate: new Date('2024-05-01').toISOString(),
     createdAt: new Date('2023-01-10').toISOString(),
     updatedAt: new Date('2025-06-01').toISOString()
   },
@@ -22,14 +23,14 @@ const equipmentData: Equipment[] = [
     id: '2',
     name: 'CNC Machine B',
     type: 'Machining',
-    manufacturerCode: 'CNC-2022-002',
+    manufacturer: 'CNC Precision Ltd',
     serialNumber: 'SN987654321',
     installationDate: new Date('2022-11-20').toISOString(),
     status: 'maintenance',
     location: 'Building 2, Floor 2',
-    description: 'Precision CNC machine for metal components',
+    notes: 'Precision CNC machine for metal components',
     model: 'CNC-X200',
-    lastMaintenanceAt: new Date('2025-06-01').toISOString(),
+    lastMaintenanceDate: new Date('2025-06-01').toISOString(),
     createdAt: new Date('2022-11-15').toISOString(),
     updatedAt: new Date('2025-06-01').toISOString()
   },
@@ -37,14 +38,14 @@ const equipmentData: Equipment[] = [
     id: '3',
     name: 'Packaging Robot C',
     type: 'Packaging',
-    manufacturerCode: 'PR-2024-003',
+    manufacturer: 'PackBot Inc',
     serialNumber: 'SN456789123',
     installationDate: new Date('2024-02-10').toISOString(),
     status: 'operational',
     location: 'Building 1, Floor 1',
-    description: 'Automated packaging robot for final product packaging',
+    notes: 'Automated packaging robot for final product packaging',
     model: 'PackBot-3000',
-    lastMaintenanceAt: new Date('2025-05-15').toISOString(),
+    lastMaintenanceDate: new Date('2025-05-15').toISOString(),
     createdAt: new Date('2024-02-05').toISOString(),
     updatedAt: new Date('2025-05-15').toISOString()
   }
@@ -55,21 +56,27 @@ export async function GET(request: NextRequest) {
   const id = request.nextUrl.searchParams.get('id');
   
   if (id) {
-    // Return single equipment if ID is provided
-    const equipment = equipmentData.find(e => e.id === id);
-    
-    if (!equipment) {
-      return NextResponse.json(
-        { error: 'Equipment not found' },
-        { status: 404 }
-      );
-    }
-    
-    return NextResponse.json(equipment);
+    // Use cache for single equipment response
+    return withCache(`equipment-${id}`, async () => {
+      // Return single equipment if ID is provided
+      const equipment = equipmentData.find(e => e.id === id);
+      
+      if (!equipment) {
+        return NextResponse.json(
+          { error: 'Equipment not found' },
+          { status: 404 }
+        );
+      }
+      
+      return NextResponse.json(equipment);
+    });
   }
   
-  // Return all equipment if no ID is provided
-  return NextResponse.json(equipmentData);
+  // Use cache for all equipment response
+  return withCache('equipment-all', async () => {
+    // Return all equipment if no ID is provided
+    return NextResponse.json(equipmentData);
+  });
 }
 
 export async function POST(request: NextRequest) {
@@ -77,7 +84,7 @@ export async function POST(request: NextRequest) {
     const data = await request.json();
     
     // Validate required fields
-    if (!data.name || !data.type || !data.manufacturerCode || !data.serialNumber) {
+    if (!data.name || !data.type || !data.manufacturer || !data.serialNumber) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -89,20 +96,20 @@ export async function POST(request: NextRequest) {
       id: `${equipmentData.length + 1}`,
       name: data.name,
       type: data.type,
-      manufacturerCode: data.manufacturerCode,
+      manufacturer: data.manufacturer,
       serialNumber: data.serialNumber,
       installationDate: data.installationDate || new Date().toISOString(),
       status: data.status || 'operational',
       location: data.location,
-      description: data.description,
+      notes: data.notes,
       model: data.model,
-      lastMaintenanceAt: data.lastMaintenanceAt,
+      lastMaintenanceDate: data.lastMaintenanceDate,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
     
-    // In a real app, this would save to a database
-    // equipmentData.push(newEquipment);
+    // Actually save to our mock data for the session
+    equipmentData.push(newEquipment);
     
     return NextResponse.json(newEquipment, { status: 201 });
   } catch (error) {
@@ -141,8 +148,8 @@ export async function PUT(request: NextRequest) {
       updatedAt: new Date().toISOString()
     };
     
-    // In a real app, this would update the database
-    // equipmentData[equipmentIndex] = updatedEquipment;
+    // Actually update our mock data for the session
+    equipmentData[equipmentIndex] = updatedEquipment;
     
     return NextResponse.json(updatedEquipment);
   } catch (error) {

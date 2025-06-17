@@ -9,8 +9,27 @@ import MockServerProvider from '@/components/providers/MockServerProvider';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Adaptive Factory AI Solutions, Inc.',
-  description: 'Advanced manufacturing intelligence and analytics',
+  title: {
+    template: '%s | Adaptive Factory AI Solutions, Inc.',
+    default: 'Adaptive Factory AI Solutions, Inc. - Advanced Manufacturing Intelligence'
+  },
+  description: 'Advanced manufacturing intelligence and analytics platform with real-time dashboards, equipment monitoring, alerts, and AI-powered insights',
+  keywords: 'manufacturing, analytics, AI, OEE, equipment monitoring, predictive maintenance, industry 4.0',
+  authors: [{ name: 'Adaptive Factory AI Solutions, Inc.' }],
+  creator: 'Adaptive Factory AI Solutions, Inc.',
+  publisher: 'Adaptive Factory AI Solutions, Inc.',
+  applicationName: 'Manufacturing Analytics Platform',
+  openGraph: {
+    type: 'website',
+    title: 'Adaptive Factory AI Solutions, Inc.',
+    description: 'Advanced manufacturing intelligence and analytics platform',
+    siteName: 'Adaptive Factory AI Solutions',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Adaptive Factory AI Solutions, Inc.',
+    description: 'Advanced manufacturing intelligence and analytics platform',
+  }
 };
 
 export default function RootLayout({

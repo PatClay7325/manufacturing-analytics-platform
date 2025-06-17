@@ -3,6 +3,9 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { setupMockFetch } from '@/test-utils/mocks';
 import { createEquipmentList } from '@/test-utils/factories';
 
+// Import React hooks for the test
+import { useState, useEffect, useCallback } from 'react';
+
 // Example custom hook
 const useEquipmentData = (refreshInterval = 5000) => {
   const [equipment, setEquipment] = useState<any[]>([]);
@@ -37,9 +40,6 @@ const useEquipmentData = (refreshInterval = 5000) => {
 
   return { equipment, loading, error, refetch: fetchEquipment };
 };
-
-// Import React hooks for the test
-import { useState, useEffect, useCallback } from 'react';
 
 describe('useEquipmentData', () => {
   let mockFetch: ReturnType<typeof setupMockFetch>;
@@ -164,10 +164,7 @@ describe('useEquipmentData', () => {
 
   it('provides refetch function', async () => {
     const mockEquipment = createEquipmentList(5);
-    const updatedEquipment = createEquipmentList(5).map((eq) => ({
-      ...eq,
-      oee: eq.oee + 5,
-    }));
+    const updatedEquipment = createEquipmentList(5);
 
     mockFetch
       .mockResolvedValueOnce({

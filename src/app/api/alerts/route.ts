@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Alert } from '@/models/alert';
+import { withCache } from '@/lib/apiCache';
 
-// Sample data
-const alertsData: Alert[] = [
+// Sample data - exported to share with dynamic route handler
+export const alertsData: Alert[] = [
   {
     id: '1',
     equipmentId: '1',
@@ -76,28 +77,33 @@ export async function GET(request: NextRequest) {
   // Check for status filter
   const status = request.nextUrl.searchParams.get('status');
   
-  if (id) {
-    // Return single alert if ID is provided
-    const alert = alertsData.find(a => a.id === id);
-    
-    if (!alert) {
-      return NextResponse.json(
-        { error: 'Alert not found' },
-        { status: 404 }
-      );
+  // Generate a cache key based on the query parameters
+  const cacheKey = `alerts-${id || ''}-${status || ''}`;
+  
+  return withCache(cacheKey, async () => {
+    if (id) {
+      // Return single alert if ID is provided
+      const alert = alertsData.find(a => a.id === id);
+      
+      if (!alert) {
+        return NextResponse.json(
+          { error: 'Alert not found' },
+          { status: 404 }
+        );
+      }
+      
+      return NextResponse.json(alert);
     }
     
-    return NextResponse.json(alert);
-  }
-  
-  // Filter by status if provided
-  if (status) {
-    const filteredAlerts = alertsData.filter(a => a.status === status);
-    return NextResponse.json(filteredAlerts);
-  }
-  
-  // Return all alerts if no filters are provided
-  return NextResponse.json(alertsData);
+    // Filter by status if provided
+    if (status) {
+      const filteredAlerts = alertsData.filter(a => a.status === status);
+      return NextResponse.json(filteredAlerts);
+    }
+    
+    // Return all alerts if no filters are provided
+    return NextResponse.json(alertsData);
+  });
 }
 
 export async function POST(request: NextRequest) {
@@ -130,8 +136,8 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date().toISOString()
     };
     
-    // In a real app, this would save to a database
-    // alertsData.push(newAlert);
+    // Actually save to our mock data for the session
+    alertsData.push(newAlert);
     
     return NextResponse.json(newAlert, { status: 201 });
   } catch (error) {
@@ -177,8 +183,8 @@ export async function PUT(request: NextRequest) {
       updatedAt: new Date().toISOString()
     };
     
-    // In a real app, this would update the database
-    // alertsData[alertIndex] = updatedAlert;
+    // Actually update our mock data for the session
+    alertsData[alertIndex] = updatedAlert;
     
     return NextResponse.json(updatedAlert);
   } catch (error) {

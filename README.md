@@ -80,6 +80,29 @@ clean-project/
 
 5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+### Running Verification and Audit Tools
+
+The project includes several tools to verify application health and compliance:
+
+1. **Page Verification**: Check that all pages are working correctly
+   ```bash
+   node page-verification.js
+   ```
+
+2. **Audit Script**: Run a comprehensive audit of the application
+   ```bash
+   npm run audit
+   # or
+   node audit-port-3001.js
+   ```
+
+   Note: If your server is running on a different port, update the PORT variable in the audit script.
+
+3. **TypeScript Type Checking**: Verify TypeScript types
+   ```bash
+   npm run typecheck
+   ```
+
 ### Mock API Server
 
 The project includes a mock API server that intercepts API requests during development and returns mock data. This allows for frontend development without requiring a backend server.
