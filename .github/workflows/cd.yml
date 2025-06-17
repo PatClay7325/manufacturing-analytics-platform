@@ -1,0 +1,79 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - main-Production-ready-code  # Deploy to production
+      - develop-Integration-branch  # Deploy to staging
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  deploy-staging:
+    name: Deploy to Staging
+    if: github.ref == 'refs/heads/develop-Integration-branch'
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: https://staging.yourdomain.com  # Replace with your actual staging URL
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Generate Prisma client
+        run: npm run prisma:generate
+      
+      - name: Build project
+        run: npm run build
+      
+      # Add your deployment steps here
+      # This is a placeholder - replace with your actual deployment method
+      - name: Deploy to staging
+        run: |
+          echo "Deploying to staging environment"
+          # Example: Vercel deployment
+          # npm install -g vercel
+          # vercel --token ${{ secrets.VERCEL_TOKEN }} --prod
+
+  deploy-production:
+    name: Deploy to Production
+    if: github.ref == 'refs/heads/main-Production-ready-code'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://production.yourdomain.com  # Replace with your actual production URL
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Generate Prisma client
+        run: npm run prisma:generate
+      
+      - name: Build project
+        run: npm run build
+      
+      # Add your production deployment steps here
+      # This is a placeholder - replace with your actual deployment method
+      - name: Deploy to production
+        run: |
+          echo "Deploying to production environment"
+          # Example: Vercel deployment
+          # npm install -g vercel
+          # vercel --token ${{ secrets.VERCEL_TOKEN }} --prod
