@@ -14,10 +14,11 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: staging
-      url: https://staging.yourdomain.com  # Replace with your actual staging URL
+      url: ${{ steps.deploy.outputs.url }}
     
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
       
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -34,14 +35,37 @@ jobs:
       - name: Build project
         run: npm run build
       
-      # Add your deployment steps here
-      # This is a placeholder - replace with your actual deployment method
-      - name: Deploy to staging
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+      
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+      
+      - name: Deploy to Vercel (Staging)
+        id: deploy
         run: |
-          echo "Deploying to staging environment"
-          # Example: Vercel deployment
-          # npm install -g vercel
-          # vercel --token ${{ secrets.VERCEL_TOKEN }} --prod
+          DEPLOY_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          echo "::set-output name=url::$DEPLOY_URL"
+          echo "Deployed to $DEPLOY_URL"
+      
+      - name: Run Post-Deployment Tests
+        run: |
+          echo "Running smoke tests against ${{ steps.deploy.outputs.url }}"
+          # Add your post-deployment verification tests here
+          # npm run test:e2e:smoke -- --base-url=${{ steps.deploy.outputs.url }}
+      
+      - name: Add Deployment Comment to PR (if from PR)
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🚀 Staging deployment completed! Preview URL: ${{ steps.deploy.outputs.url }}'
+            })
 
   deploy-production:
     name: Deploy to Production
@@ -49,10 +73,11 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: production
-      url: https://production.yourdomain.com  # Replace with your actual production URL
+      url: ${{ steps.deploy-prod.outputs.url }}
     
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
       
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -69,11 +94,38 @@ jobs:
       - name: Build project
         run: npm run build
       
-      # Add your production deployment steps here
-      # This is a placeholder - replace with your actual deployment method
-      - name: Deploy to production
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+      
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      
+      - name: Deploy to Vercel (Production)
+        id: deploy-prod
         run: |
-          echo "Deploying to production environment"
-          # Example: Vercel deployment
-          # npm install -g vercel
-          # vercel --token ${{ secrets.VERCEL_TOKEN }} --prod
+          DEPLOY_URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          echo "::set-output name=url::$DEPLOY_URL"
+          echo "Deployed to $DEPLOY_URL"
+      
+      - name: Run Post-Deployment Verification
+        run: |
+          echo "Running production verification against ${{ steps.deploy-prod.outputs.url }}"
+          # Add production health check or verification
+          # curl -f ${{ steps.deploy-prod.outputs.url }}/api/health
+      
+      - name: Create Deployment Release Tag
+        run: |
+          CURRENT_DATE=$(date +'%Y-%m-%d')
+          VERSION="v1.0.0-${CURRENT_DATE}-${GITHUB_SHA::7}"
+          git tag -a $VERSION -m "Production release $VERSION"
+          git push origin $VERSION
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Send Deployment Notification
+        run: |
+          echo "Sending deployment notification"
+          # Add notification code here (Slack, Email, etc.)
+          # curl -X POST -H "Content-type: application/json" \
+          #   --data '{"text":"New production deployment: ${{ steps.deploy-prod.outputs.url }}"}' \
+          #   ${{ secrets.SLACK_WEBHOOK_URL }}
