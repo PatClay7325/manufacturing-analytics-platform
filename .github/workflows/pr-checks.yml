@@ -106,7 +106,7 @@ jobs:
           npx playwright test visual-regression.spec.ts
       
       - name: Upload visual diff
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: visual-regression-diff
