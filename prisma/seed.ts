@@ -48,6 +48,7 @@ async function cleanDatabase() {
   console.log('Cleaning database...');
   
   // Delete in order to respect foreign key constraints
+  await prisma.metric.deleteMany({}); // Delete metrics first (they reference equipment)
   await prisma.qualityCheck.deleteMany({});
   await prisma.qualityMetric.deleteMany({});
   await prisma.performanceMetric.deleteMany({});
@@ -56,6 +57,7 @@ async function cleanDatabase() {
   await prisma.productionOrder.deleteMany({});
   await prisma.equipment.deleteMany({});
   await prisma.productionLine.deleteMany({});
+  await prisma.dashboard.deleteMany({});
   await prisma.user.deleteMany({});
   await prisma.setting.deleteMany({});
   

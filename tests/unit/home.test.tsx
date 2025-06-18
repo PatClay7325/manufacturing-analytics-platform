@@ -20,14 +20,22 @@ describe('HomePage', () => {
 
   it('renders the welcome message', () => {
     render(<HomePage />);
-    expect(screen.getByText(/Manufacturing Analytics Platform/i)).toBeInTheDocument();
+    expect(screen.getByText(/Adaptive Factory AI Solutions/i)).toBeInTheDocument();
   });
 
   it('has navigation links to main sections', () => {
     render(<HomePage />);
-    expect(screen.getByRole('link', { name: /dashboard/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /equipment/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /alerts/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /manufacturing chat/i })).toBeInTheDocument();
+    // Use getAllByRole since there are multiple dashboard links
+    const dashboardLinks = screen.getAllByRole('link', { name: /dashboard/i });
+    expect(dashboardLinks.length).toBeGreaterThan(0);
+    
+    // Check for specific equipment link
+    expect(screen.getByRole('link', { name: /Monitor Equipment/i })).toBeInTheDocument();
+    
+    // Check for specific alerts link
+    expect(screen.getByRole('link', { name: /View Alerts/i })).toBeInTheDocument();
+    
+    // Check for AI assistant link
+    expect(screen.getByRole('link', { name: /Try AI Assistant/i })).toBeInTheDocument();
   });
 });

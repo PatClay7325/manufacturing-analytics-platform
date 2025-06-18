@@ -1,0 +1,275 @@
+
+> adaptive-factory-ai-solutions@1.0.0 dev
+> next dev
+
+  ▲ Next.js 14.2.30
+  - Local:        http://localhost:3000
+  - Environments: .env.local, .env
+  - Experiments (use with caution):
+    · esmExternals
+
+ ✓ Starting...
+ ✓ Ready in 20.8s
+ ○ Compiling /src/middleware ...
+ ✓ Compiled /src/middleware in 734ms (72 modules)
+ ○ Compiling / ...
+(node:105634) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ Compiled / in 14.5s (739 modules)
+ ✓ Compiled in 1223ms (474 modules)
+ GET / 200 in 15842ms
+ ✓ Compiled in 284ms (460 modules)
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 11s (724 modules)
+ GET /dashboard 200 in 11350ms
+ ✓ Compiled /equipment in 481ms (738 modules)
+ ○ Compiling /alerts ...
+ ✓ Compiled /alerts in 1031ms (812 modules)
+ ○ Compiling /manufacturing-chat ...
+ ✓ Compiled /manufacturing-chat in 544ms (826 modules)
+ ○ Compiling /manufacturing-chat/[id] ...
+ ✓ Compiled /manufacturing-chat/[id] in 534ms (836 modules)
+ ○ Compiling /documentation ...
+ ✓ Compiled /documentation in 696ms (841 modules)
+ ○ Compiling /metrics-test ...
+ ✓ Compiled /metrics-test in 838ms (851 modules)
+ ○ Compiling /api/metrics/query ...
+ ✓ Compiled /api/metrics/query in 772ms (374 modules)
+prisma:error 
+Invalid `prisma.metric.findMany()` invocation:
+
+
+Database `manufacturing` does not exist on the database server at `localhost:5432`.
+prisma:error 
+Invalid `prisma.metric.findMany()` invocation:
+
+
+Database `manufacturing` does not exist on the database server at `localhost:5432`.
+Database connection failed, returning mock data
+Database connection failed, returning mock data
+ POST /api/metrics/query 200 in 1752ms
+ POST /api/metrics/query 200 in 1755ms
+prisma:error 
+Invalid `prisma.metric.findMany()` invocation:
+
+
+Database `manufacturing` does not exist on the database server at `localhost:5432`.
+Database connection failed, returning mock data
+ POST /api/metrics/query 200 in 138ms
+ GET / 200 in 141ms
+ GET / 200 in 95ms
+ GET / 200 in 85ms
+ GET / 200 in 84ms
+ GET /equipment 200 in 321ms
+ GET /equipment 200 in 325ms
+ GET /equipment 200 in 361ms
+ GET /equipment 200 in 446ms
+ GET /equipment 200 in 445ms
+ GET / 200 in 437ms
+ GET /equipment 200 in 153ms
+ GET /equipment 200 in 153ms
+ GET /equipment 200 in 268ms
+ GET / 200 in 147ms
+ GET /equipment 200 in 101ms
+ GET /equipment 200 in 117ms
+ GET /equipment 200 in 102ms
+ GET /equipment 200 in 105ms
+ GET / 200 in 87ms
+ GET / 200 in 83ms
+ GET /equipment 200 in 110ms
+ GET /equipment 200 in 171ms
+ GET / 200 in 90ms
+ GET /equipment 200 in 92ms
+ GET / 200 in 86ms
+ GET /equipment 200 in 89ms
+ GET / 200 in 82ms
+ GET / 200 in 75ms
+ GET /equipment 200 in 266ms
+ GET /equipment 200 in 388ms
+ GET /equipment 200 in 386ms
+ GET /equipment 200 in 380ms
+ GET / 200 in 460ms
+ GET /equipment 200 in 421ms
+ GET /equipment 200 in 110ms
+ GET /equipment 200 in 119ms
+ GET /equipment 200 in 150ms
+ GET / 200 in 105ms
+ GET /equipment 200 in 116ms
+ GET /equipment 200 in 182ms
+ GET /equipment 200 in 118ms
+ GET /equipment 200 in 105ms
+ GET / 200 in 79ms
+ GET / 200 in 84ms
+ GET / 200 in 81ms
+ GET /equipment 200 in 283ms
+ GET /equipment 200 in 352ms
+ GET / 200 in 248ms
+ GET /equipment 200 in 392ms
+ GET /equipment 200 in 359ms
+ GET /equipment 200 in 353ms
+ GET /equipment 200 in 115ms
+ GET /equipment 200 in 205ms
+ GET /equipment 200 in 216ms
+ GET / 200 in 107ms
+ GET /equipment 200 in 101ms
+ GET /equipment 200 in 105ms
+ GET /equipment 200 in 107ms
+ GET /equipment 200 in 119ms
+ GET / 200 in 91ms
+ GET / 200 in 80ms
+ GET /equipment 200 in 133ms
+ GET /equipment 200 in 131ms
+ GET / 200 in 85ms
+ GET /equipment 200 in 91ms
+ GET / 200 in 92ms
+ GET /equipment 200 in 90ms
+ GET /equipment 200 in 126ms
+ GET /equipment 200 in 114ms
+ GET /equipment 200 in 90ms
+ GET /equipment 200 in 87ms
+ GET / 200 in 84ms
+ GET / 200 in 79ms
+ GET / 200 in 98ms
+ GET /equipment 200 in 213ms
+ GET /equipment 200 in 304ms
+ GET /equipment 200 in 329ms
+ GET /equipment 200 in 348ms
+ GET / 200 in 346ms
+ GET /equipment 200 in 304ms
+ GET / 200 in 117ms
+ GET /equipment 200 in 170ms
+ GET /equipment 200 in 239ms
+ GET /equipment 200 in 222ms
+ GET /equipment 200 in 185ms
+ GET /equipment 200 in 149ms
+ GET /equipment 200 in 119ms
+ GET / 200 in 124ms
+ GET /equipment 200 in 169ms
+ GET / 200 in 167ms
+ GET /equipment 200 in 140ms
+ GET /equipment 200 in 102ms
+ GET / 200 in 93ms
+ GET /equipment 200 in 105ms
+ GET / 200 in 99ms
+ GET /equipment 200 in 86ms
+ GET / 200 in 84ms
+ GET / 200 in 82ms
+ GET /equipment 200 in 314ms
+ GET /equipment 200 in 319ms
+ GET /equipment 200 in 361ms
+ GET /equipment 200 in 370ms
+ GET /equipment 200 in 366ms
+ GET / 200 in 361ms
+ ○ Compiling /equipment/[id] ...
+ ✓ Compiled /equipment/[id] in 1846ms (847 modules)
+ GET /equipment 200 in 872ms
+ ✓ Compiled /alerts in 420ms (331 modules)
+ ✓ Compiled /manufacturing-chat in 415ms (338 modules)
+ GET /equipment 200 in 196ms
+ GET /equipment 200 in 125ms
+Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://reactjs.org/link/invalid-hook-call for tips about how to debug and fix this problem.
+Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://reactjs.org/link/invalid-hook-call for tips about how to debug and fix this problem.
+TypeError: Cannot read properties of null (reading 'useContext')
+    at t.useContext (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:162242)
+    at usePathname (webpack-internal:///(ssr)/./node_modules/next/dist/client/components/navigation.js:121:34)
+    at ErrorBoundary (webpack-internal:///(ssr)/./node_modules/next/dist/client/components/error-boundary.js:159:50)
+    at au (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:10446)
+    at /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:15122
+    at aw (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:16908)
+    at a_ (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:49776)
+    at ab (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:11808)
+    at /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:16871
+    at aw (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:16908)
+    at aw (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:46505)
+    at a_ (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:49776)
+    at ab (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:11808)
+    at /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:16871
+    at aw (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:16908)
+    at a_ (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:49776)
+    at /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:58612
+    at /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:59270
+    at aN (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:59278)
+    at Timeout._onTimeout (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:6939)
+    at listOnTimeout (node:internal/timers:594:17)
+    at process.processTimers (node:internal/timers:529:7)
+ ⨯ Internal error: TypeError: Cannot read properties of null (reading 'useContext')
+    at t.useContext (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:162242)
+    at usePathname (./node_modules/next/dist/client/components/navigation.js:121:34)
+    at ErrorBoundary (./node_modules/next/dist/client/components/error-boundary.js:159:50)
+    at au (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:10446)
+    at /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:15122
+    at aw (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:16908)
+    at a_ (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:49776)
+    at ab (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:11808)
+    at /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:16871
+    at aw (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:16908)
+    at aw (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:46505)
+    at a_ (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:49776)
+    at ab (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:11808)
+    at /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:16871
+    at aw (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:16908)
+    at a_ (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:49776)
+    at /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:58612
+    at /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:59270
+    at aN (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:59278)
+    at Timeout._onTimeout (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:6939)
+    at listOnTimeout (node:internal/timers:594:17)
+    at process.processTimers (node:internal/timers:529:7)
+digest: "536112658"
+ ⨯ TypeError: Cannot read properties of null (reading 'useContext')
+    at t.useContext (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:162242)
+    at usePathname (webpack-internal:///(ssr)/./node_modules/next/dist/client/components/navigation.js:121:34)
+    at ErrorBoundary (webpack-internal:///(ssr)/./node_modules/next/dist/client/components/error-boundary.js:159:50)
+    at au (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:10446)
+    at /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:15122
+    at aw (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:16908)
+    at a_ (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:49776)
+    at ab (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:11808)
+    at /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:16871
+    at aw (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:16908)
+    at aw (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:46505)
+    at a_ (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:49776)
+    at ab (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:11808)
+    at /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:16871
+    at aw (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:16908)
+    at a_ (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:49776)
+    at /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:58612
+    at /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:59270
+    at aN (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:59278)
+    at Timeout._onTimeout (/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:6939)
+    at listOnTimeout (node:internal/timers:594:17)
+    at process.processTimers (node:internal/timers:529:7) {
+  page: '/'
+}
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 2.6s (1084 modules)
+ GET / 500 in 9028ms
+ GET /equipment 200 in 309ms
+ GET /equipment 200 in 145ms
+ GET / 200 in 93ms
+ GET / 200 in 88ms
+ GET / 200 in 99ms
+ GET / 200 in 84ms
+ GET /equipment 200 in 224ms
+ GET /equipment 200 in 245ms
+ GET /equipment 200 in 222ms
+ GET /equipment 200 in 318ms
+ GET /equipment 200 in 316ms
+ GET / 200 in 267ms
+ GET /equipment 200 in 172ms
+ GET /equipment 200 in 103ms
+ GET /equipment 200 in 153ms
+ GET / 200 in 106ms
+   Reload env: .env
+ ✓ Compiled in 659ms (1103 modules)
+ ✓ Compiled in 559ms (1031 modules)
+ ✓ Compiled in 882ms (1031 modules)
+ ✓ Compiled in 907ms (1031 modules)

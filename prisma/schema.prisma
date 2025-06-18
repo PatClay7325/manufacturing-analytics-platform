@@ -4,11 +4,14 @@
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  // For migrations in production when using a connection pooler
+  directUrl = env("DIRECT_DATABASE_URL")
 }
 
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch", "fullTextIndex"]
+  binaryTargets   = ["native", "windows", "debian-openssl-3.0.x"]
 }
 
 // Comprehensive Equipment Model
@@ -33,6 +36,7 @@ model Equipment {
   performanceMetrics  PerformanceMetric[]
   qualityMetrics      QualityMetric[]
   alerts              Alert[]
+  metrics             Metric[]
 
   // Performance Optimization
   @@index([serialNumber])
@@ -241,6 +245,9 @@ model User {
   lastLogin     DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  
+  // Relationships
+  dashboards    Dashboard[]
 
   // Optimization
   @@index([email])
@@ -259,4 +266,66 @@ model Setting {
   // Optimization
   @@index([key])
   @@index([category])
+}
+
+// Time-Series Metrics Model (for Grafana replacement)
+model Metric {
+  id          String   @id @default(cuid())
+  timestamp   DateTime @default(now())
+  
+  // Equipment reference
+  equipmentId String
+  equipment   Equipment @relation(fields: [equipmentId], references: [id])
+  
+  // Metric details
+  name        String   // e.g., "temperature", "pressure", "production_count"
+  value       Float
+  unit        String?  // e.g., "°C", "bar", "units"
+  
+  // Flexible tags for querying (similar to Prometheus labels)
+  tags        Json?    // { "shift": "morning", "operator": "John", "line": "A1" }
+  
+  // Metadata
+  source      String?  // Source system that sent the metric
+  quality     Float?   // Data quality score (0-1)
+  
+  createdAt   DateTime @default(now())
+  
+  // Composite indexes for query performance
+  @@index([equipmentId, name, timestamp(sort: Desc)])
+  @@index([timestamp(sort: Desc)])
+  @@index([name, timestamp(sort: Desc)])
+  @@map("metrics")
+}
+
+// Dashboard Configuration Model (for storing Grafana-like dashboards)
+model Dashboard {
+  id          String   @id @default(cuid())
+  uid         String   @unique // Grafana-compatible UID
+  title       String
+  slug        String   @unique
+  
+  // Dashboard configuration
+  version     Int      @default(1)
+  panels      Json     // Array of panel configurations
+  variables   Json?    // Dashboard variables/templates
+  time        Json?    // Default time range settings
+  refresh     String?  // Auto-refresh interval
+  
+  // Metadata
+  tags        String[]
+  isStarred   Boolean  @default(false)
+  isPublic    Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String?
+  updatedBy   String?
+  
+  // Relationships
+  user        User?    @relation(fields: [createdBy], references: [id])
+  
+  @@index([slug])
+  @@index([tags])
+  @@map("dashboards")
 }

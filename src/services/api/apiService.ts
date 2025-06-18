@@ -5,7 +5,7 @@ import { getResourceUrl, apiConfig } from '@/config/api';
 /**
  * Interface for API request options
  */
-export interface ApiRequestOptions extends RequestOptions {
+export interface ApiRequestOptions extends Omit<RequestOptions, 'cache'> {
   cache?: boolean | Partial<CacheOptions>;
   resource?: string;
   endpoint?: string;

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { isFeatureEnabled } from '@/config/features';
 
 interface NavLink {
   name: string;
@@ -38,6 +39,9 @@ export default function Navigation() {
     { name: 'Alerts', href: '/alerts', icon: '🔔' },
     { name: 'AI Chat', href: '/manufacturing-chat', icon: '🤖' },
     { name: 'Documentation', href: '/documentation', icon: '📚' },
+    ...(isFeatureEnabled('enableMetricsTest') ? [
+      { name: 'Metrics Test', href: '/metrics-test', icon: '🧪' }
+    ] : []),
   ];
   
   const isActivePath = (path: string): boolean => {

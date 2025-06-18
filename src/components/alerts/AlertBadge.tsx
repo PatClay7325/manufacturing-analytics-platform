@@ -83,8 +83,23 @@ export default function AlertBadge({
   };
 
   const getLabel = () => {
-    // Capitalize first letter and convert rest to lowercase
-    return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+    // Ensure consistent rendering between server and client
+    // Use a stable transformation that doesn't depend on runtime state
+    const labelMap: Record<string, string> = {
+      // Status values
+      'active': 'Active',
+      'acknowledged': 'Acknowledged', 
+      'resolved': 'Resolved',
+      'muted': 'Muted',
+      // Severity values
+      'critical': 'Critical',
+      'high': 'High',
+      'medium': 'Medium',
+      'low': 'Low',
+      'info': 'Info'
+    };
+    
+    return labelMap[value] || value;
   };
 
   return (

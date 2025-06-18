@@ -1,4 +1,4 @@
-import { http, HttpResponse, delay } from 'msw';
+import { http, HttpResponse, delay, passthrough } from 'msw';
 import { mockEquipmentData } from './data/equipment';
 import { mockAlertData } from './data/alerts';
 import { mockChatData } from './data/chat';
@@ -465,5 +465,74 @@ export const errorHandlers = [
       { error: 'Authentication service temporarily unavailable' },
       { status: 503 }
     );
+  }),
+  
+  // Metrics endpoints
+  http.post('/api/metrics/query', async ({ request }) => {
+    await simulateNetworkDelay();
+    
+    const body = await request.json() as any;
+    const { metrics = ['temperature', 'pressure'], timeRange, aggregation = 'none' } = body;
+    
+    // Generate mock time series data
+    const generateDatapoints = (metricName: string) => {
+      const now = new Date(timeRange?.to || new Date());
+      const from = new Date(timeRange?.from || new Date(now.getTime() - 60 * 60 * 1000)); // 1 hour ago
+      const pointCount = aggregation === 'none' ? 60 : 12;
+      const interval = (now.getTime() - from.getTime()) / pointCount;
+      
+      const datapoints: [number, number][] = [];
+      
+      for (let i = 0; i < pointCount; i++) {
+        const timestamp = from.getTime() + (i * interval);
+        let value = 0;
+        
+        // Generate realistic values based on metric type
+        switch (metricName) {
+          case 'temperature':
+            value = 65 + Math.sin(i / 10) * 5 + (Math.random() - 0.5) * 2;
+            break;
+          case 'pressure':
+            value = 4.5 + Math.cos(i / 8) * 0.5 + (Math.random() - 0.5) * 0.2;
+            break;
+          case 'vibration':
+            value = 0.5 + Math.abs(Math.sin(i / 5)) * 0.3 + (Math.random() - 0.5) * 0.1;
+            break;
+          case 'production_count':
+            value = Math.floor(50 + i * 2 + (Math.random() - 0.5) * 10);
+            break;
+          default:
+            value = 50 + (Math.random() - 0.5) * 20;
+        }
+        
+        datapoints.push([value, timestamp]);
+      }
+      
+      return datapoints;
+    };
+    
+    const response = metrics.map((metricName: string) => ({
+      target: metricName,
+      datapoints: generateDatapoints(metricName)
+    }));
+    
+    return HttpResponse.json({
+      success: true,
+      data: response
+    });
+  }),
+  
+  // Handler for Next.js API routes that might not be mocked
+  http.all('/api/*', ({ request }) => {
+    console.warn(`[MSW] Unhandled API request: ${request.method} ${request.url}`);
+    return new HttpResponse(null, { status: 404 });
+  }),
+
+  // Bypass external URLs (fonts, CDNs, etc.)
+  http.get(/^https?:\/\/(?!localhost).*/, () => {
+    return passthrough();
+  }),
+  http.post(/^https?:\/\/(?!localhost).*/, () => {
+    return passthrough();
   }),
 ];

@@ -11,7 +11,14 @@ export const startMockServiceWorker = async () => {
     
     // Start the MSW worker
     await worker.start({
-      onUnhandledRequest: 'bypass', // Don't warn about unhandled requests
+      onUnhandledRequest: 'bypass',
+      serviceWorker: {
+        url: '/mockServiceWorker.js',
+        options: {
+          scope: '/'
+        }
+      },
+      quiet: false // Show MSW logs
     });
     
     console.log('[MSW] Mock service worker started');

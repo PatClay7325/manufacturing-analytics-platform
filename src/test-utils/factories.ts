@@ -18,11 +18,12 @@ export interface Equipment {
 
 export interface Alert {
   id: string;
-  severity: 'info' | 'warning' | 'critical';
+  severity: 'info' | 'warning' | 'critical' | 'low' | 'medium' | 'high';
   message: string;
+  type?: 'error' | 'warning' | 'info';
+  status: 'active' | 'acknowledged' | 'resolved';
   timestamp: string;
-  equipmentId: string;
-  acknowledged: boolean;
+  sourceName?: string;
   category?: string;
 }
 
@@ -64,9 +65,10 @@ export const createAlert = (overrides: Partial<Alert> = {}): Alert => ({
   id: 'alert-1',
   severity: 'warning',
   message: 'Temperature above normal range',
+  type: 'warning',
+  status: 'active',
   timestamp: '2023-06-10T14:30:00Z',
-  equipmentId: 'equip-1',
-  acknowledged: false,
+  sourceName: 'CNC Machine 1',
   category: 'temperature',
   ...overrides,
 });

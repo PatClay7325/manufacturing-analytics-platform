@@ -9,8 +9,18 @@ const CI = !!process.env.CI;
 // Check if we're running in WSL
 const isWSL = (): boolean => {
   try {
-    const release = execSync('uname -r').toString().toLowerCase();
-    return release.includes('microsoft') || release.includes('wsl');
+    // Check for WSL by looking at environment variables or file system
+    if (process.platform === 'win32') {
+      return false; // We're on Windows, not WSL
+    }
+    
+    // Only run uname on non-Windows platforms
+    if (process.platform === 'linux') {
+      const release = execSync('uname -r').toString().toLowerCase();
+      return release.includes('microsoft') || release.includes('wsl');
+    }
+    
+    return false;
   } catch {
     return false;
   }

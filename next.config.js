@@ -10,6 +10,10 @@ const nextConfig = {
     // Skip ESLint during build to avoid timeout
     ignoreDuringBuilds: true,
   },
+  transpilePackages: ['highcharts', 'highcharts-react-official', '@highcharts/dashboards'],
+  experimental: {
+    esmExternals: 'loose',
+  },
 };
 
 module.exports = nextConfig;

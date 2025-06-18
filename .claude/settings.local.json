@@ -46,7 +46,22 @@
       "Bash(do mv \"$file\" \"$file%.audit.ts.spec.ts\")",
       "Bash(done)",
       "Bash(sudo apt-get:*)",
-      "Bash(sudo apt-get install:*)"
+      "Bash(sudo apt-get install:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(npx prisma migrate reset:*)",
+      "Bash(npx prisma:*)",
+      "Bash(npx tsx:*)",
+      "Bash(for file in GaugeChart.tsx HeatmapChart.tsx ParetoChart.tsx GanttChart.tsx RealtimeChart.tsx HighchartsDashboard.tsx)",
+      "Bash(do sed -i \"s/import Highcharts from ''@\\/config\\/highcharts''/import type * as Highcharts from ''highcharts''/g\" \"$file\")",
+      "Bash(docker:*)",
+      "Bash(kill:*)",
+      "Bash(kill:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(/mnt/d/Source/manufacturing-analytics-platform/src/app/charts-comparison)",
+      "Bash(npm prune:*)",
+      "Bash(sudo npx playwright:*)",
+      "Bash(createdb:*)",
+      "Bash(tsx scripts/test-system-comprehensive.ts:*)"
     ],
     "deny": []
   },

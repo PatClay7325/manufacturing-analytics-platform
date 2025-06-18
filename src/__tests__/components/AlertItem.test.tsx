@@ -39,7 +39,7 @@ const AlertItem = ({ alert, onAcknowledge, onResolve }: any) => {
             {alert.message}
           </p>
           <p className="mt-1 text-xs text-gray-500">
-            Equipment: <span data-testid="alert-equipment">{alert.equipment}</span>
+            Equipment: <span data-testid="alert-equipment">{alert.sourceName || 'Unknown'}</span>
           </p>
           <p className="mt-1 text-xs text-gray-500" data-testid="alert-timestamp">
             {new Date(alert.timestamp).toLocaleString()}
@@ -74,7 +74,7 @@ describe('AlertItem', () => {
     onResolve: vi.fn(),
   };
 
-  vi.beforeEach(() => {
+  beforeEach(() => {
     vi.clearAllMocks();
   });
 
@@ -83,7 +83,7 @@ describe('AlertItem', () => {
     render(<AlertItem alert={alert} {...mockHandlers} />);
 
     expect(screen.getByTestId('alert-message')).toHaveTextContent(alert.message);
-    expect(screen.getByTestId('alert-equipment')).toHaveTextContent(alert.equipment);
+    expect(screen.getByTestId('alert-equipment')).toHaveTextContent(alert.sourceName || 'Unknown');
     expect(screen.getByTestId('alert-severity')).toHaveTextContent(alert.severity);
     expect(screen.getByTestId('alert-status')).toHaveTextContent(alert.status);
   });
