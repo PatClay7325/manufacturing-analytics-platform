@@ -61,7 +61,8 @@
       "Bash(npm prune:*)",
       "Bash(sudo npx playwright:*)",
       "Bash(createdb:*)",
-      "Bash(tsx scripts/test-system-comprehensive.ts:*)"
+      "Bash(tsx scripts/test-system-comprehensive.ts:*)",
+      "Bash(ollama list:*)"
     ],
     "deny": []
   },

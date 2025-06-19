@@ -20,6 +20,8 @@ export default function ChatSessionPage() {
   const [isLoadingResponse, setIsLoadingResponse] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [userHasScrolled, setUserHasScrolled] = useState(false);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout>();
 
   // Fetch session data
   useEffect(() => {
@@ -45,10 +47,56 @@ export default function ChatSessionPage() {
     fetchSession();
   }, [sessionId]);
 
-  // Scroll to bottom when messages change
+  // Scroll to bottom only when new messages are added (not on every render)
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    // Only scroll if we're not loading and if user hasn't scrolled up
+    if (!isLoading && messages.length > 0 && !userHasScrolled) {
+      // Check if user is near bottom (within 100px)
+      const scrollContainer = messagesEndRef.current?.parentElement;
+      if (scrollContainer) {
+        const isNearBottom = scrollContainer.scrollHeight - scrollContainer.scrollTop - scrollContainer.clientHeight < 100;
+        if (isNearBottom) {
+          messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    }
+  }, [messages.length, userHasScrolled]); // Only trigger on length change, not content changes
+
+  // Handle scroll events to detect user scrolling
+  useEffect(() => {
+    const scrollContainer = messagesEndRef.current?.parentElement;
+    if (!scrollContainer) return;
+
+    const handleScroll = () => {
+      const isNearBottom = scrollContainer.scrollHeight - scrollContainer.scrollTop - scrollContainer.clientHeight < 100;
+      
+      // User has scrolled up
+      if (!isNearBottom) {
+        setUserHasScrolled(true);
+        
+        // Clear existing timeout
+        if (scrollTimeoutRef.current) {
+          clearTimeout(scrollTimeoutRef.current);
+        }
+        
+        // Reset after 5 seconds of no scrolling
+        scrollTimeoutRef.current = setTimeout(() => {
+          setUserHasScrolled(false);
+        }, 5000);
+      } else {
+        setUserHasScrolled(false);
+      }
+    };
+
+    scrollContainer.addEventListener('scroll', handleScroll);
+    
+    return () => {
+      scrollContainer.removeEventListener('scroll', handleScroll);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Handle sending a message
   const handleSendMessage = async (content: string) => {
@@ -63,6 +111,27 @@ export default function ChatSessionPage() {
     };
     setMessages(prev => [...prev, userMessage]);
     setIsLoadingResponse(true);
+
+    // Check if this query needs database access
+    const queryLower = content.toLowerCase();
+    const needsDatabase = queryLower.includes('oee') || 
+                        queryLower.includes('equipment') || 
+                        queryLower.includes('status') || 
+                        queryLower.includes('alert') || 
+                        queryLower.includes('production') || 
+                        queryLower.includes('metric') ||
+                        queryLower.includes('current') ||
+                        queryLower.includes('show');
+    
+    if (needsDatabase) {
+      // Add "Checking database..." message
+      setMessages(prev => [...prev, {
+        id: `checking-${Date.now()}`,
+        role: 'assistant',
+        content: 'Checking database...',
+        timestamp: new Date().toISOString()
+      }]);
+    }
 
     try {
       // Add user message to session
@@ -92,7 +161,20 @@ export default function ChatSessionPage() {
       const finalSession = await chatService.getSessionById(session.id);
       if (finalSession) {
         setSession(finalSession);
-        setMessages(finalSession.messages);
+        // If we showed "Checking database...", replace it with the actual response
+        if (needsDatabase) {
+          setMessages(prev => {
+            const filtered = prev.filter(msg => !msg.content.includes('Checking database...'));
+            return [...filtered, {
+              id: `ai-${Date.now()}`,
+              role: 'assistant',
+              content: aiResponse.content,
+              timestamp: new Date().toISOString()
+            }];
+          });
+        } else {
+          setMessages(finalSession.messages);
+        }
       }
     } catch (error) {
       // Add error message
@@ -173,7 +255,7 @@ export default function ChatSessionPage() {
       actionButton={actionButton}
     >
       <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="h-[calc(75vh-2rem)] flex flex-col">
+        <div className="h-[calc(75vh-2rem)] flex flex-col relative">
           {/* Chat messages */}
           <div className="flex-1 overflow-y-auto p-4">
             {messages
@@ -195,6 +277,24 @@ export default function ChatSessionPage() {
             
             <div ref={messagesEndRef} />
           </div>
+
+          {/* Scroll to bottom indicator */}
+          {userHasScrolled && (
+            <div className="absolute bottom-20 right-4">
+              <button
+                onClick={() => {
+                  setUserHasScrolled(false);
+                  messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="bg-white rounded-full shadow-lg p-2 hover:bg-gray-100 transition-colors"
+                title="Scroll to bottom"
+              >
+                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </button>
+            </div>
+          )}
 
           {/* Chat input */}
           <div className="border-t border-gray-200 p-4">

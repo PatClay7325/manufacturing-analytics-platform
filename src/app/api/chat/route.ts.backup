@@ -1,0 +1,429 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { z } from 'zod';
+
+// Request schema
+const ChatRequestSchema = z.object({
+  sessionId: z.string(),
+  messages: z.array(z.object({
+    role: z.enum(['system', 'user', 'assistant', 'function']),
+    content: z.string(),
+    name: z.string().optional(),
+  })),
+});
+
+// Ollama API configuration
+const OLLAMA_API_URL = process.env.OLLAMA_API_URL || 'http://localhost:11434';
+const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'tinyllama';
+
+// System prompt for manufacturing context
+const SYSTEM_PROMPT = `You are a manufacturing intelligence assistant for a hierarchical manufacturing system. You have access to real-time data from a global manufacturing enterprise including:
+- Enterprise-wide KPIs and metrics
+- Site-level performance across regions
+- Area and work center productivity
+- Work unit (equipment) status and performance metrics (OEE, availability, quality)
+- Production orders and schedules
+- Maintenance records and upcoming schedules
+- Quality metrics and defect analysis
+- Real-time sensor data and alerts
+
+The system follows a hierarchical structure:
+Enterprise → Sites → Areas → Work Centers → Work Units
+
+You should provide insightful analysis, identify trends, suggest optimizations, and help with troubleshooting.
+Always base your responses on the actual data when available.`;
+
+export async function POST(request: NextRequest) {
+  try {
+    // Check if request has a body
+    const contentLength = request.headers.get('content-length');
+    if (!contentLength || contentLength === '0') {
+      return NextResponse.json(
+        { error: 'Request body is empty' },
+        { status: 400 }
+      );
+    }
+
+    const body = await request.json();
+    const { sessionId, messages } = ChatRequestSchema.parse(body);
+
+    // Add system prompt if not present
+    const messagesWithSystem = messages[0]?.role === 'system' 
+      ? messages 
+      : [{ role: 'system' as const, content: SYSTEM_PROMPT }, ...messages];
+
+    // Get context from database if user is asking about specific equipment or metrics
+    const lastUserMessage = messages.filter(m => m.role === 'user').pop()?.content || '';
+    const context = await getManufacturingContext(lastUserMessage);
+
+    // If we have context, add it to the messages
+    if (context) {
+      messagesWithSystem.push({
+        role: 'system',
+        content: `Current manufacturing data context:\n${JSON.stringify(context, null, 2)}`,
+      });
+    }
+
+    // Call Ollama API
+    const ollamaResponse = await fetch(`${OLLAMA_API_URL}/api/chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: OLLAMA_MODEL,
+        messages: messagesWithSystem,
+        stream: false,
+        options: {
+          temperature: 0.7,
+          num_predict: 1000,
+        },
+      }),
+    });
+
+    if (!ollamaResponse.ok) {
+      // If Ollama is not available, fall back to a helpful message
+      if (ollamaResponse.status === 404 || !ollamaResponse.ok) {
+        return NextResponse.json({
+          message: {
+            role: 'assistant',
+            content: `I'm currently unable to connect to the AI service. However, I can help you query the manufacturing database directly. 
+
+Here's what I can do:
+- Show enterprise-wide KPIs and site performance
+- Display work center and equipment (work unit) metrics
+- Show equipment status and OEE metrics
+- List upcoming maintenance schedules
+- Analyze quality metrics and trends
+- Review production orders and schedules
+
+Try asking questions like:
+- "Show me the enterprise OEE"
+- "What's the performance of North America site?"
+- "Show all operational equipment in Body Assembly"
+- "What's the OEE for Robotic Welding Cell 1?"
+- "List upcoming maintenance"
+- "Show quality metrics for the past week"`,
+          },
+        });
+      }
+      throw new Error(`Ollama API error: ${ollamaResponse.statusText}`);
+    }
+
+    const ollamaData = await ollamaResponse.json();
+
+    // Save the conversation to database
+    await saveConversation(sessionId, messages, ollamaData.message);
+
+    return NextResponse.json({
+      message: ollamaData.message,
+      context: context,
+    });
+  } catch (error) {
+    console.error('Chat API error:', error);
+    return NextResponse.json(
+      { error: 'Failed to process chat request' },
+      { status: 500 }
+    );
+  }
+}
+
+// Function to get manufacturing context based on user query
+async function getManufacturingContext(query: string) {
+  const queryLower = query.toLowerCase();
+  let context: any = {};
+
+  try {
+    // Check for enterprise-level queries
+    if (queryLower.includes('enterprise') || queryLower.includes('global') || queryLower.includes('company')) {
+      const enterprise = await prisma.enterprise.findFirst({
+        include: {
+          kpiSummary: true,
+          sites: {
+            include: {
+              kpiSummary: true,
+            },
+          },
+        },
+      });
+
+      if (enterprise) {
+        context.enterprise = {
+          name: enterprise.name,
+          code: enterprise.code,
+          kpi: enterprise.kpiSummary ? {
+            oee: enterprise.kpiSummary.oee,
+            availability: enterprise.kpiSummary.availability,
+            performance: enterprise.kpiSummary.performance,
+            quality: enterprise.kpiSummary.quality,
+            totalProduction: enterprise.kpiSummary.totalProduction.toString(),
+            totalDefects: enterprise.kpiSummary.totalDefects,
+          } : null,
+          sites: enterprise.sites.map(site => ({
+            name: site.name,
+            location: site.location,
+            oee: site.kpiSummary?.oee,
+          })),
+        };
+      }
+    }
+
+    // Check for site-level queries
+    if (queryLower.includes('site') || queryLower.includes('location') || queryLower.includes('north america') || queryLower.includes('asia')) {
+      const sites = await prisma.site.findMany({
+        include: {
+          kpiSummary: true,
+          areas: {
+            include: {
+              kpiSummary: true,
+            },
+          },
+        },
+      });
+
+      context.sites = sites.map(site => ({
+        id: site.id,
+        name: site.name,
+        location: site.location,
+        kpi: site.kpiSummary ? {
+          oee: site.kpiSummary.oee,
+          availability: site.kpiSummary.availability,
+          performance: site.kpiSummary.performance,
+          quality: site.kpiSummary.quality,
+        } : null,
+        areaCount: site.areas.length,
+        areas: site.areas.map(area => ({
+          name: area.name,
+          oee: area.kpiSummary?.oee,
+        })),
+      }));
+    }
+
+    // Check for equipment/work unit queries
+    if (queryLower.includes('equipment') || queryLower.includes('machine') || queryLower.includes('work unit') || queryLower.includes('oee')) {
+      const workUnits = await prisma.workUnit.findMany({
+        include: {
+          kpiSummary: true,
+          workCenter: {
+            include: {
+              area: {
+                include: {
+                  site: true,
+                },
+              },
+            },
+          },
+          alerts: {
+            where: { status: 'active' },
+          },
+          maintenanceRecords: {
+            orderBy: { startTime: 'desc' },
+            take: 1,
+          },
+        },
+        take: 20, // Limit results
+      });
+
+      context.equipment = workUnits.map(unit => ({
+        id: unit.id,
+        name: unit.name,
+        code: unit.code,
+        type: unit.equipmentType,
+        status: unit.status,
+        location: `${unit.workCenter.area.site.name} > ${unit.workCenter.area.name} > ${unit.workCenter.name}`,
+        kpi: unit.kpiSummary ? {
+          oee: unit.kpiSummary.oee,
+          availability: unit.kpiSummary.availability,
+          performance: unit.kpiSummary.performance,
+          quality: unit.kpiSummary.quality,
+          lastHourProduction: unit.kpiSummary.productionData?.lastHour,
+        } : null,
+        activeAlerts: unit.alerts.length,
+        lastMaintenance: unit.maintenanceRecords[0]?.startTime,
+      }));
+    }
+
+    // Check for production queries
+    if (queryLower.includes('production') || queryLower.includes('order')) {
+      const productionOrders = await prisma.productionOrder.findMany({
+        where: { 
+          status: { in: ['in-progress', 'scheduled'] },
+        },
+        include: {
+          workCenter: {
+            include: {
+              area: {
+                include: {
+                  site: true,
+                },
+              },
+            },
+          },
+          qualityChecks: {
+            orderBy: { timestamp: 'desc' },
+            take: 1,
+          },
+        },
+        orderBy: {
+          targetStartDate: 'asc',
+        },
+        take: 10,
+      });
+
+      context.productionOrders = productionOrders.map(order => ({
+        id: order.id,
+        orderNumber: order.orderNumber,
+        product: order.product,
+        quantity: order.quantity,
+        status: order.status,
+        location: `${order.workCenter.area.site.name} > ${order.workCenter.area.name} > ${order.workCenter.name}`,
+        targetStart: order.targetStartDate,
+        targetEnd: order.targetEndDate,
+        latestQualityCheck: order.qualityChecks[0]?.result,
+      }));
+    }
+
+    // Check for maintenance queries
+    if (queryLower.includes('maintenance') || queryLower.includes('schedule')) {
+      const upcomingMaintenance = await prisma.maintenanceRecord.findMany({
+        where: {
+          status: 'scheduled',
+          startTime: {
+            gte: new Date(),
+          },
+        },
+        include: {
+          workUnit: {
+            include: {
+              workCenter: {
+                include: {
+                  area: {
+                    include: {
+                      site: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        orderBy: {
+          startTime: 'asc',
+        },
+        take: 10,
+      });
+
+      context.upcomingMaintenance = upcomingMaintenance.map(m => ({
+        id: m.id,
+        equipmentName: m.workUnit.name,
+        equipmentCode: m.workUnit.code,
+        location: `${m.workUnit.workCenter.area.site.name} > ${m.workUnit.workCenter.area.name} > ${m.workUnit.workCenter.name}`,
+        type: m.maintenanceType,
+        scheduledFor: m.startTime,
+        technician: m.technician,
+        description: m.description,
+      }));
+    }
+
+    // Check for quality queries
+    if (queryLower.includes('quality') || queryLower.includes('defect')) {
+      const recentQualityMetrics = await prisma.qualityMetric.findMany({
+        where: {
+          timestamp: {
+            gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // Last 7 days
+          },
+          isWithinSpec: false, // Focus on out-of-spec measurements
+        },
+        include: {
+          workUnit: {
+            select: {
+              name: true,
+              code: true,
+            },
+          },
+        },
+        orderBy: {
+          timestamp: 'desc',
+        },
+        take: 20,
+      });
+
+      // Group by parameter
+      const qualityByParameter = recentQualityMetrics.reduce((acc, metric) => {
+        if (!acc[metric.parameter]) {
+          acc[metric.parameter] = {
+            parameter: metric.parameter,
+            outOfSpecCount: 0,
+            units: [],
+          };
+        }
+        acc[metric.parameter].outOfSpecCount++;
+        if (!acc[metric.parameter].units.includes(metric.workUnit.name)) {
+          acc[metric.parameter].units.push(metric.workUnit.name);
+        }
+        return acc;
+      }, {} as Record<string, any>);
+
+      context.qualityIssues = Object.values(qualityByParameter);
+    }
+
+    // Check for alert queries
+    if (queryLower.includes('alert') || queryLower.includes('issue') || queryLower.includes('problem')) {
+      const activeAlerts = await prisma.alert.findMany({
+        where: {
+          status: 'active',
+        },
+        include: {
+          workUnit: {
+            include: {
+              workCenter: {
+                include: {
+                  area: {
+                    include: {
+                      site: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        orderBy: [
+          { severity: 'desc' },
+          { timestamp: 'desc' },
+        ],
+        take: 10,
+      });
+
+      context.activeAlerts = activeAlerts.map(alert => ({
+        id: alert.id,
+        type: alert.alertType,
+        severity: alert.severity,
+        message: alert.message,
+        equipmentName: alert.workUnit.name,
+        location: `${alert.workUnit.workCenter.area.site.name} > ${alert.workUnit.workCenter.area.name} > ${alert.workUnit.workCenter.name}`,
+        timestamp: alert.timestamp,
+      }));
+    }
+
+    return context;
+  } catch (error) {
+    console.error('Error fetching manufacturing context:', error);
+    return null;
+  }
+}
+
+// Function to save conversation to database
+async function saveConversation(sessionId: string, messages: any[], aiResponse: any) {
+  try {
+    // For now, we'll just log the conversation
+    console.log('Saving conversation:', {
+      sessionId,
+      messageCount: messages.length,
+      aiResponse: aiResponse.content?.substring(0, 100) + '...',
+    });
+    // TODO: Implement actual database save when we have a conversation model
+  } catch (error) {
+    console.error('Error saving conversation:', error);
+  }
+}

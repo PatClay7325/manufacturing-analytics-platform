@@ -1,0 +1,576 @@
+// Manufacturing Intelligence Platform - Hierarchical Prisma Schema
+// This schema follows the ISA-95 manufacturing hierarchy standard
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+  binaryTargets   = ["native", "windows", "debian-openssl-3.0.x"]
+}
+
+// Enterprise Level (Top of hierarchy)
+model Enterprise {
+  id          String   @id @default(cuid())
+  name        String
+  code        String   @unique // e.g., "ENT-001"
+  
+  // Relationships
+  sites       Site[]
+  kpiSummary  EnterpriseKPISummary?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([code])
+}
+
+// Enterprise KPI Summary
+model EnterpriseKPISummary {
+  id                  String   @id @default(cuid())
+  enterpriseId        String   @unique
+  enterprise          Enterprise @relation(fields: [enterpriseId], references: [id])
+  
+  // OEE Components
+  oee                 Float
+  availability        Float
+  performance         Float
+  quality             Float
+  
+  // Reliability Metrics
+  mtbf                Float    // Mean Time Between Failures (hours)
+  mttr                Float    // Mean Time To Repair (hours)
+  
+  // Production Metrics
+  productionCount     BigInt
+  scrapRate           Float
+  energyConsumption   BigInt
+  
+  // Time period
+  periodStart         DateTime
+  periodEnd           DateTime
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  @@index([enterpriseId, periodStart, periodEnd])
+}
+
+// Site Level (Manufacturing Plant)
+model Site {
+  id          String   @id @default(cuid())
+  enterpriseId String
+  enterprise   Enterprise @relation(fields: [enterpriseId], references: [id])
+  
+  name        String
+  code        String   @unique // e.g., "SITE-NA001"
+  location    String   // e.g., "Detroit, MI, USA"
+  
+  // Relationships
+  areas       Area[]
+  kpiSummary  SiteKPISummary?
+  users       User[]  // Users associated with this site
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([enterpriseId])
+  @@index([code])
+}
+
+// Site KPI Summary
+model SiteKPISummary {
+  id                  String   @id @default(cuid())
+  siteId              String   @unique
+  site                Site     @relation(fields: [siteId], references: [id])
+  
+  // KPI fields same as Enterprise
+  oee                 Float
+  availability        Float
+  performance         Float
+  quality             Float
+  mtbf                Float
+  mttr                Float
+  productionCount     BigInt
+  scrapRate           Float
+  energyConsumption   BigInt
+  
+  periodStart         DateTime
+  periodEnd           DateTime
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  @@index([siteId, periodStart, periodEnd])
+}
+
+// Area Level (Production Area)
+model Area {
+  id          String   @id @default(cuid())
+  siteId      String
+  site        Site     @relation(fields: [siteId], references: [id])
+  
+  name        String
+  code        String   @unique // e.g., "AREA-NA001-AUT"
+  
+  // Relationships
+  workCenters WorkCenter[]
+  kpiSummary  AreaKPISummary?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([siteId])
+  @@index([code])
+}
+
+// Area KPI Summary
+model AreaKPISummary {
+  id                  String   @id @default(cuid())
+  areaId              String   @unique
+  area                Area     @relation(fields: [areaId], references: [id])
+  
+  // KPI fields
+  oee                 Float
+  availability        Float
+  performance         Float
+  quality             Float
+  mtbf                Float
+  mttr                Float
+  productionCount     BigInt
+  scrapRate           Float
+  energyConsumption   BigInt
+  
+  periodStart         DateTime
+  periodEnd           DateTime
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  @@index([areaId, periodStart, periodEnd])
+}
+
+// Work Center Level (Production Line)
+model WorkCenter {
+  id          String   @id @default(cuid())
+  areaId      String
+  area        Area     @relation(fields: [areaId], references: [id])
+  
+  name        String
+  code        String   @unique // e.g., "WC-NA001-AUT-BA"
+  
+  // Relationships
+  workUnits   WorkUnit[]
+  kpiSummary  WorkCenterKPISummary?
+  productionOrders ProductionOrder[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([areaId])
+  @@index([code])
+}
+
+// Work Center KPI Summary
+model WorkCenterKPISummary {
+  id                  String   @id @default(cuid())
+  workCenterId        String   @unique
+  workCenter          WorkCenter @relation(fields: [workCenterId], references: [id])
+  
+  // KPI fields
+  oee                 Float
+  availability        Float
+  performance         Float
+  quality             Float
+  mtbf                Float
+  mttr                Float
+  productionCount     BigInt
+  scrapRate           Float
+  energyConsumption   BigInt
+  
+  periodStart         DateTime
+  periodEnd           DateTime
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  @@index([workCenterId, periodStart, periodEnd])
+}
+
+// Work Unit Level (Individual Equipment/Machine)
+model WorkUnit {
+  id              String   @id @default(cuid())
+  workCenterId    String
+  workCenter      WorkCenter @relation(fields: [workCenterId], references: [id])
+  
+  name            String
+  code            String   @unique // e.g., "WU-NA001-AUT-BA-RW1"
+  equipmentType   String   // e.g., "Robotic Welder"
+  model           String   // e.g., "Fanuc R-2000iC"
+  serialNumber    String   @unique
+  manufacturerCode String
+  installationDate DateTime
+  status          String   @default("operational") // operational, maintenance, offline, error
+  location        String?  // Specific location within work center
+  description     String?
+  lastMaintenanceAt DateTime?
+  
+  // Relationships
+  kpiSummary      WorkUnitKPISummary?
+  downtimeCauses  DowntimeCause[]
+  productionData  ProductionData[]
+  performanceMetrics PerformanceMetric[]
+  alerts          Alert[]
+  maintenanceRecords MaintenanceRecord[]
+  metrics         Metric[]
+  qualityMetrics  QualityMetric[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([workCenterId])
+  @@index([code])
+  @@index([equipmentType])
+  @@index([status])
+  @@index([serialNumber])
+}
+
+// Work Unit KPI Summary
+model WorkUnitKPISummary {
+  id                  String   @id @default(cuid())
+  workUnitId          String   @unique
+  workUnit            WorkUnit @relation(fields: [workUnitId], references: [id])
+  
+  // KPI fields
+  oee                 Float
+  availability        Float
+  performance         Float
+  quality             Float
+  mtbf                Float
+  mttr                Float
+  productionCount     BigInt
+  scrapRate           Float
+  energyConsumption   BigInt
+  
+  periodStart         DateTime
+  periodEnd           DateTime
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  @@index([workUnitId, periodStart, periodEnd])
+}
+
+// Downtime Tracking
+model DowntimeCause {
+  id          String   @id @default(cuid())
+  workUnitId  String
+  workUnit    WorkUnit @relation(fields: [workUnitId], references: [id])
+  
+  cause       String   // e.g., "Equipment Failure", "Setup and Adjustments"
+  hours       Float
+  percentage  Float
+  
+  periodStart DateTime
+  periodEnd   DateTime
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([workUnitId, periodStart, periodEnd])
+  @@index([cause])
+}
+
+// Production Data (Monthly Output)
+model ProductionData {
+  id          String   @id @default(cuid())
+  workUnitId  String
+  workUnit    WorkUnit @relation(fields: [workUnitId], references: [id])
+  
+  month       String   // e.g., "Jan", "Feb"
+  year        Int
+  actual      Int
+  target      Int
+  
+  // Product-specific data
+  products    Product[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([workUnitId, year, month])
+  @@index([workUnitId, year, month])
+}
+
+// Product Production Data
+model Product {
+  id              String   @id @default(cuid())
+  productionDataId String
+  productionData  ProductionData @relation(fields: [productionDataId], references: [id])
+  
+  partNumber      String   // e.g., "AUT-BA-001"
+  description     String   // e.g., "Front Quarter Panel"
+  cycleTime       Int      // seconds
+  output          Int      // quantity produced
+  rejects         Int      // quantity rejected
+  oee             Float    // Product-specific OEE
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([productionDataId])
+  @@index([partNumber])
+}
+
+// Performance Metrics (Time Series)
+model PerformanceMetric {
+  id              String   @id @default(cuid())
+  workUnitId      String
+  workUnit        WorkUnit @relation(fields: [workUnitId], references: [id])
+  
+  timestamp       DateTime @default(now())
+  
+  // OEE Metrics
+  availability    Float?
+  performance     Float?
+  quality         Float?
+  oeeScore        Float?
+  
+  // Detailed metrics
+  runTime         Float?   // minutes
+  plannedDowntime Float?   // minutes
+  unplannedDowntime Float? // minutes
+  idealCycleTime  Float?   // seconds
+  actualCycleTime Float?   // seconds
+  totalParts      Int?
+  goodParts       Int?
+  
+  // Additional metadata
+  shift           String?
+  operator        String?
+  notes           String?
+  
+  createdAt       DateTime @default(now())
+  
+  @@index([workUnitId, timestamp])
+  @@index([timestamp])
+}
+
+// Alert Model
+model Alert {
+  id              String   @id @default(cuid())
+  workUnitId      String?
+  workUnit        WorkUnit? @relation(fields: [workUnitId], references: [id])
+  
+  alertType       String   // maintenance, quality, performance, safety
+  severity        String   // low, medium, high, critical
+  message         String
+  status          String   @default("active") // active, acknowledged, resolved
+  
+  timestamp       DateTime @default(now())
+  acknowledgedBy  String?
+  acknowledgedAt  DateTime?
+  resolvedBy      String?
+  resolvedAt      DateTime?
+  notes           String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([workUnitId])
+  @@index([alertType])
+  @@index([severity])
+  @@index([status])
+}
+
+// Maintenance Records
+model MaintenanceRecord {
+  id              String   @id @default(cuid())
+  workUnitId      String
+  workUnit        WorkUnit @relation(fields: [workUnitId], references: [id])
+  
+  maintenanceType String   // preventive, corrective, predictive
+  description     String
+  technician      String
+  startTime       DateTime
+  endTime         DateTime?
+  status          String   @default("scheduled") // scheduled, in-progress, completed
+  notes           String?
+  parts           String[] // List of parts used
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([workUnitId])
+  @@index([status])
+  @@index([maintenanceType])
+}
+
+// Quality Metrics Model
+model QualityMetric {
+  id            String   @id @default(cuid())
+  workUnitId    String
+  workUnit      WorkUnit @relation(fields: [workUnitId], references: [id])
+  
+  timestamp     DateTime @default(now())
+  
+  // Quality parameters
+  parameter     String   // dimension, weight, appearance, etc.
+  value         Float
+  uom           String   // unit of measure
+  lowerLimit    Float?
+  upperLimit    Float?
+  nominal       Float?
+  isWithinSpec  Boolean
+  deviation     Float?   // deviation from nominal
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([workUnitId, timestamp])
+  @@index([parameter])
+  @@index([isWithinSpec])
+}
+
+// Time-Series Metrics (Sensor Data)
+model Metric {
+  id          String   @id @default(cuid())
+  workUnitId  String
+  workUnit    WorkUnit @relation(fields: [workUnitId], references: [id])
+  
+  timestamp   DateTime @default(now())
+  name        String   // e.g., "temperature", "pressure"
+  value       Float
+  unit        String?  // e.g., "°C", "bar"
+  tags        Json?    // Flexible tags
+  source      String?  // Source system
+  quality     Float?   // Data quality score (0-1)
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([workUnitId, name, timestamp(sort: Desc)])
+  @@index([timestamp(sort: Desc)])
+  @@index([name, timestamp(sort: Desc)])
+}
+
+// User Model
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  role          String    @default("user") // admin, manager, engineer, operator
+  department    String?
+  passwordHash  String
+  lastLogin     DateTime?
+  
+  // Site association
+  siteId        String?
+  site          Site?     @relation(fields: [siteId], references: [id])
+  
+  // Relationships
+  dashboards    Dashboard[]
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  @@index([email])
+  @@index([role])
+  @@index([siteId])
+}
+
+// Settings Model
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  category  String   // system, user, notification, integration
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([key])
+  @@index([category])
+}
+
+// Production Order Model (linked to Work Center)
+model ProductionOrder {
+  id               String   @id @default(cuid())
+  orderNumber      String   @unique
+  workCenterId     String
+  workCenter       WorkCenter @relation(fields: [workCenterId], references: [id])
+  
+  product          String
+  quantity         Int
+  targetStartDate  DateTime
+  targetEndDate    DateTime
+  actualStartDate  DateTime?
+  actualEndDate    DateTime?
+  status           String   @default("scheduled") // scheduled, in-progress, completed, cancelled
+  priority         Int      @default(3) // 1-5 scale, 1 highest
+  
+  // Relationships
+  qualityChecks    QualityCheck[]
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([workCenterId])
+  @@index([status])
+  @@index([orderNumber])
+}
+
+// Quality Check Model
+model QualityCheck {
+  id                String   @id @default(cuid())
+  productionOrderId String
+  productionOrder   ProductionOrder @relation(fields: [productionOrderId], references: [id])
+  
+  checkType         String   // in-process, final, pre-delivery
+  inspector         String
+  timestamp         DateTime @default(now())
+  result            String   // pass, fail, conditional
+  notes             String?
+  defectTypes       String[] // List of defect types if any
+  defectCounts      Int[]    // Counts corresponding to defect types
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([productionOrderId])
+  @@index([result])
+  @@index([checkType])
+}
+
+// Dashboard Configuration Model (for storing Grafana-like dashboards)
+model Dashboard {
+  id          String   @id @default(cuid())
+  uid         String   @unique // Grafana-compatible UID
+  title       String
+  slug        String   @unique
+  
+  // Dashboard configuration
+  version     Int      @default(1)
+  panels      Json     // Array of panel configurations
+  variables   Json?    // Dashboard variables/templates
+  time        Json?    // Default time range settings
+  refresh     String?  // Auto-refresh interval
+  
+  // Metadata
+  tags        String[]
+  isStarred   Boolean  @default(false)
+  isPublic    Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String?
+  updatedBy   String?
+  
+  // Relationships
+  user        User?    @relation(fields: [createdBy], references: [id])
+  
+  @@index([slug])
+  @@index([tags])
+}

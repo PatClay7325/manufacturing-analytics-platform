@@ -41,7 +41,7 @@ const messages: Record<string, ChatMessage[]> = {
     {
       id: 'msg-6',
       role: 'assistant',
-      content: 'Here is the OEE trend for the past week:\n\n- Monday: 85.2%\n- Tuesday: 86.5%\n- Wednesday: 84.8%\n- Thursday: 87.1%\n- Friday: 88.3%\n- Saturday: 86.9%\n- Sunday: 85.5%\n\nThe average OEE for the week is 86.3%, which is 1.3% higher than the previous week. The highest OEE was achieved on Friday at 88.3%.',
+      content: 'Here is the OEE trend for the past week:\n\n- Monday: 85.2%\n- Tuesday: 86.5%\n- Wednesday: 87.3%\n- Thursday: 87.1%\n- Friday: 88.3%\n- Saturday: 86.9%\n- Sunday: 85.5%\n\nThe average OEE for the week is 86.7%, which is 1.7% higher than the previous week. The highest OEE was achieved on Friday at 88.3%.',
       timestamp: new Date(Date.now() - 2 * 3600000 + 20000).toISOString(), // 2 hours ago + 20 seconds
     },
     {

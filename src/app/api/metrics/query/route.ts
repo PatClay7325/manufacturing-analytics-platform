@@ -12,7 +12,8 @@ const MetricQuerySchema = z.object({
   }),
   aggregation: z.enum(['none', 'avg', 'sum', 'min', 'max', 'count']).optional().default('none'),
   interval: z.string().optional(), // e.g., '1m', '5m', '1h'
-  tags: z.record(z.string(), z.any()).optional()
+  tags: z.record(z.string(), z.any()).optional(),
+  useLiveData: z.boolean().optional().default(true) // Force live data by default
 })
 
 // Helper to parse interval string (e.g., '5m' -> 300000 ms)
@@ -215,8 +216,19 @@ export async function POST(request: NextRequest) {
     })
     
     } catch (dbError) {
-      // If database fails, return mock data
-      console.log('Database connection failed, returning mock data')
+      // In production mode with useLiveData, throw error instead of returning mock data
+      if (query.useLiveData) {
+        console.error('Database query failed:', dbError)
+        return NextResponse.json({
+          success: false,
+          error: 'Database connection failed',
+          message: 'Unable to fetch live metrics data. Please check database connection.',
+          details: dbError instanceof Error ? dbError.message : 'Unknown database error'
+        }, { status: 503 })
+      }
+      
+      // Only return mock data if explicitly requested (for development/testing)
+      console.log('Database connection failed, returning mock data (development mode)')
       return NextResponse.json(generateMockData(query))
     }
     

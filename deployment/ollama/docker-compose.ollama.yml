@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: manufacturing_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+      - ./ollama:/models
+      - ./scripts/ollama:/scripts
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+      - OLLAMA_NUM_PARALLEL=2
+      - OLLAMA_MAX_LOADED_MODELS=1
+      - OLLAMA_DEBUG=false
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+        reservations:
+          memory: 4G
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - manufacturing_network
+
+  ollama-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: manufacturing_ollama_webui
+    ports:
+      - "8080:8080"
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY:-your-secret-key}
+      - WEBUI_NAME=Manufacturing Analytics AI
+      - ENABLE_SIGNUP=false
+    volumes:
+      - ollama_webui_data:/app/backend/data
+    depends_on:
+      ollama:
+        condition: service_healthy
+    networks:
+      - manufacturing_network
+    restart: unless-stopped
+
+volumes:
+  ollama_data:
+    name: manufacturing_ollama_data
+  ollama_webui_data:
+    name: manufacturing_ollama_webui_data
+
+networks:
+  manufacturing_network:
+    name: manufacturing_analytics_network
+    external: true

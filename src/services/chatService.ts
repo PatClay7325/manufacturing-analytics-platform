@@ -564,65 +564,61 @@ export const chatService = {
     sessionId: string, 
     messages: Pick<ChatMessage, 'role' | 'content' | 'name'>[]
   ): Promise<Pick<ChatMessage, 'role' | 'content' | 'name'>> => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Convert messages to the format expected by the AI API
-    const apiMessages = messages.map(message => ({
-      role: message.role,
-      content: message.content,
-      name: message.name
-    }));
-    
-    // Create a chat completion request
-    const request: ChatCompletionRequest = {
-      messages: apiMessages,
-      model: 'manufacturing-assistant-1',
-      temperature: 0.7,
-      max_tokens: 1000,
-      functions: availableFunctions.map(fn => ({
-        name: fn.name,
-        description: fn.description,
-        parameters: fn.parameters
-      }))
-    };
-    
     try {
-      // In a real implementation, this would make an API call to an LLM service
-      // For now, simulate a response based on the user's query
-      const response = await simulateAIResponse(request);
+      // Show loading indicator for database queries
+      const lastUserMessage = messages[messages.length - 1];
+      const userQuery = lastUserMessage?.content?.toLowerCase() || '';
       
-      // Check if the AI wants to call a function
-      if (response.choices[0].message.function_call) {
-        const functionCall = response.choices[0].message.function_call;
-        const functionName = functionCall.name;
-        const functionArgs = JSON.parse(functionCall.arguments);
-        
-        // Find the function to call
-        const functionToCall = availableFunctions.find(fn => fn.name === functionName);
-        if (!functionToCall) {
-          throw new Error(`Function ${functionName} not found`);
-        }
-        
-        // Call the function
-        const functionResult = await functionToCall.handler(functionArgs);
-        
-        // Add the function result to the messages
-        const functionResultMessage: Pick<ChatMessage, 'role' | 'content' | 'name'> = {
-          role: 'function',
-          name: functionName,
-          content: JSON.stringify(functionResult)
-        };
-        
-        // Get a new response from the AI with the function result
-        return await chatService.getAIResponse(
-          sessionId,
-          [...apiMessages, response.choices[0].message, functionResultMessage]
-        );
+      // Check if this query needs database access
+      const needsDatabase = userQuery.includes('oee') || 
+                          userQuery.includes('equipment') || 
+                          userQuery.includes('status') || 
+                          userQuery.includes('alert') || 
+                          userQuery.includes('production') || 
+                          userQuery.includes('metric') ||
+                          userQuery.includes('current') ||
+                          userQuery.includes('show');
+      
+      if (needsDatabase) {
+        // We'll add "Checking database..." as a visual indicator
+        console.log('Checking database...');
       }
       
-      return response.choices[0].message;
+      // Call the real API endpoint
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sessionId,
+          messages: messages.map(msg => ({
+            role: msg.role,
+            content: msg.content,
+            name: msg.name
+          }))
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get AI response');
+      }
+
+      const data = await response.json();
+      
+      // Extract the AI response
+      const aiMessage = data.message || {
+        role: 'assistant',
+        content: 'Sorry, I encountered an error processing your request.'
+      };
+      
+      return {
+        role: aiMessage.role,
+        content: aiMessage.content,
+        name: aiMessage.name
+      };
     } catch (error) {
+      console.error('Error getting AI response:', error);
       return {
         role: 'assistant',
         content: "I'm sorry, I encountered an error processing your request. Please try again later."

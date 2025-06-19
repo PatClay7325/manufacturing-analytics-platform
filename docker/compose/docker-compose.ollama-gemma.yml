@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # Ollama with Gemma:2B as primary model
+  ollama:
+    image: ollama/ollama:latest
+    container_name: manufacturing-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+      - ./ollama:/models
+      - ./scripts/ollama:/scripts
+    environment:
+      # Performance settings optimized for Gemma:2B
+      - OLLAMA_KEEP_ALIVE=24h
+      - OLLAMA_NUM_PARALLEL=4          # Gemma:2B can handle more parallel requests
+      - OLLAMA_MAX_LOADED_MODELS=3     # Keep other models available
+      - OLLAMA_DEBUG=false
+      # Set Gemma:2B as default
+      - OLLAMA_DEFAULT_MODEL=gemma:2b
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 6g                   # Gemma:2B needs less memory
+        reservations:
+          memory: 3g
+    networks:
+      - manufacturing-network
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list | grep gemma:2b || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    # Run initialization after container starts
+    entrypoint: ["/bin/bash", "-c", "ollama serve & sleep 10 && /scripts/init-gemma-primary.sh && tail -f /dev/null"]
+
+volumes:
+  ollama-data:
+
+networks:
+  manufacturing-network:
+    external: true
+    name: manufacturing-network

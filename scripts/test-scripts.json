@@ -1,0 +1,49 @@
+{
+  "scripts": {
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:unit": "vitest run --dir src/__tests__ --exclude '**/*.integration.test.ts'",
+    "test:integration": "vitest run --config vitest.config.integration.ts",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest watch",
+    
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "e2e:debug": "playwright test --debug",
+    "e2e:headed": "playwright test --headed",
+    "e2e:report": "playwright show-report",
+    "e2e:codegen": "playwright codegen",
+    
+    "test:auth": "playwright test tests/e2e/authentication.spec.ts",
+    "test:pages": "playwright test tests/e2e/pages/",
+    "test:api": "playwright test tests/e2e/api/",
+    "test:components": "playwright test tests/e2e/components/",
+    
+    "test:perf": "playwright test tests/performance/",
+    "test:a11y": "playwright test tests/accessibility/",
+    "test:visual": "playwright test tests/visual/",
+    "test:visual:update": "playwright test tests/visual/ --update-snapshots",
+    
+    "test:all": "pnpm test:unit && pnpm test:integration && pnpm e2e",
+    "test:ci": "pnpm test:unit -- --run && pnpm test:integration -- --run && pnpm e2e",
+    
+    "test:factory": "tsx tests/fixtures/test-factories.ts",
+    "test:seed": "tsx scripts/seed-test-data.ts",
+    
+    "lint:test": "eslint tests --ext .ts,.tsx",
+    "type:test": "tsc --noEmit -p tests/tsconfig.json"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@axe-core/playwright": "^4.8.0",
+    "@faker-js/faker": "^8.3.0",
+    "@testing-library/react": "^14.1.0",
+    "@testing-library/user-event": "^14.5.0",
+    "@testing-library/jest-dom": "^6.1.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "@vitest/ui": "^1.0.0",
+    "vitest": "^1.0.0",
+    "jsdom": "^23.0.0",
+    "msw": "^2.0.0"
+  }
+}

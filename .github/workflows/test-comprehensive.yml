@@ -1,0 +1,436 @@
+name: Comprehensive Test Suite
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    # Run full test suite nightly at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      test-suite:
+        description: 'Test suite to run'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - unit
+          - integration
+          - e2e
+          - performance
+          - accessibility
+          - visual
+
+env:
+  NODE_VERSION: '18.x'
+  PNPM_VERSION: '8'
+
+jobs:
+  # Unit and Integration Tests
+  unit-integration-tests:
+    name: Unit & Integration Tests
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.test-suite == 'all' || github.event.inputs.test-suite == 'unit' || github.event.inputs.test-suite == 'integration' || github.event_name != 'workflow_dispatch' }}
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: manufacturing_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+          
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+            
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        
+      - name: Setup test database
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/manufacturing_test
+        run: |
+          pnpm prisma generate
+          pnpm prisma db push --skip-seed
+          
+      - name: Run unit tests
+        if: ${{ github.event.inputs.test-suite == 'all' || github.event.inputs.test-suite == 'unit' || github.event_name != 'workflow_dispatch' }}
+        run: pnpm test:unit -- --coverage
+        
+      - name: Run integration tests
+        if: ${{ github.event.inputs.test-suite == 'all' || github.event.inputs.test-suite == 'integration' || github.event_name != 'workflow_dispatch' }}
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/manufacturing_test
+          OLLAMA_BASE_URL: http://localhost:11434
+        run: pnpm test:integration -- --coverage
+        
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: coverage-reports
+          path: coverage/
+          
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: test-results
+          path: test-results/
+
+  # E2E Tests
+  e2e-tests:
+    name: E2E Tests - ${{ matrix.browser }}
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.test-suite == 'all' || github.event.inputs.test-suite == 'e2e' || github.event_name != 'workflow_dispatch' }}
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+        
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: manufacturing_e2e
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+          
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        
+      - name: Install Playwright browsers
+        run: pnpm playwright install --with-deps ${{ matrix.browser }}
+        
+      - name: Setup test database
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/manufacturing_e2e
+        run: |
+          pnpm prisma generate
+          pnpm prisma db push
+          pnpm prisma db seed
+          
+      - name: Build application
+        run: pnpm build
+        
+      - name: Run E2E tests
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/manufacturing_e2e
+          NEXTAUTH_URL: http://localhost:3000
+          NEXTAUTH_SECRET: test-secret-key
+        run: pnpm playwright test --project=${{ matrix.browser }}
+        
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report-${{ matrix.browser }}
+          path: playwright-report/
+          retention-days: 30
+          
+      - name: Upload Playwright screenshots
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: playwright-screenshots-${{ matrix.browser }}
+          path: test-results/
+
+  # Performance Tests
+  performance-tests:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.test-suite == 'all' || github.event.inputs.test-suite == 'performance' || (github.event_name == 'schedule') }}
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: manufacturing_perf
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+          
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        
+      - name: Install Playwright
+        run: pnpm playwright install chromium
+        
+      - name: Setup test database with large dataset
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/manufacturing_perf
+        run: |
+          pnpm prisma generate
+          pnpm prisma db push
+          pnpm tsx scripts/seed-performance-data.ts
+          
+      - name: Build application
+        run: pnpm build
+        
+      - name: Run performance tests
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/manufacturing_perf
+        run: pnpm playwright test tests/performance --project=chromium
+        
+      - name: Upload performance results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: performance-results
+          path: |
+            test-results/
+            lighthouse-reports/
+            
+      - name: Comment PR with performance metrics
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        with:
+          script: |
+            const fs = require('fs');
+            const perfResults = JSON.parse(fs.readFileSync('test-results/performance-summary.json', 'utf8'));
+            
+            const comment = `## Performance Test Results
+            
+            | Metric | Value | Budget | Status |
+            |--------|-------|--------|--------|
+            | FCP | ${perfResults.fcp}ms | 1800ms | ${perfResults.fcp <= 1800 ? '✅' : '❌'} |
+            | LCP | ${perfResults.lcp}ms | 2500ms | ${perfResults.lcp <= 2500 ? '✅' : '❌'} |
+            | TTI | ${perfResults.tti}ms | 3500ms | ${perfResults.tti <= 3500 ? '✅' : '❌'} |
+            | CLS | ${perfResults.cls} | 0.1 | ${perfResults.cls <= 0.1 ? '✅' : '❌'} |
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  # Accessibility Tests
+  accessibility-tests:
+    name: Accessibility Tests
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.test-suite == 'all' || github.event.inputs.test-suite == 'accessibility' || github.event_name != 'workflow_dispatch' }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        
+      - name: Install Playwright
+        run: pnpm playwright install chromium
+        
+      - name: Build application
+        run: pnpm build
+        
+      - name: Run accessibility tests
+        run: pnpm playwright test tests/accessibility --project=chromium
+        
+      - name: Upload accessibility reports
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: accessibility-reports
+          path: |
+            test-results/
+            a11y-reports/
+
+  # Visual Regression Tests
+  visual-tests:
+    name: Visual Regression Tests
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.test-suite == 'all' || github.event.inputs.test-suite == 'visual' || github.event_name != 'workflow_dispatch' }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        
+      - name: Install Playwright
+        run: pnpm playwright install chromium
+        
+      - name: Build application
+        run: pnpm build
+        
+      - name: Run visual regression tests
+        run: pnpm playwright test tests/visual --project=chromium
+        
+      - name: Upload visual diff reports
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: visual-diff-reports
+          path: |
+            test-results/
+            tests/visual/snapshots/
+            
+  # Test Summary and Reporting
+  test-summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [unit-integration-tests, e2e-tests, performance-tests, accessibility-tests, visual-tests]
+    if: always()
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download all artifacts
+        uses: actions/download-artifact@v3
+        
+      - name: Generate test summary
+        run: |
+          echo "# Test Results Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Unit/Integration Tests
+          if [ -f "coverage-reports/coverage-summary.json" ]; then
+            echo "## Coverage Report" >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            cat coverage-reports/coverage-summary.json | jq '.total' >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # E2E Tests
+          echo "## E2E Test Results" >> $GITHUB_STEP_SUMMARY
+          for browser in chromium firefox webkit; do
+            if [ -d "playwright-report-$browser" ]; then
+              echo "- $browser: ✅" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "- $browser: ❌" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+          
+          # Performance Tests
+          if [ -f "performance-results/performance-summary.json" ]; then
+            echo "## Performance Metrics" >> $GITHUB_STEP_SUMMARY
+            cat performance-results/performance-summary.json | jq -r 'to_entries | .[] | "- \(.key): \(.value)"' >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Accessibility Tests
+          if [ -f "accessibility-reports/a11y-summary.json" ]; then
+            echo "## Accessibility Results" >> $GITHUB_STEP_SUMMARY
+            cat accessibility-reports/a11y-summary.json | jq -r '.violations | length' | xargs -I {} echo "Violations found: {}" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+      - name: Publish test results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Test Results
+          path: '**/test-results.xml'
+          reporter: jest-junit
+          
+      - name: Update PR status
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        with:
+          script: |
+            const { data: checks } = await github.rest.checks.listForRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: context.sha
+            });
+            
+            const failed = checks.check_runs.filter(check => 
+              check.name.includes('Test') && check.conclusion === 'failure'
+            );
+            
+            if (failed.length > 0) {
+              core.setFailed(`${failed.length} test suites failed`);
+            }

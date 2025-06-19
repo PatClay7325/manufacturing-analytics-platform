@@ -1,331 +1,460 @@
-// Manufacturing Intelligence Platform - Prisma Schema
-// This schema defines the data model for the Manufacturing Intelligence Platform
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-  // For migrations in production when using a connection pooler
-  directUrl = env("DIRECT_DATABASE_URL")
-}
-
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+  previewFeatures = ["fullTextIndex", "fullTextSearch", "metrics"]
   binaryTargets   = ["native", "windows", "debian-openssl-3.0.x"]
 }
 
-// Comprehensive Equipment Model
-model Equipment {
-  id                String    @id @default(cuid())
-  name              String
-  type              String
-  manufacturerCode  String
-  serialNumber      String    @unique
-  installationDate  DateTime
-  status            String    @default("operational") // operational, maintenance, offline, error
-  location          String?
-  description       String?
-  model             String?
-  lastMaintenanceAt DateTime?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-
-  // Comprehensive Relationships
-  productionLines     ProductionLine[]
-  maintenanceRecords  MaintenanceRecord[]
-  performanceMetrics  PerformanceMetric[]
-  qualityMetrics      QualityMetric[]
-  alerts              Alert[]
-  metrics             Metric[]
-
-  // Performance Optimization
-  @@index([serialNumber])
-  @@index([type])
-  @@index([status])
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
 }
 
-// Production Line Model
-model ProductionLine {
-  id          String   @id @default(cuid())
-  name        String
-  department  String
-  description String?
-  status      String   @default("active") // active, inactive, maintenance
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relationships
-  equipment        Equipment[]
-  productionOrders ProductionOrder[]
-  performanceMetrics PerformanceMetric[]
-
-  // Optimization
-  @@index([department])
-  @@index([status])
-}
-
-// Production Order Model
 model ProductionOrder {
-  id               String   @id @default(cuid())
-  orderNumber      String   @unique
-  productionLineId String
-  product          String
-  quantity         Int
-  targetStartDate  DateTime
-  targetEndDate    DateTime
-  actualStartDate  DateTime?
-  actualEndDate    DateTime?
-  status           String   @default("scheduled") // scheduled, in-progress, completed, cancelled
-  priority         Int      @default(3) // 1-5 scale, 1 highest
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id              String         @id @default(cuid())
+  orderNumber     String         @unique
+  product         String
+  quantity        Int
+  targetStartDate DateTime
+  targetEndDate   DateTime
+  actualStartDate DateTime?
+  actualEndDate   DateTime?
+  status          String         @default("scheduled")
+  priority        Int            @default(3)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  workCenterId    String
+  WorkCenter      WorkCenter     @relation(fields: [workCenterId], references: [id])
+  qualityChecks   QualityCheck[]
 
-  // Relationships
-  productionLine ProductionLine @relation(fields: [productionLineId], references: [id])
-  qualityChecks  QualityCheck[]
-
-  // Optimization
-  @@index([productionLineId])
   @@index([status])
   @@index([orderNumber])
+  @@index([workCenterId])
 }
 
-// Maintenance Record Model
 model MaintenanceRecord {
-  id            String   @id @default(cuid())
-  equipmentId   String
-  maintenanceType String  // preventive, corrective, predictive
-  description   String
-  technician    String
-  startTime     DateTime
-  endTime       DateTime?
-  status        String   @default("scheduled") // scheduled, in-progress, completed
-  notes         String?
-  parts         String[] // List of parts used
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id              String    @id @default(cuid())
+  maintenanceType String
+  description     String
+  technician      String
+  startTime       DateTime
+  endTime         DateTime?
+  status          String    @default("scheduled")
+  notes           String?
+  parts           String[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  workUnitId      String
+  WorkUnit        WorkUnit  @relation(fields: [workUnitId], references: [id])
 
-  // Relationships
-  equipment Equipment @relation(fields: [equipmentId], references: [id])
-
-  // Optimization
-  @@index([equipmentId])
   @@index([status])
   @@index([maintenanceType])
+  @@index([workUnitId])
 }
 
-// Performance Metrics Model
 model PerformanceMetric {
-  id              String   @id @default(cuid())
-  equipmentId     String?
-  productionLineId String?
-  timestamp       DateTime @default(now())
-  
-  // Comprehensive OEE Metrics
-  availability    Float?   // 0-1 scale
-  performance     Float?   // 0-1 scale
-  quality         Float?   // 0-1 scale
-  oeeScore        Float?   // Calculated OEE
-  
-  // Detailed metrics
-  runTime         Float?   // In minutes
-  plannedDowntime Float?   // In minutes
-  unplannedDowntime Float? // In minutes
-  idealCycleTime  Float?   // In seconds
-  actualCycleTime Float?   // In seconds
-  totalParts      Int?
-  goodParts       Int?
-  
-  // Additional meta
-  shift           String?  // morning, afternoon, night
-  operator        String?
-  notes           String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id                String   @id @default(cuid())
+  timestamp         DateTime @default(now())
+  availability      Float?
+  performance       Float?
+  quality           Float?
+  oeeScore          Float?
+  runTime           Float?
+  plannedDowntime   Float?
+  unplannedDowntime Float?
+  idealCycleTime    Float?
+  actualCycleTime   Float?
+  totalParts        Int?
+  goodParts         Int?
+  shift             String?
+  operator          String?
+  notes             String?
+  createdAt         DateTime @default(now())
+  workUnitId        String
+  WorkUnit          WorkUnit @relation(fields: [workUnitId], references: [id])
 
-  // Relationships
-  equipment       Equipment? @relation(fields: [equipmentId], references: [id])
-  productionLine  ProductionLine? @relation(fields: [productionLineId], references: [id])
-
-  // Performance Optimization Indexes
-  @@index([equipmentId, timestamp])
-  @@index([productionLineId, timestamp])
   @@index([timestamp])
+  @@index([workUnitId, timestamp])
 }
 
-// Quality Metrics Model
 model QualityMetric {
-  id            String   @id @default(cuid())
-  equipmentId   String
-  timestamp     DateTime @default(now())
-  
-  // Quality parameters
-  parameter     String   // dimension, weight, appearance, etc.
-  value         Float
-  uom           String   // unit of measure
-  lowerLimit    Float?
-  upperLimit    Float?
-  nominal       Float?
-  isWithinSpec  Boolean
-  deviation     Float?   // deviation from nominal
-  
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id           String   @id @default(cuid())
+  timestamp    DateTime @default(now())
+  parameter    String
+  value        Float
+  uom          String
+  lowerLimit   Float?
+  upperLimit   Float?
+  nominal      Float?
+  isWithinSpec Boolean
+  deviation    Float?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  workUnitId   String
+  WorkUnit     WorkUnit @relation(fields: [workUnitId], references: [id])
 
-  // Relationships
-  equipment     Equipment @relation(fields: [equipmentId], references: [id])
-
-  // Optimization
-  @@index([equipmentId, timestamp])
   @@index([parameter])
   @@index([isWithinSpec])
+  @@index([workUnitId, timestamp])
 }
 
-// Quality Check Model
 model QualityCheck {
-  id                String   @id @default(cuid())
+  id                String          @id @default(cuid())
   productionOrderId String
-  checkType         String   // in-process, final, pre-delivery
+  checkType         String
   inspector         String
-  timestamp         DateTime @default(now())
-  result            String   // pass, fail, conditional
+  timestamp         DateTime        @default(now())
+  result            String
   notes             String?
-  defectTypes       String[] // List of defect types if any
-  defectCounts      Int[]    // Counts corresponding to defect types
-  
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  // Relationships
+  defectTypes       String[]
+  defectCounts      Int[]
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
   productionOrder   ProductionOrder @relation(fields: [productionOrderId], references: [id])
 
-  // Optimization
   @@index([productionOrderId])
   @@index([result])
   @@index([checkType])
 }
 
-// Alert Model
 model Alert {
-  id          String   @id @default(cuid())
-  equipmentId String?
-  alertType   String   // maintenance, quality, performance, safety
-  severity    String   // low, medium, high, critical
-  message     String
-  status      String   @default("active") // active, acknowledged, resolved, false-alarm
-  timestamp   DateTime @default(now())
+  id             String    @id @default(cuid())
+  alertType      String
+  severity       String
+  message        String
+  status         String    @default("active")
+  timestamp      DateTime  @default(now())
   acknowledgedBy String?
   acknowledgedAt DateTime?
-  resolvedBy    String?
-  resolvedAt    DateTime?
-  notes         String?
-  
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  resolvedBy     String?
+  resolvedAt     DateTime?
+  notes          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  workUnitId     String?
+  WorkUnit       WorkUnit? @relation(fields: [workUnitId], references: [id])
 
-  // Relationships
-  equipment     Equipment? @relation(fields: [equipmentId], references: [id])
-
-  // Optimization
-  @@index([equipmentId])
   @@index([alertType])
   @@index([severity])
   @@index([status])
-  @@index([timestamp])
+  @@index([workUnitId])
 }
 
-// User Model (for authentication)
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  name          String?
-  role          String    @default("user") // admin, manager, engineer, operator
-  department    String?
-  passwordHash  String
-  lastLogin     DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  
-  // Relationships
-  dashboards    Dashboard[]
+  id           String      @id @default(cuid())
+  email        String      @unique
+  name         String?
+  role         String      @default("user")
+  department   String?
+  passwordHash String
+  lastLogin    DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  siteId       String?
+  Dashboard    Dashboard[]
+  Site         Site?       @relation(fields: [siteId], references: [id])
 
-  // Optimization
   @@index([email])
   @@index([role])
+  @@index([siteId])
 }
 
-// Settings Model (for application settings)
 model Setting {
   id        String   @id @default(cuid())
   key       String   @unique
   value     String
-  category  String   // system, user, notification, integration
+  category  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Optimization
   @@index([key])
   @@index([category])
 }
 
-// Time-Series Metrics Model (for Grafana replacement)
-model Metric {
-  id          String   @id @default(cuid())
-  timestamp   DateTime @default(now())
-  
-  // Equipment reference
-  equipmentId String
-  equipment   Equipment @relation(fields: [equipmentId], references: [id])
-  
-  // Metric details
-  name        String   // e.g., "temperature", "pressure", "production_count"
-  value       Float
-  unit        String?  // e.g., "°C", "bar", "units"
-  
-  // Flexible tags for querying (similar to Prometheus labels)
-  tags        Json?    // { "shift": "morning", "operator": "John", "line": "A1" }
-  
-  // Metadata
-  source      String?  // Source system that sent the metric
-  quality     Float?   // Data quality score (0-1)
-  
-  createdAt   DateTime @default(now())
-  
-  // Composite indexes for query performance
-  @@index([equipmentId, name, timestamp(sort: Desc)])
-  @@index([timestamp(sort: Desc)])
-  @@index([name, timestamp(sort: Desc)])
-  @@map("metrics")
+model Area {
+  id             String          @id
+  siteId         String
+  name           String
+  code           String          @unique
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime
+  Site           Site            @relation(fields: [siteId], references: [id])
+  AreaKPISummary AreaKPISummary?
+  WorkCenter     WorkCenter[]
+
+  @@index([code])
+  @@index([siteId])
 }
 
-// Dashboard Configuration Model (for storing Grafana-like dashboards)
+model AreaKPISummary {
+  id                String   @id
+  areaId            String   @unique
+  oee               Float
+  availability      Float
+  performance       Float
+  quality           Float
+  mtbf              Float
+  mttr              Float
+  productionCount   BigInt
+  scrapRate         Float
+  energyConsumption BigInt
+  periodStart       DateTime
+  periodEnd         DateTime
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime
+  Area              Area     @relation(fields: [areaId], references: [id])
+
+  @@index([areaId, periodStart, periodEnd])
+}
+
 model Dashboard {
-  id          String   @id @default(cuid())
-  uid         String   @unique // Grafana-compatible UID
-  title       String
-  slug        String   @unique
-  
-  // Dashboard configuration
-  version     Int      @default(1)
-  panels      Json     // Array of panel configurations
-  variables   Json?    // Dashboard variables/templates
-  time        Json?    // Default time range settings
-  refresh     String?  // Auto-refresh interval
-  
-  // Metadata
-  tags        String[]
-  isStarred   Boolean  @default(false)
-  isPublic    Boolean  @default(false)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  createdBy   String?
-  updatedBy   String?
-  
-  // Relationships
-  user        User?    @relation(fields: [createdBy], references: [id])
-  
+  id        String   @id
+  uid       String   @unique
+  title     String
+  slug      String   @unique
+  version   Int      @default(1)
+  panels    Json
+  variables Json?
+  time      Json?
+  refresh   String?
+  tags      String[]
+  isStarred Boolean  @default(false)
+  isPublic  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  createdBy String?
+  updatedBy String?
+  User      User?    @relation(fields: [createdBy], references: [id])
+
   @@index([slug])
   @@index([tags])
-  @@map("dashboards")
+}
+
+model DowntimeCause {
+  id          String   @id
+  workUnitId  String
+  cause       String
+  hours       Float
+  percentage  Float
+  periodStart DateTime
+  periodEnd   DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  WorkUnit    WorkUnit @relation(fields: [workUnitId], references: [id])
+
+  @@index([cause])
+  @@index([workUnitId, periodStart, periodEnd])
+}
+
+model Enterprise {
+  id                   String                @id
+  name                 String
+  code                 String                @unique
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime
+  EnterpriseKPISummary EnterpriseKPISummary?
+  Site                 Site[]
+
+  @@index([code])
+}
+
+model EnterpriseKPISummary {
+  id                String     @id
+  enterpriseId      String     @unique
+  oee               Float
+  availability      Float
+  performance       Float
+  quality           Float
+  mtbf              Float
+  mttr              Float
+  productionCount   BigInt
+  scrapRate         Float
+  energyConsumption BigInt
+  periodStart       DateTime
+  periodEnd         DateTime
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime
+  Enterprise        Enterprise @relation(fields: [enterpriseId], references: [id])
+
+  @@index([enterpriseId, periodStart, periodEnd])
+}
+
+model Metric {
+  id         String   @id
+  workUnitId String
+  timestamp  DateTime @default(now())
+  name       String
+  value      Float
+  unit       String?
+  tags       Json?
+  source     String?
+  quality    Float?
+  createdAt  DateTime @default(now())
+  WorkUnit   WorkUnit @relation(fields: [workUnitId], references: [id])
+
+  @@index([name, timestamp(sort: Desc)])
+  @@index([timestamp(sort: Desc)])
+  @@index([workUnitId, name, timestamp(sort: Desc)])
+}
+
+model Product {
+  id               String         @id
+  productionDataId String
+  partNumber       String
+  description      String
+  cycleTime        Int
+  output           Int
+  rejects          Int
+  oee              Float
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime
+  ProductionData   ProductionData @relation(fields: [productionDataId], references: [id])
+
+  @@index([partNumber])
+  @@index([productionDataId])
+}
+
+model ProductionData {
+  id         String    @id
+  workUnitId String
+  month      String
+  year       Int
+  actual     Int
+  target     Int
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime
+  Product    Product[]
+  WorkUnit   WorkUnit  @relation(fields: [workUnitId], references: [id])
+
+  @@unique([workUnitId, year, month])
+  @@index([workUnitId, year, month])
+}
+
+model Site {
+  id             String          @id
+  enterpriseId   String
+  name           String
+  code           String          @unique
+  location       String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime
+  Area           Area[]
+  Enterprise     Enterprise      @relation(fields: [enterpriseId], references: [id])
+  SiteKPISummary SiteKPISummary?
+  User           User[]
+
+  @@index([code])
+  @@index([enterpriseId])
+}
+
+model SiteKPISummary {
+  id                String   @id
+  siteId            String   @unique
+  oee               Float
+  availability      Float
+  performance       Float
+  quality           Float
+  mtbf              Float
+  mttr              Float
+  productionCount   BigInt
+  scrapRate         Float
+  energyConsumption BigInt
+  periodStart       DateTime
+  periodEnd         DateTime
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime
+  Site              Site     @relation(fields: [siteId], references: [id])
+
+  @@index([siteId, periodStart, periodEnd])
+}
+
+model WorkCenter {
+  id                   String                @id
+  areaId               String
+  name                 String
+  code                 String                @unique
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime
+  ProductionOrder      ProductionOrder[]
+  Area                 Area                  @relation(fields: [areaId], references: [id])
+  WorkCenterKPISummary WorkCenterKPISummary?
+  WorkUnit             WorkUnit[]
+
+  @@index([areaId])
+  @@index([code])
+}
+
+model WorkCenterKPISummary {
+  id                String     @id
+  workCenterId      String     @unique
+  oee               Float
+  availability      Float
+  performance       Float
+  quality           Float
+  mtbf              Float
+  mttr              Float
+  productionCount   BigInt
+  scrapRate         Float
+  energyConsumption BigInt
+  periodStart       DateTime
+  periodEnd         DateTime
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime
+  WorkCenter        WorkCenter @relation(fields: [workCenterId], references: [id])
+
+  @@index([workCenterId, periodStart, periodEnd])
+}
+
+model WorkUnit {
+  id                 String              @id
+  workCenterId       String
+  name               String
+  code               String              @unique
+  equipmentType      String
+  model              String
+  serialNumber       String              @unique
+  manufacturerCode   String
+  installationDate   DateTime
+  status             String              @default("operational")
+  location           String?
+  description        String?
+  lastMaintenanceAt  DateTime?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime
+  Alert              Alert[]
+  DowntimeCause      DowntimeCause[]
+  MaintenanceRecord  MaintenanceRecord[]
+  Metric             Metric[]
+  PerformanceMetric  PerformanceMetric[]
+  ProductionData     ProductionData[]
+  QualityMetric      QualityMetric[]
+  WorkCenter         WorkCenter          @relation(fields: [workCenterId], references: [id])
+  WorkUnitKPISummary WorkUnitKPISummary?
+
+  @@index([code])
+  @@index([equipmentType])
+  @@index([serialNumber])
+  @@index([status])
+  @@index([workCenterId])
+}
+
+model WorkUnitKPISummary {
+  id                String   @id
+  workUnitId        String   @unique
+  oee               Float
+  availability      Float
+  performance       Float
+  quality           Float
+  mtbf              Float
+  mttr              Float
+  productionCount   BigInt
+  scrapRate         Float
+  energyConsumption BigInt
+  periodStart       DateTime
+  periodEnd         DateTime
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime
+  WorkUnit          WorkUnit @relation(fields: [workUnitId], references: [id])
+
+  @@index([workUnitId, periodStart, periodEnd])
 }

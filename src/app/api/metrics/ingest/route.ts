@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 
 // Validation schema for incoming metrics
 const MetricIngestionSchema = z.object({
-  equipmentId: z.string(),
+  workUnitId: z.string(),
   metrics: z.array(z.object({
     name: z.string(),
     value: z.number(),
@@ -22,13 +22,15 @@ export async function POST(request: NextRequest) {
     
     // Prepare metrics for insertion
     const metricsToInsert = validatedData.metrics.map(metric => ({
-      equipmentId: validatedData.equipmentId,
+      id: `metric-${metric.name}-${Date.now()}-${Math.random().toString(36).substring(7)}`,
+      workUnitId: validatedData.workUnitId,
       name: metric.name,
       value: metric.value,
       unit: metric.unit,
       tags: metric.tags || {},
       timestamp: metric.timestamp ? new Date(metric.timestamp) : new Date(),
-      source: 'api'
+      source: 'api',
+      quality: 100
     }))
     
     // Insert metrics in batch
