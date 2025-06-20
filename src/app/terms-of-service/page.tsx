@@ -247,6 +247,5 @@ export default function TermsOfServicePage() {
           </button>
         </div>
       </div>
-    </div>
   );
 }

@@ -533,7 +533,7 @@ export const equipmentService = {
     await new Promise(resolve => setTimeout(resolve, 300));
     
     const equipment = mockEquipmentData.find(e => e.id === equipmentId);
-    return equipment?.maintenanceHistory || [];
+    return ((equipment?.maintenanceHistory || []));
   },
   
   // Get equipment metrics
@@ -542,7 +542,7 @@ export const equipmentService = {
     await new Promise(resolve => setTimeout(resolve, 300));
     
     const equipment = mockEquipmentData.find(e => e.id === equipmentId);
-    return equipment?.metrics || [];
+    return ((equipment?.metrics || []));
   },
   
   // Add new equipment

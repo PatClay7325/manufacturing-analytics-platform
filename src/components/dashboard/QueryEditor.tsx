@@ -7,9 +7,12 @@ import {
   ChevronDownIcon, 
   ChevronRightIcon,
   EyeIcon,
-  EyeSlashIcon
+  EyeSlashIcon,
+  BeakerIcon
 } from '@heroicons/react/24/outline';
 import { Panel, Dashboard, DataQuery } from '@/types/dashboard';
+import { variableService } from '@/services/variableService';
+import VariableSelector from './VariableSelector';
 
 interface QueryEditorProps {
   panel?: Panel;
@@ -79,15 +82,39 @@ export default function QueryEditor({
     setExpandedQueries(newExpanded);
   };
 
-  // Run queries (mock for now)
+  // Run queries with variable interpolation
   const runQueries = async () => {
-    // Mock data for demonstration
-    const mockData = Array.from({ length: 50 }, (_, i) => ({
-      time: Date.now() - (49 - i) * 60000,
-      value: Math.random() * 100,
-      value2: Math.random() * 80 + 20
-    }));
-    onDataReceived?.(mockData);
+    try {
+      // Initialize variable context if dashboard is available
+      let interpolatedQueries = queries;
+      
+      if (dashboard) {
+        const context = variableService.initializeVariables(dashboard);
+        
+        // Interpolate variables in all queries
+        interpolatedQueries = queries.map(query => ({
+          ...query,
+          query: query.query ? variableService.interpolate(query.query, context) : '',
+          // Interpolate other fields that might contain variables
+          legendFormat: query.legendFormat ? 
+            variableService.interpolate(query.legendFormat, context) : 
+            query.legendFormat
+        }));
+      }
+      
+      // Mock data for demonstration
+      const mockData = Array.from({ length: 50 }, (_, i) => ({
+        time: Date.now() - (49 - i) * 60000,
+        value: Math.random() * 100,
+        value2: Math.random() * 80 + 20,
+        // Add variable info to help with debugging
+        _interpolated: interpolatedQueries
+      }));
+      
+      onDataReceived?.(mockData);
+    } catch (error) {
+      console.error('Error running queries:', error);
+    }
   };
 
   useEffect(() => {
@@ -173,13 +200,34 @@ export default function QueryEditor({
               <div className="p-4 space-y-4">
                 {selectedDataSource === 'postgres' ? (
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      SQL Query
-                    </label>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-sm font-medium text-gray-300">
+                        SQL Query
+                      </label>
+                      <VariableSelector
+                        dashboard={dashboard}
+                        onSelect={(variable) => {
+                          const textarea = document.querySelector(`#query-${query?.refId}`) as HTMLTextAreaElement;
+                          if (textarea) {
+                            const start = textarea.selectionStart;
+                            const end = textarea.selectionEnd;
+                            const text = textarea.value;
+                            const newText = text.substring(0, start) + variable + text.substring(end);
+                            updateQuery(query?.refId, { query: newText });
+                            // Restore cursor position after React re-render
+                            setTimeout(() => {
+                              textarea.focus();
+                              textarea.setSelectionRange(start + variable.length, start + variable.length);
+                            }, 0);
+                          }
+                        }}
+                      />
+                    </div>
                     <textarea
+                      id={`query-${query?.refId}`}
                       value={query?.query || ''}
                       onChange={(e) => updateQuery(query?.refId, { query: e.target.value })}
-                      placeholder="SELECT time, value FROM metrics WHERE $__timeFilter(time)"
+                      placeholder="SELECT time, value FROM metrics WHERE $__timeFilter AND equipment = '$equipment'"
                       className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white font-mono text-sm placeholder-gray-500 focus:outline-none focus:border-blue-500"
                       rows={4}
                     />
@@ -258,9 +306,33 @@ export default function QueryEditor({
       {/* Query Inspector */}
       <div className="mt-6 p-4 bg-gray-800 rounded">
         <h4 className="text-sm font-medium text-gray-300 mb-2">Query Inspector</h4>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-gray-500 mb-3">
           {queries?.filter(q => !q?.hide).length} active queries
         </p>
+        
+        {/* Variable Preview */}
+        {dashboard && queries.some(q => q.query?.includes('$')) && (
+          <div className="mt-3 pt-3 border-t border-gray-700">
+            <h5 className="text-xs font-medium text-gray-400 mb-2 flex items-center gap-1">
+              <BeakerIcon className="w-3 h-3" />
+              Variable Preview
+            </h5>
+            <div className="space-y-2">
+              {queries.filter(q => !q.hide && q.query?.includes('$')).map(query => {
+                const context = variableService.initializeVariables(dashboard);
+                const interpolated = variableService.interpolate(query.query || '', context);
+                return (
+                  <div key={query.refId} className="text-xs">
+                    <div className="text-gray-500">Query {query.refId}:</div>
+                    <div className="mt-1 p-2 bg-gray-900 rounded font-mono text-gray-300 break-all">
+                      {interpolated}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

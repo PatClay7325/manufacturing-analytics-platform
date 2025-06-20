@@ -17,8 +17,11 @@ export default function HeatmapPanel({ panel, data = [], height, width }: Heatma
   // Simple heatmap implementation using CSS grid
   // In a real implementation, you would use a library like D3.js or Plotly
   
+  // Ensure data is an array
+  const safeData = Array.isArray(data) ? data : [];
+  
   // Generate sample heatmap data if none provided
-  const heatmapData = data.length > 0 ? data : generateSampleData();
+  const heatmapData = safeData.length > 0 ? safeData : generateSampleData();
   
   // Calculate color based on value
   const getColor = (value: number, min: number, max: number) => {

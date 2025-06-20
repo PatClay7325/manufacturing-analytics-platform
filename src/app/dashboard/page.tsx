@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import PageLayout from '@/components/layout/PageLayout';
@@ -45,13 +47,13 @@ export default function Dashboard() {
   const actionButton = (
     <div className="flex space-x-4">
       <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-        <svg xmlns="http://www?.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h?.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
         </svg>
         Refresh Data
       </button>
       <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-        <svg xmlns="http://www?.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
         </svg>
         Add Widget
@@ -149,7 +151,7 @@ export default function Dashboard() {
         <h3 className="text-lg font-medium text-gray-900 mb-4">Production Overview</h3>
         <div className="bg-gray-100 h-80 rounded flex items-center justify-center">
           <p className="text-gray-500">
-            Production charts will appear here. Integrate with Highcharts library.
+            Production charts will appear here.
           </p>
         </div>
       </div>

@@ -22,9 +22,9 @@ const patterns = [
     replacement: '): $1.$2 =>',
     description: 'Arrow function return types'
   },
-  // Static property access on known objects (e.g., Highcharts, Date)
+  // Static property access on known objects (e.g., Date, Math)
   {
-    pattern: /(Highcharts|Date|Math|Array|Object|String|Number|JSON)\?\./g,
+    pattern: /(Date|Math|Array|Object|String|Number|JSON)\?\./g,
     replacement: '$1.',
     description: 'Static global objects'
   },

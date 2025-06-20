@@ -186,7 +186,7 @@ export class TenantServiceImpl implements TenantService {
       let isSystemAdmin = false;
       if (userId) {
         const userInfo = await this.userService.getUserInfo(userId, tenantId);
-        permissions = userInfo?.permissions || [];
+        permissions = ((userInfo?.permissions || []));
         isSystemAdmin = userInfo?.isSystemAdmin || false;
       }
 

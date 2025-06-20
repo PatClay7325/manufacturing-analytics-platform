@@ -63,7 +63,7 @@ export default function UnifiedDashboardPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div>
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -110,8 +110,7 @@ export default function UnifiedDashboardPage() {
             return (
               <Card key={metric?.title} className="p-6">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">{metric?.title}</p>
+                                      <p className="text-sm text-gray-600">{metric?.title}</p>
                     <p className="text-2xl font-bold text-gray-900 mt-1">
                       {metric?.value}
                     </p>
@@ -279,6 +278,5 @@ export default function UnifiedDashboardPage() {
           </div>
         )}
       </div>
-    </div>
   );
 }

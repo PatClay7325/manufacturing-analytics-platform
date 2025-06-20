@@ -126,8 +126,7 @@ export default function SupportPage() {
         
         <form className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
                 Name
               </label>
               <input
@@ -139,8 +138,7 @@ export default function SupportPage() {
               />
             </div>
             
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                 Email
               </label>
               <input
@@ -153,8 +151,7 @@ export default function SupportPage() {
             </div>
           </div>
           
-          <div>
-            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
               Category
             </label>
             <select
@@ -169,8 +166,7 @@ export default function SupportPage() {
             </select>
           </div>
           
-          <div>
-            <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
               Message
             </label>
             <textarea
@@ -190,6 +186,5 @@ export default function SupportPage() {
           </button>
         </form>
       </div>
-    </div>
   );
 }

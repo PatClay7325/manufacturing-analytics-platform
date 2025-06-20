@@ -80,21 +80,20 @@ export class AuthApiService {
   /**
    * Log in a user
    */
-  async login(credentials: LoginCredentials): Promise<LoginResponse> {
+  async login(email: string, password: string, remember?: boolean): Promise<LoginResponse> {
     return apiService.post<LoginResponse>({
-      resource: this.resource,
-      endpoint: '/login'
-    }, credentials);
+      endpoint: '/auth/login'
+    }, { email, password, remember });
   }
 
   /**
    * Register a new user
    */
-  async register(data: RegistrationData): Promise<User> {
-    return apiService.post<User>({
-      resource: this.resource,
-      endpoint: '/register'
+  async register(data: any): Promise<{ user: User }> {
+    const result = await apiService.post<User>({
+      endpoint: '/auth/register'
     }, data);
+    return { user: result };
   }
 
   /**
@@ -102,8 +101,7 @@ export class AuthApiService {
    */
   async logout(): Promise<void> {
     await apiService.post({
-      resource: this.resource,
-      endpoint: '/logout'
+      endpoint: '/auth/logout'
     });
   }
 
@@ -132,8 +130,7 @@ export class AuthApiService {
    */
   async getCurrentUser(): Promise<User> {
     return apiService.get<User>({
-      resource: this.resource,
-      endpoint: '/me',
+      endpoint: '/auth/me',
       cache: { ttl: 5 * 60 * 1000 } // Cache for 5 minutes
     });
   }
@@ -141,11 +138,12 @@ export class AuthApiService {
   /**
    * Refresh an access token
    */
-  async refreshToken(request: RefreshTokenRequest): Promise<{ token: string; expiresAt: number }> {
-    return apiService.post<{ token: string; expiresAt: number }>({
-      resource: this.resource,
-      endpoint: '/refresh-token'
-    }, request);
+  async refreshToken(): Promise<{ user: User; token: string; expiresAt: number }> {
+    const refreshToken = localStorage.getItem('refreshToken');
+    const result = await apiService.post<{ user: User; token: string; expiresAt: number }>({
+      endpoint: '/auth/refresh-token'
+    }, { refreshToken });
+    return result;
   }
 
   /**
@@ -178,5 +176,5 @@ export class AuthApiService {
 }
 
 // Create and export a default instance
-const authApi = new AuthApiService();
+export const authApi = new AuthApiService();
 export default authApi;

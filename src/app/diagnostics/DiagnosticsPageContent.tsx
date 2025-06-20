@@ -1052,8 +1052,13 @@ function StatusSection({ icon, title, status, details, error }: any) {
 function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div>
-      <span className="font-medium text-sm text-gray-700">{label}:</span>
-      <div className="mt-1 text-sm">{value}</div>
+      <div>
+
+        <span className="font-medium text-sm text-gray-700">{label}:</span>
+
+        <div className="mt-1 text-sm">{value}</div>
+
+      </div>
     </div>
   );
 }

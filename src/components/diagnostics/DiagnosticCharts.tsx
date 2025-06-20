@@ -85,7 +85,7 @@ export default function DiagnosticCharts({ testResults, systemMetrics, logs }: D
     [{ name: 'No tests run', value: 1, color: '#9ca3af' }];
 
   // Database metrics
-  const dbMetricsData = systemMetrics?.database?.(tables || []).map(table => ({
+  const dbMetricsData = (systemMetrics?.database?.tables || []).map(table => ({
     name: table.name,
     records: table.count
   })) || [];
@@ -403,13 +403,13 @@ export default function DiagnosticCharts({ testResults, systemMetrics, logs }: D
                   data={[
                     { 
                       name: 'Used', 
-                      value: systemMetrics.system?.memory ? 
-                        Math.round((systemMetrics?.system.memory?.used / systemMetrics?.system.memory?.total) * 100) : 0
+                      value: systemMetrics?.system?.memory ? 
+                        Math.round((systemMetrics.system.memory.used / systemMetrics.system.memory.total) * 100) : 0
                     },
                     { 
                       name: 'Free', 
-                      value: systemMetrics.system?.memory ? 
-                        Math.round(((systemMetrics?.system.memory?.total - systemMetrics?.system.memory?.used) / systemMetrics?.system.memory?.total) * 100) : 100
+                      value: systemMetrics?.system?.memory ? 
+                        Math.round(((systemMetrics.system.memory.total - systemMetrics.system.memory.used) / systemMetrics.system.memory.total) * 100) : 100
                     }
                   ]}
                   cx="50%"
@@ -422,14 +422,14 @@ export default function DiagnosticCharts({ testResults, systemMetrics, logs }: D
                 >
                   <Cell fill={
                     systemMetrics?.system?.memory && 
-                    (systemMetrics?.system.memory?.used / systemMetrics?.system.memory?.total) > 0.8 ? '#ef4444' : 
-                    (systemMetrics?.system.memory?.used / systemMetrics?.system.memory?.total) > 0.6 ? '#f59e0b' : '#10b981'
+                    (systemMetrics.system.memory.used / systemMetrics.system.memory.total) > 0.8 ? '#ef4444' : 
+                    (systemMetrics.system.memory.used / systemMetrics.system.memory.total) > 0.6 ? '#f59e0b' : '#10b981'
                   } />
                   <Cell fill="#e5e7eb" />
                 </Pie>
                 <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle" className="text-2xl font-bold">
                   {systemMetrics?.system?.memory ? 
-                    `${Math.round((systemMetrics?.system.memory?.used / systemMetrics?.system.memory?.total) * 100)}%` : '0%'}
+                    `${Math.round((systemMetrics.system.memory.used / systemMetrics.system.memory.total) * 100)}%` : '0%'}
                 </text>
               </PieChart>
             </ResponsiveContainer>

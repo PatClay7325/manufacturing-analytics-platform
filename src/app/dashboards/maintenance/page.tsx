@@ -11,7 +11,7 @@ export default function MaintenanceDashboardPage() {
         title="Maintenance Dashboard"
         defaultTimeRange="last30d"
         defaultEquipment="all"
-        defaultTabIndex={4} // Start on Maintenance tab
+        defaultTabIndex={4} />/ Start on Maintenance tab
       />
     </DashboardLayout>
   );

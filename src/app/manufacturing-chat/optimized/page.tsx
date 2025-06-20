@@ -178,12 +178,10 @@ export default function OptimizedChatPage() {
           <div className="bg-white rounded-lg shadow p-4">
             <h3 className="font-semibold mb-3">Model Configuration</h3>
             <div className="space-y-2 text-sm">
-              <div>
-                <span className="text-gray-600">Model:</span>
+                              <span className="text-gray-600">Model:</span>
                 <div className="font-medium">Gemma:2B</div>
               </div>
-              <div>
-                <span className="text-gray-600">Optimizations:</span>
+                              <span className="text-gray-600">Optimizations:</span>
                 <ul className="mt-1 space-y-1 text-xs">
                   <li className="flex items-center">
                     <span className="text-green-500 mr-1">✓</span>

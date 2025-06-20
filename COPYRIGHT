@@ -1,0 +1,54 @@
+Copyright Notice for Manufacturing Analytics Platform
+====================================================
+
+Copyright (c) 2025 Adaptive Factory AI Solutions, Inc.
+All rights reserved.
+
+This software is licensed under the MIT License. See LICENSE file for details.
+
+## Source Code Headers
+
+All source code files should include the following header:
+
+```typescript
+/**
+ * Manufacturing Analytics Platform
+ * Copyright (c) 2025 Adaptive Factory AI Solutions, Inc.
+ * Licensed under the MIT License
+ */
+```
+
+## Third-Party Components
+
+This software includes the following third-party components:
+
+1. Chart Libraries:
+   - Recharts (MIT License)
+
+2. UI Framework:
+   - React (MIT License)
+   - Next.js (MIT License)
+   - Tailwind CSS (MIT License)
+
+3. Data Management:
+   - Prisma (Apache 2.0 License)
+   - PostgreSQL (PostgreSQL License)
+
+4. Development Tools:
+   - TypeScript (Apache 2.0 License)
+   - Various npm packages (see package.json for full list)
+
+## Patent Notice
+
+No patents are claimed on this software. The algorithms for OEE calculation
+and manufacturing analytics are based on industry-standard formulas.
+
+## Trademark Notice
+
+"Adaptive Factory AI Solutions" is a trademark of Adaptive Factory AI Solutions, Inc.
+Other trademarks are property of their respective owners.
+
+## Contact
+
+For licensing questions: legal@adaptivefactory.ai
+For technical questions: support@adaptivefactory.ai

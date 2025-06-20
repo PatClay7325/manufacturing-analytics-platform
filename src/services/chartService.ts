@@ -1,13 +1,18 @@
+/**
+ * Manufacturing Analytics Platform
+ * Copyright (c) 2025 Adaptive Factory AI Solutions, Inc.
+ * Licensed under the MIT License
+ */
+
 import { metricsService, MetricQuery, MetricDataPoint } from './metricsService'
 import { isFeatureEnabled } from '@/config/features'
-import type * as Highcharts from 'highcharts'
 
 export interface ChartConfig {
   type: 'timeseries' | 'gauge' | 'heatmap' | 'pareto' | 'gantt'
   title?: string
   subtitle?: string
   height?: number
-  options?: Partial<Highcharts.Options>
+  options?: Record<string, any>
 }
 
 export interface TimeSeriesConfig extends ChartConfig {
@@ -27,11 +32,33 @@ export interface GaugeConfig extends ChartConfig {
   bands?: Array<{ from: number; to: number; color: string; label?: string }>
 }
 
+export interface ChartOptions {
+  title?: { text?: string }
+  subtitle?: { text?: string }
+  height?: number
+  series?: Array<{
+    name: string
+    data: Array<[number, number]>
+    type?: string
+    color?: string
+  }>
+  xAxis?: {
+    type?: string
+    min?: number
+    max?: number
+  }
+  yAxis?: {
+    min?: number
+    max?: number
+    title?: { text?: string }
+  }
+}
+
 class ChartService {
   private updateCallbacks: Map<string, (data: any) => void> = new Map()
   private updateIntervals: Map<string, NodeJS.Timeout> = new Map()
 
-  async createTimeSeriesChart(config: TimeSeriesConfig): Promise<Highcharts.Options> {
+  async createTimeSeriesChart(config: TimeSeriesConfig): Promise<ChartOptions> {
     try {
       // Fetch data using metrics service
       const response = await metricsService.query(config.query)
@@ -40,62 +67,27 @@ class ChartService {
         throw new Error(response.error || 'Failed to fetch metrics')
       }
 
-      // Convert to Highcharts series format
+      // Convert to chart series format
       const series = response.data.map(metric => ({
         name: metric.target,
         data: metric.datapoints,
         type: config.chartType || 'line',
-        marker: {
-          enabled: metric.datapoints.length < 50
-        }
+        color: this.getSeriesColor(metric.target)
       }))
 
       // Build chart options
-      const options: Highcharts.Options = {
+      const options: ChartOptions = {
         title: { text: config.title },
         subtitle: { text: config.subtitle },
-        chart: {
-          height: config.height || 400,
-          zoomType: 'x'
-        },
+        height: config.height || 400,
+        series: series,
         xAxis: {
           type: 'datetime'
         },
         yAxis: {
           title: { text: 'Value' }
         },
-        tooltip: {
-          shared: true,
-          crosshairs: true
-        },
-        series: series as any,
         ...config.options
-      }
-
-      // Add stock features if requested
-      if (config.showNavigator || config.showRangeSelector) {
-        Object.assign(options, {
-          navigator: config.showNavigator ? { enabled: true } : undefined,
-          rangeSelector: config.showRangeSelector ? {
-            enabled: true,
-            buttons: [{
-              type: 'hour',
-              count: 1,
-              text: '1h'
-            }, {
-              type: 'day',
-              count: 1,
-              text: '1d'
-            }, {
-              type: 'week',
-              count: 1,
-              text: '1w'
-            }, {
-              type: 'all',
-              text: 'All'
-            }]
-          } : undefined
-        })
       }
 
       return options
@@ -105,7 +97,7 @@ class ChartService {
     }
   }
 
-  async createGaugeChart(config: GaugeConfig): Promise<Highcharts.Options> {
+  async createGaugeChart(config: GaugeConfig): Promise<ChartOptions> {
     const defaultBands = [
       { from: 0, to: 60, color: '#55BF3B', label: 'Normal' },
       { from: 60, to: 80, color: '#DDDF0D', label: 'Warning' },
@@ -113,43 +105,39 @@ class ChartService {
     ]
 
     return {
-      chart: {
-        type: 'gauge' as any,
-        height: config.height || 300
-      },
-      title: {
-        text: config.title
-      },
-      pane: {
-        startAngle: -150,
-        endAngle: 150
-      },
+      height: config.height || 300,
+      title: { text: config.title },
       yAxis: {
         min: config.min || 0,
         max: config.max || 100,
-        title: {
-          text: config.unit || ''
-        },
-        plotBands: (config.bands || defaultBands).map(band => ({
-          from: band.from,
-          to: band.to,
-          color: band.color,
-          label: band.label ? {
-            text: band.label,
-            style: { color: '#606060' }
-          } : undefined
-        }))
+        title: { text: config.unit || '' }
       },
       series: [{
-        type: 'gauge' as any,
         name: config.title || 'Value',
-        data: [config.value],
-        tooltip: {
-          valueSuffix: ' ' + (config.unit || '')
-        }
-      }] as any,
+        data: [[Date.now(), config.value]],
+        type: 'gauge',
+        color: this.getGaugeColor(config.value, config.bands || defaultBands)
+      }],
       ...config.options
     }
+  }
+
+  private getSeriesColor(seriesName: string): string {
+    const colors = [
+      '#2563eb', '#dc2626', '#16a34a', '#ca8a04',
+      '#9333ea', '#c2410c', '#0891b2', '#be123c'
+    ]
+    const hash = seriesName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+    return colors[hash % colors.length]
+  }
+
+  private getGaugeColor(value: number, bands: Array<{ from: number; to: number; color: string }>): string {
+    for (const band of bands) {
+      if (value >= band.from && value <= band.to) {
+        return band.color
+      }
+    }
+    return '#808080' // Default gray
   }
 
   // Real-time update functionality
@@ -205,24 +193,30 @@ class ChartService {
   }
 
   // Export functionality
-  async exportChart(chart: Highcharts.Chart, options?: Highcharts.ExportingOptions): Promise<void> {
-    if (!chart.exportChart) {
-      throw new Error('Export module not loaded')
+  async exportChartData(chartData: any[], format: 'csv' | 'json' = 'csv'): Promise<string> {
+    if (format === 'json') {
+      return JSON.stringify(chartData, null, 2)
     }
 
-    chart.exportChart(options || {
-      type: 'image/png',
-      filename: `chart-${Date.now()}`
-    })
-  }
-
-  // CSV export
-  async exportCSV(chart: Highcharts.Chart): Promise<string> {
-    if (!chart.getCSV) {
-      throw new Error('Export-data module not loaded')
+    // CSV export
+    if (!chartData || chartData.length === 0) {
+      return ''
     }
 
-    return chart.getCSV()
+    const headers = Object.keys(chartData[0])
+    const csvContent = [
+      headers.join(','),
+      ...chartData.map(row => 
+        headers.map(header => {
+          const value = row[header]
+          return typeof value === 'string' && value.includes(',') 
+            ? `"${value}"` 
+            : value
+        }).join(',')
+      )
+    ].join('\n')
+
+    return csvContent
   }
 
   // Create dashboard configuration

@@ -41,7 +41,7 @@ async function addSampleMetrics() {
     })
     
     // Production count increases over time
-    const baseCount = Math.floor((time - oneHourAgo.getTime()) / (5 * 60 * 1000)) * 10
+    const baseCount = Math.floor(time - oneHourAgo.getTime() / (5 * 60 * 1000)) * 10
     dataPoints.push({
       name: 'production_count',
       value: baseCount + Math.floor(Math.random() * 5),

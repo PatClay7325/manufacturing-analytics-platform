@@ -591,7 +591,7 @@ ${alerts?.filter((a: any) => a.alertType.includes('MAINTENANCE')).length > 0 ?
 3. **Prevent**: Implement predictive maintenance strategies
 
 **Total Unplanned Downtime**: ${totalDowntime.toFixed(1)} minutes
-**Availability Impact**: ${((totalDowntime / (24 * 60)) * 100).toFixed(2)}% of planned production time
+**Availability Impact**: ${(totalDowntime / (24 * 60) * 100).toFixed(2)}% of planned production time
 
 *Analysis based on ${(performanceMetrics?.length || 0) + (alerts?.length || 0)} data points following ISO 14224:2016 reliability standards.*`;
 

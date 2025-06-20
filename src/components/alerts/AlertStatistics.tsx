@@ -175,7 +175,7 @@ export default function AlertStatistics({ className = '' }: AlertStatisticsProps
           <h4 className="text-sm font-medium text-gray-700 mb-3">Alerts Trend (Last 7 Days)</h4>
           <div className="relative h-40">
             <div className="absolute inset-0 flex items-end">
-              {stats?.(trend || []).map((day, index) => (
+              {(stats?.trend || []).map((day, index) => (
                 <div 
                   key={day?.date} 
                   className="flex-1 flex flex-col items-center"

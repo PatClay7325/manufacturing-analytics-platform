@@ -162,20 +162,22 @@ export default function EditDashboardPage({
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <LoadingSpinner />
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-center h-64">
+          <LoadingSpinner />
+        </div>
       </div>
     );
   }
 
   if (error || !dashboard) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-400 mb-4">{error || 'Dashboard not found'}</p>
+      <div className="container mx-auto px-4 py-8">
+        <div className="bg-white rounded-lg shadow p-8 text-center">
+          <p className="text-red-600 mb-4">{error || 'Dashboard not found'}</p>
           <button
             onClick={() => router?.push('/dashboards')}
-            className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded"
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
           >
             Back to Dashboards
           </button>

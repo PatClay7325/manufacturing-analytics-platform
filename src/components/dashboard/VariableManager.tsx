@@ -25,7 +25,7 @@ export default function VariableManager({
   onClose
 }: VariableManagerProps) {
   const [variables, setVariables] = useState<TemplateVariable[]>(
-    dashboard?.templating?.list || []
+    (dashboard?.templating?.list || [])
   );
   const [editingVariable, setEditingVariable] = useState<TemplateVariable | null>(null);
   const [isCreating, setIsCreating] = useState(false);

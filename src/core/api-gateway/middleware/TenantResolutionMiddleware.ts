@@ -59,7 +59,7 @@ export class TenantResolutionMiddleware {
         userId: req.user?.id,
         sessionId: req.id,
         timestamp: new Date(),
-        permissions: req.user?.permissions || [],
+        permissions: req.((user?.permissions || [])),
         isSystemAdmin: req.user?.isSystemAdmin || false
       });
       

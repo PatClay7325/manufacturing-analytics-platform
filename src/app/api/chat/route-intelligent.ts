@@ -461,8 +461,8 @@ Use the specific data provided above to give a precise, helpful answer. Referenc
       message: ollamaData.message,
       context: context,
       debug: {
-        patternsDetected: context.queryAnalysis?.detectedPatterns || [],
-        dataFetched: context.queryAnalysis?.dataFetched || [],
+        patternsDetected: context.((queryAnalysis?.detectedPatterns || [])),
+        dataFetched: context.((queryAnalysis?.dataFetched || [])),
         queryAnalyzed: lastUserMessage,
       },
     });

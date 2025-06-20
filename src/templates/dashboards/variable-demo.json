@@ -1,0 +1,318 @@
+{
+  "uid": "variable-demo",
+  "title": "Variable System Demo - $facility",
+  "description": "Demonstrates the variable and templating system",
+  "tags": ["demo", "variables", "templating"],
+  "version": 1,
+  "schemaVersion": 21,
+  "time": { "from": "now-6h", "to": "now" },
+  "refresh": "30s",
+  "timezone": "browser",
+  "fiscalYearStartMonth": 0,
+  "liveNow": false,
+  "weekStart": "",
+  "style": "dark",
+  "editable": true,
+  "hideControls": false,
+  "graphTooltip": 0,
+  "preload": false,
+  "templating": {
+    "list": [
+      {
+        "name": "facility",
+        "type": "custom",
+        "label": "Manufacturing Facility",
+        "description": "Select manufacturing facility",
+        "options": [
+          { "text": "Detroit Plant", "value": "detroit" },
+          { "text": "Chicago Factory", "value": "chicago" },
+          { "text": "Austin Assembly", "value": "austin" }
+        ],
+        "current": { "text": "Detroit Plant", "value": "detroit" },
+        "hide": 0,
+        "includeAll": false,
+        "multi": false
+      },
+      {
+        "name": "production_line",
+        "type": "query",
+        "label": "Production Line",
+        "description": "Production lines in selected facility",
+        "datasource": { "uid": "postgres" },
+        "query": "SELECT DISTINCT name FROM production_lines WHERE facility = '$facility' ORDER BY name",
+        "refresh": 1,
+        "options": [],
+        "current": {},
+        "hide": 0,
+        "includeAll": true,
+        "allValue": ".*",
+        "multi": true
+      },
+      {
+        "name": "shift",
+        "type": "custom",
+        "label": "Shift",
+        "options": [
+          { "text": "Morning (6AM-2PM)", "value": "morning" },
+          { "text": "Afternoon (2PM-10PM)", "value": "afternoon" },
+          { "text": "Night (10PM-6AM)", "value": "night" },
+          { "text": "All Shifts", "value": "all" }
+        ],
+        "current": { "text": "All Shifts", "value": "all" },
+        "hide": 0
+      },
+      {
+        "name": "metric_interval",
+        "type": "interval",
+        "label": "Aggregation Interval",
+        "query": "1m,5m,10m,30m,1h,3h,6h,12h,1d",
+        "current": { "text": "5m", "value": "5m" },
+        "hide": 0
+      },
+      {
+        "name": "quality_threshold",
+        "type": "textbox",
+        "label": "Quality Threshold (%)",
+        "query": "95",
+        "current": { "text": "95", "value": "95" },
+        "hide": 0
+      },
+      {
+        "name": "show_maintenance",
+        "type": "custom",
+        "label": "Show Maintenance Data",
+        "options": [
+          { "text": "Yes", "value": "true" },
+          { "text": "No", "value": "false" }
+        ],
+        "current": { "text": "Yes", "value": "true" },
+        "hide": 1
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "text",
+      "title": "Variable System Overview",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 3 },
+      "options": {
+        "content": "## Manufacturing Dashboard for **$facility**\n\nShowing data for production lines: **$production_line**\n\nTime Range: **$__from** to **$__to** | Interval: **$metric_interval**"
+      },
+      "fieldConfig": { "defaults": {}, "overrides": [] },
+      "targets": [],
+      "transformations": [],
+      "transparent": true,
+      "datasource": null,
+      "links": []
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "OEE - $facility",
+      "gridPos": { "x": 0, "y": 3, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "uid": "postgres" },
+          "query": "SELECT \n  AVG(oee_percentage) as value\nFROM equipment_metrics\nWHERE facility = '$facility'\n  AND production_line IN ($production_line)\n  AND $__timeFilter\n  AND ($shift = 'all' OR shift = '$shift')"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": 0, "color": "red" },
+              { "value": 65, "color": "yellow" },
+              { "value": 85, "color": "green" }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": ["lastNotNull"]
+        },
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto"
+      },
+      "transformations": [],
+      "transparent": false,
+      "datasource": null,
+      "links": []
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Production Rate - $production_line",
+      "gridPos": { "x": 6, "y": 3, "w": 18, "h": 8 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "uid": "postgres" },
+          "query": "SELECT \n  time_bucket('$metric_interval', timestamp) as time,\n  production_line,\n  AVG(production_rate) as \"Production Rate\"\nFROM production_metrics\nWHERE facility = '$facility'\n  AND production_line IN ($production_line)\n  AND $__timeFilter\nGROUP BY 1, 2\nORDER BY 1",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "pointSize": 5,
+            "showPoints": "never",
+            "spanNulls": true
+          },
+          "displayName": "${__field.labels.production_line}"
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "transformations": [],
+      "transparent": false,
+      "datasource": null,
+      "links": []
+    },
+    {
+      "id": 4,
+      "type": "gauge",
+      "title": "Quality Score",
+      "description": "Current quality score compared to threshold of $quality_threshold%",
+      "gridPos": { "x": 0, "y": 7, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "uid": "postgres" },
+          "query": "SELECT \n  AVG(quality_score) as value\nFROM quality_metrics\nWHERE facility = '$facility'\n  AND production_line IN ($production_line)\n  AND timestamp >= NOW() - INTERVAL '$metric_interval'"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": 0, "color": "red" },
+              { "value": null, "color": "yellow" },
+              { "value": null, "color": "green" }
+            ]
+          },
+          "custom": {
+            "thresholdValue": "$quality_threshold"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showThresholdLabels": true,
+        "showThresholdMarkers": true
+      },
+      "transformations": [],
+      "transparent": false,
+      "datasource": null,
+      "links": []
+    },
+    {
+      "id": 5,
+      "type": "table",
+      "title": "Equipment Status",
+      "gridPos": { "x": 0, "y": 11, "w": 24, "h": 8 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "uid": "postgres" },
+          "query": "SELECT \n  equipment_name as \"Equipment\",\n  production_line as \"Line\",\n  status as \"Status\",\n  oee_percentage as \"OEE %\",\n  last_maintenance as \"Last Maintenance\",\n  next_maintenance as \"Next Maintenance\"\nFROM equipment_status\nWHERE facility = '$facility'\n  AND production_line IN ($production_line)\n  AND ('$show_maintenance' = 'false' OR maintenance_required = true)\nORDER BY oee_percentage ASC",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "OEE %" },
+            "properties": [
+              { "id": "unit", "value": "percent" },
+              { "id": "decimals", "value": 1 },
+              { "id": "custom.cellOptions", "value": { "type": "color-background" } },
+              { "id": "thresholds", "value": {
+                "mode": "absolute",
+                "steps": [
+                  { "value": 0, "color": "red" },
+                  { "value": 65, "color": "yellow" },
+                  { "value": 85, "color": "green" }
+                ]
+              }}
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Status" },
+            "properties": [
+              { "id": "custom.cellOptions", "value": { "type": "color-text" } },
+              { "id": "mappings", "value": [
+                { "type": "value", "options": { "running": { "text": "Running", "color": "green" } } },
+                { "type": "value", "options": { "stopped": { "text": "Stopped", "color": "red" } } },
+                { "type": "value", "options": { "maintenance": { "text": "Maintenance", "color": "yellow" } } }
+              ]}
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "sortBy": [{ "displayName": "OEE %", "desc": false }]
+      },
+      "transformations": [],
+      "transparent": false,
+      "datasource": null,
+      "links": []
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "name": "Maintenance Events",
+        "enable": true,
+        "datasource": { "uid": "postgres" },
+        "query": "SELECT \n  timestamp as time,\n  'Maintenance: ' || equipment_name as text,\n  'maintenance' as tags\nFROM maintenance_events\nWHERE facility = '$facility'\n  AND production_line IN ($production_line)\n  AND $__timeFilter",
+        "iconColor": "yellow"
+      }
+    ]
+  },
+  "links": [
+    {
+      "type": "link",
+      "title": "Facility Details",
+      "url": "/facility/$facility",
+      "icon": "external",
+      "targetBlank": true,
+      "includeVars": true
+    }
+  ],
+  "meta": {
+    "created": "2024-01-20T10:00:00Z",
+    "updated": "2024-01-20T10:00:00Z",
+    "createdBy": "system",
+    "updatedBy": "system",
+    "version": 1
+  }
+}

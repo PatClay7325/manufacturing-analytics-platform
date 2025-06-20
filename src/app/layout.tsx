@@ -1,8 +1,10 @@
+import React from 'react';
+
 import './globals.css';
 import { Inter } from 'next/font/google';
 import type { Metadata } from 'next';
-import Footer from '@/components/layout/Footer';
 import ErrorBoundary from '@/components/common/ErrorBoundary';
+import AppLayout from '@/components/layout/AppLayout';
 // import MockServerProvider from '@/components/providers/MockServerProvider';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -21,10 +23,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter?.className}>
         <ErrorBoundary>
-          <div className="flex min-h-screen flex-col">
-            <main className="flex-1 bg-gray-50">{children}</main>
-            <Footer />
-          </div>
+          <AppLayout>
+            {children}
+          </AppLayout>
         </ErrorBoundary>
         {/* Initialize mock server in development mode */}
         {/* <MockServerProvider /> */}

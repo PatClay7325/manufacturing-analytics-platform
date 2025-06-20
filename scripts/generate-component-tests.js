@@ -23,7 +23,7 @@ const errorScenarios = [
   },
   {
     name: 'empty object props',
-    props: '{}',
+    props: '{null}',
     description: 'should handle empty props without crashing'
   },
   {
@@ -100,14 +100,14 @@ describe('${componentName} - Error Handling', () => {
   });`}
   
   it('should not have console errors during render', () => {
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    render(<${componentName} ${hasProps ? '{...{}}' : ''} />);
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {null});
+    render(<${componentName} ${hasProps ? '{...{null}}' : ''} />);
     expect(consoleSpy).not.toHaveBeenCalled();
     consoleSpy.mockRestore();
   });
   
   it('should handle hydration without mismatch', () => {
-    const { container } = render(<${componentName} ${hasProps ? '{...{}}' : ''} />);
+    const { container } = render(<${componentName} ${hasProps ? '{...{null}}' : ''} />);
     expect(container.firstChild).toBeTruthy();
   });
 });`;

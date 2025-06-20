@@ -31,12 +31,12 @@ export default function NewDashboardPage() {
 
   if (!newDashboard) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-600">Failed to create new dashboard</p>
+      <div className="container mx-auto px-4 py-8">
+        <div className="bg-white rounded-lg shadow p-8 text-center">
+          <p className="text-red-600 mb-4">Failed to create new dashboard</p>
           <button 
             onClick={() => router.push('/dashboards')}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
           >
             Back to Dashboards
           </button>
@@ -46,14 +46,12 @@ export default function NewDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <DashboardEditor
-        dashboard={newDashboard}
-        onSave={handleSave}
-        onCancel={handleCancel}
-        isSaving={isSaving}
-        isNew={true}
-      />
-    </div>
+    <DashboardEditor
+      dashboard={newDashboard}
+      onSave={handleSave}
+      onCancel={handleCancel}
+      isSaving={isSaving}
+      isNew={true}
+    />
   );
 }

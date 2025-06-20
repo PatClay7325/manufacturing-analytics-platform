@@ -124,7 +124,7 @@ export function DashboardPanel({
       case 'timeseries':
         return (
           <TimeSeriesChart 
-            data={data?.data || []} 
+            data={(data?.data || [])} 
             lines={data?.lines || ['value']} 
           />
         );
@@ -169,21 +169,21 @@ export function DashboardPanel({
       case 'table':
         return (
           <TablePanel 
-            data={data?.rows || []}
+            data={(data?.rows || [])}
           />
         );
       
       case 'piechart':
         return (
           <PieChart 
-            data={data?.data || []}
+            data={(data?.data || [])}
           />
         );
       
       case 'heatmap':
         return (
           <HeatmapChart 
-            data={data?.data || []}
+            data={(data?.data || [])}
           />
         );
       

@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -76,7 +78,7 @@ export default function Navigation() {
               {/* Icon when menu is closed */}
               <svg 
                 className={`${isMenuOpen ? 'hidden' : 'block'} h-6 w-6`} 
-                xmlns="http://www?.w3.org/2000/svg" 
+                xmlns="http://www.w3.org/2000/svg" 
                 fill="none" 
                 viewBox="0 0 24 24" 
                 stroke="currentColor" 
@@ -87,7 +89,7 @@ export default function Navigation() {
               {/* Icon when menu is open */}
               <svg 
                 className={`${isMenuOpen ? 'block' : 'hidden'} h-6 w-6`} 
-                xmlns="http://www?.w3.org/2000/svg" 
+                xmlns="http://www.w3.org/2000/svg" 
                 fill="none" 
                 viewBox="0 0 24 24" 
                 stroke="currentColor" 

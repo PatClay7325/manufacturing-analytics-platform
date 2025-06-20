@@ -150,7 +150,7 @@ export default function EnterpriseAlertAnalytics({ className = '' }: EnterpriseA
     };
 
     // Time series data with additional metrics
-    const enhancedTrendData = stats?.(trend || []).map((day, index) => ({
+    const enhancedTrendData = (stats?.trend || []).map((day, index) => ({
       ...day,
       date: new Date(day?.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
       responseTime: Math.floor(Math.random() * 20) + 10,
@@ -347,7 +347,7 @@ export default function EnterpriseAlertAnalytics({ className = '' }: EnterpriseA
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {transformedData?.(severityData || []).map((entry, index) => (
+                  {(transformedData?.severityData || []).map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry?.color} />
                   ))}
                 </Pie>
@@ -360,7 +360,7 @@ export default function EnterpriseAlertAnalytics({ className = '' }: EnterpriseA
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {transformedData?.(severityData || []).map((entry, index) => (
+                  {(transformedData?.severityData || []).map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry?.color} opacity={0.3} />
                   ))}
                 </Pie>

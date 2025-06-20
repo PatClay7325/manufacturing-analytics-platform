@@ -2,14 +2,14 @@
 export interface FeatureFlags {
   enableWebSocket: boolean
   enableMetricsTest: boolean
-  useHighcharts: boolean
+  useRecharts: boolean
 }
 
 // Default feature flags
 const defaultFlags: FeatureFlags = {
   enableWebSocket: false, // WebSocket disabled by default
   enableMetricsTest: false, // Metrics test page disabled
-  useHighcharts: true, // Always use Highcharts
+  useRecharts: true, // Always use Recharts
 }
 
 // Get feature flags from localStorage (client-side only)

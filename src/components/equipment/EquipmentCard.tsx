@@ -37,7 +37,7 @@ export default function EquipmentCard({ equipment, className = '' }: EquipmentCa
           {equipment?.location && (
             <div className="flex items-start">
               <svg 
-                xmlns="http://www?.w3.org/2000/svg" 
+                xmlns="http://www.w3.org/2000/svg" 
                 className="h-5 w-5 text-gray-400 mt-0.5 mr-2" 
                 fill="none" 
                 viewBox="0 0 24 24" 
@@ -63,7 +63,7 @@ export default function EquipmentCard({ equipment, className = '' }: EquipmentCa
           {equipment?.nextMaintenanceDate && (
             <div className="flex items-start">
               <svg 
-                xmlns="http://www?.w3.org/2000/svg" 
+                xmlns="http://www.w3.org/2000/svg" 
                 className="h-5 w-5 text-gray-400 mt-0.5 mr-2" 
                 fill="none" 
                 viewBox="0 0 24 24" 
@@ -89,7 +89,7 @@ export default function EquipmentCard({ equipment, className = '' }: EquipmentCa
                 return (
                   <div className="flex items-start">
                     <svg 
-                      xmlns="http://www?.w3.org/2000/svg" 
+                      xmlns="http://www.w3.org/2000/svg" 
                       className="h-5 w-5 text-gray-400 mt-0.5 mr-2" 
                       fill="none" 
                       viewBox="0 0 24 24" 
@@ -115,7 +115,7 @@ export default function EquipmentCard({ equipment, className = '' }: EquipmentCa
                   return (
                     <div className="flex items-start">
                       <svg 
-                        xmlns="http://www?.w3.org/2000/svg" 
+                        xmlns="http://www.w3.org/2000/svg" 
                         className="h-5 w-5 text-gray-400 mt-0.5 mr-2" 
                         fill="none" 
                         viewBox="0 0 24 24" 
@@ -143,7 +143,7 @@ export default function EquipmentCard({ equipment, className = '' }: EquipmentCa
       
       <div className="bg-gray-50 px-5 py-3 border-t border-gray-200">
         <Link 
-          href={`/equipment/${equipment?.id}`}
+          href={` />equipment/${equipment?.id}`}
           className="text-sm font-medium text-blue-600 hover:text-blue-800 transition"
         >
           View Details &rarr;

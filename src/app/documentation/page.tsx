@@ -1,3 +1,5 @@
+import React from 'react';
+
 import Link from 'next/link';
 
 export default function Documentation() {
@@ -706,36 +708,31 @@ await pipeline?.start();`}
             <section id="faq" className="mb-12">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
               <div className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-800">What types of manufacturing systems can the platform integrate with?</h3>
+                                  <h3 className="text-lg font-semibold text-gray-800">What types of manufacturing systems can the platform integrate with?</h3>
                   <p className="mt-2">
                     The platform can integrate with a wide range of manufacturing systems using various protocols including OPC UA, MQTT, REST APIs, Modbus, and others. It can connect to PLCs, SCADA systems, MES, ERP, and custom manufacturing equipment.
                   </p>
                 </div>
                 
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-800">How is manufacturing data secured in the platform?</h3>
+                                  <h3 className="text-lg font-semibold text-gray-800">How is manufacturing data secured in the platform?</h3>
                   <p className="mt-2">
                     The platform implements multiple security measures including encrypted data transmission, role-based access control, authentication and authorization, secure credential storage, network segmentation, and audit logging.
                   </p>
                 </div>
                 
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-800">Can the platform be deployed in air-gapped environments?</h3>
+                                  <h3 className="text-lg font-semibold text-gray-800">Can the platform be deployed in air-gapped environments?</h3>
                   <p className="mt-2">
                     Yes, the platform can be deployed in air-gapped environments without internet connectivity. The on-premise deployment option provides all necessary components to run without external dependencies.
                   </p>
                 </div>
                 
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-800">How does the AI assistant access manufacturing data?</h3>
+                                  <h3 className="text-lg font-semibold text-gray-800">How does the AI assistant access manufacturing data?</h3>
                   <p className="mt-2">
                     The AI assistant accesses manufacturing data through the platform's API, with appropriate access controls. It can retrieve equipment status, production metrics, alert information, and other manufacturing data to answer questions.
                   </p>
                 </div>
                 
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-800">What database systems are supported?</h3>
+                                  <h3 className="text-lg font-semibold text-gray-800">What database systems are supported?</h3>
                   <p className="mt-2">
                     The platform primarily uses PostgreSQL for data storage, but can be configured to work with other database systems including MySQL, SQL Server, and Oracle Database. Time-series data can optionally be stored in specialized databases like InfluxDB or TimescaleDB.
                   </p>
@@ -778,6 +775,5 @@ await pipeline?.start();`}
             </section>
           </div>
       </div>
-    </div>
   );
 }

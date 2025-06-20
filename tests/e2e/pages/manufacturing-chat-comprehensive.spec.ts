@@ -122,7 +122,7 @@ test.describe('Manufacturing Chat - Comprehensive Tests', () => {
         // Chart should have rendered
         const canvas = chartContainer.locator('canvas');
         const svg = chartContainer.locator('svg');
-        expect((await canvas.count()) > 0 || (await svg.count()) > 0).toBe(true);
+        expect(await canvas.count() > 0 || (await svg.count()) > 0).toBe(true);
         
         // Chart should have controls
         await expect(chartContainer.locator('[data-testid="chart-download"]')).toBeVisible();

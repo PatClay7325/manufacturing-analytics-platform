@@ -53,7 +53,7 @@ function testDependencyExtraction() {
     let match;
     VARIABLE_REGEX.lastIndex = 0;
     
-    while ((match = VARIABLE_REGEX.exec(test.query)) !== null) {
+    while (match = VARIABLE_REGEX.exec(test.query) !== null) {
       const varName = match[1] || match[2] || match[4];
       if (varName) deps.push(varName);
     }
@@ -93,7 +93,7 @@ function testCircularDetection() {
     
     let match;
     VARIABLE_REGEX.lastIndex = 0;
-    while ((match = VARIABLE_REGEX.exec(query)) !== null) {
+    while (match = VARIABLE_REGEX.exec(query) !== null) {
       const varName = match[1] || match[2] || match[4];
       if (varName && varName !== variable.name && variables.find(v => v.name === varName)) {
         deps.push(varName);
@@ -164,7 +164,7 @@ function testLevelCalculation() {
     
     let match;
     VARIABLE_REGEX.lastIndex = 0;
-    while ((match = VARIABLE_REGEX.exec(query)) !== null) {
+    while (match = VARIABLE_REGEX.exec(query) !== null) {
       const varName = match[1] || match[2] || match[4];
       if (varName && varName !== variable.name && variables.find(v => v.name === varName)) {
         deps.push(varName);

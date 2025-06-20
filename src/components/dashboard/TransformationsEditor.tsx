@@ -67,7 +67,7 @@ export default function TransformationsEditor({
   onChange
 }: TransformationsEditorProps) {
   const [transformations, setTransformations] = useState<DataTransformerConfig[]>(
-    panel?.transformations || []
+    (panel?.transformations || [])
   );
   const [expandedTransformations, setExpandedTransformations] = useState<Set<number>>(new Set());
 

@@ -112,7 +112,7 @@ describe('Optional Chaining Syntax Validation', () => {
           return;
         }
         
-        // Skip arrow function return types (e.g., ): JSX?.Element =>)
+        // Skip arrow function return types (e.g. ): JSX?.Element =>)
         if (/\):\s*\w+\?\.\w+\s*=>/.test(line)) {
           return;
         }

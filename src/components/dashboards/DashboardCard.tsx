@@ -86,7 +86,7 @@ export default function DashboardCard({
                 <div className="flex items-center space-x-2">
                   <h3 className="text-lg font-semibold text-gray-900 truncate">
                     <Link 
-                      href={`/dashboard/${dashboard?.uid}`}
+                      href={`/dashboards/${dashboard?.uid}`}
                       className="hover:text-blue-600"
                     >
                       {dashboard?.title}
@@ -131,7 +131,7 @@ export default function DashboardCard({
             {/* Actions */}
             <div className="flex items-center space-x-2 ml-4">
               <Link
-                href={`/dashboard/${dashboard?.uid}`}
+                href={`/dashboards/${dashboard?.uid}`}
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700"
               >
                 View
@@ -149,7 +149,7 @@ export default function DashboardCard({
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
                     <div className="py-1">
                       <Link
-                        href={`/dashboard/${dashboard?.uid}/edit`}
+                        href={`/dashboards/edit/${dashboard?.uid}`}
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setShowMenu(false)}
                       >
@@ -207,7 +207,7 @@ export default function DashboardCard({
             <div className="flex-1 min-w-0">
               <h3 className="text-lg font-semibold text-gray-900 truncate">
                 <Link 
-                  href={`/dashboard/${dashboard?.uid}`}
+                  href={`/dashboards/${dashboard?.uid}`}
                   className="hover:text-blue-600"
                 >
                   {dashboard?.title}
@@ -234,7 +234,7 @@ export default function DashboardCard({
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
                 <div className="py-1">
                   <Link
-                    href={`/dashboard/${dashboard?.uid}/edit`}
+                    href={`/dashboards/edit/${dashboard?.uid}`}
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     onClick={() => setShowMenu(false)}
                   >
@@ -306,7 +306,7 @@ export default function DashboardCard({
           </div>
           
           <Link
-            href={`/dashboard/${dashboard?.uid}`}
+            href={`/dashboards/${dashboard?.uid}`}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors"
           >
             Open

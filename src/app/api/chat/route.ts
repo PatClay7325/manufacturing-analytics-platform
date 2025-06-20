@@ -498,8 +498,8 @@ Use the specific data provided above to give a precise, helpful answer. Referenc
       message: ollamaData.message,
       context: context,
       debug: {
-        patternsDetected: context.queryAnalysis?.detectedPatterns || [],
-        dataFetched: context.queryAnalysis?.dataFetched || [],
+        patternsDetected: queryAnalysis?.detectedPatterns || [],
+        dataFetched: queryAnalysis?.dataFetched || [],
         queryAnalyzed: lastUserMessage,
       },
     });

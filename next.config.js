@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  swcMinify: true,
+  reactStrictMode: false, // Temporarily disable for debugging
+  swcMinify: false, // Disable SWC minification to avoid syntax errors
   typescript: {
     // Skip type checking during build to avoid timeout
     ignoreBuildErrors: true,
@@ -10,9 +10,13 @@ const nextConfig = {
     // Skip ESLint during build to avoid timeout
     ignoreDuringBuilds: true,
   },
-  transpilePackages: ['highcharts', 'highcharts-react-official', '@highcharts/dashboards'],
+  transpilePackages: ['recharts'],
   experimental: {
     esmExternals: 'loose',
+  },
+  compiler: {
+    // Remove console logs in production
+    removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error'] } : false,
   },
 };
 

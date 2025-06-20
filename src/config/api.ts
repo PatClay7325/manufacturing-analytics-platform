@@ -24,11 +24,11 @@ interface ApiConfig {
 // Get base URL from environment or use default
 const getBaseUrl = (): string => {
   if (typeof window !== 'undefined') {
-    // Client-side
-    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+    // Client-side - use relative URL for same-origin requests
+    return '/api';
   }
   // Server-side
-  return process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+  return process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 };
 
 // Development environment configuration
@@ -56,7 +56,7 @@ const devConfig: ApiConfig = {
 // Test environment configuration
 const testConfig: ApiConfig = {
   ...devConfig,
-  baseUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api',
+  baseUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api',
 };
 
 // Production environment configuration

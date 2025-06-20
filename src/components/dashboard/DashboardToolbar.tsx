@@ -77,7 +77,7 @@ export default function DashboardToolbar({
   };
 
   return (
-    <div className={`dashboard-toolbar bg-gray-800 border-b border-gray-700 ${isKioskMode ? 'hidden' : ''}`}>
+    <div className={`dashboard-toolbar bg-white border-b border-gray-200 ${isKioskMode ? 'hidden' : ''}`}>
       <div className="flex items-center justify-between px-4 py-3">
         {/* Left Section */}
         <div className="flex items-center gap-4">
@@ -85,7 +85,7 @@ export default function DashboardToolbar({
           {isViewMode && (
             <button
               onClick={() => window.history.back()}
-              className="p-2 rounded hover:bg-gray-700 text-gray-400"
+              className="p-2 rounded hover:bg-gray-100 text-gray-600"
             >
               <ArrowLeftIcon className="w-5 h-5" />
             </button>
@@ -93,7 +93,7 @@ export default function DashboardToolbar({
 
           {/* Dashboard Title */}
           <div className="flex items-center gap-2">
-            <h1 className="text-lg font-semibold text-white">
+            <h1 className="text-lg font-semibold text-gray-900">
               {dashboard?.title}
             </h1>
             {hasUnsavedChanges && (
@@ -106,7 +106,7 @@ export default function DashboardToolbar({
           {/* Star button */}
           <button
             onClick={() => setIsStarred(!isStarred)}
-            className="p-1 rounded hover:bg-gray-700 text-gray-400"
+            className="p-1 rounded hover:bg-gray-100 text-gray-600"
             title={isStarred ? 'Unstar dashboard' : 'Star dashboard'}
           >
             {isStarred ? (
@@ -130,7 +130,7 @@ export default function DashboardToolbar({
             onClick={onRefresh}
             disabled={isRefreshing}
             className={`
-              p-2 rounded hover:bg-gray-700 text-gray-400
+              p-2 rounded hover:bg-gray-100 text-gray-600
               ${isRefreshing ? 'animate-spin' : ''}
             `}
             title="Refresh dashboard"
@@ -152,7 +152,7 @@ export default function DashboardToolbar({
           {/* TV/Kiosk Mode */}
           <button
             onClick={handleToggleKiosk}
-            className="p-2 rounded hover:bg-gray-700 text-gray-400"
+            className="p-2 rounded hover:bg-gray-100 text-gray-600"
             title="Toggle kiosk mode"
           >
             <PlayIcon className="w-5 h-5" />
@@ -160,7 +160,7 @@ export default function DashboardToolbar({
 
           {/* Share */}
           <button
-            className="p-2 rounded hover:bg-gray-700 text-gray-400"
+            className="p-2 rounded hover:bg-gray-100 text-gray-600"
             title="Share dashboard"
           >
             <ShareIcon className="w-5 h-5" />
@@ -169,7 +169,7 @@ export default function DashboardToolbar({
           {/* Settings (edit mode only) */}
           {!isViewMode && (
             <button
-              className="p-2 rounded hover:bg-gray-700 text-gray-400"
+              className="p-2 rounded hover:bg-gray-100 text-gray-600"
               title="Dashboard settings"
             >
               <CogIcon className="w-5 h-5" />
@@ -184,8 +184,8 @@ export default function DashboardToolbar({
               className={`
                 px-4 py-2 rounded text-sm font-medium transition-colors
                 ${hasUnsavedChanges || dashboard?.meta?.isNew
-                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                  : 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                  ? 'bg-blue-600 hover:bg-blue-700 text-gray-900'
+                  : 'bg-gray-100 text-gray-600 cursor-not-allowed'
                 }
               `}
             >
@@ -197,7 +197,7 @@ export default function DashboardToolbar({
           <div className="relative">
             <button
               onClick={() => setShowMoreMenu(!showMoreMenu)}
-              className="p-2 rounded hover:bg-gray-700 text-gray-400"
+              className="p-2 rounded hover:bg-gray-100 text-gray-600"
             >
               <EllipsisHorizontalIcon className="w-5 h-5" />
             </button>
@@ -208,13 +208,13 @@ export default function DashboardToolbar({
                   className="fixed inset-0 z-10"
                   onClick={() => setShowMoreMenu(false)}
                 />
-                <div className="absolute right-0 top-10 z-20 bg-gray-800 border border-gray-700 rounded-lg shadow-lg py-1 min-w-[200px]">
+                <div className="absolute right-0 top-10 z-20 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[200px]">
                   <button
                     onClick={() => {
                       // TODO: Implement duplicate
                       setShowMoreMenu(false);
                     }}
-                    className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-700 text-gray-300 text-sm"
+                    className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100 text-gray-700 text-sm"
                   >
                     <DocumentDuplicateIcon className="w-4 h-4" />
                     Duplicate dashboard
@@ -224,7 +224,7 @@ export default function DashboardToolbar({
                       handleExportJSON();
                       setShowMoreMenu(false);
                     }}
-                    className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-700 text-gray-300 text-sm"
+                    className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100 text-gray-700 text-sm"
                   >
                     <ArrowDownTrayIcon className="w-4 h-4" />
                     Export JSON
@@ -234,18 +234,18 @@ export default function DashboardToolbar({
                       // TODO: Show JSON modal
                       setShowMoreMenu(false);
                     }}
-                    className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-700 text-gray-300 text-sm"
+                    className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100 text-gray-700 text-sm"
                   >
                     <CodeBracketIcon className="w-4 h-4" />
                     View JSON
                   </button>
-                  <hr className="my-1 border-gray-700" />
+                  <hr className="my-1 border-gray-200" />
                   <button
                     onClick={() => {
                       // TODO: Implement delete
                       setShowMoreMenu(false);
                     }}
-                    className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-700 text-red-400 text-sm"
+                    className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100 text-red-600 text-sm"
                   >
                     <TrashIcon className="w-4 h-4" />
                     Delete dashboard

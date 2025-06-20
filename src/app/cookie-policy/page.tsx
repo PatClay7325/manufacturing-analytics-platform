@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 
 export default function CookiePolicyPage() {
@@ -210,6 +212,5 @@ export default function CookiePolicyPage() {
           </button>
         </div>
       </div>
-    </div>
   );
 }

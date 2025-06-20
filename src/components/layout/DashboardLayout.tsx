@@ -12,8 +12,9 @@ import {
   Clock, Star, Filter, ChevronLeft,
   Factory, Gauge, Wrench, ClipboardList, LineChart,
   Activity, BarChart3, FileText, Zap, Globe, Shield,
-  Menu, X
+  Menu, X, User, LogOut
 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface NavItem {
   id: string;
@@ -52,7 +53,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['dashboards']));
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const { user, logout } = useAuth();
 
   const navTree: NavItem[] = [
     {
@@ -146,7 +149,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   // Initialize from localStorage
   useEffect(() => {
-    const storedValue = localStorage?.getItem('grafanaSidebarCollapsed');
+    const storedValue = localStorage?.getItem('manufacturingSidebarCollapsed');
     if (storedValue !== null) {
       setIsCollapsed(JSON.parse(storedValue));
     }
@@ -166,10 +169,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   // Save to localStorage when state changes
   useEffect(() => {
-    localStorage?.setItem('grafanaSidebarCollapsed', JSON.stringify(isCollapsed));
+    localStorage?.setItem('manufacturingSidebarCollapsed', JSON.stringify(isCollapsed));
 
     // Dispatch custom event for other components
-    const event = new CustomEvent('grafanaSidebarStateChange', {
+    const event = new CustomEvent('manufacturingSidebarStateChange', {
       detail: { collapsed: isCollapsed }
     });
     document.dispatchEvent(event);
@@ -344,15 +347,66 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
 
           {/* User Menu */}
-          {!isCollapsed && (
-            <div className="p-3 border-t border-gray-200">
-              <div className="flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md cursor-pointer">
+          {!isCollapsed && user && (
+            <div className="p-3 border-t border-gray-200 relative">
+              <div 
+                className="flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md cursor-pointer"
+                onClick={() => setShowUserMenu(!showUserMenu)}
+              >
                 <div className="flex items-center">
-                  <div className="w-6 h-6 bg-gray-300 rounded-full mr-3" />
-                  <span>Admin</span>
+                  <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full mr-3 flex items-center justify-center">
+                    <span className="text-white text-xs font-semibold">
+                      {user.name ? user.name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="block font-medium">{user.name || user.email}</span>
+                    <span className="block text-xs text-gray-500 capitalize">{user.role}</span>
+                  </div>
                 </div>
-                <ChevronDown className="h-3 w-3" />
+                <ChevronDown className={`h-3 w-3 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
               </div>
+              
+              {/* User Dropdown Menu */}
+              {showUserMenu && (
+                <div className="absolute bottom-full left-3 right-3 mb-2 bg-white border border-gray-200 rounded-md shadow-lg overflow-hidden">
+                  <Link
+                    href="/profile"
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    onClick={() => setShowUserMenu(false)}
+                  >
+                    <User className="h-4 w-4 mr-3" />
+                    Profile
+                  </Link>
+                  <Link
+                    href="/api-keys"
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    onClick={() => setShowUserMenu(false)}
+                  >
+                    <KeyRound className="h-4 w-4 mr-3" />
+                    API Keys
+                  </Link>
+                  <Link
+                    href="/teams"
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    onClick={() => setShowUserMenu(false)}
+                  >
+                    <UsersIcon className="h-4 w-4 mr-3" />
+                    Teams
+                  </Link>
+                  <hr className="border-t border-gray-200" />
+                  <button
+                    onClick={() => {
+                      setShowUserMenu(false);
+                      logout();
+                    }}
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  >
+                    <LogOut className="h-4 w-4 mr-3" />
+                    Sign Out
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -385,6 +439,19 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <button className="text-gray-600 hover:text-gray-900">
                 <Settings className="h-4 w-4" />
               </button>
+              {/* User Avatar for Mobile */}
+              {user && (
+                <div className="lg:hidden">
+                  <button
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center"
+                  >
+                    <span className="text-white text-sm font-semibold">
+                      {user.name ? user.name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
+                    </span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 

@@ -53,7 +53,7 @@ export default function StreamingChatMessage({
       data-sender={isUser ? 'user' : 'ai'}
     >
       <div
-        className={`max-w-3/4 rounded-lg px-4 py-2 shadow-sm transition-all duration-200 ${
+        className={`max-w-3 />4 rounded-lg px-4 py-2 shadow-sm transition-all duration-200 ${
           isUser
             ? 'bg-blue-600 text-white'
             : 'bg-gray-100 text-gray-800'

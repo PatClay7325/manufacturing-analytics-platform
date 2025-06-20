@@ -285,7 +285,7 @@ export default function TablePanel({
           {options?.showHeader && (
             <thead className="bg-gray-50 sticky top-0">
               <tr>
-                {tableData?.(fields || []).map((field) => (
+                {(tableData?.fields || []).map((field) => (
                   <th
                     key={field?.name}
                     className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
@@ -312,7 +312,7 @@ export default function TablePanel({
                 key={row?._index}
                 className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
               >
-                {tableData?.(fields || []).map((field) => (
+                {(tableData?.fields || []).map((field) => (
                   <td
                     key={field?.name}
                     className={getCellStyle(field, row[field?.name])}
@@ -328,7 +328,7 @@ export default function TablePanel({
           {options?.footer?.show && (
             <tfoot className="bg-gray-100 border-t border-gray-300">
               <tr>
-                {tableData?.(fields || []).map((field) => (
+                {(tableData?.fields || []).map((field) => (
                   <td
                     key={field?.name}
                     className="px-3 py-2 text-sm font-medium text-gray-700 border-b border-gray-200"

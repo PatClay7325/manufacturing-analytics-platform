@@ -30,9 +30,9 @@ test.describe('Dashboard E2E Tests', () => {
     const chartContainer = page.locator('[data-testid="production-trends-chart"]');
     await expect(chartContainer).toBeVisible();
     
-    // Verify chart has rendered (check for highcharts container)
-    const highchartsContainer = chartContainer.locator('.highcharts-root');
-    await expect(highchartsContainer).toBeVisible();
+    // Verify chart has rendered (check for recharts container)
+    const chartsContainer = chartContainer.locator('.recharts-wrapper');
+    await expect(chartsContainer).toBeVisible();
   });
 
   test('displays equipment status grid', async ({ page }) => {

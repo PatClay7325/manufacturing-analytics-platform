@@ -11,7 +11,7 @@ export default function OEEAnalyticsPage() {
         title="OEE Analytics Dashboard"
         defaultTimeRange="last24h"
         defaultEquipment="all"
-        defaultTabIndex={1} // Start on OEE Analytics tab
+        defaultTabIndex={1} />/ Start on OEE Analytics tab
       />
     </DashboardLayout>
   );

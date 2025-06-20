@@ -1,3 +1,5 @@
+import React from 'react';
+
 import Link from 'next/link';
 
 export default function ApiReference() {
@@ -1617,6 +1619,5 @@ X-Rate-Limit-Reset: 1686927000`}
           </div>
         </div>
       </div>
-    </div>
   );
 }

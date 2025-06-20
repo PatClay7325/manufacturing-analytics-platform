@@ -41,7 +41,7 @@ export default function EquipmentDetailPage() {
   // Action button for scheduling maintenance
   const actionButton = (
     <button className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-      <svg className="-ml-1 mr-2 h-5 w-5" xmlns="http://www?.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg className="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
       </svg>
       Schedule Maintenance
@@ -181,41 +181,35 @@ export default function EquipmentDetailPage() {
             <div className="bg-white shadow rounded-lg p-6">
               <h3 className="text-lg font-medium text-gray-900 mb-4">Details</h3>
               <dl className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Type</dt>
+                                  <dt className="text-sm font-medium text-gray-500">Type</dt>
                   <dd className="mt-1 text-sm text-gray-900">{equipment?.type}</dd>
                 </div>
                 {equipment?.department && (
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Department</dt>
+                                      <dt className="text-sm font-medium text-gray-500">Department</dt>
                     <dd className="mt-1 text-sm text-gray-900">{equipment?.department}</dd>
                   </div>
                 )}
                 {equipment?.location && (
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Location</dt>
+                                      <dt className="text-sm font-medium text-gray-500">Location</dt>
                     <dd className="mt-1 text-sm text-gray-900">{equipment?.location}</dd>
                   </div>
                 )}
                 {equipment?.installationDate && (
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Installation Date</dt>
+                                      <dt className="text-sm font-medium text-gray-500">Installation Date</dt>
                     <dd className="mt-1 text-sm text-gray-900">
                       {new Date(equipment?.installationDate).toLocaleDateString()}
                     </dd>
                   </div>
                 )}
                 {equipment?.lastMaintenanceDate && (
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Last Maintenance</dt>
+                                      <dt className="text-sm font-medium text-gray-500">Last Maintenance</dt>
                     <dd className="mt-1 text-sm text-gray-900">
                       {new Date(equipment?.lastMaintenanceDate).toLocaleDateString()}
                     </dd>
                   </div>
                 )}
                 {equipment?.nextMaintenanceDate && (
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Next Maintenance</dt>
+                                      <dt className="text-sm font-medium text-gray-500">Next Maintenance</dt>
                     <dd className="mt-1 text-sm text-gray-900">
                       {new Date(equipment?.nextMaintenanceDate).toLocaleDateString()}
                     </dd>
@@ -232,7 +226,7 @@ export default function EquipmentDetailPage() {
               <div className="bg-white shadow rounded-lg p-6 md:col-span-2">
                 <h3 className="text-lg font-medium text-gray-900 mb-4">Tags</h3>
                 <div className="flex flex-wrap gap-2">
-                  {equipment?.(tags || []).map((tag) => (
+                  {(equipment?.tags || []).map((tag) => (
                     <span
                       key={tag}
                       className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"

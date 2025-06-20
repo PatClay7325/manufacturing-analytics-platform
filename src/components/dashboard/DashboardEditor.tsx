@@ -91,7 +91,7 @@ export default function DashboardEditor({
   const handleUpdatePanel = useCallback((panelId: number, updates: Partial<Panel>) => {
     setDashboard(prev => ({
       ...prev,
-      panels: (prev.panels || []).map(panel =>
+      panels: (prev?.panels || []).map(panel =>
         panel?.id === panelId ? { ...panel, ...updates } : panel
       )
     }));
@@ -100,7 +100,7 @@ export default function DashboardEditor({
   const handleDeletePanel = useCallback((panelId: number) => {
     setDashboard(prev => ({
       ...prev,
-      panels: prev.panels.filter(panel => panel?.id !== panelId)
+      panels: (prev?.panels || []).filter(panel => panel?.id !== panelId)
     }));
     if (selectedPanel?.id === panelId) {
       setSelectedPanel(null);
@@ -180,20 +180,20 @@ export default function DashboardEditor({
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="flex h-screen bg-gray-900">
+      <div className="flex h-screen bg-gray-50">
         {/* Sidebar */}
         <div className={`${
           isSidebarCollapsed ? 'w-16' : 'w-64'
-        } bg-gray-800 border-r border-gray-700 transition-all duration-300 flex flex-col`}>
+        } bg-white border-r border-gray-200 transition-all duration-300 flex flex-col`}>
           {/* Sidebar Header */}
-          <div className="p-4 border-b border-gray-700">
+          <div className="p-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
               {!isSidebarCollapsed && (
-                <h2 className="text-lg font-semibold text-white">Dashboard Editor</h2>
+                <h2 className="text-lg font-semibold text-gray-900">Dashboard Editor</h2>
               )}
               <button
                 onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-                className="p-1 rounded hover:bg-gray-700 text-gray-400"
+                className="p-1 rounded hover:bg-gray-100 text-gray-600"
               >
                 {isSidebarCollapsed ? <ChevronRightIcon className="w-5 h-5" /> : <ChevronLeftIcon className="w-5 h-5" />}
               </button>
@@ -204,21 +204,21 @@ export default function DashboardEditor({
           <nav className="flex-1 p-4 space-y-2">
             <button
               onClick={() => setIsPanelLibraryOpen(true)}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-700 text-gray-300"
+              className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-100 text-gray-700"
             >
               <PlusIcon className="w-5 h-5" />
               {!isSidebarCollapsed && <span>Add Panel</span>}
             </button>
             <button
               onClick={() => setIsVariablesOpen(true)}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-700 text-gray-300"
+              className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-100 text-gray-700"
             >
               <VariableIcon className="w-5 h-5" />
               {!isSidebarCollapsed && <span>Variables</span>}
             </button>
             <button
               onClick={() => setIsSettingsOpen(true)}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-700 text-gray-300"
+              className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-100 text-gray-700"
             >
               <CogIcon className="w-5 h-5" />
               {!isSidebarCollapsed && <span>Settings</span>}
@@ -226,10 +226,10 @@ export default function DashboardEditor({
           </nav>
 
           {/* Sidebar Footer */}
-          <div className="p-4 border-t border-gray-700">
+          <div className="p-4 border-t border-gray-200">
             <button
               onClick={onCancel}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded border border-gray-600 hover:bg-gray-700 text-gray-300"
+              className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded border border-gray-300 hover:bg-gray-100 text-gray-700"
             >
               {!isSidebarCollapsed && <span>Exit</span>}
               <XMarkIcon className="w-5 h-5" />
@@ -251,7 +251,7 @@ export default function DashboardEditor({
           />
 
           {/* Dashboard Canvas */}
-          <div className="flex-1 overflow-auto bg-gray-900 p-4">
+          <div className="flex-1 overflow-auto bg-gray-50 p-4">
             <GridLayout
               panels={dashboard?.panels}
               onLayoutChange={handleLayoutChange}

@@ -378,7 +378,7 @@ export class XmlTransformer implements DataTransformer {
     const tagRegex = /<\/?([^\s>]+)[^>]*>/g;
     let match;
     
-    while ((match = tagRegex.exec(xmlString)) !== null) {
+    while (match = tagRegex.exec(xmlString) !== null) {
       const fullTag = match[0];
       const tagName = match[1];
       

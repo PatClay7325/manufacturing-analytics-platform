@@ -75,17 +75,37 @@ export class HttpClient {
    * Create a URL with query parameters
    */
   private createUrl(endpoint: string, params?: Record<string, string | number | boolean | undefined | null>): string {
-    const url = new URL(endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint}`);
+    let fullUrl: string;
     
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          url.searchParams.append(key, String(value));
+    if (endpoint.startsWith('http')) {
+      fullUrl = endpoint;
+    } else {
+      // For relative URLs, combine with base URL
+      if (this.baseUrl.startsWith('http')) {
+        fullUrl = `${this.baseUrl}${endpoint}`;
+      } else {
+        // If baseUrl is also relative, use current origin
+        if (typeof window !== 'undefined') {
+          fullUrl = `${window.location.origin}${this.baseUrl}${endpoint}`;
+        } else {
+          // Server-side fallback
+          fullUrl = `http://localhost:3000${this.baseUrl}${endpoint}`;
         }
-      });
+      }
     }
     
-    return url.toString();
+    // If no params, return the URL as-is
+    if (!params || Object.keys(params).length === 0) {
+      return fullUrl;
+    }
+    
+    // Add query parameters manually to avoid URL constructor issues
+    const queryParams = Object.entries(params)
+      .filter(([, value]) => value !== undefined && value !== null)
+      .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`)
+      .join('&');
+    
+    return queryParams ? `${fullUrl}?${queryParams}` : fullUrl;
   }
 
   /**
@@ -211,7 +231,7 @@ export class HttpClient {
       ...fetchOptions,
       method,
       headers,
-      credentials: withCredentials ? 'include' : 'same-origin'
+      credentials: 'include' // Always include credentials for cookies
     };
     
     // Add body for non-GET requests

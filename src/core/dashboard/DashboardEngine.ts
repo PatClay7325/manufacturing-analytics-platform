@@ -663,24 +663,217 @@ class PanelRenderer {
 }
 
 class DashboardStorage {
+  private storage: Map<string, string> = new Map();
+  
+  constructor() {
+    // Initialize with some default dashboards
+    this.initializeDefaultDashboards();
+  }
+
   async load(identifier: string): Promise<string> {
-    // Load dashboard from )
-    throw new Error('Not implemented');
+    const data = this.storage.get(identifier);
+    if (!data) {
+      throw new Error(`Dashboard ${identifier} not found`);
+    }
+    return data;
   }
 
   async save(uid: string, data: string): Promise<void> {
-    // Save dashboard to storage
-    throw new Error('Not implemented');
+    this.storage.set(uid, data);
+    // In production, this would save to a database
   }
 
   async delete(uid: string): Promise<void> {
-    // Delete dashboard from storage
-    throw new Error('Not implemented');
+    this.storage.delete(uid);
+    // In production, this would delete from a database
   }
 
-  async search(query: string, tags?: string[]): Promise<Dashboard[]> {
-    // Search dashboards
-    throw new Error('Not implemented');
+  async search(query: string = '', tags?: string[]): Promise<Dashboard[]> {
+    const dashboards: Dashboard[] = [];
+    
+    for (const [uid, data] of this.storage.entries()) {
+      try {
+        const dashboard = JSON.parse(data) as Dashboard;
+        
+        // Filter by query
+        if (query) {
+          const searchLower = query.toLowerCase();
+          const matchesQuery = 
+            dashboard.title.toLowerCase().includes(searchLower) ||
+            dashboard.description?.toLowerCase().includes(searchLower) ||
+            dashboard.tags.some(tag => tag.toLowerCase().includes(searchLower));
+          
+          if (!matchesQuery) continue;
+        }
+        
+        // Filter by tags
+        if (tags && tags.length > 0) {
+          const hasAllTags = tags.every(tag => dashboard.tags.includes(tag));
+          if (!hasAllTags) continue;
+        }
+        
+        dashboards.push(dashboard);
+      } catch (error) {
+        console.error(`Error parsing dashboard ${uid}:`, error);
+      }
+    }
+    
+    // Sort by updated date, most recent first
+    dashboards.sort((a, b) => {
+      const dateA = new Date(a.meta?.updated || 0).getTime();
+      const dateB = new Date(b.meta?.updated || 0).getTime();
+      return dateB - dateA;
+    });
+    
+    return dashboards;
+  }
+  
+  private initializeDefaultDashboards() {
+    // Manufacturing Overview Dashboard
+    const manufacturingOverview: Dashboard = {
+      uid: 'manufacturing-overview',
+      title: 'Manufacturing Overview',
+      description: 'Real-time overview of manufacturing operations',
+      tags: ['manufacturing', 'oee', 'production'],
+      version: 1,
+      schemaVersion: 21,
+      time: { from: 'now-6h', to: 'now' },
+      refresh: '30s',
+      panels: [
+        {
+          id: 1,
+          type: 'gauge',
+          title: 'Overall Equipment Effectiveness',
+          gridPos: { x: 0, y: 0, w: 8, h: 8 },
+          targets: [],
+          fieldConfig: {
+            defaults: {
+              unit: 'percent',
+              min: 0,
+              max: 100,
+              thresholds: {
+                mode: 'absolute',
+                steps: [
+                  { value: 0, color: 'red' },
+                  { value: 65, color: 'yellow' },
+                  { value: 85, color: 'green' }
+                ]
+              }
+            },
+            overrides: []
+          },
+          options: {}
+        },
+        {
+          id: 2,
+          type: 'timeseries',
+          title: 'Production Rate',
+          gridPos: { x: 8, y: 0, w: 16, h: 8 },
+          targets: [],
+          fieldConfig: {
+            defaults: { unit: 'short' },
+            overrides: []
+          },
+          options: {}
+        }
+      ],
+      templating: { list: [] },
+      annotations: { list: [] },
+      links: [],
+      meta: {
+        created: '2024-01-15T10:00:00Z',
+        updated: new Date().toISOString(),
+        createdBy: 'system',
+        updatedBy: 'system',
+        version: 1
+      }
+    };
+    
+    // Quality Dashboard
+    const qualityDashboard: Dashboard = {
+      uid: 'quality-dashboard',
+      title: 'Quality Control Dashboard',
+      description: 'Monitor quality metrics and defect rates',
+      tags: ['quality', 'spc', 'defects'],
+      version: 1,
+      schemaVersion: 21,
+      time: { from: 'now-24h', to: 'now' },
+      refresh: '1m',
+      panels: [
+        {
+          id: 1,
+          type: 'stat',
+          title: 'First Pass Yield',
+          gridPos: { x: 0, y: 0, w: 6, h: 4 },
+          targets: [],
+          fieldConfig: {
+            defaults: { unit: 'percent', decimals: 1 },
+            overrides: []
+          },
+          options: {}
+        },
+        {
+          id: 2,
+          type: 'barchart',
+          title: 'Defect Pareto',
+          gridPos: { x: 6, y: 0, w: 18, h: 8 },
+          targets: [],
+          fieldConfig: { defaults: {}, overrides: [] },
+          options: {}
+        }
+      ],
+      templating: { list: [] },
+      annotations: { list: [] },
+      links: [],
+      meta: {
+        created: '2024-01-14T09:00:00Z',
+        updated: new Date().toISOString(),
+        createdBy: 'system',
+        updatedBy: 'system',
+        version: 1
+      }
+    };
+    
+    // Energy Dashboard
+    const energyDashboard: Dashboard = {
+      uid: 'energy-monitoring',
+      title: 'Energy Monitoring',
+      description: 'Track energy consumption and efficiency',
+      tags: ['energy', 'sustainability', 'iso50001'],
+      version: 1,
+      schemaVersion: 21,
+      time: { from: 'now-7d', to: 'now' },
+      refresh: '5m',
+      panels: [
+        {
+          id: 1,
+          type: 'timeseries',
+          title: 'Energy Consumption',
+          gridPos: { x: 0, y: 0, w: 24, h: 8 },
+          targets: [],
+          fieldConfig: {
+            defaults: { unit: 'kwatth' },
+            overrides: []
+          },
+          options: {}
+        }
+      ],
+      templating: { list: [] },
+      annotations: { list: [] },
+      links: [],
+      meta: {
+        created: '2024-01-10T08:00:00Z',
+        updated: new Date().toISOString(),
+        createdBy: 'system',
+        updatedBy: 'system',
+        version: 1
+      }
+    };
+    
+    // Save default dashboards
+    this.storage.set('manufacturing-overview', JSON.stringify(manufacturingOverview));
+    this.storage.set('quality-dashboard', JSON.stringify(qualityDashboard));
+    this.storage.set('energy-monitoring', JSON.stringify(energyDashboard));
   }
 }
 

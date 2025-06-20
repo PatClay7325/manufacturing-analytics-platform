@@ -1,0 +1,28 @@
+Manufacturing Analytics Platform
+Copyright (c) 2025 Adaptive Factory AI Solutions, Inc.
+
+This product includes software developed by Adaptive Factory AI Solutions, Inc.
+
+## Acknowledgments
+
+This platform was inspired by modern monitoring and observability tools, but contains
+no code from those projects. All implementation is original work.
+
+The following open-source libraries are used under their respective licenses:
+- Next.js (MIT License)
+- React (MIT License)
+- TypeScript (Apache 2.0 License)
+- Tailwind CSS (MIT License)
+- Prisma (Apache 2.0 License)
+- Recharts (MIT License)
+
+## Important Notes
+
+This software is designed specifically for manufacturing intelligence and analytics.
+While inspired by general-purpose monitoring tools, it includes unique features for:
+- Manufacturing OEE calculations
+- Equipment lifecycle management
+- Industrial IoT integration
+- AI-powered manufacturing insights
+
+For questions about licensing or usage, please contact: legal@adaptivefactory.ai
