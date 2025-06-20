@@ -1,11 +1,11 @@
 /**
  * Initialize Plugins - Register all built-in plugins
- * This is the actual working implementation
+ * This is the actual working implementation with comprehensive React chart panels
  */
 
 import React from 'react';
-import { pluginRegistry, PanelPlugin } from './SimplePluginSystem';
-import { SimpleTimeSeriesPanel } from '@/components/panels/SimpleTimeSeriesPanel';
+import { pluginRegistry } from './SimplePluginSystem';
+import { registerAllPanelPlugins } from './AllPanelPlugins';
 import StatPanel from '@/components/panels/StatPanel';
 import TablePanel from '@/components/panels/TablePanel';
 
@@ -25,107 +25,93 @@ const createPlaceholderComponent = (name: string) => {
 };
 
 export function initializePlugins(): void {
-  console.log('Initializing plugins...');
-  console.log('SimpleTimeSeriesPanel available:', !!SimpleTimeSeriesPanel);
+  console.log('🔌 Initializing comprehensive plugin system...');
 
-  // Register Time Series Panel
-  const timeSeriesPlugin: PanelPlugin = {
-    meta: {
-      id: 'timeseries',
-      name: 'Time Series',
-      type: 'panel',
-      description: 'Visualize time series data with lines, points, and thresholds',
-      version: '1.0.0',
-      author: 'Manufacturing Analytics',
-    },
-    component: SimpleTimeSeriesPanel,
-    defaults: {
-      showLegend: true,
-      showGrid: true,
-      showTooltip: true,
-    },
-  };
+  // Register all React chart panels (comprehensive set)
+  registerAllPanelPlugins();
+
+  // Register additional utility panels
   try {
-    pluginRegistry.registerPanel(timeSeriesPlugin);
-    console.log('Time series panel registered successfully');
+    if (StatPanel) {
+      pluginRegistry.registerPanel({
+        meta: {
+          id: 'stat',
+          name: 'Stat',
+          type: 'panel',
+          description: 'Display single statistics with optional sparklines',
+          version: '1.0.0',
+          author: 'Manufacturing Analytics',
+        },
+        component: StatPanel,
+        defaults: {
+          reduceOptions: {
+            calcs: ['lastNotNull'],
+          },
+        },
+      });
+    }
+
+    if (TablePanel) {
+      pluginRegistry.registerPanel({
+        meta: {
+          id: 'table',
+          name: 'Table',
+          type: 'panel',
+          description: 'Display data in a table format',
+          version: '1.0.0',
+          author: 'Manufacturing Analytics',
+        },
+        component: TablePanel,
+        defaults: {
+          showHeader: true,
+          sortable: true,
+        },
+      });
+    }
+
+    // Register placeholder panels for additional functionality
+    pluginRegistry.registerPanel({
+      meta: {
+        id: 'gauge',
+        name: 'Gauge',
+        type: 'panel',
+        description: 'Display values on a gauge',
+        version: '1.0.0',
+        author: 'Manufacturing Analytics',
+      },
+      component: createPlaceholderComponent('Gauge'),
+      defaults: {
+        showThresholdLabels: false,
+        showThresholdMarkers: true,
+      },
+    });
+
+    pluginRegistry.registerPanel({
+      meta: {
+        id: 'text',
+        name: 'Text',
+        type: 'panel',
+        description: 'Display markdown or HTML',
+        version: '1.0.0',
+        author: 'Manufacturing Analytics',
+      },
+      component: createPlaceholderComponent('Text'),
+      defaults: {
+        mode: 'markdown',
+        content: '# Text Panel\n\nAdd your content here...',
+      },
+    });
+
   } catch (error) {
-    console.error('Failed to register time series panel:', error);
+    console.error('Error registering additional panels:', error);
   }
 
-  // Register Stat Panel
-  const statPlugin: PanelPlugin = {
-    meta: {
-      id: 'stat',
-      name: 'Stat',
-      type: 'panel',
-      description: 'Display single statistics with optional sparklines',
-      version: '1.0.0',
-      author: 'Manufacturing Analytics',
-    },
-    component: StatPanel || createPlaceholderComponent('Stat'),
-    defaults: {
-      reduceOptions: {
-        calcs: ['lastNotNull'],
-      },
-    },
-  };
-  pluginRegistry.registerPanel(statPlugin);
-
-  // Register Table Panel
-  const tablePlugin: PanelPlugin = {
-    meta: {
-      id: 'table',
-      name: 'Table',
-      type: 'panel',
-      description: 'Display data in a table format',
-      version: '1.0.0',
-      author: 'Manufacturing Analytics',
-    },
-    component: TablePanel || createPlaceholderComponent('Table'),
-    defaults: {
-      showHeader: true,
-      sortable: true,
-    },
-  };
-  pluginRegistry.registerPanel(tablePlugin);
-
-  // Register Gauge Panel
-  const gaugePlugin: PanelPlugin = {
-    meta: {
-      id: 'gauge',
-      name: 'Gauge',
-      type: 'panel',
-      description: 'Display values on a gauge',
-      version: '1.0.0',
-      author: 'Manufacturing Analytics',
-    },
-    component: createPlaceholderComponent('Gauge'),
-    defaults: {
-      showThresholdLabels: false,
-      showThresholdMarkers: true,
-    },
-  };
-  pluginRegistry.registerPanel(gaugePlugin);
-
-  // Register Text Panel
-  const textPlugin: PanelPlugin = {
-    meta: {
-      id: 'text',
-      name: 'Text',
-      type: 'panel',
-      description: 'Display markdown or HTML',
-      version: '1.0.0',
-      author: 'Manufacturing Analytics',
-    },
-    component: createPlaceholderComponent('Text'),
-    defaults: {
-      mode: 'markdown',
-      content: '# Text Panel\n\nAdd your content here...',
-    },
-  };
-  pluginRegistry.registerPanel(textPlugin);
-
-  console.log(`Initialized ${pluginRegistry.getPanels().length} panel plugins`);
+  const totalPanels = pluginRegistry.getPanels().length;
+  console.log(`✅ Plugin initialization complete: ${totalPanels} panels registered`);
+  
+  // Log available panels for debugging
+  const panels = pluginRegistry.getPanels();
+  console.log('📊 Available panels:', panels.map(p => p.meta.name).join(', '));
 }
 
 // Auto-initialize if in browser environment

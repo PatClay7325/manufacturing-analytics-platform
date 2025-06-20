@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import PageLayout from '@/components/layout/PageLayout';
 import { Search, Star, Clock, Filter, FolderOpen, LayoutGrid, Plus } from 'lucide-react';
 import Link from 'next/link';
 
@@ -97,12 +97,15 @@ export default function BrowseDashboardsPage() {
   const allTags = Array.from(new Set(dashboards?.flatMap(d => d?.tags)));
 
   return (
-    <DashboardLayout>
+    <PageLayout
+      title="Browse Dashboards"
+      description="Find and organize your dashboards"
+    >
       <div className="h-full">
         {/* Header */}
-        <div className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-xl font-semibold text-gray-900">Dashboards</h1>
+            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Dashboards</h1>
             <Link
               href="/dashboards/new"
               className="flex items-center space-x-2 px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors"
@@ -248,6 +251,6 @@ export default function BrowseDashboardsPage() {
           )}
         </div>
       </div>
-    </DashboardLayout>
+    </PageLayout>
   );
 }

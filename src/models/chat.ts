@@ -6,6 +6,7 @@ export interface ChatMessage {
   content: string;
   timestamp: string;
   name?: string;
+  thoughts?: string[];
 }
 
 export interface ChatSession {

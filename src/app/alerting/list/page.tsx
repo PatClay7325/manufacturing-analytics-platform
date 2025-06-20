@@ -5,12 +5,12 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Search, Filter, AlertTriangle, Bell, BellOff, Edit, Trash2, Copy, Play, Pause } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { PageLayout } from '@/components/layout/PageLayout';
-import { TabNavigation } from '@/components/common/TabNavigation';
+import PageLayout from '@/components/layout/PageLayout';
+import TabNavigation from '@/components/common/TabNavigation';
 import { cn } from '@/lib/utils';
 
 interface AlertRule {

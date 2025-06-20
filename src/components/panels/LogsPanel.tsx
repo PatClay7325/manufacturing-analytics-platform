@@ -372,11 +372,15 @@ const LogsPanel: React.FC<PanelProps<LogsPanelOptions>> = ({
                       )}
                       {log.fields && (
                         <div>
-                          <span className="text-muted-foreground">Fields:</span>
-                          <pre className="ml-4 text-xs">
+    <div>
+    <div>
+      <span className="text-muted-foreground">Fields:</span>
+      <pre className="ml-4 text-xs">
                             {JSON.stringify(log.fields, null, 2)}
                           </pre>
-                        </div>
+    </div>
+  </div>
+  </div>
                       )}
                     </div>
                   </div>

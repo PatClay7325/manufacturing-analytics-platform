@@ -1,3 +1,5 @@
+import React from 'react';
+
 /**
  * Variable Dashboard Page - Template variable system demonstration
  * URL: /variable-dashboard

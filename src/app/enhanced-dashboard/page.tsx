@@ -1,3 +1,5 @@
+import React from 'react';
+
 /**
  * Enhanced Dashboard Page - Advanced Grafana-like dashboard
  * URL: /enhanced-dashboard

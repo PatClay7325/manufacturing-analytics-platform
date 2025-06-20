@@ -5,10 +5,10 @@
 
 'use client';
 
-import { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Upload, Link, FileJson, AlertCircle, Check } from 'lucide-react';
-import { PageLayout } from '@/components/layout/PageLayout';
+import PageLayout from '@/components/layout/PageLayout';
 import { cn } from '@/lib/utils';
 
 interface ImportMethod {
@@ -310,7 +310,6 @@ export default function DashboardImportPage() {
   return (
     <PageLayout
       title="Import dashboard"
-      description="Import dashboard from file or Grafana.com"
     >
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Import methods */}

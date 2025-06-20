@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
+import { ThoughtCards } from './ThoughtCards';
 
 interface StreamingChatMessageProps {
   role?: 'user' | 'assistant' | 'system';
@@ -7,6 +8,8 @@ interface StreamingChatMessageProps {
   timestamp?: string;
   isStreaming?: boolean;
   streamingContent?: string;
+  thoughts?: string[];
+  onThoughtSelect?: (thought: string) => void;
 }
 
 export default function StreamingChatMessage({ 
@@ -14,7 +17,9 @@ export default function StreamingChatMessage({
   content = '', 
   timestamp, 
   isStreaming = false,
-  streamingContent = ''
+  streamingContent = '',
+  thoughts,
+  onThoughtSelect
 }: StreamingChatMessageProps) {
   const isUser = role === 'user';
   const [displayContent, setDisplayContent] = useState(content);
@@ -79,6 +84,13 @@ export default function StreamingChatMessage({
               <div className={`text-xs mt-1 ${isUser ? 'text-blue-200' : 'text-gray-500'}`}>
                 {formattedTime}
               </div>
+            )}
+            {/* Integrate ThoughtCards for assistant messages */}
+            {role === 'assistant' && thoughts && thoughts.length > 0 && onThoughtSelect && !isStreaming && (
+              <ThoughtCards
+                thoughts={thoughts}
+                onSelect={onThoughtSelect}
+              />
             )}
           </>
         )}

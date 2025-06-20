@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+
 import { memo } from 'react';
 
 interface EquipmentItemProps {

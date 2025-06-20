@@ -3,834 +3,467 @@
 > next dev
 
  ⚠ Port 3000 is in use, trying 3001 instead.
- ⚠ Port 3001 is in use, trying 3002 instead.
   ▲ Next.js 14.2.30
-  - Local:        http://localhost:3002
+  - Local:        http://localhost:3001
   - Environments: .env.local, .env
   - Experiments (use with caution):
     · esmExternals
 
  ✓ Starting...
- ✓ Ready in 13.6s
- ○ Compiling /src/middleware ...
- ✓ Compiled /src/middleware in 545ms (72 modules)
- ○ Compiling /api/chat ...
- ✓ Compiled /api/chat in 883ms (69 modules)
-prisma:query SELECT "public"."Enterprise"."id", "public"."Enterprise"."name", "public"."Enterprise"."code", "public"."Enterprise"."createdAt", "public"."Enterprise"."updatedAt" FROM "public"."Enterprise" WHERE 1=1 LIMIT $1 OFFSET $2
-prisma:query SELECT "public"."EnterpriseKPISummary"."id", "public"."EnterpriseKPISummary"."enterpriseId", "public"."EnterpriseKPISummary"."oee", "public"."EnterpriseKPISummary"."availability", "public"."EnterpriseKPISummary"."performance", "public"."EnterpriseKPISummary"."quality", "public"."EnterpriseKPISummary"."mtbf", "public"."EnterpriseKPISummary"."mttr", "public"."EnterpriseKPISummary"."productionCount", "public"."EnterpriseKPISummary"."scrapRate", "public"."EnterpriseKPISummary"."energyConsumption", "public"."EnterpriseKPISummary"."periodStart", "public"."EnterpriseKPISummary"."periodEnd", "public"."EnterpriseKPISummary"."createdAt", "public"."EnterpriseKPISummary"."updatedAt" FROM "public"."EnterpriseKPISummary" WHERE "public"."EnterpriseKPISummary"."enterpriseId" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Site"."id", "public"."Site"."enterpriseId", "public"."Site"."name", "public"."Site"."code", "public"."Site"."location", "public"."Site"."createdAt", "public"."Site"."updatedAt" FROM "public"."Site" WHERE "public"."Site"."enterpriseId" IN ($1) OFFSET $2
-prisma:query SELECT "public"."SiteKPISummary"."id", "public"."SiteKPISummary"."siteId", "public"."SiteKPISummary"."oee", "public"."SiteKPISummary"."availability", "public"."SiteKPISummary"."performance", "public"."SiteKPISummary"."quality", "public"."SiteKPISummary"."mtbf", "public"."SiteKPISummary"."mttr", "public"."SiteKPISummary"."productionCount", "public"."SiteKPISummary"."scrapRate", "public"."SiteKPISummary"."energyConsumption", "public"."SiteKPISummary"."periodStart", "public"."SiteKPISummary"."periodEnd", "public"."SiteKPISummary"."createdAt", "public"."SiteKPISummary"."updatedAt" FROM "public"."SiteKPISummary" WHERE "public"."SiteKPISummary"."siteId" IN ($1) OFFSET $2
-prisma:query SELECT "public"."WorkUnit"."id", "public"."WorkUnit"."workCenterId", "public"."WorkUnit"."name", "public"."WorkUnit"."code", "public"."WorkUnit"."equipmentType", "public"."WorkUnit"."model", "public"."WorkUnit"."serialNumber", "public"."WorkUnit"."manufacturerCode", "public"."WorkUnit"."installationDate", "public"."WorkUnit"."status", "public"."WorkUnit"."location", "public"."WorkUnit"."description", "public"."WorkUnit"."lastMaintenanceAt", "public"."WorkUnit"."createdAt", "public"."WorkUnit"."updatedAt" FROM "public"."WorkUnit" WHERE 1=1 OFFSET $1
-prisma:query SELECT "public"."WorkCenter"."id", "public"."WorkCenter"."areaId", "public"."WorkCenter"."name", "public"."WorkCenter"."code", "public"."WorkCenter"."createdAt", "public"."WorkCenter"."updatedAt" FROM "public"."WorkCenter" WHERE "public"."WorkCenter"."id" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Area"."id", "public"."Area"."siteId", "public"."Area"."name", "public"."Area"."code", "public"."Area"."createdAt", "public"."Area"."updatedAt" FROM "public"."Area" WHERE "public"."Area"."id" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Site"."id", "public"."Site"."enterpriseId", "public"."Site"."name", "public"."Site"."code", "public"."Site"."location", "public"."Site"."createdAt", "public"."Site"."updatedAt" FROM "public"."Site" WHERE "public"."Site"."id" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Alert"."id", "public"."Alert"."alertType", "public"."Alert"."severity", "public"."Alert"."message", "public"."Alert"."status", "public"."Alert"."timestamp", "public"."Alert"."acknowledgedBy", "public"."Alert"."acknowledgedAt", "public"."Alert"."resolvedBy", "public"."Alert"."resolvedAt", "public"."Alert"."notes", "public"."Alert"."createdAt", "public"."Alert"."updatedAt", "public"."Alert"."workUnitId" FROM "public"."Alert" WHERE ("public"."Alert"."status" = $1 AND "public"."Alert"."workUnitId" IN ($2)) OFFSET $3
-prisma:query SELECT "public"."PerformanceMetric"."id", "public"."PerformanceMetric"."timestamp", "public"."PerformanceMetric"."availability", "public"."PerformanceMetric"."performance", "public"."PerformanceMetric"."quality", "public"."PerformanceMetric"."oeeScore", "public"."PerformanceMetric"."runTime", "public"."PerformanceMetric"."plannedDowntime", "public"."PerformanceMetric"."unplannedDowntime", "public"."PerformanceMetric"."idealCycleTime", "public"."PerformanceMetric"."actualCycleTime", "public"."PerformanceMetric"."totalParts", "public"."PerformanceMetric"."goodParts", "public"."PerformanceMetric"."shift", "public"."PerformanceMetric"."operator", "public"."PerformanceMetric"."notes", "public"."PerformanceMetric"."createdAt", "public"."PerformanceMetric"."workUnitId" FROM "public"."PerformanceMetric" WHERE ("public"."PerformanceMetric"."timestamp" >= $1 AND "public"."PerformanceMetric"."workUnitId" IN ($2)) ORDER BY "public"."PerformanceMetric"."timestamp" DESC LIMIT $3 OFFSET $4
-prisma:query SELECT "public"."Metric"."id", "public"."Metric"."workUnitId", "public"."Metric"."timestamp", "public"."Metric"."name", "public"."Metric"."value", "public"."Metric"."unit", "public"."Metric"."tags", "public"."Metric"."source", "public"."Metric"."quality", "public"."Metric"."createdAt" FROM "public"."Metric" WHERE ("public"."Metric"."timestamp" >= $1 AND "public"."Metric"."workUnitId" IN ($2)) ORDER BY "public"."Metric"."timestamp" DESC LIMIT $3 OFFSET $4
-prisma:query SELECT "public"."Alert"."id", "public"."Alert"."alertType", "public"."Alert"."severity", "public"."Alert"."message", "public"."Alert"."status", "public"."Alert"."timestamp", "public"."Alert"."acknowledgedBy", "public"."Alert"."acknowledgedAt", "public"."Alert"."resolvedBy", "public"."Alert"."resolvedAt", "public"."Alert"."notes", "public"."Alert"."createdAt", "public"."Alert"."updatedAt", "public"."Alert"."workUnitId" FROM "public"."Alert" WHERE "public"."Alert"."status" = $1 ORDER BY "public"."Alert"."severity" DESC OFFSET $2
-prisma:query SELECT "public"."Metric"."id", "public"."Metric"."workUnitId", "public"."Metric"."timestamp", "public"."Metric"."name", "public"."Metric"."value", "public"."Metric"."unit", "public"."Metric"."tags", "public"."Metric"."source", "public"."Metric"."quality", "public"."Metric"."createdAt" FROM "public"."Metric" WHERE "public"."Metric"."timestamp" >= $1 ORDER BY "public"."Metric"."timestamp" DESC LIMIT $2 OFFSET $3
-Saving conversation: {
-  sessionId: 'default',
-  messageCount: 1,
-  aiResponse: 'The current temperature of the Robotic Welding Cell 1 is 72.208580001025°C (measured at 6/18/2025, 9...'
-}
- POST /api/chat 200 in 36200ms
- ✓ Compiled /api/test-db in 215ms (57 modules)
- GET /api/test-db 200 in 474ms
- ✓ Compiled /api/metrics/ingest in 221ms (71 modules)
-prisma:query SELECT 1
-prisma:query SELECT 1
- GET /api/metrics/ingest 200 in 477ms
- ✓ Compiled /api/chat in 143ms (73 modules)
-prisma:query SELECT "public"."Enterprise"."id", "public"."Enterprise"."name", "public"."Enterprise"."code", "public"."Enterprise"."createdAt", "public"."Enterprise"."updatedAt" FROM "public"."Enterprise" WHERE 1=1 LIMIT $1 OFFSET $2
-prisma:query SELECT "public"."EnterpriseKPISummary"."id", "public"."EnterpriseKPISummary"."enterpriseId", "public"."EnterpriseKPISummary"."oee", "public"."EnterpriseKPISummary"."availability", "public"."EnterpriseKPISummary"."performance", "public"."EnterpriseKPISummary"."quality", "public"."EnterpriseKPISummary"."mtbf", "public"."EnterpriseKPISummary"."mttr", "public"."EnterpriseKPISummary"."productionCount", "public"."EnterpriseKPISummary"."scrapRate", "public"."EnterpriseKPISummary"."energyConsumption", "public"."EnterpriseKPISummary"."periodStart", "public"."EnterpriseKPISummary"."periodEnd", "public"."EnterpriseKPISummary"."createdAt", "public"."EnterpriseKPISummary"."updatedAt" FROM "public"."EnterpriseKPISummary" WHERE "public"."EnterpriseKPISummary"."enterpriseId" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Site"."id", "public"."Site"."enterpriseId", "public"."Site"."name", "public"."Site"."code", "public"."Site"."location", "public"."Site"."createdAt", "public"."Site"."updatedAt" FROM "public"."Site" WHERE "public"."Site"."enterpriseId" IN ($1) OFFSET $2
-prisma:query SELECT "public"."SiteKPISummary"."id", "public"."SiteKPISummary"."siteId", "public"."SiteKPISummary"."oee", "public"."SiteKPISummary"."availability", "public"."SiteKPISummary"."performance", "public"."SiteKPISummary"."quality", "public"."SiteKPISummary"."mtbf", "public"."SiteKPISummary"."mttr", "public"."SiteKPISummary"."productionCount", "public"."SiteKPISummary"."scrapRate", "public"."SiteKPISummary"."energyConsumption", "public"."SiteKPISummary"."periodStart", "public"."SiteKPISummary"."periodEnd", "public"."SiteKPISummary"."createdAt", "public"."SiteKPISummary"."updatedAt" FROM "public"."SiteKPISummary" WHERE "public"."SiteKPISummary"."siteId" IN ($1) OFFSET $2
-prisma:query SELECT "public"."WorkUnit"."id", "public"."WorkUnit"."workCenterId", "public"."WorkUnit"."name", "public"."WorkUnit"."code", "public"."WorkUnit"."equipmentType", "public"."WorkUnit"."model", "public"."WorkUnit"."serialNumber", "public"."WorkUnit"."manufacturerCode", "public"."WorkUnit"."installationDate", "public"."WorkUnit"."status", "public"."WorkUnit"."location", "public"."WorkUnit"."description", "public"."WorkUnit"."lastMaintenanceAt", "public"."WorkUnit"."createdAt", "public"."WorkUnit"."updatedAt" FROM "public"."WorkUnit" WHERE 1=1 OFFSET $1
-prisma:query SELECT "public"."WorkCenter"."id", "public"."WorkCenter"."areaId", "public"."WorkCenter"."name", "public"."WorkCenter"."code", "public"."WorkCenter"."createdAt", "public"."WorkCenter"."updatedAt" FROM "public"."WorkCenter" WHERE "public"."WorkCenter"."id" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Area"."id", "public"."Area"."siteId", "public"."Area"."name", "public"."Area"."code", "public"."Area"."createdAt", "public"."Area"."updatedAt" FROM "public"."Area" WHERE "public"."Area"."id" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Site"."id", "public"."Site"."enterpriseId", "public"."Site"."name", "public"."Site"."code", "public"."Site"."location", "public"."Site"."createdAt", "public"."Site"."updatedAt" FROM "public"."Site" WHERE "public"."Site"."id" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Alert"."id", "public"."Alert"."alertType", "public"."Alert"."severity", "public"."Alert"."message", "public"."Alert"."status", "public"."Alert"."timestamp", "public"."Alert"."acknowledgedBy", "public"."Alert"."acknowledgedAt", "public"."Alert"."resolvedBy", "public"."Alert"."resolvedAt", "public"."Alert"."notes", "public"."Alert"."createdAt", "public"."Alert"."updatedAt", "public"."Alert"."workUnitId" FROM "public"."Alert" WHERE ("public"."Alert"."status" = $1 AND "public"."Alert"."workUnitId" IN ($2)) OFFSET $3
-prisma:query SELECT "public"."PerformanceMetric"."id", "public"."PerformanceMetric"."timestamp", "public"."PerformanceMetric"."availability", "public"."PerformanceMetric"."performance", "public"."PerformanceMetric"."quality", "public"."PerformanceMetric"."oeeScore", "public"."PerformanceMetric"."runTime", "public"."PerformanceMetric"."plannedDowntime", "public"."PerformanceMetric"."unplannedDowntime", "public"."PerformanceMetric"."idealCycleTime", "public"."PerformanceMetric"."actualCycleTime", "public"."PerformanceMetric"."totalParts", "public"."PerformanceMetric"."goodParts", "public"."PerformanceMetric"."shift", "public"."PerformanceMetric"."operator", "public"."PerformanceMetric"."notes", "public"."PerformanceMetric"."createdAt", "public"."PerformanceMetric"."workUnitId" FROM "public"."PerformanceMetric" WHERE ("public"."PerformanceMetric"."timestamp" >= $1 AND "public"."PerformanceMetric"."workUnitId" IN ($2)) ORDER BY "public"."PerformanceMetric"."timestamp" DESC LIMIT $3 OFFSET $4
-prisma:query SELECT "public"."Metric"."id", "public"."Metric"."workUnitId", "public"."Metric"."timestamp", "public"."Metric"."name", "public"."Metric"."value", "public"."Metric"."unit", "public"."Metric"."tags", "public"."Metric"."source", "public"."Metric"."quality", "public"."Metric"."createdAt" FROM "public"."Metric" WHERE ("public"."Metric"."timestamp" >= $1 AND "public"."Metric"."workUnitId" IN ($2)) ORDER BY "public"."Metric"."timestamp" DESC LIMIT $3 OFFSET $4
-prisma:query SELECT "public"."Alert"."id", "public"."Alert"."alertType", "public"."Alert"."severity", "public"."Alert"."message", "public"."Alert"."status", "public"."Alert"."timestamp", "public"."Alert"."acknowledgedBy", "public"."Alert"."acknowledgedAt", "public"."Alert"."resolvedBy", "public"."Alert"."resolvedAt", "public"."Alert"."notes", "public"."Alert"."createdAt", "public"."Alert"."updatedAt", "public"."Alert"."workUnitId" FROM "public"."Alert" WHERE "public"."Alert"."status" = $1 ORDER BY "public"."Alert"."severity" DESC OFFSET $2
-prisma:query SELECT "public"."Metric"."id", "public"."Metric"."workUnitId", "public"."Metric"."timestamp", "public"."Metric"."name", "public"."Metric"."value", "public"."Metric"."unit", "public"."Metric"."tags", "public"."Metric"."source", "public"."Metric"."quality", "public"."Metric"."createdAt" FROM "public"."Metric" WHERE "public"."Metric"."timestamp" >= $1 ORDER BY "public"."Metric"."timestamp" DESC LIMIT $2 OFFSET $3
-Saving conversation: {
-  sessionId: 'default',
-  messageCount: 1,
-  aiResponse: "Hello! I'm here to help with any questions you might have about your manufacturing operations. I hav..."
-}
- POST /api/chat 200 in 35423ms
-prisma:query SELECT 1
-prisma:query SELECT "public"."Enterprise"."id", "public"."Enterprise"."name", "public"."Enterprise"."code", "public"."Enterprise"."createdAt", "public"."Enterprise"."updatedAt" FROM "public"."Enterprise" WHERE 1=1 LIMIT $1 OFFSET $2
-prisma:query SELECT "public"."EnterpriseKPISummary"."id", "public"."EnterpriseKPISummary"."enterpriseId", "public"."EnterpriseKPISummary"."oee", "public"."EnterpriseKPISummary"."availability", "public"."EnterpriseKPISummary"."performance", "public"."EnterpriseKPISummary"."quality", "public"."EnterpriseKPISummary"."mtbf", "public"."EnterpriseKPISummary"."mttr", "public"."EnterpriseKPISummary"."productionCount", "public"."EnterpriseKPISummary"."scrapRate", "public"."EnterpriseKPISummary"."energyConsumption", "public"."EnterpriseKPISummary"."periodStart", "public"."EnterpriseKPISummary"."periodEnd", "public"."EnterpriseKPISummary"."createdAt", "public"."EnterpriseKPISummary"."updatedAt" FROM "public"."EnterpriseKPISummary" WHERE "public"."EnterpriseKPISummary"."enterpriseId" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Site"."id", "public"."Site"."enterpriseId", "public"."Site"."name", "public"."Site"."code", "public"."Site"."location", "public"."Site"."createdAt", "public"."Site"."updatedAt" FROM "public"."Site" WHERE "public"."Site"."enterpriseId" IN ($1) OFFSET $2
-prisma:query SELECT "public"."SiteKPISummary"."id", "public"."SiteKPISummary"."siteId", "public"."SiteKPISummary"."oee", "public"."SiteKPISummary"."availability", "public"."SiteKPISummary"."performance", "public"."SiteKPISummary"."quality", "public"."SiteKPISummary"."mtbf", "public"."SiteKPISummary"."mttr", "public"."SiteKPISummary"."productionCount", "public"."SiteKPISummary"."scrapRate", "public"."SiteKPISummary"."energyConsumption", "public"."SiteKPISummary"."periodStart", "public"."SiteKPISummary"."periodEnd", "public"."SiteKPISummary"."createdAt", "public"."SiteKPISummary"."updatedAt" FROM "public"."SiteKPISummary" WHERE "public"."SiteKPISummary"."siteId" IN ($1) OFFSET $2
-prisma:query SELECT "public"."WorkUnit"."id", "public"."WorkUnit"."workCenterId", "public"."WorkUnit"."name", "public"."WorkUnit"."code", "public"."WorkUnit"."equipmentType", "public"."WorkUnit"."model", "public"."WorkUnit"."serialNumber", "public"."WorkUnit"."manufacturerCode", "public"."WorkUnit"."installationDate", "public"."WorkUnit"."status", "public"."WorkUnit"."location", "public"."WorkUnit"."description", "public"."WorkUnit"."lastMaintenanceAt", "public"."WorkUnit"."createdAt", "public"."WorkUnit"."updatedAt" FROM "public"."WorkUnit" WHERE 1=1 OFFSET $1
-prisma:query SELECT "public"."WorkCenter"."id", "public"."WorkCenter"."areaId", "public"."WorkCenter"."name", "public"."WorkCenter"."code", "public"."WorkCenter"."createdAt", "public"."WorkCenter"."updatedAt" FROM "public"."WorkCenter" WHERE "public"."WorkCenter"."id" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Area"."id", "public"."Area"."siteId", "public"."Area"."name", "public"."Area"."code", "public"."Area"."createdAt", "public"."Area"."updatedAt" FROM "public"."Area" WHERE "public"."Area"."id" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Site"."id", "public"."Site"."enterpriseId", "public"."Site"."name", "public"."Site"."code", "public"."Site"."location", "public"."Site"."createdAt", "public"."Site"."updatedAt" FROM "public"."Site" WHERE "public"."Site"."id" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Alert"."id", "public"."Alert"."alertType", "public"."Alert"."severity", "public"."Alert"."message", "public"."Alert"."status", "public"."Alert"."timestamp", "public"."Alert"."acknowledgedBy", "public"."Alert"."acknowledgedAt", "public"."Alert"."resolvedBy", "public"."Alert"."resolvedAt", "public"."Alert"."notes", "public"."Alert"."createdAt", "public"."Alert"."updatedAt", "public"."Alert"."workUnitId" FROM "public"."Alert" WHERE ("public"."Alert"."status" = $1 AND "public"."Alert"."workUnitId" IN ($2)) OFFSET $3
-prisma:query SELECT "public"."PerformanceMetric"."id", "public"."PerformanceMetric"."timestamp", "public"."PerformanceMetric"."availability", "public"."PerformanceMetric"."performance", "public"."PerformanceMetric"."quality", "public"."PerformanceMetric"."oeeScore", "public"."PerformanceMetric"."runTime", "public"."PerformanceMetric"."plannedDowntime", "public"."PerformanceMetric"."unplannedDowntime", "public"."PerformanceMetric"."idealCycleTime", "public"."PerformanceMetric"."actualCycleTime", "public"."PerformanceMetric"."totalParts", "public"."PerformanceMetric"."goodParts", "public"."PerformanceMetric"."shift", "public"."PerformanceMetric"."operator", "public"."PerformanceMetric"."notes", "public"."PerformanceMetric"."createdAt", "public"."PerformanceMetric"."workUnitId" FROM "public"."PerformanceMetric" WHERE ("public"."PerformanceMetric"."timestamp" >= $1 AND "public"."PerformanceMetric"."workUnitId" IN ($2)) ORDER BY "public"."PerformanceMetric"."timestamp" DESC LIMIT $3 OFFSET $4
-prisma:query SELECT "public"."Metric"."id", "public"."Metric"."workUnitId", "public"."Metric"."timestamp", "public"."Metric"."name", "public"."Metric"."value", "public"."Metric"."unit", "public"."Metric"."tags", "public"."Metric"."source", "public"."Metric"."quality", "public"."Metric"."createdAt" FROM "public"."Metric" WHERE ("public"."Metric"."timestamp" >= $1 AND "public"."Metric"."workUnitId" IN ($2)) ORDER BY "public"."Metric"."timestamp" DESC LIMIT $3 OFFSET $4
-prisma:query SELECT "public"."Alert"."id", "public"."Alert"."alertType", "public"."Alert"."severity", "public"."Alert"."message", "public"."Alert"."status", "public"."Alert"."timestamp", "public"."Alert"."acknowledgedBy", "public"."Alert"."acknowledgedAt", "public"."Alert"."resolvedBy", "public"."Alert"."resolvedAt", "public"."Alert"."notes", "public"."Alert"."createdAt", "public"."Alert"."updatedAt", "public"."Alert"."workUnitId" FROM "public"."Alert" WHERE "public"."Alert"."status" = $1 ORDER BY "public"."Alert"."severity" DESC OFFSET $2
-prisma:query SELECT "public"."Metric"."id", "public"."Metric"."workUnitId", "public"."Metric"."timestamp", "public"."Metric"."name", "public"."Metric"."value", "public"."Metric"."unit", "public"."Metric"."tags", "public"."Metric"."source", "public"."Metric"."quality", "public"."Metric"."createdAt" FROM "public"."Metric" WHERE "public"."Metric"."timestamp" >= $1 ORDER BY "public"."Metric"."timestamp" DESC LIMIT $2 OFFSET $3
-Saving conversation: {
-  sessionId: 'default',
-  messageCount: 1,
-  aiResponse: 'The current temperature of the Robotic Welding Cell 1 is 72.208580001025°C (measured at 6/18/2025, 9...'
-}
- POST /api/chat 200 in 34535ms
-prisma:query SELECT 1
-prisma:query SELECT "public"."Enterprise"."id", "public"."Enterprise"."name", "public"."Enterprise"."code", "public"."Enterprise"."createdAt", "public"."Enterprise"."updatedAt" FROM "public"."Enterprise" WHERE 1=1 LIMIT $1 OFFSET $2
-prisma:query SELECT "public"."EnterpriseKPISummary"."id", "public"."EnterpriseKPISummary"."enterpriseId", "public"."EnterpriseKPISummary"."oee", "public"."EnterpriseKPISummary"."availability", "public"."EnterpriseKPISummary"."performance", "public"."EnterpriseKPISummary"."quality", "public"."EnterpriseKPISummary"."mtbf", "public"."EnterpriseKPISummary"."mttr", "public"."EnterpriseKPISummary"."productionCount", "public"."EnterpriseKPISummary"."scrapRate", "public"."EnterpriseKPISummary"."energyConsumption", "public"."EnterpriseKPISummary"."periodStart", "public"."EnterpriseKPISummary"."periodEnd", "public"."EnterpriseKPISummary"."createdAt", "public"."EnterpriseKPISummary"."updatedAt" FROM "public"."EnterpriseKPISummary" WHERE "public"."EnterpriseKPISummary"."enterpriseId" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Site"."id", "public"."Site"."enterpriseId", "public"."Site"."name", "public"."Site"."code", "public"."Site"."location", "public"."Site"."createdAt", "public"."Site"."updatedAt" FROM "public"."Site" WHERE "public"."Site"."enterpriseId" IN ($1) OFFSET $2
-prisma:query SELECT "public"."SiteKPISummary"."id", "public"."SiteKPISummary"."siteId", "public"."SiteKPISummary"."oee", "public"."SiteKPISummary"."availability", "public"."SiteKPISummary"."performance", "public"."SiteKPISummary"."quality", "public"."SiteKPISummary"."mtbf", "public"."SiteKPISummary"."mttr", "public"."SiteKPISummary"."productionCount", "public"."SiteKPISummary"."scrapRate", "public"."SiteKPISummary"."energyConsumption", "public"."SiteKPISummary"."periodStart", "public"."SiteKPISummary"."periodEnd", "public"."SiteKPISummary"."createdAt", "public"."SiteKPISummary"."updatedAt" FROM "public"."SiteKPISummary" WHERE "public"."SiteKPISummary"."siteId" IN ($1) OFFSET $2
-prisma:query SELECT "public"."WorkUnit"."id", "public"."WorkUnit"."workCenterId", "public"."WorkUnit"."name", "public"."WorkUnit"."code", "public"."WorkUnit"."equipmentType", "public"."WorkUnit"."model", "public"."WorkUnit"."serialNumber", "public"."WorkUnit"."manufacturerCode", "public"."WorkUnit"."installationDate", "public"."WorkUnit"."status", "public"."WorkUnit"."location", "public"."WorkUnit"."description", "public"."WorkUnit"."lastMaintenanceAt", "public"."WorkUnit"."createdAt", "public"."WorkUnit"."updatedAt" FROM "public"."WorkUnit" WHERE 1=1 OFFSET $1
-prisma:query SELECT "public"."WorkCenter"."id", "public"."WorkCenter"."areaId", "public"."WorkCenter"."name", "public"."WorkCenter"."code", "public"."WorkCenter"."createdAt", "public"."WorkCenter"."updatedAt" FROM "public"."WorkCenter" WHERE "public"."WorkCenter"."id" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Area"."id", "public"."Area"."siteId", "public"."Area"."name", "public"."Area"."code", "public"."Area"."createdAt", "public"."Area"."updatedAt" FROM "public"."Area" WHERE "public"."Area"."id" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Site"."id", "public"."Site"."enterpriseId", "public"."Site"."name", "public"."Site"."code", "public"."Site"."location", "public"."Site"."createdAt", "public"."Site"."updatedAt" FROM "public"."Site" WHERE "public"."Site"."id" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Alert"."id", "public"."Alert"."alertType", "public"."Alert"."severity", "public"."Alert"."message", "public"."Alert"."status", "public"."Alert"."timestamp", "public"."Alert"."acknowledgedBy", "public"."Alert"."acknowledgedAt", "public"."Alert"."resolvedBy", "public"."Alert"."resolvedAt", "public"."Alert"."notes", "public"."Alert"."createdAt", "public"."Alert"."updatedAt", "public"."Alert"."workUnitId" FROM "public"."Alert" WHERE ("public"."Alert"."status" = $1 AND "public"."Alert"."workUnitId" IN ($2)) OFFSET $3
-prisma:query SELECT "public"."PerformanceMetric"."id", "public"."PerformanceMetric"."timestamp", "public"."PerformanceMetric"."availability", "public"."PerformanceMetric"."performance", "public"."PerformanceMetric"."quality", "public"."PerformanceMetric"."oeeScore", "public"."PerformanceMetric"."runTime", "public"."PerformanceMetric"."plannedDowntime", "public"."PerformanceMetric"."unplannedDowntime", "public"."PerformanceMetric"."idealCycleTime", "public"."PerformanceMetric"."actualCycleTime", "public"."PerformanceMetric"."totalParts", "public"."PerformanceMetric"."goodParts", "public"."PerformanceMetric"."shift", "public"."PerformanceMetric"."operator", "public"."PerformanceMetric"."notes", "public"."PerformanceMetric"."createdAt", "public"."PerformanceMetric"."workUnitId" FROM "public"."PerformanceMetric" WHERE ("public"."PerformanceMetric"."timestamp" >= $1 AND "public"."PerformanceMetric"."workUnitId" IN ($2)) ORDER BY "public"."PerformanceMetric"."timestamp" DESC LIMIT $3 OFFSET $4
-prisma:query SELECT "public"."Metric"."id", "public"."Metric"."workUnitId", "public"."Metric"."timestamp", "public"."Metric"."name", "public"."Metric"."value", "public"."Metric"."unit", "public"."Metric"."tags", "public"."Metric"."source", "public"."Metric"."quality", "public"."Metric"."createdAt" FROM "public"."Metric" WHERE ("public"."Metric"."timestamp" >= $1 AND "public"."Metric"."workUnitId" IN ($2)) ORDER BY "public"."Metric"."timestamp" DESC LIMIT $3 OFFSET $4
-prisma:query SELECT "public"."Alert"."id", "public"."Alert"."alertType", "public"."Alert"."severity", "public"."Alert"."message", "public"."Alert"."status", "public"."Alert"."timestamp", "public"."Alert"."acknowledgedBy", "public"."Alert"."acknowledgedAt", "public"."Alert"."resolvedBy", "public"."Alert"."resolvedAt", "public"."Alert"."notes", "public"."Alert"."createdAt", "public"."Alert"."updatedAt", "public"."Alert"."workUnitId" FROM "public"."Alert" WHERE "public"."Alert"."status" = $1 ORDER BY "public"."Alert"."severity" DESC OFFSET $2
-prisma:query SELECT "public"."Metric"."id", "public"."Metric"."workUnitId", "public"."Metric"."timestamp", "public"."Metric"."name", "public"."Metric"."value", "public"."Metric"."unit", "public"."Metric"."tags", "public"."Metric"."source", "public"."Metric"."quality", "public"."Metric"."createdAt" FROM "public"."Metric" WHERE "public"."Metric"."timestamp" >= $1 ORDER BY "public"."Metric"."timestamp" DESC LIMIT $2 OFFSET $3
-Saving conversation: {
-  sessionId: 'default',
-  messageCount: 1,
-  aiResponse: 'The current temperature of the Robotic Welding Cell 1 is 72.208580001025°C (measured at 6/18/2025, 9...'
-}
- POST /api/chat 200 in 34715ms
-prisma:query SELECT "public"."Enterprise"."id", "public"."Enterprise"."name", "public"."Enterprise"."code", "public"."Enterprise"."createdAt", "public"."Enterprise"."updatedAt" FROM "pu ✓ Compiled in 5.9s (475 modules)
-   Reload env: .env
- ✓ Compiled in 6.7s (533 modules)
-ummary"."id", "public"."EnterpriseKPISummary"."enterpriseId", "public"."EnterpriseKPISummary"."oee", "public"."EnterpriseKPISummary"."availability", "public"."EnterpriseKPISummary"."performance", "public"."EnterpriseKPISummary"."quality", "public"."EnterpriseKPISummary"."mtbf", "public"."EnterpriseKPISummary"."mttr", "public"."EnterpriseKPISummary"."productionCount", "public"."EnterpriseKPISummary"."scrapRate", "public"."EnterpriseKPISummary"."energyConsumption", "public"."EnterpriseKPISummary"."periodStart", "public"."EnterpriseKPISummary"."periodEnd", "public"."EnterpriseKPISummary"."createdAt", "public"."EnterpriseKPISummary"."updatedAt" FROM "public"."EnterpriseKPISummary" WHERE "public"."EnterpriseKPISummary"."enterpriseId" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Site"."id", "public"."Site"."enterpriseId", "public"."Site"."name", "public"."Site"."code", "public"."Site"."location", "public"."Site"."createdAt", "public"."Site"."updatedAt" FROM "public"."Site" WHERE "public"."Site"."enterpriseId" IN ($1) OFFSET $2
-prisma:query SELECT "public"."SiteKPISummary"."id", "public"."SiteKPISummary"."siteId", "public"."SiteKPISummary"."oee", "public"."SiteKPISummary"."availability", "public"."SiteKPISummary"."performance", "public"."SiteKPISummary"."quality", "public"."SiteKPISummary"."mtbf", "public"."SiteKPISummary"."mttr", "public"."SiteKPISummary"."productionCount", "public"."SiteKPISummary"."scrapRate", "public"."SiteKPISummary"."energyConsumption", "public"."SiteKPISummary"."periodStart", "public"."SiteKPISummary"."periodEnd", "public"."SiteKPISummary"."createdAt", "public"."SiteKPISummary"."updatedAt" FROM "public"."SiteKPISummary" WHERE "public"."SiteKPISummary"."siteId" IN ($1) OFFSET $2
-prisma:query SELECT "public"."WorkUnit"."id", "public"."WorkUnit"."workCenterId", "public"."WorkUnit"."name", "public"."WorkUnit"."code", "public"."WorkUnit"."equipmentType", "public"."WorkUnit"."model", "public"."WorkUnit"."serialNumber", "public"."WorkUnit"."manufacturerCode", "public"."WorkUnit"."installationDate", "public"."WorkUnit"."status", "public"."WorkUnit"."location", "public"."WorkUnit"."description", "public"."WorkUnit"."lastMaintenanceAt", "public"."WorkUnit"."createdAt", "public"."WorkUnit"."updatedAt" FROM "public"."WorkUnit" WHERE 1=1 OFFSET $1
-prisma:query SELECT "public"."WorkCenter"."id", "public"."WorkCenter"."areaId", "public"."WorkCenter"."name", "public"."WorkCenter"."code", "public"."WorkCenter"."createdAt", "public"."WorkCenter"."updatedAt" FROM "public"."WorkCenter" WHERE "public"."WorkCenter"."id" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Area"."id", "public"."Area"."siteId", "public"."Area"."name", "public"."Area"."code", "public"."Area"."createdAt", "public"."Area"."updatedAt" FROM "public"."Area" WHERE "public"."Area"."id" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Site"."id", "public"."Site"."enterpriseId", "public"."Site"."name", "public"."Site"."code", "public"."Site"."location", "public"."Site"."createdAt", "public"."Site"."updatedAt" FROM "public"."Site" WHERE "public"."Site"."id" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Alert"."id", "public"."Alert"."alertType", "public"."Alert"."severity", "public"."Alert"."message", "public"."Alert"."status", "public"."Alert"."timestamp", "public"."Alert"."acknowledgedBy", "public"."Alert"."acknowledgedAt", "public"."Alert"."resolvedBy", "public"."Alert"."resolvedAt", "public"."Alert"."notes", "public"."Alert"."createdAt", "public"."Alert"."updatedAt", "public"."Alert"."workUnitId" FROM "public"."Alert" WHERE ("public"."Alert"."status" = $1 AND "public"."Alert"."workUnitId" IN ($2)) OFFSET $3
-prisma:query SELECT "public"."PerformanceMetric"."id", "public"."PerformanceMetric"."timestamp", "public"."PerformanceMetric"."availability", "public"."PerformanceMetric"."performance", "public"."PerformanceMetric"."quality", "public"."PerformanceMetric"."oeeScore", "public"."PerformanceMetric"."runTime", "public"."PerformanceMetric"."plannedDowntime", "public"."PerformanceMetric"."unplannedDowntime", "public"."PerformanceMetric"."idealCycleTime", "public"."PerformanceMetric"."actualCycleTime", "public"."PerformanceMetric"."totalParts", "public"."PerformanceMetric"."goodParts", "public"."PerformanceMetric"."shift", "public"."PerformanceMetric"."operator", "public"."PerformanceMetric"."notes", "public"."PerformanceMetric"."createdAt", "public"."PerformanceMetric"."workUnitId" FROM "public"."PerformanceMetric" WHERE ("public"."PerformanceMetric"."timestamp" >= $1 AND "public"."PerformanceMetric"."workUnitId" IN ($2)) ORDER BY "public"."PerformanceMetric"."timestamp" DESC LIMIT $3 OFFSET $4
-prisma:query SELECT "public"."Metric"."id", "public"."Metric"."workUnitId", "public"."Metric"."timestamp", "public"."Metric"."name", "public"."Metric"."value", "public"."Metric"."unit", "public"."Metric"."tags", "public"."Metric"."source", "public"."Metric"."quality", "public"."Metric"."createdAt" FROM "public"."Metric" WHERE ("public"."Metric"."timestamp" >= $1 AND "public"."Metric"."workUnitId" IN ($2)) ORDER BY "public"."Metric"."timestamp" DESC LIMIT $3 OFFSET $4
-prisma:query SELECT "public"."Alert"."id", "public"."Alert"."alertType", "public"."Alert"."severity", "public"."Alert"."message", "public"."Alert"."status", "public"."Alert"."timestamp", "public"."Alert"."acknowledgedBy", "public"."Alert"."acknowledgedAt", "public"."Alert"."resolvedBy", "public"."Alert"."resolvedAt", "public"."Alert"."notes", "public"."Alert"."createdAt", "public"."Alert"."updatedAt", "public"."Alert"."workUnitId" FROM "public"."Alert" WHERE "public"."Alert"."status" = $1 ORDER BY "public"."Alert"."severity" DESC OFFSET $2
-prisma:query SELECT "public"."Metric"."id", "public"."Metric"."workUnitId", "public"."Metric"."timestamp", "public"."Metric"."name", "public"."Metric"."value", "public"."Metric"."unit", "public"."Metric"."tags", "public"."Metric"."source", "public"."Metric"."quality", "public"."Metric"."createdAt" FROM "public"."Metric" WHERE "public"."Metric"."timestamp" >= $1 ORDER BY "public"."Metric"."timestamp" DESC LIMIT $2 OFFSET $3
-Saving conversation: {
-  sessionId: 'default',
-  messageCount: 1,
-  aiResponse: "Hello! I'm here to help you understand your manufacturing operations through natural conversation. I..."
-}
- POST /api/chat 200 in 34181ms
-prisma:query SELECT 1
-prisma:query SELECT "public"."Enterprise"."id", "public"."Enterprise"."name", "public"."Enterprise"."code", "public"."Enterprise"."createdAt", "public"."Enterprise"."updatedAt" FROM "public"."Enterprise" WHERE 1=1 LIMIT $1 OFFSET $2
-prisma:query SELECT "public"."EnterpriseKPISummary"."id", "public"."EnterpriseKPISummary"."enterpriseId", "public"."EnterpriseKPISummary"."oee", "public"."EnterpriseKPISummary"."availability", "public"."EnterpriseKPISummary"."performance", "public"."EnterpriseKPISummary"."quality", "public"."EnterpriseKPISummary"."mtbf", "public"."EnterpriseKPISummary"."mttr", "public"."EnterpriseKPISummary"."productionCount", "public"."EnterpriseKPISummary"."scrapRate", "public"."EnterpriseKPISummary"."energyConsumption", "public"."EnterpriseKPISummary"."periodStart", "public"."EnterpriseKPISummary"."periodEnd", "public"."EnterpriseKPISummary"."createdAt", "public"."EnterpriseKPISummary"."updatedAt" FROM "public"."EnterpriseKPISummary" WHERE "public"."EnterpriseKPISummary"."enterpriseId" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Site"."id", "public"."Site"."enterpriseId", "public"."Site"."name", "public"."Site"."code", "public"."Site"."location", "public"."Site"."createdAt", "public"."Site"."updatedAt" FROM "public"."Site" WHERE "public"."Site"."enterpriseId" IN ($1) OFFSET $2
-prisma:query SELECT "public"."SiteKPISummary"."id", "public"."SiteKPISummary"."siteId", "public"."SiteKPISummary"."oee", "public"."SiteKPISummary"."availability", "public"."SiteKPISummary"."performance", "public"."SiteKPISummary"."quality", "public"."SiteKPISummary"."mtbf", "public"."SiteKPISummary"."mttr", "public"."SiteKPISummary"."productionCount", "public"."SiteKPISummary"."scrapRate", "public"."SiteKPISummary"."energyConsumption", "public"."SiteKPISummary"."periodStart", "public"."SiteKPISummary"."periodEnd", "public"."SiteKPISummary"."createdAt", "public"."SiteKPISummary"."updatedAt" FROM "public"."SiteKPISummary" WHERE "public"."SiteKPISummary"."siteId" IN ($1) OFFSET $2
-prisma:query SELECT "public"."WorkUnit"."id", "public"."WorkUnit"."workCenterId", "public"."WorkUnit"."name", "public"."WorkUnit"."code", "public"."WorkUnit"."equipmentType", "public"."WorkUnit"."model", "public"."WorkUnit"."serialNumber", "public"."WorkUnit"."manufacturerCode", "public"."WorkUnit"."installationDate", "public"."WorkUnit"."status", "public"."WorkUnit"."location", "public"."WorkUnit"."description", "public"."WorkUnit"."lastMaintenanceAt", "public"."WorkUnit"."createdAt", "public"."WorkUnit"."updatedAt" FROM "public"."WorkUnit" WHERE 1=1 OFFSET $1
-prisma:query SELECT "public"."WorkCenter"."id", "public"."WorkCenter"."areaId", "public"."WorkCenter"."name", "public"."WorkCenter"."code", "public"."WorkCenter"."createdAt", "public"."WorkCenter"."updatedAt" FROM "public"."WorkCenter" WHERE "public"."WorkCenter"."id" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Area"."id", "public"."Area"."siteId", "public"."Area"."name", "public"."Area"."code", "public"."Area"."createdAt", "public"."Area"."updatedAt" FROM "public"."Area" WHERE "public"."Area"."id" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Site"."id", "public"."Site"."enterpriseId", "public"."Site"."name", "public"."Site"."code", "public"."Site"."location", "public"."Site"."createdAt", "public"."Site"."updatedAt" FROM "public"."Site" WHERE "public"."Site"."id" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Alert"."id", "public"."Alert"."alertType", "public"."Alert"."severity", "public"."Alert"."message", "public"."Alert"."status", "public"."Alert"."timestamp", "public"."Alert"."acknowledgedBy", "public"."Alert"."acknowledgedAt", "public"."Alert"."resolvedBy", "public"."Alert"."resolvedAt", "public"."Alert"."notes", "public"."Alert"."createdAt", "public"."Alert"."updatedAt", "public"."Alert"."workUnitId" FROM "public"."Alert" WHERE ("public"."Alert"."status" = $1 AND "public"."Alert"."workUnitId" IN ($2)) OFFSET $3
-prisma:query SELECT "public"."PerformanceMetric"."id", "public"."PerformanceMetric"."timestamp", "public"."PerformanceMetric"."availability", "public"."PerformanceMetric"."performance", "public"."PerformanceMetric"."quality", "public"."PerformanceMetric"."oeeScore", "public"."PerformanceMetric"."runTime", "public"."PerformanceMetric"."plannedDowntime", "public"."PerformanceMetric"."unplannedDowntime", "public"."PerformanceMetric"."idealCycleTime", "public"."PerformanceMetric"."actualCycleTime", "public"."PerformanceMetric"."totalParts", "public"."PerformanceMetric"."goodParts", "public"."PerformanceMetric"."shift", "public"."PerformanceMetric"."operator", "public"."PerformanceMetric"."notes", "public"."PerformanceMetric"."createdAt", "public"."PerformanceMetric"."workUnitId" FROM "public"."PerformanceMetric" WHERE ("public"."PerformanceMetric"."timestamp" >= $1 AND "public"."PerformanceMetric"."workUnitId" IN ($2)) ORDER BY "public"."PerformanceMetric"."timestamp" DESC LIMIT $3 OFFSET $4
-prisma:query SELECT "public"."Metric"."id", "public"."Metric"."workUnitId", "public"."Metric"."timestamp", "public"."Metric"."name", "public"."Metric"."value", "public"."Metric"."unit", "public"."Metric"."tags", "public"."Metric"."source", "public"."Metric"."quality", "public"."Metric"."createdAt" FROM "public"."Metric" WHERE ("public"."Metric"."timestamp" >= $1 AND "public"."Metric"."workUnitId" IN ($2)) ORDER BY "public"."Metric"."timestamp" DESC LIMIT $3 OFFSET $4
-prisma:query SELECT "public"."Alert"."id", "public"."Alert"."alertType", "public"."Alert"."severity", "public"."Alert"."message", "public"."Alert"."status", "public"."Alert"."timestamp", "public"."Alert"."acknowledgedBy", "public"."Alert"."acknowledgedAt", "public"."Alert"."resolvedBy", "public"."Alert"."resolvedAt", "public"."Alert"."notes", "public"."Alert"."createdAt", "public"."Alert"."updatedAt", "public"."Alert"."workUnitId" FROM "public"."Alert" WHERE "public"."Alert"."status" = $1 ORDER BY "public"."Alert"."severity" DESC OFFSET $2
-prisma:query SELECT "public"."Metric"."id", "public"."Metric"."workUnitId", "public"."Metric"."timestamp", "public"."Metric"."name", "public"."Metric"."value", "public"."Metric"."unit", "public"."Metric"."tags", "public"."Metric"."source", "public"."Metric"."quality", "public"."Metric"."createdAt" FROM "public"."Metric" WHERE "public"."Metric"."timestamp" >= $1 ORDER BY "public"."Metric"."timestamp" DESC LIMIT $2 OFFSET $3
-Saving conversation: {
-  sessionId: 'default',
-  messageCount: 1,
-  aiResponse: "Hello! I'm here to help you understand your manufacturing operations through natural conversation. I..."
-}
- POST /api/chat 200 in 38222ms
-prisma:query SELECT 1
-prisma:query SELECT "public"."Enterprise"."id", "public"."Enterprise"."name", "public"."Enterprise"."code", "public"."Enterprise"."createdAt", "public"."Enterprise"."updatedAt" FROM "public"."Enterprise" WHERE 1=1 LIMIT $1 OFFSET $2
-prisma:query SELECT "public"."EnterpriseKPISummary"."id", "public"."EnterpriseKPISummary"."enterpriseId", "public"."EnterpriseKPISummary"."oee", "public"."EnterpriseKPISummary"."availability", "public"."EnterpriseKPISummary"."performance", "public"."EnterpriseKPISummary"."quality", "public"."EnterpriseKPISummary"."mtbf", "public"."EnterpriseKPISummary"."mttr", "public"."EnterpriseKPISummary"."productionCount", "public"."EnterpriseKPISummary"."scrapRate", "public"."EnterpriseKPISummary"."energyConsumption", "public"."EnterpriseKPISummary"."periodStart", "public"."EnterpriseKPISummary"."periodEnd", "public"."EnterpriseKPISummary"."createdAt", "public"."EnterpriseKPISummary"."updatedAt" FROM "public"."EnterpriseKPISummary" WHERE "public"."EnterpriseKPISummary"."enterpriseId" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Site"."id", "public"."Site"."enterpriseId", "public"."Site"."name", "public"."Site"."code", "public"."Site"."location", "public"."Site"."createdAt", "public"."Site"."updatedAt" FROM "public"."Site" WHERE "public"."Site"."enterpriseId" IN ($1) OFFSET $2
-prisma:query SELECT "public"."SiteKPISummary"."id", "public"."SiteKPISummary"."siteId", "public"."SiteKPISummary"."oee", "public"."SiteKPISummary"."availability", "public"."SiteKPISummary"."performance", "public"."SiteKPISummary"."quality", "public"."SiteKPISummary"."mtbf", "public"."SiteKPISummary"."mttr", "public"."SiteKPISummary"."productionCount", "public"."SiteKPISummary"."scrapRate", "public"."SiteKPISummary"."energyConsumption", "public"."SiteKPISummary"."periodStart", "public"."SiteKPISummary"."periodEnd", "public"."SiteKPISummary"."createdAt", "public"."SiteKPISummary"."updatedAt" FROM "public"."SiteKPISummary" WHERE "public"."SiteKPISummary"."siteId" IN ($1) OFFSET $2
-prisma:query SELECT "public"."WorkUnit"."id", "public"."WorkUnit"."workCenterId", "public"."WorkUnit"."name", "public"."WorkUnit"."code", "public"."WorkUnit"."equipmentType", "public"."WorkUnit"."model", "public"."WorkUnit"."serialNumber", "public"."WorkUnit"."manufacturerCode", "public"."WorkUnit"."installationDate", "public"."WorkUnit"."status", "public"."WorkUnit"."location", "public"."WorkUnit"."description", "public"."WorkUnit"."lastMaintenanceAt", "public"."WorkUnit"."createdAt", "public"."WorkUnit"."updatedAt" FROM "public"."WorkUnit" WHERE 1=1 OFFSET $1
-prisma:query SELECT "public"."WorkCenter"."id", "public"."WorkCenter"."areaId", "public"."WorkCenter"."name", "public"."WorkCenter"."code", "public"."WorkCenter"."createdAt", "public"."WorkCenter"."updatedAt" FROM "public"."WorkCenter" WHERE "public"."WorkCenter"."id" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Area"."id", "public"."Area"."siteId", "public"."Area"."name", "public"."Area"."code", "public"."Area"."createdAt", "public"."Area"."updatedAt" FROM "public"."Area" WHERE "public"."Area"."id" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Site"."id", "public"."Site"."enterpriseId", "public"."Site"."name", "public"."Site"."code", "public"."Site"."location", "public"."Site"."createdAt", "public"."Site"."updatedAt" FROM "public"."Site" WHERE "public"."Site"."id" IN ($1) OFFSET $2
-prisma:query SELECT "public"."Alert"."id", "public"."Alert"."alertType", "public"."Alert"."severity", "public"."Alert"."message", "public"."Alert"."status", "public"."Alert"."timestamp", "public"."Alert"."acknowledgedBy", "public"."Alert"."acknowledgedAt", "public"."Alert"."resolvedBy", "public"."Alert"."resolvedAt", "public"."Alert"."notes", "public"."Alert"."createdAt", "public"."Alert"."updatedAt", "public"."Alert"."workUnitId" FROM "public"."Alert" WHERE ("public"."Alert"."status" = $1 AND "public"."Alert"."workUnitId" IN ($2)) OFFSET $3
-prisma:query SELECT "public"."PerformanceMetric"."id", "public"."PerformanceMetric"."timestamp", "public"."PerformanceMetric"."availability", "public"."PerformanceMetric"."performance", "public"."PerformanceMetric"."quality", "public"."PerformanceMetric"."oeeScore", "public"."PerformanceMetric"."runTime", "public"."PerformanceMetric"."plannedDowntime", "public"."PerformanceMetric"."unplannedDowntime", "public"."PerformanceMetric"."idealCycleTime", "public"."PerformanceMetric"."actualCycleTime", "public"."PerformanceMetric"."totalParts", "public"."PerformanceMetric"."goodParts", "public"."PerformanceMetric"."shift", "public"."PerformanceMetric"."operator", "public"."PerformanceMetric"."notes", "public"."PerformanceMetric"."createdAt", "public"."PerformanceMetric"."workUnitId" FROM "public"."PerformanceMetric" WHERE ("public"."PerformanceMetric"."timestamp" >= $1 AND "public"."PerformanceMetric"."workUnitId" IN ($2)) ORDER BY "public"."PerformanceMetric"."timestamp" DESC LIMIT $3 OFFSET $4
-prisma:query SELECT "public"."Metric"."id", "public"."Metric"."workUnitId", "public"."Metric"."timestamp", "public"."Metric"."name", "public"."Metric"."value", "public"."Metric"."unit", "public"."Metric"."tags", "public"."Metric"."source", "public"."Metric"."quality", "public"."Metric"."createdAt" FROM "public"."Metric" WHERE ("public"."Metric"."timestamp" >= $1 AND "public"."Metric"."workUnitId" IN ($2)) ORDER BY "public"."Metric"."timestamp" DESC LIMIT $3 OFFSET $4
-prisma:query SELECT "public"."Alert"."id", "public"."Alert"."alertType", "public"."Alert"."severity", "public"."Alert"."message", "public"."Alert"."status", "public"."Alert"."timestamp", "public"."Alert"."acknowledgedBy", "public"."Alert"."acknowledgedAt", "public"."Alert"."resolvedBy", "public"."Alert"."resolvedAt", "public"."Alert"."notes", "public"."Alert"."createdAt", "public"."Alert"."updatedAt", "public"."Alert"."workUnitId" FROM "public"."Alert" WHERE "public"."Alert"."status" = $1 ORDER BY "public"."Alert"."severity" DESC OFFSET $2
-prisma:query SELECT "public"."Metric"."id", "public"."Metric"."workUnitId", "public"."Metric"."timestamp", "public"."Metric"."name", "public"."Metric"."value", "public"."Metric"."unit", "public"."Metric"."tags", "public"."Metric"."source", "public"."Metric"."quality", "public"."Metric"."createdAt" FROM "public"."Metric" WHERE "public"."Metric"."timestamp" >= $1 ORDER BY "public"."Metric"."timestamp" DESC LIMIT $2 OFFSET $3
-Saving conversation: {
-  sessionId: 'default',
-  messageCount: 1,
-  aiResponse: "Hello! I'm here to help you understand your manufacturing operations through natural conversation. I..."
-}
- POST /api/chat 200 in 73591ms
-[?25h
-urce/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack-config.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack-config.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/diagnostics/db-queries/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/diagnostics/db-queries/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/diagnostics/db-queries/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack-config.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack-config.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db'
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/test-db/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/test-db/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/test-db/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
- ✓ Compiled in 532ms (697 modules)
- ✓ Compiled in 442ms (697 modules)
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics'
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/metrics/ingest/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/metrics/ingest/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/metrics/ingest/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics'
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/metrics/ingest/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/metrics/ingest/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/metrics/ingest/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack-config.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack-config.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
- ✓ Compiled in 846ms (697 modules)
- ✓ Compiled in 343ms (697 modules)
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics'
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/metrics/ingest/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/metrics/ingest/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/metrics/ingest/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics'
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/metrics/ingest/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/metrics/ingest/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/metrics/ingest/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
- ✓ Compiled in 457ms (697 modules)
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics'
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/metrics/ingest/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/metrics/ingest/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/metrics/ingest/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics'
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/metrics/ingest/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/metrics/ingest/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/metrics/ingest/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack-config.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack-config.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
- ✓ Compiled in 425ms (697 modules)
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest'
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/metrics/ingest/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/metrics/ingest/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/metrics/ingest/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest'
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/metrics/ingest/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/metrics/ingest/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/metrics/ingest/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
- ✓ Compiled in 3.5s (697 modules)
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db'
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/test-db/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/test-db/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/test-db/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/metrics/ingest/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/metrics/ingest/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/metrics/ingest/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/diagnostics/db-connection/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-connection/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/diagnostics/db-connection/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/diagnostics/db-connection/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-connection/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/diagnostics/db-queries/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/diagnostics/db-queries/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/diagnostics/db-queries/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db'
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/test-db/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/test-db/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/test-db/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/metrics/ingest/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/metrics/ingest/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/metrics/ingest/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/diagnostics/db-queries/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/diagnostics/db-queries/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/diagnostics/db-queries/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
- ✓ Compiled in 4.2s (663 modules)
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api'
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/test-db/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/test-db/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/test-db/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/metrics/ingest/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/metrics/ingest/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/metrics/ingest/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-   Reload env: .env
- ✓ Compiled in 9.3s (769 modules)
- ✓ Compiled in 290ms (697 modules)
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db'
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/test-db/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/test-db/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/test-db/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/metrics/ingest/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/metrics/ingest/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/metrics/ingest/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/diagnostics/db-queries/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/diagnostics/db-queries/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/diagnostics/db-queries/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db'
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/test-db/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/test-db/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/test-db/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/parse-module.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/parse-module.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-flight-client-module-loader.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-flight-client-module-loader.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-flight-client-module-loader.js
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/diagnostics/db-queries/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/diagnostics/db-queries/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/diagnostics/db-queries/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/parse-module.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/parse-module.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-flight-client-module-loader.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-flight-client-module-loader.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-flight-client-module-loader.js
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/metrics/ingest/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/metrics/ingest/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/metrics/ingest/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/parse-module.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/parse-module.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-flight-client-module-loader.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-flight-client-module-loader.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-flight-client-module-loader.js
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/diagnostics/db-connection/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-connection/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/diagnostics/db-connection/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/diagnostics/db-connection/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-connection/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/parse-module.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/parse-module.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-flight-client-module-loader.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-flight-client-module-loader.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-flight-client-module-loader.js
- ✓ Compiled in 2s (697 modules)
- ✓ Compiled in 498ms (697 modules)
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db'
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db'
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/test-db/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/test-db/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/test-db/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/diagnostics/db-queries/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/diagnostics/db-queries/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/diagnostics/db-queries/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/metrics/ingest/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/metrics/ingest/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/metrics/ingest/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/test-db/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/test-db/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/test-db/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/diagnostics/db-connection/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-connection/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/diagnostics/db-connection/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/diagnostics/db-connection/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-connection/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/diagnostics/db-queries/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/diagnostics/db-queries/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/diagnostics/db-queries/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/metrics/ingest/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/metrics/ingest/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/metrics/ingest/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/diagnostics/db-connection/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-connection/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/diagnostics/db-connection/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/diagnostics/db-connection/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-connection/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
- ○ Compiling /_error ...
- ✓ Compiled /_error in 2.4s (699 modules)
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api'
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/test-db/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/test-db/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/test-db/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/diagnostics/db-connection/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-connection/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/diagnostics/db-connection/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/diagnostics/db-connection/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-connection/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/metrics/ingest/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/metrics/ingest/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/metrics/ingest/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/diagnostics/db-queries/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/diagnostics/db-queries/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/diagnostics/db-queries/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api'
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/test-db/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/test-db/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/test-db/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/metrics/ingest/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/metrics/ingest/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/metrics/ingest/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/diagnostics/db-queries/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/diagnostics/db-queries/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/api/diagnostics/db-queries/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js)
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
-<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
-<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+ ⚠ Disabling SWC Minifer will not be an option in the next major version. Please report any issues you may be experiencing to https://github.com/vercel/next.js/issues
+ ✓ Ready in 15.7s
+ ✓ Compiled /src/middleware in 261ms (150 modules)
+ ○ Compiling /documentation ...
+(node:203706) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ Compiled /admin/plugins in 31.6s (652 modules)
+ ⚠ Unsupported metadata viewport is configured in metadata export in /dashboard/import. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /connections. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin/plugins. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /documentation. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin/plugins 200 in 2071ms
+ ○ Compiling /org/serviceaccounts ...
+ ✓ Compiled /org/serviceaccounts in 722ms (674 modules)
+ ⚠ Unsupported metadata viewport is configured in metadata export in /org/serviceaccounts. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /org/serviceaccounts 200 in 1272ms
+ ○ Compiling /dashboards/library-panels ...
+ ✓ Compiled /dashboards/library-panels in 695ms (704 modules)
+ ⚠ Unsupported metadata viewport is configured in metadata export in /dashboards/library-panels. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /dashboards/library-panels 200 in 1239ms
+ ○ Compiling /alerting/groups ...
+ ✓ Compiled /alerting/groups in 875ms (714 modules)
+ ⚠ Unsupported metadata viewport is configured in metadata export in /alerting/groups. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /alerting/groups 200 in 1420ms
+ ○ Compiling /alerting/admin ...
+ ✓ Compiled /alerting/admin in 751ms (720 modules)
+ ⚠ Unsupported metadata viewport is configured in metadata export in /alerting/admin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /alerting/admin 200 in 1322ms
+ ○ Compiling /alerting/state-history ...
+ ✓ Compiled /alerting/state-history in 822ms (726 modules)
+ ⚠ Unsupported metadata viewport is configured in metadata export in /alerting/state-history. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /alerting/state-history 200 in 1394ms
+ ○ Compiling /alerting/contact-points ...
+ ✓ Compiled /alerting/contact-points in 875ms (732 modules)
+ ⚠ Unsupported metadata viewport is configured in metadata export in /alerting/contact-points. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /alerting/contact-points 200 in 1456ms
+ ○ Compiling /alerting/notification-policies ...
+ ✓ Compiled /alerting/notification-policies in 955ms (738 modules)
+ ⚠ Unsupported metadata viewport is configured in metadata export in /alerting/notification-policies. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /alerting/notification-policies 200 in 1560ms
+ ○ Compiling /admin/stats ...
+ ✓ Compiled /admin/stats in 976ms (744 modules)
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin/stats. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin/stats 200 in 1723ms
+ ○ Compiling /admin/extensions ...
+ ✓ Compiled /admin/extensions in 988ms (750 modules)
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin/extensions. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin/extensions 200 in 1548ms
+ ○ Compiling /admin/access ...
+ ✓ Compiled /admin/access in 1009ms (756 modules)
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin/access. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin/access 200 in 1613ms
+ ○ Compiling /admin/ldap ...
+ ✓ Compiled /admin/ldap in 970ms (762 modules)
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin/ldap. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin/ldap 200 in 1526ms
+ ○ Compiling /admin/authentication ...
+ ✓ Compiled /admin/authentication in 971ms (768 modules)
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin/authentication. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin/authentication 200 in 1569ms
+ ○ Compiling /admin/config ...
+ ✓ Compiled /admin/config in 1099ms (774 modules)
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin/config. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin/config 200 in 1721ms
+ ○ Compiling /admin/storage ...
+ ✓ Compiled /admin/storage in 1180ms (780 modules)
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin/storage. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin/storage 200 in 1806ms
+ ○ Compiling /admin/migrations ...
+ ✓ Compiled /admin/migrations in 1104ms (786 modules)
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin/migrations. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin/migrations 200 in 1749ms
+ ○ Compiling /admin/feature-toggles ...
+ ✓ Compiled /admin/feature-toggles in 1174ms (792 modules)
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin/feature-toggles. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /admin/feature-toggles 200 in 1755ms
+ ○ Compiling /org/new ...
+ ✓ Compiled /org/new in 1169ms (798 modules)
+ ⚠ Unsupported metadata viewport is configured in metadata export in /org/new. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /org/new 200 in 1757ms
+ ○ Compiling /profile/preferences ...
+ ✓ Compiled /profile/preferences in 1342ms (804 modules)
+ ⚠ Unsupported metadata viewport is configured in metadata export in /profile/preferences. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /profile/preferences 200 in 1987ms
+ ○ Compiling /profile/sessions ...
+ ✓ Compiled /profile/sessions in 1372ms (810 modules)
+ ⚠ Unsupported metadata viewport is configured in metadata export in /profile/sessions. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /profile/sessions 200 in 2000ms
+ ○ Compiling /profile/tokens ...
+ ✓ Compiled /profile/tokens in 1322ms (816 modules)
+ ⚠ Unsupported metadata viewport is configured in metadata export in /profile/tokens. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /profile/tokens 200 in 1961ms
+ ○ Compiling /profile/password ...
+ ✓ Compiled /profile/password in 1485ms (822 modules)
+ ⚠ Unsupported metadata viewport is configured in metadata export in /profile/password. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /profile/password 200 in 2150ms
+ ○ Compiling /profile/notifications ...
+ ✓ Compiled /profile/notifications in 1484ms (828 modules)
+ ⚠ Unsupported metadata viewport is configured in metadata export in /profile/notifications. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /profile/notifications 200 in 2223ms
+ ○ Compiling /profile/orgs ...
+ ✓ Compiled /profile/orgs in 1504ms (834 modules)
+ ⚠ Unsupported metadata viewport is configured in metadata export in /profile/orgs. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /profile/orgs 200 in 2149ms
+ ○ Compiling /profile/teams ...
+ ✓ Compiled /profile/teams in 1565ms (840 modules)
+ ⚠ Unsupported metadata viewport is configured in metadata export in /profile/teams. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /profile/teams 200 in 2169ms
+ ○ Compiling /playlists ...
+ ⚠ ./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+
+./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+ ⚠ Unsupported metadata viewport is configured in metadata export in /playlists. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /playlists 200 in 2398ms
+ ⚠ ./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+
+./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+ ⚠ ./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+
+./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+ ⚠ Unsupported metadata viewport is configured in metadata export in /dashboards/snapshots. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /dashboards/snapshots 200 in 2004ms
+ ⚠ ./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+
+./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+ ⚠ ./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+
+./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+ ⚠ Unsupported metadata viewport is configured in metadata export in /dashboards/public. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /dashboards/public 200 in 1982ms
+ ⚠ ./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+
+./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+ ⚠ ./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+
+./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+ ⚠ Unsupported metadata viewport is configured in metadata export in /help. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /help 200 in 1996ms
+ ⚠ ./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+
+./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+ ⚠ ./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+
+./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+ ⚠ Unsupported metadata viewport is configured in metadata export in /about. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /about 200 in 2228ms
+ ⚠ ./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+
+./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+ ⚠ ./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+
+./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+ ⚠ Unsupported metadata viewport is configured in metadata export in /search. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /search 200 in 2344ms
+ ⚠ ./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+
+./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+ ⚠ ./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+
+./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+ ⚠ Unsupported metadata viewport is configured in metadata export in /bookmarks. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /bookmarks 200 in 2575ms
+ ⚠ ./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+
+./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+ ⚠ ./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+
+./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+ ⚠ Unsupported metadata viewport is configured in metadata export in /shortcuts. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /shortcuts 200 in 2180ms
+ ⚠ ./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+
+./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+ ⚠ ./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+
+./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+ ⚠ Unsupported metadata viewport is configured in metadata export in /reports. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /reports 200 in 2267ms
+ ⚠ ./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+
+./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+ ⚠ ./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+
+./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+ ⚠ Unsupported metadata viewport is configured in metadata export in /annotations. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /annotations 200 in 2240ms
+ ⚠ ./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+
+./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+ ⚠ ./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+
+./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+ ⚠ Unsupported metadata viewport is configured in metadata export in /live. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /live 200 in 2340ms
+ ⚠ ./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+
+./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+ ⚠ ./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+
+./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+ ⚠ Unsupported metadata viewport is configured in metadata export in /monitoring. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /monitoring 200 in 2497ms
+ ⚠ ./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+
+./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+ ⚠ ./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+
+./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx
+ ⚠ Unsupported metadata viewport is configured in metadata export in /logs. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /logs 200 in 2584ms
+   Reload env: .env.local
+ ⚠ ./src/app/playlists/page.tsx
+Attempted import error: 'PageLayout' is not exported from '@/components/layout/PageLayout' (imported as 'PageLayout').
+
+Import trace for requested module:
+./src/app/playlists/page.tsx

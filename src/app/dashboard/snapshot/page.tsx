@@ -5,10 +5,12 @@
 
 'use client';
 
+import React from 'react';
+
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Camera, Share2, Clock, Shield, Globe, Link2, Copy, Check } from 'lucide-react';
-import { PageLayout } from '@/components/layout/PageLayout';
+import PageLayout from '@/components/layout/PageLayout';
 import { cn } from '@/lib/utils';
 
 export default function DashboardSnapshotPage() {

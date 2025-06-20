@@ -1,3 +1,5 @@
+import React from 'react';
+
 /**
  * Test Dashboard Page - Route for testing the plugin system
  * URL: /test-dashboard

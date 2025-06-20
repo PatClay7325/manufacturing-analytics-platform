@@ -1,14 +1,16 @@
 import React from 'react';
 import { ChatMessage as ChatMessageType } from '@/models/chat';
 import { formatDistanceToNow } from 'date-fns';
+import { ThoughtCards } from './ThoughtCards';
 
 interface ChatMessageProps {
-  message?: Pick<ChatMessageType, 'role' | 'content'>;
+  message?: Pick<ChatMessageType, 'role' | 'content' | 'thoughts'>;
   timestamp?: string;
   isLoading?: boolean;
+  onThoughtSelect?: (thought: string) => void;
 }
 
-export default function ChatMessage({ message, timestamp, isLoading = false }: ChatMessageProps) {
+export default function ChatMessage({ message, timestamp, isLoading = false, onThoughtSelect }: ChatMessageProps) {
   const isUser = message?.role === 'user';
 
   // Format timestamp if provided
@@ -40,6 +42,13 @@ export default function ChatMessage({ message, timestamp, isLoading = false }: C
               <div className={`text-xs mt-1 ${isUser ? 'text-blue-200' : 'text-gray-500'}`}>
                 {formattedTime}
               </div>
+            )}
+            {/* Integrate ThoughtCards for assistant messages */}
+            {message?.role === 'assistant' && message.thoughts && message.thoughts.length > 0 && onThoughtSelect && (
+              <ThoughtCards
+                thoughts={message.thoughts}
+                onSelect={onThoughtSelect}
+              />
             )}
           </>
         )}

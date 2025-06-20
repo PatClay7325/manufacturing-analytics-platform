@@ -5,6 +5,8 @@
 
 'use client';
 
+import React from 'react';
+
 import { useState, useEffect } from 'react';
 import { Plus, Play, Pause, Edit, Trash2, List, Clock, Monitor } from 'lucide-react';
 import Link from 'next/link';

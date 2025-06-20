@@ -130,3 +130,5 @@ export default function TabNavigation({
     </nav>
   );
 }
+
+export default TabNavigation;

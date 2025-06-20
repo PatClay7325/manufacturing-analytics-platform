@@ -2,7 +2,7 @@ import React from 'react';
 
 import './globals.css';
 import { Inter } from 'next/font/google';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import ErrorBoundary from '@/components/common/ErrorBoundary';
 import GrafanaLayout from '@/components/layout/GrafanaLayout';
 // import MockServerProvider from '@/components/providers/MockServerProvider';
@@ -14,7 +14,6 @@ export const metadata: Metadata = {
   description: 'Advanced manufacturing intelligence and analytics platform powered by Grafana-style architecture',
   keywords: 'manufacturing, analytics, intelligence, dashboard, metrics, grafana, industrial, IoT',
   authors: [{ name: 'Manufacturing Analytics Team' }],
-  viewport: 'width=device-width, initial-scale=1',
   robots: 'index, follow',
   openGraph: {
     title: 'Manufacturing Analytics Platform',
@@ -36,6 +35,11 @@ export const metadata: Metadata = {
     'theme-color': '#1f2937',
     'color-scheme': 'dark light',
   },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({

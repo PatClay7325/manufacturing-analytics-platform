@@ -1,161 +1,215 @@
 import { NextRequest } from 'next/server';
-import { manufacturingChatService } from '@/services/manufacturingChatService';
+import { MANUFACTURING_SYSTEM_PROMPT } from '@/config/ai-system-prompt';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// Helper to format SSE messages
-function formatSSE(data: any): string {
-  return `data: ${JSON.stringify(data)}\n\n`;
+// Function to detect if user is asking about metrics
+function detectMetricQuery(message: string): { hasQuery: boolean; type: string; timeRange: string } {
+  const lowerMessage = message.toLowerCase();
+  
+  // Detect metric types
+  let type = 'all';
+  if (lowerMessage.includes('oee')) type = 'oee';
+  else if (lowerMessage.includes('production') || lowerMessage.includes('units')) type = 'production';
+  else if (lowerMessage.includes('quality') || lowerMessage.includes('defect')) type = 'quality';
+  else if (lowerMessage.includes('equipment') || lowerMessage.includes('machine') || lowerMessage.includes('down')) type = 'equipment';
+  
+  // Detect time ranges
+  let timeRange = '24h';
+  if (lowerMessage.includes('hour') || lowerMessage.includes('hourly')) timeRange = '1h';
+  else if (lowerMessage.includes('today') || lowerMessage.includes('day')) timeRange = '24h';
+  else if (lowerMessage.includes('week')) timeRange = '7d';
+  else if (lowerMessage.includes('month')) timeRange = '30d';
+  
+  // Check if this is a metric query
+  const metricKeywords = ['oee', 'production', 'quality', 'defect', 'equipment', 'machine', 'down', 'units', 'rate', 'performance', 'availability'];
+  const hasQuery = metricKeywords.some(keyword => lowerMessage.includes(keyword));
+  
+  return { hasQuery, type, timeRange };
+}
+
+// Format metrics data for the AI
+function formatMetricsForAI(data: any): string {
+  let context = "Current Manufacturing Metrics:\n\n";
+  
+  if (data.oee) {
+    context += `**OEE (Overall Equipment Effectiveness)**\n`;
+    context += `- Current OEE: ${(data.oee.current * 100).toFixed(1)}%\n`;
+    context += `- Average OEE: ${(data.oee.average * 100).toFixed(1)}%\n`;
+    context += `- Trend: ${data.oee.trend > 0 ? '↑' : '↓'} ${Math.abs(data.oee.trend).toFixed(1)}%\n`;
+    context += `- Availability: ${(data.oee.components.availability.current * 100).toFixed(1)}%\n`;
+    context += `- Performance: ${(data.oee.components.performance.current * 100).toFixed(1)}%\n`;
+    context += `- Quality: ${(data.oee.components.quality.current * 100).toFixed(1)}%\n\n`;
+  }
+  
+  if (data.production) {
+    context += `**Production Metrics**\n`;
+    context += `- Total Units Produced: ${data.production.totalUnits.toLocaleString()}\n`;
+    context += `- Current Production Rate: ${data.production.currentRate.toFixed(1)} units/hour\n`;
+    context += `- Average Cycle Time: ${data.production.averageCycleTime.toFixed(1)} seconds\n\n`;
+  }
+  
+  if (data.quality) {
+    context += `**Quality Metrics**\n`;
+    context += `- Current Defect Rate: ${(data.quality.currentDefectRate * 100).toFixed(2)}%\n`;
+    context += `- First Pass Yield: ${(data.quality.currentFPY * 100).toFixed(1)}%\n`;
+    context += `- Scrap Rate: ${(data.quality.currentScrapRate * 100).toFixed(2)}%\n\n`;
+  }
+  
+  if (data.equipment) {
+    context += `**Equipment Status**\n`;
+    const running = data.equipment.filter((e: any) => e.status === 'running').length;
+    const total = data.equipment.length;
+    context += `- ${running} of ${total} machines running\n`;
+    
+    const downMachines = data.equipment.filter((e: any) => e.status !== 'running');
+    if (downMachines.length > 0) {
+      context += `- Down machines: ${downMachines.map((e: any) => e.name).join(', ')}\n`;
+    }
+    
+    if (data.downtime) {
+      context += `- Total downtime: ${data.downtime.totalMinutes.toFixed(0)} minutes\n`;
+      context += `- Downtime incidents: ${data.downtime.incidents}\n`;
+    }
+  }
+  
+  return context;
 }
 
 export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { messages, sessionId = 'default' } = body;
-    
-    if (!messages || messages.length === 0) {
-      return new Response(JSON.stringify({ error: 'No messages provided' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-
-    const lastMessage = messages[messages.length - 1];
-    
-    // Create streaming response
-    const stream = new ReadableStream({
-      async start(controller) {
-        const encoder = new TextEncoder();
+  const encoder = new TextEncoder();
+  
+  const stream = new ReadableStream({
+    async start(controller) {
+      try {
+        const body = await request.json();
+        const messages = body.messages || [];
+        const lastMessage = messages[messages.length - 1]?.content || '';
         
-        try {
-          // First, check if this is a data query
-          const queryKeywords = ['show me', 'what is', 'current', 'latest', 'how many', 'list', 'calculate'];
-          const isDataQuery = queryKeywords.some(kw => lastMessage.content.toLowerCase().includes(kw));
-          
-          if (isDataQuery) {
-            // Get context data first
-            controller.enqueue(encoder.encode(formatSSE({
-              choices: [{ delta: { content: 'Checking database... ' }, index: 0 }]
-            })));
-          }
-
-          // Process with manufacturing context
-          const context = await manufacturingChatService.processMessage(sessionId, lastMessage.content);
-          
-          // Enhanced system prompt with database access
-          const SYSTEM_PROMPT = `You are an AI assistant for a manufacturing Analytics platform with LIVE DATABASE ACCESS. 
-
-You can query and analyze real-time data including:
-- Current OEE (Overall Equipment Effectiveness) calculations
-- Equipment status and performance metrics
-- Active alerts and alarms
-- Production metrics and quality data
-- Maintenance schedules and history
-
-When users ask for specific data, you have access to the actual current values from 
-
-Always provide specific numbers when available, and explain what the data means in the manufacturing context.`;
-
-          // Prepare messages with context
-          const enhancedMessages = [
-            { role: 'system', content: SYSTEM_PROMPT },
-            ...messages.slice(0, -1),
-            { role: 'user', content: context || lastMessage.content }
-          ];
-
-          // Call Ollama with enhanced context
-          const ollamaResponse = await fetch('http://localhost:11434/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              model: body.model || 'gemma:2b',
-              messages: enhancedMessages,
-              stream: true,
-              options: {
-                temperature: 0.7,
-                num_predict: 1000,
-                num_ctx: 4096,
+        // Check if user is asking about metrics
+        const metricQuery = detectMetricQuery(lastMessage);
+        let metricsContext = '';
+        
+        if (metricQuery.hasQuery) {
+          // Fetch real metrics
+          try {
+            const metricsResponse = await fetch(`${request.nextUrl.origin}/api/ai/metrics`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                query: metricQuery.type,
+                timeRange: metricQuery.timeRange
+              })
+            });
+            
+            if (metricsResponse.ok) {
+              const metricsData = await metricsResponse.json();
+              if (metricsData.success && metricsData.data) {
+                metricsContext = formatMetricsForAI(metricsData.data);
+                
+                // Send metrics as a thought card
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({
+                  thoughts: [{
+                    type: 'insight',
+                    title: 'Manufacturing Data Retrieved',
+                    body: `Fetched ${metricQuery.type} metrics for ${metricQuery.timeRange} time range`
+                  }]
+                })}\n\n`));
               }
-            }),
-          });
-
-          if (!ollamaResponse.ok) {
-            throw new Error(`Ollama API error: ${ollamaResponse.status}`);
+            }
+          } catch (error) {
+            console.error('Failed to fetch metrics:', error);
           }
-
-          // Stream the response
-          const reader = ollamaResponse.body?.getReader();
-          if (!reader) throw new Error('No response body');
-
-          const decoder = new TextDecoder();
-          let buffer = '';
-
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-
-            buffer += decoder.decode(value, { stream: true });
-            const lines = buffer.split('\n');
-            buffer = lines.pop() || '';
-
-            for (const line of lines) {
-              if (!line.trim()) continue;
-              
+        }
+        
+        // Build the prompt with system context and metrics
+        const enhancedMessages = [
+          { role: 'system', content: MANUFACTURING_SYSTEM_PROMPT + (metricsContext ? `\n\n${metricsContext}` : '') },
+          ...messages
+        ];
+        
+        // Check Ollama
+        const testResponse = await fetch('http://127.0.0.1:11434/api/tags');
+        if (!testResponse.ok) {
+          throw new Error('Ollama is not running');
+        }
+        
+        // Convert messages to prompt for Ollama
+        const prompt = enhancedMessages.map(m => {
+          if (m.role === 'system') return m.content;
+          return `${m.role === 'user' ? 'Human' : 'Assistant'}: ${m.content}`;
+        }).join('\n\n') + '\n\nAssistant:';
+        
+        // Call Ollama
+        const ollamaResponse = await fetch('http://127.0.0.1:11434/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: body.model || 'gemma:2b',
+            prompt: prompt,
+            stream: true,
+            context_window: 4096,
+            temperature: 0.7
+          })
+        });
+        
+        if (!ollamaResponse.ok) {
+          throw new Error(`Ollama error: ${ollamaResponse.status}`);
+        }
+        
+        // Stream response
+        const reader = ollamaResponse.body?.getReader();
+        if (!reader) throw new Error('No response body');
+        
+        const decoder = new TextDecoder();
+        let buffer = '';
+        
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+          
+          for (const line of lines) {
+            if (line.trim()) {
               try {
                 const data = JSON.parse(line);
-                if (data.message?.content) {
-                  const sseData = {
-                    choices: [{
-                      delta: { content: data.message.content },
-                      index: 0,
-                    }],
-                  };
-                  controller.enqueue(encoder.encode(formatSSE(sseData)));
-                }
-                
-                if (data.done) {
-                  controller.enqueue(encoder.encode('data: [DONE]\n\n'));
-                  controller.close();
-                  return;
+                if (data.response) {
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({
+                    content: data.response
+                  })}\n\n`));
                 }
               } catch (e) {
-                // Skip invalid JSON
+                console.error('Parse error:', e);
               }
             }
           }
-          
-          controller.close();
-        } catch (error) {
-          const errorData = {
-            error: { 
-              message: error instanceof Error ? error.message : 'Unknown error',
-            }
-          };
-          controller.enqueue(encoder.encode(formatSSE(errorData)));
-          controller.close();
         }
-      },
-    });
-
-    return new Response(stream, {
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
-        'X-Accel-Buffering': 'no',
-      },
-    });
-  } catch (error) {
-    console.error('Manufacturing chat error:', error);
-    return new Response(
-      JSON.stringify({ 
-        error: error instanceof Error ? error.message : 'Unknown error' 
-      }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
+        
+        controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+        controller.close();
+        
+      } catch (error) {
+        console.error('Stream error:', error);
+        
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({
+          content: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
+        })}\n\n`));
+        
+        controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+        controller.close();
       }
-    );
-  }
+    }
+  });
+  
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+    },
+  });
 }

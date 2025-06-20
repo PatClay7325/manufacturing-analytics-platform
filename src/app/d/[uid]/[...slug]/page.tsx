@@ -5,6 +5,8 @@
 
 'use client';
 
+import React from 'react';
+
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { DashboardViewer } from '@/components/dashboard/DashboardViewer';

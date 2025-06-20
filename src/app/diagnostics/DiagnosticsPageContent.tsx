@@ -742,11 +742,15 @@ function SystemTestsPanel(props: any) {
                 )}
                 {selectedTest?.response && (
                   <div>
-                    <span className="font-medium text-sm">Response:</span>
-                    <pre className="text-xs bg-gray-100 p-2 rounded mt-1 overflow-x-auto">
+    <div>
+    <div>
+      <span className="font-medium text-sm">Response:</span>
+      <pre className="text-xs bg-gray-100 p-2 rounded mt-1 overflow-x-auto">
                       {JSON.stringify(selectedTest?.response, null, 2)}
                     </pre>
-                  </div>
+    </div>
+  </div>
+  </div>
                 )}
               </div>
             </div>

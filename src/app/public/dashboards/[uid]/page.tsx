@@ -5,6 +5,8 @@
 
 'use client';
 
+import React from 'react';
+
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { Shield, Globe, AlertCircle, Home } from 'lucide-react';

@@ -5,6 +5,8 @@
 
 'use client';
 
+import React from 'react';
+
 import { useState, useEffect } from 'react';
 import { Plus, Mail, MessageSquare, Webhook, Send, Bell, Settings, TestTube, Trash2, Edit } from 'lucide-react';
 import Link from 'next/link';

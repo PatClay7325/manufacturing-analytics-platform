@@ -85,7 +85,13 @@
       "Bash(git checkout:*)",
       "Bash(timeout 60 npm run build)",
       "Bash(timeout 30 npm run build:*)",
-      "Bash(tsx scripts/test-prisma-integration.ts:*)"
+      "Bash(tsx scripts/test-prisma-integration.ts:*)",
+      "Bash(./test-pages-curl.sh:*)",
+      "Bash(ss:*)",
+      "Bash(DATABASE_URL=\"postgresql://postgres:postgres@localhost:5432/manufacturing_test?schema=public\" npx prisma db push --skip-generate)",
+      "Bash(DATABASE_URL=\"postgresql://postgres:postgres@localhost:5432/manufacturing_test?schema=public\" npx prisma db push --accept-data-loss)",
+      "Bash(./test-summary.sh:*)",
+      "Bash(bash:*)"
     ],
     "deny": []
   },

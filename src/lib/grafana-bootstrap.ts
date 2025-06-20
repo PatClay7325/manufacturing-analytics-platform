@@ -469,6 +469,12 @@ class BootstrapManager {
         icon: 'compass'
       },
       {
+        id: 'ai-chat',
+        text: 'Manufacturing Agent',
+        url: '/ai-chat',
+        icon: 'comment-alt-share'
+      },
+      {
         id: 'alerting',
         text: 'Alerting',
         icon: 'bell',

@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ManufacturingDashboard } from '@/components/Analytics/ManufacturingDashboard';
-import ManufacturingChart from '@/components/charts/ManufacturingCharts';
+import { ManufacturingDashboard } from '@/components/analytics/ManufacturingDashboard';
+import ManufacturingChart from '@/components/charts/ManufacturingChart';
 import { Card } from '@/components/common/Card';
 import { BarChart3, TrendingUp, AlertCircle, Activity } from 'lucide-react';
 

@@ -1,3 +1,5 @@
+import React from 'react';
+
 /**
  * Prometheus Dashboard Page - Real data source integration demo
  * URL: /prometheus-dashboard

@@ -1,194 +1,181 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useRef, useEffect } from 'react';
+import { ChatMessage as ChatMessageType } from '@/models/chat';
+import ChatMessage from '@/components/chat/ChatMessage';
+import ChatInput from '@/components/chat/ChatInput';
 import PageLayout from '@/components/layout/PageLayout';
-import ChatHistory from '@/components/chat/ChatHistory';
-import SampleQuestions from '@/components/chat/SampleQuestions';
-import ChatInfo from '@/components/chat/ChatInfo';
-import { ChatSession } from '@/models/chat';
-import chatService from '@/services/chatService';
+import { v4 as uuidv4 } from 'uuid';
+
+// Sample thought suggestions based on context
+const getThoughtSuggestions = (lastMessage: string): string[] => {
+  const lowerMessage = lastMessage.toLowerCase();
+  
+  if (lowerMessage.includes('oee') || lowerMessage.includes('efficiency')) {
+    return [
+      'Show me OEE trends for the past week',
+      'What factors are impacting our OEE?',
+      'Compare OEE across different production lines',
+      'How can we improve equipment efficiency?'
+    ];
+  }
+  
+  if (lowerMessage.includes('equipment') || lowerMessage.includes('machine')) {
+    return [
+      'Which equipment needs maintenance?',
+      'Show equipment downtime analysis',
+      'What is the current equipment status?',
+      'Equipment performance metrics'
+    ];
+  }
+  
+  if (lowerMessage.includes('quality') || lowerMessage.includes('defect')) {
+    return [
+      'Show quality metrics dashboard',
+      'What are the top defect categories?',
+      'Quality trend analysis for this month',
+      'How to reduce defect rates?'
+    ];
+  }
+  
+  if (lowerMessage.includes('production') || lowerMessage.includes('output')) {
+    return [
+      'Current production vs targets',
+      'Production bottlenecks analysis',
+      'Shift-wise production comparison',
+      'How to optimize production flow?'
+    ];
+  }
+  
+  // Default suggestions
+  return [
+    'Show me today\'s production overview',
+    'What is the current OEE?',
+    'Any critical equipment alerts?',
+    'Performance metrics summary'
+  ];
+};
 
 export default function ManufacturingChatPage() {
-  const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+  const [messages, setMessages] = useState<ChatMessageType[]>([
+    {
+      id: uuidv4(),
+      role: 'assistant',
+      content: 'Hello! I\'m your manufacturing analytics assistant. How can I help you today?',
+      timestamp: new Date().toISOString(),
+      thoughts: [
+        'Show me today\'s production overview',
+        'What is the current OEE?',
+        'Check equipment status',
+        'View quality metrics'
+      ]
+    }
+  ]);
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Fetch chat sessions
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   useEffect(() => {
-    const fetchSessions = async () => {
-      setIsLoading(true);
-      setError(null);
-      
-      try {
-        const sessions = await chatService?.getAllSessions();
-        setChatSessions(sessions);
-      } catch (err) {
-        setError('Failed to load chat sessions');
-      } finally {
-        setIsLoading(false);
-      }
+    scrollToBottom();
+  }, [messages]);
+
+  const handleSendMessage = async (text: string) => {
+    // Add user message
+    const userMessage: ChatMessageType = {
+      id: uuidv4(),
+      role: 'user',
+      content: text,
+      timestamp: new Date().toISOString()
     };
     
-    fetchSessions();
-  }, []);
+    setMessages(prev => [...prev, userMessage]);
+    setIsLoading(true);
 
-  // Handle creating a new chat
-  const handleNewChat = async () => {
     try {
-      const newSession = await chatService?.createSession();
-      router?.push(`/manufacturing-chat/${newSession?.id}`);
-    } catch (err) {
-      setError('Failed to create new chat session');
-    }
-  };
-
-  // Handle selecting a sample question
-  const handleSampleQuestion = async (question: string) => {
-    try {
-      // Create a new session with the question as the title
-      const newSession = await chatService?.createSession(question);
-      
-      // Add the question as a user message
-      await chatService?.addMessage(newSession?.id, {
-        role: 'user',
-        content: question
+      // Call API
+      const response = await fetch('/api/chat/manufacturing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [...messages, userMessage].map(m => ({
+            role: m.role,
+            content: m.content
+          })),
+          stream: false
+        })
       });
-      
-      // Navigate to the new session
-      router?.push(`/manufacturing-chat/${newSession?.id}`);
-    } catch (err) {
-      setError('Failed to create new chat session');
-    }
-  };
 
-  // Handle deleting a chat session
-  const handleDeleteSession = async (sessionId: string) => {
-    try {
-      await chatService?.deleteSession(sessionId);
-      setChatSessions(prev => prev?.filter(session => session?.id !== sessionId));
-    } catch (err) {
-      setError('Failed to delete chat session');
-    }
-  };
-
-  // Handle renaming a chat session
-  const handleRenameSession = async (sessionId: string, title: string) => {
-    try {
-      const updatedSession = await chatService?.renameSession(sessionId, title);
-      if (updatedSession) {
-        setChatSessions(prev => prev?.map(session => 
-          session?.id === sessionId ? updatedSession : session
-        ));
+      if (!response.ok) {
+        throw new Error('Failed to get response');
       }
-    } catch (err) {
-      setError('Failed to rename chat session');
+
+      const data = await response.json();
+      
+      // Add assistant message with thoughts
+      const assistantMessage: ChatMessageType = {
+        id: uuidv4(),
+        role: 'assistant',
+        content: data.choices[0].message.content,
+        timestamp: new Date().toISOString(),
+        thoughts: getThoughtSuggestions(data.choices[0].message.content)
+      };
+      
+      setMessages(prev => [...prev, assistantMessage]);
+    } catch (error) {
+      console.error('Chat error:', error);
+      
+      // Add error message
+      const errorMessage: ChatMessageType = {
+        id: uuidv4(),
+        role: 'assistant',
+        content: 'I apologize, but I encountered an error processing your request. Please try again.',
+        timestamp: new Date().toISOString(),
+        thoughts: ['Try a different question', 'Check system status', 'Contact support']
+      };
+      
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Action button for new chat
-  const actionButton = (
-    <button
-      onClick={handleNewChat}
-      className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-      data-testid="new-chat-button"
-    >
-      <svg className="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-        <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-      </svg>
-      New Chat
-    </button>
-  );
+  const handleThoughtSelect = (thought: string) => {
+    handleSendMessage(thought);
+  };
 
   return (
-    <PageLayout
-      title="Manufacturing Intelligence Chat"
-      actionButton={actionButton}
+    <PageLayout 
+      title="Manufacturing Chat Assistant"
+      description="AI-powered insights for your manufacturing operations"
     >
-      {error && (
-        <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded mb-6">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <svg className="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h?.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div className="ml-3">
-              <p className="text-sm text-red-700">{error}</p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Chat History */}
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <div className="p-4 border-b border-gray-200">
-              <button
-                onClick={handleNewChat}
-                className="w-full flex justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                <svg className="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-                </svg>
-                Start New Chat
-              </button>
-            </div>
-            
-            {isLoading ? (
-              <div className="p-4 text-center text-gray-500">
-                <div className="inline-block animate-spin h-8 w-8 border-4 border-gray-200 rounded-full border-t-blue-600 mb-2" role="status">
-                  <span className="sr-only">Loading...</span>
-                </div>
-                <p>Loading chat history...</p>
-              </div>
-            ) : (
-              <ChatHistory
-                sessions={chatSessions}
-                onDeleteSession={handleDeleteSession}
-                onRenameSession={handleRenameSession}
-                className="h-[calc(100vh-16rem)]"
+      <div className="flex flex-col h-[calc(100vh-200px)]">
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto px-4 py-6">
+          <div className="max-w-4xl mx-auto space-y-4">
+            {messages.map((message) => (
+              <ChatMessage
+                key={message.id}
+                message={message}
+                timestamp={message.timestamp}
+                onThoughtSelect={handleThoughtSelect}
               />
+            ))}
+            {isLoading && (
+              <ChatMessage isLoading />
             )}
+            <div ref={messagesEndRef} />
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="lg:col-span-2">
-          <div className="grid grid-cols-1 gap-6">
-            {/* Welcome Banner */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                Welcome to Manufacturing Chat
-              </h2>
-              <p className="text-gray-700 mb-4">
-                Start a new conversation or select a previous chat from the history. 
-                The Manufacturing Assistant is connected to your manufacturing systems 
-                and can provide insights and answers to your questions.
-              </p>
-              <button
-                onClick={handleNewChat}
-                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                <svg className="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-                </svg>
-                Start New Chat
-              </button>
-            </div>
-
-            {/* Sample Questions */}
-            <SampleQuestions
-              onSelectQuestion={handleSampleQuestion}
-              isDisabled={isLoading}
-            />
-            
-            {/* Chat Info */}
-            <ChatInfo />
-          </div>
-        </div>
+        {/* Input */}
+        <ChatInput 
+          onSend={handleSendMessage}
+          disabled={isLoading}
+          placeholder="Ask about production metrics, equipment status, or quality data..."
+        />
       </div>
     </PageLayout>
   );
