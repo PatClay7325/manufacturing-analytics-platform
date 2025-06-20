@@ -101,7 +101,7 @@ const mqttAdapter = await integrationManager.registerIntegrationConfig({
   connectionParams: {
     brokerUrl: 'mqtt://broker.factory.example.com',
     port: 1883,
-    clientId: 'manufacturing-analytics-platform',
+    clientId: 'manufacturing-Analytics-platform',
     keepalive: 60,
     qos: 1
   },

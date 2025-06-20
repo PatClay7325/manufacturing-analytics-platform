@@ -1,6 +1,6 @@
 /**
  * TenantResolver interface defines the contract for resolving tenant information
- * from various sources like HTTP requests, authentication tokens, or environment variables.
+ * from 
  */
 import { Tenant } from './TenantManager';
 
@@ -31,21 +31,21 @@ export interface TenantResolver {
   resolveTenant(context: TenantIdentificationContext): Promise<TenantResolutionResult>;
 
   /**
-   * Resolves tenant from URL path pattern (e.g., /tenants/{tenantId}/resources)
+   * Resolves tenant from , /tenants/{tenantId}/resources)
    * @param path The URL path to parse
    * @returns Tenant ID if found, null otherwise
    */
   resolveFromPath(path: string): Promise<string | null>;
 
   /**
-   * Resolves tenant from subdomain (e.g., {tenantId}.example.com)
+   * Resolves tenant from com)
    * @param host The host string from the request
    * @returns Tenant ID if found, null otherwise
    */
   resolveFromSubdomain(host: string): Promise<string | null>;
 
   /**
-   * Resolves tenant from request headers (e.g., X-Tenant-ID)
+   * Resolves tenant from , X-Tenant-ID)
    * @param headers The request headers
    * @returns Tenant ID if found, null otherwise
    */

@@ -1,8 +1,8 @@
 import React from 'react';
 
 export interface CardProps {
-  title: string;
-  children: React.ReactNode;
+  title?: string;
+  children?: React.ReactNode;
   className?: string;
   headerClassName?: string;
   bodyClassName?: string;

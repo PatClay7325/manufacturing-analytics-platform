@@ -5,9 +5,9 @@
  * Responsible for adapter lifecycle management, configuration, and monitoring.
  */
 
-import { BaseConfig, HealthCheckResult, ServiceStatus } from '../architecture/types';
-import { BaseService, LoggerService, ConfigService } from '../architecture/interfaces';
-import { EventBus, EventProducer } from '../events/interfaces';
+import { BaseConfig, HealthCheckResult, ServiceStatus } from './architecture/types';
+import { BaseService, LoggerService, ConfigService } from './architecture/interfaces';
+import { EventBus, EventProducer } from './events/interfaces';
 import { IntegrationAdapter } from './interfaces/IntegrationAdapter';
 import { 
   ConnectionStatus, 
@@ -534,12 +534,12 @@ export class IntegrationManager implements BaseService {
         return {
           name: adapter.name,
           status: health.status,
-          responseTime: adapterHealth?.latency || 0,
+          responseTime: adapterHealth.latency || 0,
           details: {
             connectionStatus: adapter.connectionStatus,
-            circuitBreakerTripped: adapterHealth?.circuitBreakerTripped || false,
-            consecutiveFailures: adapterHealth?.consecutiveFailures || 0,
-            successRate: adapterHealth?.successRate || 100
+            circuitBreakerTripped: adapterHealth.circuitBreakerTripped || false,
+            consecutiveFailures: adapterHealth.consecutiveFailures || 0,
+            successRate: adapterHealth.successRate || 100
           }
         };
       } catch (error) {

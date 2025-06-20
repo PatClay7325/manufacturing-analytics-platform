@@ -3,13 +3,13 @@ import { ChatMessage as ChatMessageType } from '@/models/chat';
 import { formatDistanceToNow } from 'date-fns';
 
 interface ChatMessageProps {
-  message: Pick<ChatMessageType, 'role' | 'content'>;
+  message?: Pick<ChatMessageType, 'role' | 'content'>;
   timestamp?: string;
   isLoading?: boolean;
 }
 
 export default function ChatMessage({ message, timestamp, isLoading = false }: ChatMessageProps) {
-  const isUser = message.role === 'user';
+  const isUser = message?.role === 'user';
 
   // Format timestamp if provided
   const formattedTime = timestamp ? formatDistanceToNow(new Date(timestamp), { addSuffix: true }) : '';
@@ -35,7 +35,7 @@ export default function ChatMessage({ message, timestamp, isLoading = false }: C
           </div>
         ) : (
           <>
-            <div className="whitespace-pre-line">{message.content}</div>
+            <div className="whitespace-pre-line">{message?.content}</div>
             {timestamp && (
               <div className={`text-xs mt-1 ${isUser ? 'text-blue-200' : 'text-gray-500'}`}>
                 {formattedTime}

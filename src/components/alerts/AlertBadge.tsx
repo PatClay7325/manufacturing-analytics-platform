@@ -2,17 +2,19 @@ import React from 'react';
 import { AlertSeverity, AlertStatus } from '@/models/alert';
 
 interface AlertBadgeProps {
-  type: 'severity' | 'status';
-  value: AlertSeverity | AlertStatus;
+  type?: 'severity' | 'status';
+  value?: AlertSeverity | AlertStatus;
   showLabel?: boolean;
   className?: string;
+  'data-testid'?: string;
 }
 
 export default function AlertBadge({ 
   type,
   value, 
   showLabel = true, 
-  className = ''
+  className = '',
+  'data-testid': testId
 }: AlertBadgeProps) {
   const getBadgeColor = () => {
     if (type === 'severity') {
@@ -105,7 +107,7 @@ export default function AlertBadge({
   return (
     <span 
       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getBadgeColor()} ${className}`}
-      data-testid={`alert-${type}-badge`}
+      data-testid={testId || `alert-${type}-badge`}
     >
       <span className={`h-2 w-2 rounded-full ${getDotColor()} mr-1.5`} aria-hidden="true"></span>
       {showLabel && getLabel()}

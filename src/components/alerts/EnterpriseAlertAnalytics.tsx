@@ -74,22 +74,22 @@ export default function EnterpriseAlertAnalytics({ className = '' }: EnterpriseA
       setError(null);
       
       try {
-        const data = await alertService.getAlertStatistics();
+        const data = await alertService?.getAlertStatistics();
         setStats(data);
         
         // Generate mock live metrics for now
         const mockLiveMetrics = [];
         for (let i = 0; i < 24; i++) {
-          mockLiveMetrics.push({
+          mockLiveMetrics?.push({
             timestamp: Date.now() - (i * 60 * 60 * 1000),
             alert_count: Math.floor(Math.random() * 10) + 1,
             mttr: Math.floor(Math.random() * 60) + 20,
             alert_rate: Math.round((Math.random() * 5 + 0.5) * 10) / 10
           });
         }
-        setLiveMetrics(mockLiveMetrics.reverse());
+        setLiveMetrics(mockLiveMetrics?.reverse());
       } catch (err) {
-        setError('Failed to load alert analytics.');
+        setError('Failed to load alert Analytics.');
       } finally {
         setLoading(false);
       }
@@ -109,11 +109,11 @@ export default function EnterpriseAlertAnalytics({ className = '' }: EnterpriseA
       { name: 'Medium', value: stats.bySeverity.medium, color: COLORS.medium },
       { name: 'Low', value: stats.bySeverity.low, color: COLORS.low },
       { name: 'Info', value: stats.bySeverity.info, color: COLORS.info }
-    ].filter(item => item.value > 0);
+    ].filter(item => item?.value > 0);
 
     // Source performance data for radar chart
-    const sourcePerformanceData = Object.entries(stats.bySource).map(([source, count]) => ({
-      source: source.charAt(0).toUpperCase() + source.slice(1),
+    const sourcePerformanceData = Object.entries(stats?.bySource).map(([source, count]) => ({
+      source: source.charAt(0).toUpperCase() + source?.slice(1),
       alerts: count,
       responseTime: Math.floor(Math.random() * 30) + 10, // Mock response time
       resolutionRate: Math.floor(Math.random() * 20) + 75, // Mock resolution rate
@@ -127,37 +127,37 @@ export default function EnterpriseAlertAnalytics({ className = '' }: EnterpriseA
         {
           name: 'Equipment',
           children: [
-            { name: 'CNC Machines', value: Math.floor(stats.total * 0.25), severity: 'high' },
-            { name: 'Conveyors', value: Math.floor(stats.total * 0.15), severity: 'medium' },
-            { name: 'Robots', value: Math.floor(stats.total * 0.1), severity: 'low' }
+            { name: 'CNC Machines', value: Math.floor(stats?.total * 0.25), severity: 'high' },
+            { name: 'Conveyors', value: Math.floor(stats?.total * 0.15), severity: 'medium' },
+            { name: 'Robots', value: Math.floor(stats?.total * 0.1), severity: 'low' }
           ]
         },
         {
           name: 'Quality',
           children: [
-            { name: 'Defects', value: Math.floor(stats.total * 0.2), severity: 'critical' },
-            { name: 'Tolerance', value: Math.floor(stats.total * 0.1), severity: 'medium' }
+            { name: 'Defects', value: Math.floor(stats?.total * 0.2), severity: 'critical' },
+            { name: 'Tolerance', value: Math.floor(stats?.total * 0.1), severity: 'medium' }
           ]
         },
         {
           name: 'Maintenance',
           children: [
-            { name: 'Scheduled', value: Math.floor(stats.total * 0.1), severity: 'info' },
-            { name: 'Predictive', value: Math.floor(stats.total * 0.1), severity: 'low' }
+            { name: 'Scheduled', value: Math.floor(stats?.total * 0.1), severity: 'info' },
+            { name: 'Predictive', value: Math.floor(stats?.total * 0.1), severity: 'low' }
           ]
         }
       ]
     };
 
     // Time series data with additional metrics
-    const enhancedTrendData = stats.trend.map((day, index) => ({
+    const enhancedTrendData = stats?.(trend || []).map((day, index) => ({
       ...day,
-      date: new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      date: new Date(day?.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
       responseTime: Math.floor(Math.random() * 20) + 10,
       resolutionRate: Math.floor(Math.random() * 30) + 60,
-      criticalAlerts: Math.floor(day.count * 0.2),
-      mediumAlerts: Math.floor(day.count * 0.5),
-      lowAlerts: Math.floor(day.count * 0.3),
+      criticalAlerts: Math.floor(day?.count * 0.2),
+      mediumAlerts: Math.floor(day?.count * 0.5),
+      lowAlerts: Math.floor(day?.count * 0.3),
       predicted: day.count + Math.floor(Math.random() * 10) - 5
     }));
 
@@ -171,14 +171,14 @@ export default function EnterpriseAlertAnalytics({ className = '' }: EnterpriseA
 
   // Custom tooltips
   const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
+    if (active && payload && payload?.length) {
       return (
         <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
           <p className="text-sm font-semibold mb-1">{label}</p>
-          {payload.map((entry: any, index: number) => (
+          {payload?.map((entry: any, index: number) => (
             <p key={index} className="text-xs" style={{ color: entry.color }}>
-              {entry.name}: {entry.value}
-              {entry.unit ? ` ${entry.unit}` : ''}
+              {entry?.name}: {entry?.value}
+              {entry?.unit ? ` ${entry?.unit}` : ''}
             </p>
           ))}
         </div>
@@ -189,8 +189,8 @@ export default function EnterpriseAlertAnalytics({ className = '' }: EnterpriseA
 
   // Custom treemap content
   const CustomTreemapContent = (props: any) => {
-    const { x, y, width, height, name, value, severity } = props;
-    const severityColor = COLORS[severity as keyof typeof COLORS] || COLORS.info;
+    const { x, y, width, height, name, value, severity  } = props || {};
+    const severityColor = COLORS[severity as keyof typeof COLORS] || COLORS?.info;
     
     return (
       <g>
@@ -223,15 +223,15 @@ export default function EnterpriseAlertAnalytics({ className = '' }: EnterpriseA
 
   // Custom dot for line charts
   const CustomDot = (props: any) => {
-    const { cx, cy, payload } = props;
-    if (payload.criticalAlerts > 5) {
+    const { cx, cy, payload  } = props || {};
+    if (payload?.criticalAlerts > 5) {
       return (
-        <circle cx={cx} cy={cy} r={6} fill={COLORS.critical} stroke="#fff" strokeWidth={2}>
+        <circle cx={cx} cy={cy} r={6} fill={COLORS?.critical} stroke="#fff" strokeWidth={2}>
           <animate attributeName="r" values="6;8;6" dur="1.5s" repeatCount="indefinite" />
         </circle>
       );
     }
-    return <circle cx={cx} cy={cy} r={4} fill={COLORS.primary} stroke="#fff" strokeWidth={2} />;
+    return <circle cx={cx} cy={cy} r={4} fill={COLORS?.primary} stroke="#fff" strokeWidth={2} />;
   };
 
   if (loading) {
@@ -253,14 +253,14 @@ export default function EnterpriseAlertAnalytics({ className = '' }: EnterpriseA
     return (
       <div className={`bg-white rounded-lg shadow-lg p-6 ${className}`}>
         <div className="text-center text-gray-500">
-          <p className="text-sm">{error || 'Unable to load analytics'}</p>
+          <p className="text-sm">{error || 'Unable to load Analytics'}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`bg-white rounded-lg shadow-lg ${className}`} data-testid="enterprise-alert-analytics">
+    <div className={`bg-white rounded-lg shadow-lg ${className}`} data-testid="enterprise-alert-Analytics">
       {/* Header with controls */}
       <div className="border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
@@ -305,12 +305,12 @@ export default function EnterpriseAlertAnalytics({ className = '' }: EnterpriseA
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
           <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4">
             <div className="text-blue-700 text-sm font-medium">Total Alerts</div>
-            <div className="text-2xl font-bold text-blue-900 mt-1">{stats.total}</div>
+            <div className="text-2xl font-bold text-blue-900 mt-1">{stats?.total}</div>
             <div className="text-xs text-blue-600 mt-1">↑ 12% from last period</div>
           </div>
           <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-lg p-4">
             <div className="text-red-700 text-sm font-medium">Critical Active</div>
-            <div className="text-2xl font-bold text-red-900 mt-1">{stats.bySeverity.critical}</div>
+            <div className="text-2xl font-bold text-red-900 mt-1">{stats?.bySeverity.critical}</div>
             <div className="text-xs text-red-600 mt-1">Immediate attention</div>
           </div>
           <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4">
@@ -338,7 +338,7 @@ export default function EnterpriseAlertAnalytics({ className = '' }: EnterpriseA
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
                 <Pie
-                  data={transformedData.severityData}
+                  data={transformedData?.severityData}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
@@ -347,12 +347,12 @@ export default function EnterpriseAlertAnalytics({ className = '' }: EnterpriseA
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {transformedData.severityData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  {transformedData?.(severityData || []).map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry?.color} />
                   ))}
                 </Pie>
                 <Pie
-                  data={transformedData.severityData}
+                  data={transformedData?.severityData}
                   cx="50%"
                   cy="50%"
                   innerRadius={40}
@@ -360,8 +360,8 @@ export default function EnterpriseAlertAnalytics({ className = '' }: EnterpriseA
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {transformedData.severityData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} opacity={0.3} />
+                  {transformedData?.(severityData || []).map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry?.color} opacity={0.3} />
                   ))}
                 </Pie>
                 <Tooltip content={<CustomTooltip />} />
@@ -373,12 +373,12 @@ export default function EnterpriseAlertAnalytics({ className = '' }: EnterpriseA
           <div className="bg-gray-50 rounded-lg p-4">
             <h4 className="text-sm font-semibold text-gray-700 mb-3">Source Performance Metrics</h4>
             <ResponsiveContainer width="100%" height={250}>
-              <RadarChart data={transformedData.sourcePerformanceData}>
+              <RadarChart data={transformedData?.sourcePerformanceData}>
                 <PolarGrid stroke="#e5e7eb" />
                 <PolarAngleAxis dataKey="source" tick={{ fontSize: 11 }} />
                 <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 10 }} />
-                <Radar name="Resolution Rate" dataKey="resolutionRate" stroke={COLORS.success} fill={COLORS.success} fillOpacity={0.6} />
-                <Radar name="Response Score" dataKey="responseTime" stroke={COLORS.primary} fill={COLORS.primary} fillOpacity={0.4} />
+                <Radar name="Resolution Rate" dataKey="resolutionRate" stroke={COLORS?.success} fill={COLORS?.success} fillOpacity={0.6} />
+                <Radar name="Response Score" dataKey="responseTime" stroke={COLORS?.primary} fill={COLORS?.primary} fillOpacity={0.4} />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend />
               </RadarChart>
@@ -390,11 +390,11 @@ export default function EnterpriseAlertAnalytics({ className = '' }: EnterpriseA
         <div className="bg-gray-50 rounded-lg p-4">
           <h4 className="text-sm font-semibold text-gray-700 mb-3">Alert Trends & Predictions</h4>
           <ResponsiveContainer width="100%" height={300}>
-            <ComposedChart data={transformedData.enhancedTrendData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <ComposedChart data={transformedData?.enhancedTrendData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
               <defs>
                 <linearGradient id="alertGradient" x1="0" y1="0" x2="0" y2="1">
-                  {SEVERITY_COLORS.map((color, index) => (
-                    <stop key={index} offset={color.offset} stopColor={color.color} stopOpacity={0.8} />
+                  {SEVERITY_COLORS?.map((color, index) => (
+                    <stop key={index} offset={color?.offset} stopColor={color?.color} stopOpacity={0.8} />
                   ))}
                 </linearGradient>
               </defs>
@@ -404,19 +404,19 @@ export default function EnterpriseAlertAnalytics({ className = '' }: EnterpriseA
               <YAxis yAxisId="right" orientation="right" stroke="#6b7280" fontSize={11} />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
-              <Brush dataKey="date" height={30} stroke={COLORS.primary} />
+              <Brush dataKey="date" height={30} stroke={COLORS?.primary} />
               
               {/* Stacked bars for severity */}
-              <Bar yAxisId="left" dataKey="criticalAlerts" stackId="a" fill={COLORS.critical} name="Critical" />
-              <Bar yAxisId="left" dataKey="mediumAlerts" stackId="a" fill={COLORS.medium} name="Medium" />
-              <Bar yAxisId="left" dataKey="lowAlerts" stackId="a" fill={COLORS.low} name="Low" />
+              <Bar yAxisId="left" dataKey="criticalAlerts" stackId="a" fill={COLORS?.critical} name="Critical" />
+              <Bar yAxisId="left" dataKey="mediumAlerts" stackId="a" fill={COLORS?.medium} name="Medium" />
+              <Bar yAxisId="left" dataKey="lowAlerts" stackId="a" fill={COLORS?.low} name="Low" />
               
               {/* Lines for metrics */}
               <Line 
                 yAxisId="left" 
                 type="monotone" 
                 dataKey="count" 
-                stroke={COLORS.primary} 
+                stroke={COLORS?.primary} 
                 strokeWidth={3}
                 name="Total Alerts"
                 dot={<CustomDot />}
@@ -425,7 +425,7 @@ export default function EnterpriseAlertAnalytics({ className = '' }: EnterpriseA
                 yAxisId="left" 
                 type="monotone" 
                 dataKey="predicted" 
-                stroke={COLORS.secondary} 
+                stroke={COLORS?.secondary} 
                 strokeWidth={2}
                 strokeDasharray="5 5"
                 name="Predicted"
@@ -435,7 +435,7 @@ export default function EnterpriseAlertAnalytics({ className = '' }: EnterpriseA
                 yAxisId="right" 
                 type="monotone" 
                 dataKey="resolutionRate" 
-                stroke={COLORS.success} 
+                stroke={COLORS?.success} 
                 strokeWidth={2}
                 name="Resolution %"
                 dot={false}
@@ -452,7 +452,7 @@ export default function EnterpriseAlertAnalytics({ className = '' }: EnterpriseA
           <h4 className="text-sm font-semibold text-gray-700 mb-3">Alert Distribution by Category</h4>
           <ResponsiveContainer width="100%" height={300}>
             <Treemap
-              data={[transformedData.treemapData]}
+              data={[transformedData?.treemapData]}
               dataKey="value"
               aspectRatio={4/3}
               stroke="#fff"
@@ -467,14 +467,14 @@ export default function EnterpriseAlertAnalytics({ className = '' }: EnterpriseA
         <div className="bg-gray-50 rounded-lg p-4">
           <h4 className="text-sm font-semibold text-gray-700 mb-3">Real-time Alert Activity</h4>
           <ResponsiveContainer width="100%" height={150}>
-            <BarChart data={liveMetrics.slice(-20)} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
+            <BarChart data={liveMetrics?.slice(-20)} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
               <XAxis dataKey="timestamp" tick={false} />
               <YAxis tick={{ fontSize: 10 }} />
               <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="alert_count" fill={COLORS.primary}>
-                {liveMetrics.slice(-20).map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.alert_count > 5 ? COLORS.critical : COLORS.primary} />
+              <Bar dataKey="alert_count" fill={COLORS?.primary}>
+                {liveMetrics?.slice(-20).map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry?.alert_count > 5 ? COLORS?.critical : COLORS.primary} />
                 ))}
               </Bar>
             </BarChart>

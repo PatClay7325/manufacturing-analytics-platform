@@ -5,7 +5,7 @@
  * functionality for managing data standards and validation.
  */
 
-import { AbstractBaseService } from '../architecture/BaseService';
+import { AbstractBaseService } from './architecture/BaseService';
 import { DataStandardManager } from './interfaces';
 import { ManufacturingDataStandard } from './types';
 

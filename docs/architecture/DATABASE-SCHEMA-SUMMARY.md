@@ -164,7 +164,7 @@
 - Belongs to: Equipment (optional)
 
 ### 9. Metric
-**Purpose**: Time-series sensor data (Grafana replacement)
+**Purpose**: Time-series sensor data (Analytics replacement)
 
 | Field | Type | Required | Notes |
 |-------|------|----------|-------|
@@ -208,7 +208,7 @@
 | category | String | ✅ | system/user/notification/integration |
 
 ### 12. Dashboard
-**Purpose**: Dashboard configurations (Grafana-like)
+**Purpose**: Dashboard configurations (Analytics-like)
 
 | Field | Type | Required | Notes |
 |-------|------|----------|-------|

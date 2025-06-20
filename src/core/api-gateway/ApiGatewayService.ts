@@ -6,7 +6,7 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
-import { BaseModularService } from '../services/BaseModularService';
+import { BaseModularService } from './services/BaseModularService';
 import {
   ApiGatewayService,
   RouteRegistry,
@@ -24,7 +24,7 @@ import {
   ApiVersion,
   HttpMethod,
 } from './types';
-import { ServiceCapability, ServiceDependencies } from '../services/types';
+import { ServiceCapability, ServiceDependencies } from './services/types';
 import { RouteRegistryImpl } from './RouteRegistry';
 import { RequestHandlerImpl } from './RequestHandler';
 import { AuthManagerImpl } from './AuthManager';

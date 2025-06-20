@@ -6,7 +6,7 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
-import { BaseModularService } from '../services/BaseModularService';
+import { BaseModularService } from './services/BaseModularService';
 import {
   ComplianceService,
   ComplianceRegistry,
@@ -15,7 +15,7 @@ import {
   DataStandardManager,
   TerminologyManager,
 } from './interfaces';
-import { ServiceCapability, ServiceDependencies } from '../services/types';
+import { ServiceCapability, ServiceDependencies } from './services/types';
 import {
   ComplianceProfile,
   ComplianceCheckResult,

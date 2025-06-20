@@ -5,7 +5,7 @@
  * Suitable for development and testing, or for small deployments with limited event history needs.
  */
 
-import { AbstractBaseService } from '../architecture/BaseService';
+import { AbstractBaseService } from './architecture/BaseService';
 import { EventStore } from './interfaces';
 import { Event, EventStatus } from './types';
 

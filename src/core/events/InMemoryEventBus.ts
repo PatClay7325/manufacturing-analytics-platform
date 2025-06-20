@@ -7,7 +7,7 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
-import { AbstractBaseService } from '../architecture/BaseService';
+import { AbstractBaseService } from './architecture/BaseService';
 import { EventBus, EventStore } from './interfaces';
 import { 
   Event, 
@@ -19,7 +19,7 @@ import {
   EventPriority,
   TenantEventOptions 
 } from './types';
-import { TenantContext } from '../multi-tenancy/interfaces/TenantContext';
+import { TenantContext } from './multi-tenancy/interfaces/TenantContext';
 
 /**
  * Subscription information

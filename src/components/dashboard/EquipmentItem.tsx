@@ -3,10 +3,10 @@
 import { memo } from 'react';
 
 interface EquipmentItemProps {
-  id: number | string;
-  name: string;
-  status: 'running' | 'maintenance' | 'idle' | 'error';
-  uptime: string;
+  id?: number | string;
+  name?: string;
+  status?: 'running' | 'maintenance' | 'idle' | 'error';
+  uptime?: string;
 }
 
 // Memoized Equipment Item component to prevent unnecessary re-renders

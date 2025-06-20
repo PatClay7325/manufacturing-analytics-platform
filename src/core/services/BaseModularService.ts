@@ -5,8 +5,8 @@
  * common functionality for all modular services.
  */
 
-import { AbstractBaseService } from '../architecture/BaseService';
-import { BaseConfig, HealthCheckResult } from '../architecture/types';
+import { AbstractBaseService } from './architecture/BaseService';
+import { BaseConfig, HealthCheckResult } from './architecture/types';
 import { ModularService } from './interfaces';
 import { ServiceCapability, ServiceConfig, ServiceDependencies, ServiceMetrics } from './types';
 

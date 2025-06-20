@@ -517,7 +517,7 @@ export const equipmentService = {
       const searchLower = filter.search.toLowerCase();
       filteredEquipment = filteredEquipment.filter(e => 
         e.name.toLowerCase().includes(searchLower) ||
-        e.serialNumber?.toLowerCase().includes(searchLower) ||
+        e.serialNumber.toLowerCase().includes(searchLower) ||
         e.model?.toLowerCase().includes(searchLower) ||
         e.manufacturer?.toLowerCase().includes(searchLower) ||
         e.tags?.some(tag => tag.toLowerCase().includes(searchLower))

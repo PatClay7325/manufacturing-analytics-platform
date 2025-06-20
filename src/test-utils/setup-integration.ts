@@ -26,8 +26,13 @@ export async function cleanDatabase() {
   await prisma.maintenanceRecord.deleteMany({});
   await prisma.alert.deleteMany({});
   await prisma.productionOrder.deleteMany({});
-  await prisma.equipment.deleteMany({});
-  await prisma.productionLine.deleteMany({});
+  // Delete hierarchical data in reverse order
+  await prisma.workUnit.deleteMany({});
+  await prisma.workCenter.deleteMany({});
+  await prisma.area.deleteMany({});
+  await prisma.site.deleteMany({});
+  await prisma.enterprise.deleteMany({});
+  // Delete other data
   await prisma.dashboard.deleteMany({});
   await prisma.user.deleteMany({});
   await prisma.setting.deleteMany({});
@@ -58,7 +63,13 @@ afterAll(async () => {
 
 beforeEach(async () => {
   // Clean database before each test
-  await cleanDatabase();
+  try {
+    await cleanDatabase();
+  } catch (error) {
+    console.warn('Warning: Database cleanup failed, retrying...', error);
+    // Retry cleanup once
+    await cleanDatabase();
+  }
 });
 
 // Global test utilities
@@ -75,28 +86,115 @@ global.createTestUser = async (overrides = {}) => {
   });
 };
 
-global.createTestEquipment = async (overrides = {}) => {
+global.createTestEnterprise = async (overrides = {}) => {
+  const timestamp = Date.now();
+  const random = Math.floor(Math.random() * 1000);
+  return prisma.enterprise.create({
+    data: {
+      id: `ent-${timestamp}-${random}`,
+      name: 'Test Enterprise',
+      code: `TEST-ENT-${timestamp}-${random}`,
+      updatedAt: new Date(),
+      ...overrides,
+    },
+  });
+};
+
+global.createTestSite = async (enterpriseId: string, overrides = {}) => {
+  const timestamp = Date.now();
+  const random = Math.floor(Math.random() * 1000);
+  return prisma.site.create({
+    data: {
+      id: `site-${timestamp}-${random}`,
+      name: 'Test Site',
+      code: `TEST-SITE-${timestamp}-${random}`,
+      location: 'Test Location',
+      updatedAt: new Date(),
+      enterpriseId,
+      ...overrides,
+    },
+  });
+};
+
+global.createTestArea = async (siteId: string, overrides = {}) => {
+  const timestamp = Date.now();
+  const random = Math.floor(Math.random() * 1000);
+  return prisma.area.create({
+    data: {
+      id: `area-${timestamp}-${random}`,
+      name: 'Test Area',
+      code: `TEST-AREA-${timestamp}-${random}`,
+      updatedAt: new Date(),
+      siteId,
+      ...overrides,
+    },
+  });
+};
+
+global.createTestWorkCenter = async (areaId: string, overrides = {}) => {
+  const timestamp = Date.now();
+  const random = Math.floor(Math.random() * 1000);
+  return prisma.workCenter.create({
+    data: {
+      id: `wc-${timestamp}-${random}`,
+      name: 'Test Work Center',
+      code: `TEST-WC-${timestamp}-${random}`,
+      updatedAt: new Date(),
+      areaId,
+      ...overrides,
+    },
+  });
+};
+
+global.createTestWorkUnit = async (workCenterId: string, overrides = {}) => {
   // Generate unique serial number
   const timestamp = Date.now();
   const random = Math.floor(Math.random() * 1000);
   const defaultSerialNumber = `SN-${timestamp}-${random}`;
   
-  return prisma.equipment.create({
+  return prisma.workUnit.create({
     data: {
-      name: 'Test Equipment',
-      type: 'CNC',
-      manufacturerCode: 'TEST-001',
+      id: `wu-${timestamp}-${random}`,
+      name: 'Test Work Unit',
+      code: `TEST-WU-${timestamp}-${random}`,
+      equipmentType: 'CNC',
+      manufacturerCode: 'MFG-TEST-001',
+      model: 'Model X',
       serialNumber: defaultSerialNumber,
-      status: 'operational',
+      status: 'OPERATIONAL',
       installationDate: new Date(),
+      updatedAt: new Date(),
+      workCenterId,
       ...overrides,
     },
   });
+};
+
+// Helper to create full hierarchy
+global.createTestHierarchy = async () => {
+  const enterprise = await global.createTestEnterprise();
+  const site = await global.createTestSite(enterprise.id);
+  const area = await global.createTestArea(site.id);
+  const workCenter = await global.createTestWorkCenter(area.id);
+  const workUnit = await global.createTestWorkUnit(workCenter.id);
+  
+  return { enterprise, site, area, workCenter, workUnit };
 };
 
 // Declare global types
 declare global {
   var testPrisma: PrismaClient;
   var createTestUser: (overrides?: any) => Promise<any>;
-  var createTestEquipment: (overrides?: any) => Promise<any>;
+  var createTestEnterprise: (overrides?: any) => Promise<any>;
+  var createTestSite: (enterpriseId: string, overrides?: any) => Promise<any>;
+  var createTestArea: (siteId: string, overrides?: any) => Promise<any>;
+  var createTestWorkCenter: (areaId: string, overrides?: any) => Promise<any>;
+  var createTestWorkUnit: (workCenterId: string, overrides?: any) => Promise<any>;
+  var createTestHierarchy: () => Promise<{
+    enterprise: any;
+    site: any;
+    area: any;
+    workCenter: any;
+    workUnit: any;
+  }>;
 }

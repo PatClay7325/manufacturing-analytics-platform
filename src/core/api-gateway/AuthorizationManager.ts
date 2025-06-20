@@ -5,10 +5,10 @@
  * functionality for API authorization with multi-tenant support.
  */
 
-import { AbstractBaseService } from '../architecture/BaseService';
+import { AbstractBaseService } from './architecture/BaseService';
 import { AuthorizationManager } from './interfaces';
 import { ApiRequest, ApiRoute } from './types';
-import { TenantContext } from '../multi-tenancy/interfaces/TenantContext';
+import { TenantContext } from './multi-tenancy/interfaces/TenantContext';
 
 /**
  * Authorization manager implementation

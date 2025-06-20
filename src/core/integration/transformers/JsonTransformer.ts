@@ -12,11 +12,11 @@ import {
   DataTransformer, 
   TransformationResult, 
   TransformationRule 
-} from '../interfaces/DataTransformer';
+} from './interfaces/DataTransformer';
 import { 
   IntegrationDataPacket, 
   IntegrationErrorType 
-} from '../types';
+} from './types';
 
 /**
  * JSON Transformer class for handling JSON data transformations
@@ -69,10 +69,10 @@ export class JsonTransformer implements DataTransformer {
       // Create standardized data packet
       const dataPacket: IntegrationDataPacket<TargetType> = {
         id: uuidv4(),
-        source: context?.source as string || 'json-source',
+        source: context.source as string || 'json-source',
         timestamp: new Date(),
         payload: transformedData as unknown as TargetType,
-        schemaVersion: context?.schemaVersion as string,
+        schemaVersion: context.schemaVersion as string,
         metadata: {
           originalFormat: 'json',
           ...context?.metadata as Record<string, unknown>

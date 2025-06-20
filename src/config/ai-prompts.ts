@@ -2,7 +2,7 @@
  * AI System Prompts for Manufacturing Context
  */
 
-export const MANUFACTURING_SYSTEM_PROMPT = `You are an AI assistant for a manufacturing analytics platform. You have access to real-time and historical data about manufacturing operations including:
+export const MANUFACTURING_SYSTEM_PROMPT = `You are an AI assistant for a manufacturing Analytics platform. You have access to real-time and historical data about manufacturing operations including:
 
 - Equipment performance metrics (OEE, availability, performance, quality)
 - Production line data and throughput

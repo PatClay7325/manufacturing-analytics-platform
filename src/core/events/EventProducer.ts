@@ -56,9 +56,9 @@ export class BaseEventProducer implements EventProducer {
       source: this.source,
       timestamp: new Date(),
       payload,
-      correlationId: options?.correlationId,
-      priority: options?.priority,
-      metadata: options?.metadata,
+      correlationId: options.correlationId,
+      priority: options.priority,
+      metadata: options.metadata,
     };
     
     // Publish event

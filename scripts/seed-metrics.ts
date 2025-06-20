@@ -5,11 +5,11 @@ const prisma = new PrismaClient()
 async function seedMetrics() {
   console.log('Seeding metrics data...')
   
-  // Get all equipment
-  const equipment = await prisma.equipment.findMany()
+  // Get all work units
+  const workUnits = await prisma.workUnit.findMany()
   
-  if (equipment.length === 0) {
-    console.log('No equipment found. Please run the main seed first.')
+  if (workUnits.length === 0) {
+    console.log('No work units found. Please run the main seed first.')
     return
   }
   
@@ -25,8 +25,8 @@ async function seedMetrics() {
     { name: 'production_count', unit: 'units', baseValue: 50, variance: 10 }
   ]
   
-  // Generate metrics for each equipment
-  for (const equip of equipment) {
+  // Generate metrics for each work unit
+  for (const workUnit of workUnits) {
     for (const metricType of metricTypes) {
       // Generate data points every 5 minutes
       for (let time = yesterday.getTime(); time <= now.getTime(); time += 5 * 60 * 1000) {
@@ -51,7 +51,7 @@ async function seedMetrics() {
         }
         
         metrics.push({
-          equipmentId: equip.id,
+          workUnitId: workUnit.id,
           name: metricType.name,
           value: value,
           unit: metricType.unit,
@@ -60,8 +60,8 @@ async function seedMetrics() {
           quality: 0.95 + Math.random() * 0.05,
           tags: {
             shift: hour >= 6 && hour < 14 ? 'morning' : hour >= 14 && hour < 22 ? 'afternoon' : 'night',
-            equipmentType: equip.type,
-            location: equip.location || 'main-floor'
+            equipmentType: workUnit.equipmentType,
+            location: workUnit.location || 'main-floor'
           }
         })
       }

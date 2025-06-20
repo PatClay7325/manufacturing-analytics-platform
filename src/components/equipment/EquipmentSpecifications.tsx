@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface EquipmentSpecificationsProps {
-  specifications: Record<string, string | number>;
+  specifications?: Record<string, string | number>;
   className?: string;
 }
 
@@ -22,7 +22,7 @@ export default function EquipmentSpecifications({ specifications, className = ''
       ) : (
         <div className="px-6 py-5">
           <dl className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
-            {specKeys.map((key) => (
+            {specKeys?.map((key) => (
               <div key={key} className="sm:col-span-1">
                 <dt className="text-sm font-medium text-gray-500">{key}</dt>
                 <dd className="mt-1 text-sm text-gray-900">{specifications[key]}</dd>

@@ -22,7 +22,7 @@ export default function ManufacturingChatPage() {
       setError(null);
       
       try {
-        const sessions = await chatService.getAllSessions();
+        const sessions = await chatService?.getAllSessions();
         setChatSessions(sessions);
       } catch (err) {
         setError('Failed to load chat sessions');
@@ -37,8 +37,8 @@ export default function ManufacturingChatPage() {
   // Handle creating a new chat
   const handleNewChat = async () => {
     try {
-      const newSession = await chatService.createSession();
-      router.push(`/manufacturing-chat/${newSession.id}`);
+      const newSession = await chatService?.createSession();
+      router?.push(`/manufacturing-chat/${newSession?.id}`);
     } catch (err) {
       setError('Failed to create new chat session');
     }
@@ -48,16 +48,16 @@ export default function ManufacturingChatPage() {
   const handleSampleQuestion = async (question: string) => {
     try {
       // Create a new session with the question as the title
-      const newSession = await chatService.createSession(question);
+      const newSession = await chatService?.createSession(question);
       
       // Add the question as a user message
-      await chatService.addMessage(newSession.id, {
+      await chatService?.addMessage(newSession?.id, {
         role: 'user',
         content: question
       });
       
       // Navigate to the new session
-      router.push(`/manufacturing-chat/${newSession.id}`);
+      router?.push(`/manufacturing-chat/${newSession?.id}`);
     } catch (err) {
       setError('Failed to create new chat session');
     }
@@ -66,8 +66,8 @@ export default function ManufacturingChatPage() {
   // Handle deleting a chat session
   const handleDeleteSession = async (sessionId: string) => {
     try {
-      await chatService.deleteSession(sessionId);
-      setChatSessions(prev => prev.filter(session => session.id !== sessionId));
+      await chatService?.deleteSession(sessionId);
+      setChatSessions(prev => prev?.filter(session => session?.id !== sessionId));
     } catch (err) {
       setError('Failed to delete chat session');
     }
@@ -76,10 +76,10 @@ export default function ManufacturingChatPage() {
   // Handle renaming a chat session
   const handleRenameSession = async (sessionId: string, title: string) => {
     try {
-      const updatedSession = await chatService.renameSession(sessionId, title);
+      const updatedSession = await chatService?.renameSession(sessionId, title);
       if (updatedSession) {
-        setChatSessions(prev => prev.map(session => 
-          session.id === sessionId ? updatedSession : session
+        setChatSessions(prev => prev?.map(session => 
+          session?.id === sessionId ? updatedSession : session
         ));
       }
     } catch (err) {
@@ -94,7 +94,7 @@ export default function ManufacturingChatPage() {
       className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
       data-testid="new-chat-button"
     >
-      <svg className="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+      <svg className="-ml-1 mr-2 h-5 w-5" xmlns="http://www?.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
         <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
       </svg>
       New Chat
@@ -111,7 +111,7 @@ export default function ManufacturingChatPage() {
           <div className="flex">
             <div className="flex-shrink-0">
               <svg className="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h?.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
             <div className="ml-3">
@@ -130,7 +130,7 @@ export default function ManufacturingChatPage() {
                 onClick={handleNewChat}
                 className="w-full flex justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
-                <svg className="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <svg className="-ml-1 mr-2 h-5 w-5" xmlns="http://www?.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
                 </svg>
                 Start New Chat
@@ -172,7 +172,7 @@ export default function ManufacturingChatPage() {
                 onClick={handleNewChat}
                 className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
-                <svg className="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <svg className="-ml-1 mr-2 h-5 w-5" xmlns="http://www?.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
                 </svg>
                 Start New Chat

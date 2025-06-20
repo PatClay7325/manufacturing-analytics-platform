@@ -96,7 +96,7 @@ export default function AdminPage() {
       setState(prev => ({ ...prev, loading: true, error: null }));
       
       // Load data source health
-      const dataSourceHealth = await dataSourceRegistry.getDataSourceHealth();
+      const dataSourceHealth = await dataSourceRegistry?.getDataSourceHealth();
       
       // Load system health (simulated - in real app this would come from monitoring APIs)
       const systemHealth = await getSystemHealth();
@@ -111,7 +111,7 @@ export default function AdminPage() {
       setState(prev => ({
         ...prev,
         loading: false,
-        error: error instanceof Error ? error.message : 'Failed to load system data'
+        error: error instanceof Error ? error?.message : 'Failed to load system data'
       }));
     }
   };
@@ -187,12 +187,12 @@ export default function AdminPage() {
     let value = bytes;
     let unitIndex = 0;
     
-    while (value >= 1024 && unitIndex < units.length - 1) {
+    while (value >= 1024 && unitIndex < units?.length - 1) {
       value /= 1024;
       unitIndex++;
     }
     
-    return `${value.toFixed(1)} ${units[unitIndex]}`;
+    return `${value?.toFixed(1)} ${units[unitIndex]}`;
   };
 
   const getStatusColor = (status: string): string => {
@@ -217,14 +217,14 @@ export default function AdminPage() {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${getStatusColor(state.systemHealth.status)}`}>
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${getStatusColor(state?.systemHealth.status)}`}>
                 <span className="text-lg">🏥</span>
               </div>
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">System Status</p>
               <p className="text-2xl font-semibold text-gray-900 capitalize">
-                {state.systemHealth.status}
+                {state?.systemHealth.status}
               </p>
             </div>
           </div>
@@ -240,7 +240,7 @@ export default function AdminPage() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Uptime</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {formatUptime(state.systemHealth.uptime)}
+                {formatUptime(state?.systemHealth.uptime)}
               </p>
             </div>
           </div>
@@ -256,10 +256,10 @@ export default function AdminPage() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Memory Usage</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {state.systemHealth.memory.percentage.toFixed(1)}%
+                {state?.systemHealth.memory?.percentage.toFixed(1)}%
               </p>
               <p className="text-xs text-gray-500">
-                {formatBytes(state.systemHealth.memory.used)} / {formatBytes(state.systemHealth.memory.total)}
+                {formatBytes(state?.systemHealth.memory?.used)} / {formatBytes(state?.systemHealth.memory?.total)}
               </p>
             </div>
           </div>
@@ -275,7 +275,7 @@ export default function AdminPage() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Data Sources</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {state.dataSourceHealth.filter(ds => ds.status === 'healthy').length} / {state.dataSourceHealth.length}
+                {state?.dataSourceHealth.filter(ds => ds?.status === 'healthy').length} / {state?.dataSourceHealth.length}
               </p>
               <p className="text-xs text-gray-500">Active</p>
             </div>
@@ -300,24 +300,24 @@ export default function AdminPage() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {state.systemHealth.services.map((service) => (
-                <tr key={service.name}>
+              {state?.systemHealth.services?.map((service) => (
+                <tr key={service?.name}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {service.name}
+                    {service?.name}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(service.status)}`}>
-                      {service.status}
+                    <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(service?.status)}`}>
+                      {service?.status}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatUptime(service.uptime)}
+                    {formatUptime(service?.uptime)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatBytes(service.memory)}
+                    {formatBytes(service?.memory)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {service.cpu.toFixed(1)}%
+                    {service?.cpu.toFixed(1)}%
                   </td>
                 </tr>
               ))}
@@ -377,7 +377,7 @@ export default function AdminPage() {
   );
 
   const renderTabContent = () => {
-    switch (state.activeTab) {
+    switch (state?.activeTab) {
       case 'overview':
         return renderOverview();
       case 'datasources':
@@ -421,8 +421,8 @@ export default function AdminPage() {
             </div>
             
             <div className="flex items-center space-x-4">
-              <span className={`inline-flex px-3 py-1 text-sm font-medium rounded-full ${getStatusColor(state.systemHealth.status)}`}>
-                System {state.systemHealth.status}
+              <span className={`inline-flex px-3 py-1 text-sm font-medium rounded-full ${getStatusColor(state?.systemHealth.status)}`}>
+                System {state?.systemHealth.status}
               </span>
               
               <button
@@ -439,18 +439,18 @@ export default function AdminPage() {
           {/* Sidebar Navigation */}
           <div className="w-64 bg-gray-50 border-r border-gray-200">
             <nav className="p-4 space-y-2">
-              {tabs.map((tab) => (
+              {tabs?.map((tab) => (
                 <button
-                  key={tab.id}
+                  key={tab?.id}
                   onClick={() => setState(prev => ({ ...prev, activeTab: tab.id }))}
                   className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left ${
-                    state.activeTab === tab.id
+                    state?.activeTab === tab?.id
                       ? 'bg-blue-100 text-blue-900 font-medium'
                       : 'text-gray-700 hover:bg-gray-100'
                   }`}
                 >
-                  <span className="text-lg">{tab.icon}</span>
-                  <span>{tab.name}</span>
+                  <span className="text-lg">{tab?.icon}</span>
+                  <span>{tab?.name}</span>
                 </button>
               ))}
             </nav>
@@ -459,14 +459,14 @@ export default function AdminPage() {
           {/* Main Content */}
           <div className="flex-1 overflow-auto">
             <div className="p-6">
-              {state.loading ? (
+              {state?.loading ? (
                 <div className="flex items-center justify-center h-64">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
                 </div>
               ) : state.error ? (
                 <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
                   <h3 className="text-lg font-medium text-red-800 mb-2">Error Loading Data</h3>
-                  <p className="text-red-600 mb-4">{state.error}</p>
+                  <p className="text-red-600 mb-4">{state?.error}</p>
                   <button
                     onClick={loadSystemData}
                     className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"

@@ -5,7 +5,7 @@
  * functionality for managing standardized manufacturing terms.
  */
 
-import { AbstractBaseService } from '../architecture/BaseService';
+import { AbstractBaseService } from './architecture/BaseService';
 import { TerminologyManager } from './interfaces';
 import { ManufacturingTerm } from './types';
 

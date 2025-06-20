@@ -12,10 +12,10 @@ import Link from 'next/link';
 import { Dashboard } from '@/types/dashboard';
 
 interface DashboardCardProps {
-  dashboard: Dashboard;
-  viewMode: 'grid' | 'list';
-  onDelete: (uid: string) => void;
-  onDuplicate: (uid: string) => void;
+  dashboard?: Dashboard;
+  viewMode?: 'grid' | 'list';
+  onDelete?: (uid?: string) => void;
+  onDuplicate?: (uid?: string) => void;
 }
 
 export default function DashboardCard({ 
@@ -39,9 +39,9 @@ export default function DashboardCard({
 
   const getStatusIcon = (): string => {
     // Determine dashboard health/status based on last update
-    const lastUpdate = new Date(dashboard.meta.updated || 0);
+    const lastUpdate = new Date(dashboard?.meta.updated || 0);
     const now = new Date();
-    const hoursSinceUpdate = (now.getTime() - lastUpdate.getTime()) / (1000 * 60 * 60);
+    const hoursSinceUpdate = (now?.getTime() - lastUpdate?.getTime()) / (1000 * 60 * 60);
     
     if (hoursSinceUpdate < 1) return '🟢'; // Active
     if (hoursSinceUpdate < 24) return '🟡'; // Recent
@@ -50,22 +50,22 @@ export default function DashboardCard({
 
   const getManufacturingIcon = (): string => {
     // Determine icon based on dashboard tags or content
-    if (dashboard.tags.includes('oee')) return '📊';
-    if (dashboard.tags.includes('quality')) return '✅';
-    if (dashboard.tags.includes('maintenance')) return '🔧';
-    if (dashboard.tags.includes('energy')) return '⚡';
-    if (dashboard.tags.includes('production')) return '🏭';
-    if (dashboard.tags.includes('equipment')) return '⚙️';
+    if (dashboard?.tags.includes('oee')) return '📊';
+    if (dashboard?.tags.includes('quality')) return '✅';
+    if (dashboard?.tags.includes('maintenance')) return '🔧';
+    if (dashboard?.tags.includes('energy')) return '⚡';
+    if (dashboard?.tags.includes('production')) return '🏭';
+    if (dashboard?.tags.includes('equipment')) return '⚙️';
     return '📈';
   };
 
   const getPanelCount = (): number => {
-    return dashboard.panels.length;
+    return dashboard?.panels.length;
   };
 
   const getRefreshStatus = (): string => {
-    if (dashboard.refresh === false || !dashboard.refresh) return 'Manual';
-    return `Every ${dashboard.refresh}`;
+    if (dashboard?.refresh === false || !dashboard?.refresh) return 'Manual';
+    return `Every ${dashboard?.refresh}`;
   };
 
   if (viewMode === 'list') {
@@ -86,18 +86,18 @@ export default function DashboardCard({
                 <div className="flex items-center space-x-2">
                   <h3 className="text-lg font-semibold text-gray-900 truncate">
                     <Link 
-                      href={`/dashboard/${dashboard.uid}`}
+                      href={`/dashboard/${dashboard?.uid}`}
                       className="hover:text-blue-600"
                     >
-                      {dashboard.title}
+                      {dashboard?.title}
                     </Link>
                   </h3>
                   <span className="text-sm">{getStatusIcon()}</span>
                 </div>
                 
-                {dashboard.description && (
+                {dashboard?.description && (
                   <p className="text-sm text-gray-600 truncate mt-1">
-                    {dashboard.description}
+                    {dashboard?.description}
                   </p>
                 )}
                 
@@ -106,13 +106,13 @@ export default function DashboardCard({
                   <span>•</span>
                   <span>Refresh: {getRefreshStatus()}</span>
                   <span>•</span>
-                  <span>Updated: {formatDate(dashboard.meta.updated)}</span>
+                  <span>Updated: {formatDate(dashboard?.meta.updated)}</span>
                 </div>
               </div>
               
               {/* Tags */}
               <div className="flex flex-wrap gap-1 max-w-xs">
-                {dashboard.tags.slice(0, 3).map((tag) => (
+                {dashboard?.tags.slice(0, 3).map((tag) => (
                   <span
                     key={tag}
                     className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
@@ -120,9 +120,9 @@ export default function DashboardCard({
                     {tag}
                   </span>
                 ))}
-                {dashboard.tags.length > 3 && (
+                {dashboard?.tags.length > 3 && (
                   <span className="text-xs text-gray-500">
-                    +{dashboard.tags.length - 3} more
+                    +{dashboard?.tags.length - 3} more
                   </span>
                 )}
               </div>
@@ -131,7 +131,7 @@ export default function DashboardCard({
             {/* Actions */}
             <div className="flex items-center space-x-2 ml-4">
               <Link
-                href={`/dashboard/${dashboard.uid}`}
+                href={`/dashboard/${dashboard?.uid}`}
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700"
               >
                 View
@@ -149,7 +149,7 @@ export default function DashboardCard({
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
                     <div className="py-1">
                       <Link
-                        href={`/dashboard/${dashboard.uid}/edit`}
+                        href={`/dashboard/${dashboard?.uid}/edit`}
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setShowMenu(false)}
                       >
@@ -157,7 +157,7 @@ export default function DashboardCard({
                       </Link>
                       <button
                         onClick={() => {
-                          onDuplicate(dashboard.uid);
+                          onDuplicate(dashboard?.uid);
                           setShowMenu(false);
                         }}
                         className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -166,7 +166,7 @@ export default function DashboardCard({
                       </button>
                       <button
                         onClick={() => {
-                          navigator.clipboard.writeText(JSON.stringify(dashboard, null, 2));
+                          navigator?.clipboard.writeText(JSON.stringify(dashboard, null, 2));
                           setShowMenu(false);
                         }}
                         className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -176,7 +176,7 @@ export default function DashboardCard({
                       <hr className="my-1" />
                       <button
                         onClick={() => {
-                          onDelete(dashboard.uid);
+                          onDelete(dashboard?.uid);
                           setShowMenu(false);
                         }}
                         className="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-50"
@@ -207,10 +207,10 @@ export default function DashboardCard({
             <div className="flex-1 min-w-0">
               <h3 className="text-lg font-semibold text-gray-900 truncate">
                 <Link 
-                  href={`/dashboard/${dashboard.uid}`}
+                  href={`/dashboard/${dashboard?.uid}`}
                   className="hover:text-blue-600"
                 >
-                  {dashboard.title}
+                  {dashboard?.title}
                 </Link>
               </h3>
               <div className="flex items-center space-x-2 mt-1">
@@ -234,7 +234,7 @@ export default function DashboardCard({
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
                 <div className="py-1">
                   <Link
-                    href={`/dashboard/${dashboard.uid}/edit`}
+                    href={`/dashboard/${dashboard?.uid}/edit`}
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     onClick={() => setShowMenu(false)}
                   >
@@ -242,7 +242,7 @@ export default function DashboardCard({
                   </Link>
                   <button
                     onClick={() => {
-                      onDuplicate(dashboard.uid);
+                      onDuplicate(dashboard?.uid);
                       setShowMenu(false);
                     }}
                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -251,7 +251,7 @@ export default function DashboardCard({
                   </button>
                   <button
                     onClick={() => {
-                      navigator.clipboard.writeText(JSON.stringify(dashboard, null, 2));
+                      navigator?.clipboard.writeText(JSON.stringify(dashboard, null, 2));
                       setShowMenu(false);
                     }}
                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -261,7 +261,7 @@ export default function DashboardCard({
                   <hr className="my-1" />
                   <button
                     onClick={() => {
-                      onDelete(dashboard.uid);
+                      onDelete(dashboard?.uid);
                       setShowMenu(false);
                     }}
                     className="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-50"
@@ -275,15 +275,15 @@ export default function DashboardCard({
         </div>
         
         {/* Description */}
-        {dashboard.description && (
+        {dashboard?.description && (
           <p className="text-sm text-gray-600 mt-3 line-clamp-2">
-            {dashboard.description}
+            {dashboard?.description}
           </p>
         )}
         
         {/* Tags */}
         <div className="flex flex-wrap gap-1 mt-4">
-          {dashboard.tags.slice(0, 4).map((tag) => (
+          {dashboard?.tags.slice(0, 4).map((tag) => (
             <span
               key={tag}
               className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
@@ -291,9 +291,9 @@ export default function DashboardCard({
               {tag}
             </span>
           ))}
-          {dashboard.tags.length > 4 && (
+          {dashboard?.tags.length > 4 && (
             <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-              +{dashboard.tags.length - 4}
+              +{dashboard?.tags.length - 4}
             </span>
           )}
         </div>
@@ -301,12 +301,12 @@ export default function DashboardCard({
         {/* Footer */}
         <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-100">
           <div className="text-xs text-gray-500">
-            <div>Updated: {formatDate(dashboard.meta.updated)}</div>
+            <div>Updated: {formatDate(dashboard?.meta.updated)}</div>
             <div className="mt-1">Refresh: {getRefreshStatus()}</div>
           </div>
           
           <Link
-            href={`/dashboard/${dashboard.uid}`}
+            href={`/dashboard/${dashboard?.uid}`}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors"
           >
             Open

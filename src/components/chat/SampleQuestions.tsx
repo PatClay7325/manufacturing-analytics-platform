@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface SampleQuestionProps {
-  onSelectQuestion: (question: string) => void;
+  onSelectQuestion?: (question?: string) => void;
   isDisabled?: boolean;
 }
 
@@ -47,15 +47,15 @@ export default function SampleQuestions({ onSelectQuestion, isDisabled = false }
         Sample Questions:
       </h2>
       <ul className="space-y-2 text-gray-600">
-        {sampleQuestions.map((item) => (
-          <li key={item.id}>
+        {sampleQuestions?.map((item) => (
+          <li key={item?.id}>
             <button
-              onClick={() => onSelectQuestion(item.question)}
+              onClick={() => onSelectQuestion(item?.question)}
               className="text-left hover:text-blue-700 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-1 py-0.5 -mx-1 disabled:opacity-50 disabled:hover:no-underline disabled:hover:text-gray-600"
               disabled={isDisabled}
-              data-testid={`sample-question-${item.id}`}
+              data-testid={`sample-question-${item?.id}`}
             >
-              {item.question}
+              {item?.question}
             </button>
           </li>
         ))}

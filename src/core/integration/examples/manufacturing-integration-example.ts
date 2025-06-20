@@ -5,20 +5,20 @@
  * manufacturing system, process data, and integrate with other platform services.
  */
 
-import { initializePlatform } from '../../index';
-import { IntegrationService } from '../service/IntegrationService';
-import { IntegrationAdapter } from '../interfaces/IntegrationAdapter';
-import { DataTransformer } from '../interfaces/DataTransformer';
-import { DataValidator } from '../interfaces/DataValidator';
-import { IntegrationSystemType, IntegrationDataPacket } from '../types';
-import { JsonTransformer } from '../transformers/JsonTransformer';
-import { SchemaValidator } from '../validation/SchemaValidator';
-import { ISO22400Validator } from '../validation/standards/ISO22400Validator';
-import { IntegrationPipeline } from '../pipeline/IntegrationPipeline';
-import { OpcUaAdapter } from '../adapters/opcua/OpcUaAdapter';
-import { MqttAdapter } from '../adapters/mqtt/MqttAdapter';
-import { DeploymentEnvironment, LogLevel } from '../../architecture/types';
-import { EventBus } from '../../events/interfaces';
+import { initializePlatform } from './index';
+import { IntegrationService } from './service/IntegrationService';
+import { IntegrationAdapter } from './interfaces/IntegrationAdapter';
+import { DataTransformer } from './interfaces/DataTransformer';
+import { DataValidator } from './interfaces/DataValidator';
+import { IntegrationSystemType, IntegrationDataPacket } from './types';
+import { JsonTransformer } from './transformers/JsonTransformer';
+import { SchemaValidator } from './validation/SchemaValidator';
+import { ISO22400Validator } from './validation/standards/ISO22400Validator';
+import { IntegrationPipeline } from './pipeline/IntegrationPipeline';
+import { OpcUaAdapter } from './adapters/opcua/OpcUaAdapter';
+import { MqttAdapter } from './adapters/mqtt/MqttAdapter';
+import { DeploymentEnvironment, LogLevel } from './architecture/types';
+import { EventBus } from './events/interfaces';
 
 // Example machine data schema
 const machineDataSchema = {
@@ -283,7 +283,7 @@ function setupEventHandlers(eventBus: EventBus): void {
   });
   
   eventBus.subscribe('integration.data.received', (event: any) => {
-    console.log(`Event: Data received from ${event.integrationId} - Data ID: ${event.dataId}`);
+    console.log(`Event: Data received from dataId}`);
   });
   
   eventBus.subscribe('integration.data.processed', (event: any) => {
@@ -305,7 +305,7 @@ async function setupDataHandlers(
 ): Promise<void> {
   // Set up OPC UA data handler
   await integrationService.receiveData(opcUaAdapter.id, async (data: IntegrationDataPacket<any>) => {
-    console.log(`Received OPC UA data from ${data.source}:`, data.payload);
+    console.log(`Received OPC UA data from payload);
     
     // Process the data (in a real implementation, this would do something useful)
     await processOpcUaData(data);
@@ -313,7 +313,7 @@ async function setupDataHandlers(
   
   // Set up MQTT data handler
   await integrationService.receiveData(mqttAdapter.id, async (data: IntegrationDataPacket<any>) => {
-    console.log(`Received MQTT data from ${data.source}:`, data.payload);
+    console.log(`Received MQTT data from payload);
     
     // Process the data (in a real implementation, this would do something useful)
     await processMqttData(data);

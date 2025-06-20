@@ -12,11 +12,11 @@ import {
   DataTransformer, 
   TransformationResult, 
   TransformationRule 
-} from '../interfaces/DataTransformer';
+} from './interfaces/DataTransformer';
 import { 
   IntegrationDataPacket, 
   IntegrationErrorType 
-} from '../types';
+} from './types';
 
 /**
  * CSV parsing options
@@ -152,10 +152,10 @@ export class CsvTransformer implements DataTransformer {
       // Create standardized data packet
       const dataPacket: IntegrationDataPacket<TargetType> = {
         id: uuidv4(),
-        source: context?.source as string || 'csv-source',
+        source: context.source as string || 'csv-source',
         timestamp: new Date(),
         payload: transformedData as unknown as TargetType,
-        schemaVersion: context?.schemaVersion as string,
+        schemaVersion: context.schemaVersion as string,
         metadata: {
           originalFormat: 'csv',
           ...context?.metadata as Record<string, unknown>

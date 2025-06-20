@@ -6,13 +6,13 @@
  * such as MQTT brokers, OPC UA servers, REST APIs, databases, and file systems.
  */
 
-import { BaseService } from '../../architecture/interfaces';
+import { BaseService } from './architecture/interfaces';
 import { 
   IntegrationConfig, 
   ConnectionStatus, 
   IntegrationDataPacket, 
   IntegrationError 
-} from '../types';
+} from './types';
 
 /**
  * Integration adapter interface

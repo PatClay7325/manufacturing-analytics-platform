@@ -6,7 +6,7 @@
  * and formats before processing or transmission.
  */
 
-import { IntegrationDataPacket, IntegrationErrorType } from '../types';
+import { IntegrationDataPacket, IntegrationErrorType } from './types';
 
 /**
  * Validation result interface

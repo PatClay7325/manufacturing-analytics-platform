@@ -1,13 +1,13 @@
 /**
  * Implementation of the TenantService interface.
  */
-import { Tenant, TenantConfiguration, TenantManager } from '../interfaces/TenantManager';
+import { Tenant, TenantConfiguration, TenantManager } from './interfaces/TenantManager';
 import {
   TenantIdentificationContext,
   TenantResolutionResult,
   TenantResolver
-} from '../interfaces/TenantResolver';
-import { TenantContext, TenantContextData } from '../interfaces/TenantContext';
+} from './interfaces/TenantResolver';
+import { TenantContext, TenantContextData } from './interfaces/TenantContext';
 import {
   TenantRegistrationData,
   TenantService,

@@ -1,18 +1,18 @@
 /**
  * Integration Pipeline
  * 
- * Provides a pipeline system for processing data from integration adapters.
+ * Provides a pipeline system for processing data from 
  * The pipeline combines data acquisition, transformation, validation, and delivery
  * into a configurable workflow.
  */
 
-import { EventProducer } from '../../events/interfaces';
-import { LoggerService } from '../../architecture/interfaces';
-import { ServiceStatus } from '../../architecture/types';
-import { IntegrationAdapter } from '../interfaces/IntegrationAdapter';
-import { DataTransformer, TransformationResult } from '../interfaces/DataTransformer';
-import { DataValidator, ValidationResult } from '../interfaces/DataValidator';
-import { IntegrationDataPacket, IntegrationError, IntegrationErrorType } from '../types';
+import { EventProducer } from './events/interfaces';
+import { LoggerService } from './architecture/interfaces';
+import { ServiceStatus } from './architecture/types';
+import { IntegrationAdapter } from './interfaces/IntegrationAdapter';
+import { DataTransformer, TransformationResult } from './interfaces/DataTransformer';
+import { DataValidator, ValidationResult } from './interfaces/DataValidator';
+import { IntegrationDataPacket, IntegrationError, IntegrationErrorType } from './types';
 
 /**
  * Pipeline stage type
@@ -482,10 +482,10 @@ export class IntegrationPipeline {
         if (adapter) {
           for (const subscriptionId of subscriptionIds) {
             try {
-              this.logger.debug(`Unsubscribing from ${adapter.name} (subscription: ${subscriptionId})`);
+              this.logger.debug(`Unsubscribing from name} (subscription: ${subscriptionId})`);
               await adapter.unsubscribe(subscriptionId);
             } catch (error) {
-              this.logger.error(`Failed to unsubscribe from ${adapter.name}`, error);
+              this.logger.error(`Failed to unsubscribe from name}`, error);
             }
           }
         }
@@ -1248,7 +1248,7 @@ export class IntegrationPipeline {
     
     // Create a data handler for this source
     const dataHandler = async (data: IntegrationDataPacket): Promise<void> => {
-      this.logger.debug(`Received data from source adapter: ${adapter.name}`, {
+      this.logger.debug(`Received data from name}`, {
         pipelineId: this.id,
         adapterId: adapter.id,
         dataId: data.id
@@ -1266,7 +1266,7 @@ export class IntegrationPipeline {
           return;
         }
         
-        this.logger.error(`Error processing data from source ${adapter.name}: ${error.message}`, error, {
+        this.logger.error(`Error processing data from message}`, error, {
           pipelineId: this.id,
           adapterId: adapter.id,
           dataId: data.id

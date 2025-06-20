@@ -38,7 +38,7 @@ export default function OEEPanel({
 }: PanelProps<OEEDisplayOptions>) {
   
   const oeeData = useMemo((): OEEData => {
-    if (!data || !data.length) {
+    if (!data || !data?.length) {
       return {
         availability: 0,
         performance: 0,
@@ -50,9 +50,9 @@ export default function OEEPanel({
     }
 
     const frame = data[0];
-    const availabilityField = frame.fields.find(f => f.name.toLowerCase().includes('availability'));
-    const performanceField = frame.fields.find(f => f.name.toLowerCase().includes('performance'));
-    const qualityField = frame.fields.find(f => f.name.toLowerCase().includes('quality'));
+    const availabilityField = frame?.fields.find(f => f?.name.toLowerCase().includes('availability'));
+    const performanceField = frame?.fields.find(f => f?.name.toLowerCase().includes('performance'));
+    const qualityField = frame?.fields.find(f => f?.name.toLowerCase().includes('quality'));
     
     const availability = getLatestValue(availabilityField) || 0;
     const performance = getLatestValue(performanceField) || 0;
@@ -71,10 +71,10 @@ export default function OEEPanel({
       quality,
       oee,
       targets: {
-        availability: options.targets?.find(t => t.metric === 'availability')?.target || 85,
-        performance: options.targets?.find(t => t.metric === 'performance')?.target || 85,
-        quality: options.targets?.find(t => t.metric === 'quality')?.target || 99,
-        oee: options.targets?.find(t => t.metric === 'oee')?.target || 75
+        availability: options.targets?.find(t => t?.metric === 'availability')?.target || 85,
+        performance: options.targets?.find(t => t?.metric === 'performance')?.target || 85,
+        quality: options.targets?.find(t => t?.metric === 'quality')?.target || 99,
+        oee: options.targets?.find(t => t?.metric === 'oee')?.target || 75
       },
       trends: {
         availability: availabilityTrend,
@@ -85,14 +85,14 @@ export default function OEEPanel({
     };
 
     function getLatestValue(field?: any): number {
-      if (!field || !field.values.length) return 0;
-      return field.values[field.values.length - 1] || 0;
+      if (!field || !field?.values.length) return 0;
+      return field?.values[field?.values.length - 1] || 0;
     }
 
     function calculateTrend(field?: any, currentValue?: number, previousValue?: number): number {
-      if (field && field.values.length >= 2) {
-        const current = field.values[field.values.length - 1];
-        const previous = field.values[field.values.length - 2];
+      if (field && field?.values.length >= 2) {
+        const current = field?.values[field?.values.length - 1];
+        const previous = field?.values[field?.values.length - 2];
         return current - previous;
       }
       if (currentValue !== undefined && previousValue !== undefined) {
@@ -103,25 +103,25 @@ export default function OEEPanel({
 
     function getPreviousOEE(): number {
       if (!availabilityField || !performanceField || !qualityField) return 0;
-      if (availabilityField.values.length < 2) return 0;
+      if (availabilityField?.values.length < 2) return 0;
       
-      const prevAvail = availabilityField.values[availabilityField.values.length - 2] || 0;
-      const prevPerf = performanceField.values[performanceField.values.length - 2] || 0;
-      const prevQual = qualityField.values[qualityField.values.length - 2] || 0;
+      const prevAvail = availabilityField?.values[availabilityField?.values.length - 2] || 0;
+      const prevPerf = performanceField?.values[performanceField?.values.length - 2] || 0;
+      const prevQual = qualityField?.values[qualityField?.values.length - 2] || 0;
       
       return (prevAvail * prevPerf * prevQual) / 10000;
     }
-  }, [data, options.targets]);
+  }, [data, options?.targets]);
 
   const getStatusColor = (value: number, thresholds: { good: number; warning: number }): string => {
-    if (value >= thresholds.good) return 'text-green-600';
-    if (value >= thresholds.warning) return 'text-yellow-600';
+    if (value >= thresholds?.good) return 'text-green-600';
+    if (value >= thresholds?.warning) return 'text-yellow-600';
     return 'text-red-600';
   };
 
   const getStatusBgColor = (value: number, thresholds: { good: number; warning: number }): string => {
-    if (value >= thresholds.good) return 'bg-green-100';
-    if (value >= thresholds.warning) return 'bg-yellow-100';
+    if (value >= thresholds?.good) return 'bg-green-100';
+    if (value >= thresholds?.warning) return 'bg-yellow-100';
     return 'bg-red-100';
   };
 
@@ -135,7 +135,7 @@ export default function OEEPanel({
   };
 
   const formatPercentage = (value: number): string => {
-    return `${value.toFixed(1)}%`;
+    return `${value?.toFixed(1)}%`;
   };
 
   const renderGauge = (
@@ -155,7 +155,7 @@ export default function OEEPanel({
           <div className="flex items-center space-x-1">
             {getTrendIcon(trend)}
             <span className="text-xs text-gray-500">
-              {trend > 0 ? '+' : ''}{trend.toFixed(1)}%
+              {trend > 0 ? '+' : ''}{trend?.toFixed(1)}%
             </span>
           </div>
         </div>
@@ -166,8 +166,8 @@ export default function OEEPanel({
             {/* Value bar */}
             <div 
               className={`h-full transition-all duration-500 ${
-                value >= thresholds.good ? 'bg-green-500' :
-                value >= thresholds.warning ? 'bg-yellow-500' : 'bg-red-500'
+                value >= thresholds?.good ? 'bg-green-500' :
+                value >= thresholds?.warning ? 'bg-yellow-500' : 'bg-red-500'
               }`}
               style={{ width: `${percentage}%` }}
             />
@@ -226,8 +226,8 @@ export default function OEEPanel({
               cy="60"
               r={radius}
               stroke={
-                value >= thresholds.good ? '#10b981' :
-                value >= thresholds.warning ? '#f59e0b' : '#ef4444'
+                value >= thresholds?.good ? '#10b981' :
+                value >= thresholds?.warning ? '#f59e0b' : '#ef4444'
               }
               strokeWidth="8"
               fill="transparent"
@@ -284,7 +284,7 @@ export default function OEEPanel({
         
         {trend !== 0 && (
           <div className="text-xs text-gray-600 mt-1">
-            {trend > 0 ? '+' : ''}{trend.toFixed(1)}% vs previous
+            {trend > 0 ? '+' : ''}{trend?.toFixed(1)}% vs previous
           </div>
         )}
       </div>
@@ -292,38 +292,38 @@ export default function OEEPanel({
   };
 
   const renderComponent = () => {
-    const thresholds = options.alertThresholds;
+    const thresholds = options?.alertThresholds;
     
-    switch (options.displayMode) {
+    switch (options?.displayMode) {
       case 'gauge':
         return (
           <div className="grid grid-cols-2 gap-4 h-full">
-            {options.showAvailability && renderGauge(
+            {options?.showAvailability && renderGauge(
               'Availability', 
-              oeeData.availability, 
-              oeeData.targets.availability, 
-              oeeData.trends.availability,
-              thresholds.availability
+              oeeData?.availability, 
+              oeeData?.targets.availability, 
+              oeeData?.trends.availability,
+              thresholds?.availability
             )}
-            {options.showPerformance && renderGauge(
+            {options?.showPerformance && renderGauge(
               'Performance', 
-              oeeData.performance, 
-              oeeData.targets.performance, 
-              oeeData.trends.performance,
-              thresholds.performance
+              oeeData?.performance, 
+              oeeData?.targets.performance, 
+              oeeData?.trends.performance,
+              thresholds?.performance
             )}
-            {options.showQuality && renderGauge(
+            {options?.showQuality && renderGauge(
               'Quality', 
-              oeeData.quality, 
-              oeeData.targets.quality, 
-              oeeData.trends.quality,
-              thresholds.quality
+              oeeData?.quality, 
+              oeeData?.targets.quality, 
+              oeeData?.trends.quality,
+              thresholds?.quality
             )}
-            {options.showOverallOEE && renderCircularGauge(
+            {options?.showOverallOEE && renderCircularGauge(
               'Overall OEE', 
-              oeeData.oee, 
-              oeeData.targets.oee,
-              thresholds.oee
+              oeeData?.oee, 
+              oeeData?.targets.oee,
+              thresholds?.oee
             )}
           </div>
         );
@@ -331,33 +331,33 @@ export default function OEEPanel({
       case 'number':
         return (
           <div className="grid grid-cols-2 gap-4 h-full">
-            {options.showAvailability && renderNumberDisplay(
+            {options?.showAvailability && renderNumberDisplay(
               'Availability', 
-              oeeData.availability, 
-              oeeData.targets.availability, 
-              oeeData.trends.availability,
-              thresholds.availability
+              oeeData?.availability, 
+              oeeData?.targets.availability, 
+              oeeData?.trends.availability,
+              thresholds?.availability
             )}
-            {options.showPerformance && renderNumberDisplay(
+            {options?.showPerformance && renderNumberDisplay(
               'Performance', 
-              oeeData.performance, 
-              oeeData.targets.performance, 
-              oeeData.trends.performance,
-              thresholds.performance
+              oeeData?.performance, 
+              oeeData?.targets.performance, 
+              oeeData?.trends.performance,
+              thresholds?.performance
             )}
-            {options.showQuality && renderNumberDisplay(
+            {options?.showQuality && renderNumberDisplay(
               'Quality', 
-              oeeData.quality, 
-              oeeData.targets.quality, 
-              oeeData.trends.quality,
-              thresholds.quality
+              oeeData?.quality, 
+              oeeData?.targets.quality, 
+              oeeData?.trends.quality,
+              thresholds?.quality
             )}
-            {options.showOverallOEE && renderNumberDisplay(
+            {options?.showOverallOEE && renderNumberDisplay(
               'Overall OEE', 
-              oeeData.oee, 
-              oeeData.targets.oee, 
-              oeeData.trends.oee,
-              thresholds.oee
+              oeeData?.oee, 
+              oeeData?.targets.oee, 
+              oeeData?.trends.oee,
+              thresholds?.oee
             )}
           </div>
         );

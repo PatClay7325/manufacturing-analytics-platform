@@ -2,14 +2,14 @@ import React from 'react';
 import { Maintenance, MaintenanceType } from '@/models/equipment';
 
 interface MaintenanceHistoryProps {
-  maintenanceHistory: Maintenance[];
+  maintenanceHistory?: Maintenance[];
   className?: string;
 }
 
 export default function MaintenanceHistory({ maintenanceHistory, className = '' }: MaintenanceHistoryProps) {
   // Sort maintenance history by scheduled date (newest first)
   const sortedHistory = [...maintenanceHistory].sort((a, b) => {
-    return new Date(b.scheduledDate).getTime() - new Date(a.scheduledDate).getTime();
+    return new Date(b?.scheduledDate).getTime() - new Date(a?.scheduledDate).getTime();
   });
 
   // Function to get status badge color
@@ -77,38 +77,38 @@ export default function MaintenanceHistory({ maintenanceHistory, className = '' 
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {sortedHistory.map((maintenance) => (
-                <tr key={maintenance.id} data-testid={`maintenance-row-${maintenance.id}`}>
+              {sortedHistory?.map((maintenance) => (
+                <tr key={maintenance?.id} data-testid={`maintenance-row-${maintenance?.id}`}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {new Date(maintenance.scheduledDate).toLocaleDateString()}
-                    {maintenance.completedDate && maintenance.completedDate !== maintenance.scheduledDate && (
+                    {new Date(maintenance?.scheduledDate).toLocaleDateString()}
+                    {maintenance?.completedDate && maintenance?.completedDate !== maintenance?.scheduledDate && (
                       <span className="text-xs text-gray-500 block">
-                        Completed: {new Date(maintenance.completedDate).toLocaleDateString()}
+                        Completed: {new Date(maintenance?.completedDate).toLocaleDateString()}
                       </span>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 text-xs rounded-full ${getTypeBadgeColor(maintenance.type)}`}>
-                      {maintenance.type.charAt(0).toUpperCase() + maintenance.type.slice(1)}
+                    <span className={`px-2 py-1 text-xs rounded-full ${getTypeBadgeColor(maintenance?.type)}`}>
+                      {maintenance?.type.charAt(0).toUpperCase() + maintenance?.type.slice(1)}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-900">
                     <div className="max-w-xs">
-                      {maintenance.description}
-                      {maintenance.notes && (
+                      {maintenance?.description}
+                      {maintenance?.notes && (
                         <span className="text-xs text-gray-500 block mt-1">
-                          {maintenance.notes}
+                          {maintenance?.notes}
                         </span>
                       )}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 text-xs rounded-full ${getStatusBadgeColor(maintenance.status)}`}>
-                      {maintenance.status.charAt(0).toUpperCase() + maintenance.status.slice(1)}
+                    <span className={`px-2 py-1 text-xs rounded-full ${getStatusBadgeColor(maintenance?.status)}`}>
+                      {maintenance?.status.charAt(0).toUpperCase() + maintenance?.status.slice(1)}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {maintenance.technician || '-'}
+                    {maintenance?.technician || '-'}
                   </td>
                 </tr>
               ))}

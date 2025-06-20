@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 
 interface StreamingChatMessageProps {
-  role: 'user' | 'assistant' | 'system';
+  role?: 'user' | 'assistant' | 'system';
   content?: string;
   timestamp?: string;
   isStreaming?: boolean;

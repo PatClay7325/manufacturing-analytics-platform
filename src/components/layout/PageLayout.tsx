@@ -1,10 +1,10 @@
 import React from 'react';
 
 interface PageLayoutProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   title?: string;
   showBreadcrumbs?: boolean;
-  breadcrumbs?: { label: string; href: string }[];
+  breadcrumbs?: { label?: string; href?: string }[];
   actionButton?: React.ReactNode;
 }
 
@@ -20,17 +20,17 @@ export default function PageLayout({
       {(title || actionButton) && (
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
           <div>
-            {showBreadcrumbs && breadcrumbs.length > 0 && (
+            {showBreadcrumbs && breadcrumbs?.length > 0 && (
               <nav className="flex mb-2" aria-label="Breadcrumb">
                 <ol className="inline-flex items-center space-x-1 md:space-x-3 text-sm">
-                  {breadcrumbs.map((crumb, index) => (
-                    <li key={crumb.href} className="inline-flex items-center">
+                  {breadcrumbs?.map((crumb, index) => (
+                    <li key={crumb?.href} className="inline-flex items-center">
                       {index > 0 && (
                         <svg
                           className="w-4 h-4 text-gray-400 mx-1"
                           fill="currentColor"
                           viewBox="0 0 20 20"
-                          xmlns="http://www.w3.org/2000/svg"
+                          xmlns="http://www?.w3.org/2000/svg"
                         >
                           <path
                             fillRule="evenodd"
@@ -40,15 +40,15 @@ export default function PageLayout({
                         </svg>
                       )}
                       <a
-                        href={crumb.href}
+                        href={crumb?.href}
                         className={`${
-                          index === breadcrumbs.length - 1
+                          index === breadcrumbs?.length - 1
                             ? 'text-gray-500'
                             : 'text-blue-600 hover:text-blue-800'
                         } ${index === 0 ? 'ml-1' : ''}`}
-                        aria-current={index === breadcrumbs.length - 1 ? 'page' : undefined}
+                        aria-current={index === breadcrumbs?.length - 1 ? 'page' : undefined}
                       >
-                        {crumb.label}
+                        {crumb?.label}
                       </a>
                     </li>
                   ))}

@@ -108,17 +108,17 @@ export class EquipmentServiceImpl extends BaseModularService implements Equipmen
     const startTime = Date.now();
     
     try {
-      // Get equipment from database
-      const equipment = await this.prisma.equipment.findUnique({
+      // Get work unit from database
+      const workUnit = await this.prisma.workUnit.findUnique({
         where: { id },
         include: {
-          maintenanceRecords: {
+          MaintenanceRecord: {
             orderBy: {
               startTime: 'desc',
             },
             take: 5,
           },
-          performanceMetrics: {
+          PerformanceMetric: {
             orderBy: {
               timestamp: 'desc',
             },
@@ -127,12 +127,12 @@ export class EquipmentServiceImpl extends BaseModularService implements Equipmen
         },
       });
       
-      if (!equipment) {
+      if (!workUnit) {
         this.trackRequest(startTime, false);
         return {
           success: false,
-          error: `Equipment not found: ${id}`,
-          errorCode: 'EQUIPMENT_NOT_FOUND',
+          error: `Work unit not found: ${id}`,
+          errorCode: 'WORKUNIT_NOT_FOUND',
           timestamp: new Date(),
           duration: Date.now() - startTime,
         };
@@ -141,7 +141,7 @@ export class EquipmentServiceImpl extends BaseModularService implements Equipmen
       this.trackRequest(startTime, true);
       return {
         success: true,
-        data: equipment,
+        data: workUnit,
         timestamp: new Date(),
         duration: Date.now() - startTime,
       };
@@ -149,7 +149,7 @@ export class EquipmentServiceImpl extends BaseModularService implements Equipmen
       this.trackRequest(startTime, false);
       return {
         success: false,
-        error: `Error getting equipment: ${error instanceof Error ? error.message : String(error)}`,
+        error: `Error getting work unit: ${error instanceof Error ? error.message : String(error)}`,
         errorCode: 'DATABASE_ERROR',
         timestamp: new Date(),
         duration: Date.now() - startTime,
@@ -199,9 +199,9 @@ export class EquipmentServiceImpl extends BaseModularService implements Equipmen
       const limit = pagination?.limit || 10;
       const skip = (page - 1) * limit;
       
-      // Get equipment from database
-      const [equipment, total] = await Promise.all([
-        this.prisma.equipment.findMany({
+      // Get work units from database
+      const [workUnits, total] = await Promise.all([
+        this.prisma.workUnit.findMany({
           where,
           skip,
           take: limit,
@@ -209,13 +209,13 @@ export class EquipmentServiceImpl extends BaseModularService implements Equipmen
             name: 'asc',
           },
         }),
-        this.prisma.equipment.count({ where }),
+        this.prisma.workUnit.count({ where }),
       ]);
       
       this.trackRequest(startTime, true);
       return {
         success: true,
-        data: equipment,
+        data: workUnits,
         timestamp: new Date(),
         duration: Date.now() - startTime,
       };
@@ -223,7 +223,7 @@ export class EquipmentServiceImpl extends BaseModularService implements Equipmen
       this.trackRequest(startTime, false);
       return {
         success: false,
-        error: `Error getting equipment list: ${error instanceof Error ? error.message : String(error)}`,
+        error: `Error getting work unit list: ${error instanceof Error ? error.message : String(error)}`,
         errorCode: 'DATABASE_ERROR',
         timestamp: new Date(),
         duration: Date.now() - startTime,
@@ -251,8 +251,8 @@ export class EquipmentServiceImpl extends BaseModularService implements Equipmen
         };
       }
       
-      // Check if equipment with same serial number already exists
-      const existing = await this.prisma.equipment.findUnique({
+      // Check if work unit with same serial number already exists
+      const existing = await this.prisma.workUnit.findUnique({
         where: { serialNumber: data.serialNumber },
       });
       
@@ -260,38 +260,40 @@ export class EquipmentServiceImpl extends BaseModularService implements Equipmen
         this.trackRequest(startTime, false);
         return {
           success: false,
-          error: `Equipment with serial number ${data.serialNumber} already exists`,
+          error: `Work unit with serial number ${data.serialNumber} already exists`,
           errorCode: 'DUPLICATE_SERIAL_NUMBER',
           timestamp: new Date(),
           duration: Date.now() - startTime,
         };
       }
       
-      // Create equipment in database
-      const equipment = await this.prisma.equipment.create({
+      // Create work unit in database
+      const workUnit = await this.prisma.workUnit.create({
         data: {
           name: data.name,
-          type: data.type,
+          code: data.code || `WU-${data.serialNumber}`,
+          equipmentType: data.type,
+          model: data.model || 'Unknown',
           manufacturerCode: data.manufacturerCode,
           serialNumber: data.serialNumber,
           installationDate: data.installationDate || new Date(),
           status: data.status || 'operational',
           location: data.location,
           description: data.description,
-          model: data.model,
+          workCenterId: data.workCenterId || 'wc-default',
         },
       });
       
-      // Emit equipment created event
+      // Emit work unit created event
       await this.eventProducer.createAndPublishEvent(
-        'equipment.created',
-        { equipment }
+        'workunit.created',
+        { workUnit }
       );
       
       this.trackRequest(startTime, true);
       return {
         success: true,
-        data: equipment,
+        data: workUnit,
         timestamp: new Date(),
         duration: Date.now() - startTime,
       };
@@ -299,7 +301,7 @@ export class EquipmentServiceImpl extends BaseModularService implements Equipmen
       this.trackRequest(startTime, false);
       return {
         success: false,
-        error: `Error creating equipment: ${error instanceof Error ? error.message : String(error)}`,
+        error: `Error creating work unit: ${error instanceof Error ? error.message : String(error)}`,
         errorCode: 'DATABASE_ERROR',
         timestamp: new Date(),
         duration: Date.now() - startTime,
@@ -316,8 +318,8 @@ export class EquipmentServiceImpl extends BaseModularService implements Equipmen
     const startTime = Date.now();
     
     try {
-      // Check if equipment exists
-      const existing = await this.prisma.equipment.findUnique({
+      // Check if work unit exists
+      const existing = await this.prisma.workUnit.findUnique({
         where: { id },
       });
       
@@ -325,8 +327,8 @@ export class EquipmentServiceImpl extends BaseModularService implements Equipmen
         this.trackRequest(startTime, false);
         return {
           success: false,
-          error: `Equipment not found: ${id}`,
-          errorCode: 'EQUIPMENT_NOT_FOUND',
+          error: `Work unit not found: ${id}`,
+          errorCode: 'WORKUNIT_NOT_FOUND',
           timestamp: new Date(),
           duration: Date.now() - startTime,
         };
@@ -334,7 +336,7 @@ export class EquipmentServiceImpl extends BaseModularService implements Equipmen
       
       // Check if serial number is being changed and if it would conflict
       if (data.serialNumber && data.serialNumber !== existing.serialNumber) {
-        const conflicting = await this.prisma.equipment.findUnique({
+        const conflicting = await this.prisma.workUnit.findUnique({
           where: { serialNumber: data.serialNumber },
         });
         
@@ -353,8 +355,8 @@ export class EquipmentServiceImpl extends BaseModularService implements Equipmen
       // Capture old status for event
       const oldStatus = existing.status;
       
-      // Update equipment in database
-      const equipment = await this.prisma.equipment.update({
+      // Update work unit in database
+      const workUnit = await this.prisma.workUnit.update({
         where: { id },
         data,
       });
@@ -369,16 +371,16 @@ export class EquipmentServiceImpl extends BaseModularService implements Equipmen
         );
       }
       
-      // Emit equipment updated event
+      // Emit work unit updated event
       await this.eventProducer.createAndPublishEvent(
-        'equipment.updated',
-        { equipment, changes: data }
+        'workunit.updated',
+        { workUnit, changes: data }
       );
       
       this.trackRequest(startTime, true);
       return {
         success: true,
-        data: equipment,
+        data: workUnit,
         timestamp: new Date(),
         duration: Date.now() - startTime,
       };
@@ -402,14 +404,14 @@ export class EquipmentServiceImpl extends BaseModularService implements Equipmen
     const startTime = Date.now();
     
     try {
-      // Check if equipment exists
-      const existing = await this.prisma.equipment.findUnique({
+      // Check if work unit exists
+      const existing = await this.prisma.workUnit.findUnique({
         where: { id },
         include: {
-          maintenanceRecords: { select: { id: true }, take: 1 },
-          performanceMetrics: { select: { id: true }, take: 1 },
-          qualityMetrics: { select: { id: true }, take: 1 },
-          alerts: { select: { id: true }, take: 1 },
+          MaintenanceRecord: { select: { id: true }, take: 1 },
+          PerformanceMetric: { select: { id: true }, take: 1 },
+          QualityMetric: { select: { id: true }, take: 1 },
+          Alert: { select: { id: true }, take: 1 },
         },
       });
       
@@ -417,39 +419,39 @@ export class EquipmentServiceImpl extends BaseModularService implements Equipmen
         this.trackRequest(startTime, false);
         return {
           success: false,
-          error: `Equipment not found: ${id}`,
-          errorCode: 'EQUIPMENT_NOT_FOUND',
+          error: `Work unit not found: ${id}`,
+          errorCode: 'WORKUNIT_NOT_FOUND',
           timestamp: new Date(),
           duration: Date.now() - startTime,
         };
       }
       
-      // Check if equipment has related records
+      // Check if work unit has related records
       const hasRelatedRecords = 
-        existing.maintenanceRecords.length > 0 ||
-        existing.performanceMetrics.length > 0 ||
-        existing.qualityMetrics.length > 0 ||
-        existing.alerts.length > 0;
+        existing.MaintenanceRecord.length > 0 ||
+        existing.PerformanceMetric.length > 0 ||
+        existing.QualityMetric.length > 0 ||
+        existing.Alert.length > 0;
       
       if (hasRelatedRecords) {
         this.trackRequest(startTime, false);
         return {
           success: false,
-          error: 'Cannot delete equipment with related records',
+          error: 'Cannot delete work unit with related records',
           errorCode: 'HAS_RELATED_RECORDS',
           timestamp: new Date(),
           duration: Date.now() - startTime,
         };
       }
       
-      // Delete equipment from database
-      await this.prisma.equipment.delete({
+      // Delete work unit from database
+      await this.prisma.workUnit.delete({
         where: { id },
       });
       
-      // Emit equipment deleted event
+      // Emit work unit deleted event
       await this.eventProducer.createAndPublishEvent(
-        'equipment.deleted',
+        'workunit.deleted',
         { id, name: existing.name }
       );
       
@@ -486,8 +488,8 @@ export class EquipmentServiceImpl extends BaseModularService implements Equipmen
     const startTime = Date.now();
     
     try {
-      // Check if equipment exists
-      const existing = await this.prisma.equipment.findUnique({
+      // Check if work unit exists
+      const existing = await this.prisma.workUnit.findUnique({
         where: { id },
       });
       
@@ -495,8 +497,8 @@ export class EquipmentServiceImpl extends BaseModularService implements Equipmen
         this.trackRequest(startTime, false);
         return {
           success: false,
-          error: `Equipment not found: ${id}`,
-          errorCode: 'EQUIPMENT_NOT_FOUND',
+          error: `Work unit not found: ${id}`,
+          errorCode: 'WORKUNIT_NOT_FOUND',
           timestamp: new Date(),
           duration: Date.now() - startTime,
         };
@@ -519,8 +521,8 @@ export class EquipmentServiceImpl extends BaseModularService implements Equipmen
       // Capture old status for event
       const oldStatus = existing.status;
       
-      // Update equipment status in database
-      const equipment = await this.prisma.equipment.update({
+      // Update work unit status in database
+      const workUnit = await this.prisma.workUnit.update({
         where: { id },
         data: { status },
       });
@@ -539,7 +541,7 @@ export class EquipmentServiceImpl extends BaseModularService implements Equipmen
       this.trackRequest(startTime, true);
       return {
         success: true,
-        data: equipment,
+        data: workUnit,
         timestamp: new Date(),
         duration: Date.now() - startTime,
       };
@@ -619,8 +621,8 @@ Body: { status: string, reason?: string }
    * Get custom metrics
    */
   protected async getCustomMetrics(): Promise<Record<string, unknown>> {
-    // Get equipment counts by status
-    const statusCounts = await this.prisma.equipment.groupBy({
+    // Get work unit counts by status
+    const statusCounts = await this.prisma.workUnit.groupBy({
       by: ['status'],
       _count: {
         status: true,
@@ -628,17 +630,17 @@ Body: { status: string, reason?: string }
     });
     
     // Convert to record
-    const equipmentByStatus: Record<string, number> = {};
+    const workUnitsByStatus: Record<string, number> = {};
     for (const { status, _count } of statusCounts) {
-      equipmentByStatus[status] = _count.status;
+      workUnitsByStatus[status] = _count.status;
     }
     
-    // Get total equipment count
-    const totalEquipment = await this.prisma.equipment.count();
+    // Get total work units count
+    const totalWorkUnits = await this.prisma.workUnit.count();
     
     return {
-      totalEquipment,
-      equipmentByStatus,
+      totalWorkUnits,
+      workUnitsByStatus,
     };
   }
 }

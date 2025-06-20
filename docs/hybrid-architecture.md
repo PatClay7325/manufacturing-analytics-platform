@@ -51,10 +51,10 @@ Contains the main business logic services:
 
 ### 4. Intelligence Layer
 
-Provides AI and analytics capabilities:
+Provides AI and Analytics capabilities:
 
 - **AIService**: Integration with Ollama for LLM inference
-- **AnalyticsService**: Advanced analytics and insights
+- **AnalyticsService**: Advanced Analytics and insights
 - **AgentService**: Autonomous manufacturing agents
 - **PredictiveService**: Predictive maintenance and quality
 
@@ -89,7 +89,7 @@ All components run on local infrastructure, ideal for:
 
 Core services run on-premises with selected services in the cloud:
 - Local processing for time-sensitive data
-- Cloud processing for analytics and AI
+- Cloud processing for Analytics and AI
 - Cloud storage for long-term data retention
 
 ### 3. Multi-Cloud

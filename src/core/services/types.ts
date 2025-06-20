@@ -4,7 +4,7 @@
  * This file defines the types and interfaces for the modular services architecture.
  */
 
-import { BaseConfig } from '../architecture/types';
+import { BaseConfig } from './architecture/types';
 
 /**
  * Service configuration

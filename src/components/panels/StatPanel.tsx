@@ -28,20 +28,20 @@ export default function StatPanel({
 }: PanelProps<StatPanelOptions>) {
   
   const statData = useMemo((): StatPanelData => {
-    if (!data || !data.length || !data[0].fields.length) {
+    if (!data || !data?.length || !data[0].fields?.length) {
       return { value: 0 };
     }
 
     const frame = data[0];
-    const valueField = frame.fields.find(field => field.type === 'number');
+    const valueField = frame?.fields.find(field => field?.type === 'number');
     
-    if (!valueField || !valueField.values.length) {
+    if (!valueField || !valueField?.values.length) {
       return { value: 0 };
     }
 
-    const values = valueField.values;
-    const currentValue = values[values.length - 1] || 0;
-    const previousValue = values.length > 1 ? values[values.length - 2] : undefined;
+    const values = valueField?.values;
+    const currentValue = values[values?.length - 1] || 0;
+    const previousValue = values?.length > 1 ? values[values?.length - 2] : undefined;
     
     let trend: 'up' | 'down' | 'stable' = 'stable';
     let trendPercentage = 0;
@@ -58,22 +58,22 @@ export default function StatPanel({
     return {
       value: currentValue,
       previousValue,
-      unit: fieldConfig.defaults.unit,
+      unit: fieldConfig.defaults?.unit,
       trend,
       trendPercentage
     };
   }, [data, fieldConfig]);
 
   const getValueColor = (): string => {
-    if (!fieldConfig.defaults.thresholds?.steps) return 'text-gray-900';
+    if (!fieldConfig?.defaults?.thresholds?.steps) return 'text-gray-900';
     
-    const thresholds = fieldConfig.defaults.thresholds.steps;
-    const value = statData.value;
+    const thresholds = fieldConfig?.defaults.thresholds?.steps;
+    const value = statData?.value;
     
-    for (let i = thresholds.length - 1; i >= 0; i--) {
+    for (let i = thresholds?.length - 1; i >= 0; i--) {
       const threshold = thresholds[i];
-      if (threshold.value === null || value >= threshold.value) {
-        switch (threshold.color) {
+      if (threshold.value === null || value >= threshold?.value) {
+        switch (threshold?.color) {
           case 'red': return 'text-red-600';
           case 'yellow': return 'text-yellow-600';
           case 'green': return 'text-green-600';
@@ -87,23 +87,23 @@ export default function StatPanel({
   };
 
   const getBackgroundColor = (): string => {
-    if (options.colorMode !== 'background' && options.colorMode !== 'background_solid') {
+    if (!options?.colorMode || (options?.colorMode !== 'background' && options?.colorMode !== 'background_solid')) {
       return 'bg-white';
     }
     
-    if (!fieldConfig.defaults.thresholds?.steps) return 'bg-white';
+    if (!fieldConfig?.defaults?.thresholds?.steps) return 'bg-white';
     
-    const thresholds = fieldConfig.defaults.thresholds.steps;
-    const value = statData.value;
+    const thresholds = fieldConfig?.defaults.thresholds?.steps;
+    const value = statData?.value;
     
-    for (let i = thresholds.length - 1; i >= 0; i--) {
+    for (let i = thresholds?.length - 1; i >= 0; i--) {
       const threshold = thresholds[i];
-      if (threshold.value === null || value >= threshold.value) {
-        switch (threshold.color) {
-          case 'red': return options.colorMode === 'background_solid' ? 'bg-red-100' : 'bg-red-50';
-          case 'yellow': return options.colorMode === 'background_solid' ? 'bg-yellow-100' : 'bg-yellow-50';
-          case 'green': return options.colorMode === 'background_solid' ? 'bg-green-100' : 'bg-green-50';
-          case 'blue': return options.colorMode === 'background_solid' ? 'bg-blue-100' : 'bg-blue-50';
+      if (threshold.value === null || value >= threshold?.value) {
+        switch (threshold?.color) {
+          case 'red': return options?.colorMode === 'background_solid' ? 'bg-red-100' : 'bg-red-50';
+          case 'yellow': return options?.colorMode === 'background_solid' ? 'bg-yellow-100' : 'bg-yellow-50';
+          case 'green': return options?.colorMode === 'background_solid' ? 'bg-green-100' : 'bg-green-50';
+          case 'blue': return options?.colorMode === 'background_solid' ? 'bg-blue-100' : 'bg-blue-50';
           default: return 'bg-white';
         }
       }
@@ -113,28 +113,28 @@ export default function StatPanel({
   };
 
   const formatValue = (value: number): string => {
-    if (statData.unit) {
-      return `${value.toLocaleString()}${statData.unit}`;
+    if (statData?.unit) {
+      return `${value?.toLocaleString()}${statData?.unit}`;
     }
-    return value.toLocaleString();
+    return value?.toLocaleString();
   };
 
   const getTrendIcon = () => {
-    if (!statData.trend || statData.trend === 'stable') return null;
+    if (!statData?.trend || statData?.trend === 'stable') return null;
     
-    const iconClass = statData.trend === 'up' ? 'text-green-500' : 'text-red-500';
-    const arrow = statData.trend === 'up' ? '↗' : '↘';
+    const iconClass = statData?.trend === 'up' ? 'text-green-500' : 'text-red-500';
+    const arrow = statData?.trend === 'up' ? '↗' : '↘';
     
     return (
       <span className={`inline-flex items-center text-sm font-medium ${iconClass}`}>
-        {arrow} {statData.trendPercentage?.toFixed(1)}%
+        {arrow} {statData?.trendPercentage?.toFixed(1)}%
       </span>
     );
   };
 
   const getValueSize = (): string => {
-    if (options.text?.valueSize) {
-      return `text-${options.text.valueSize}xl`;
+    if (options?.text?.valueSize) {
+      return `text-${options?.text.valueSize}xl`;
     }
     
     // Auto-size based on panel dimensions
@@ -145,8 +145,8 @@ export default function StatPanel({
   };
 
   const getTitleSize = (): string => {
-    if (options.text?.titleSize) {
-      return `text-${options.text.titleSize}xl`;
+    if (options?.text?.titleSize) {
+      return `text-${options?.text.titleSize}xl`;
     }
     
     if (width < 200) return 'text-sm';
@@ -155,22 +155,22 @@ export default function StatPanel({
   };
 
   const shouldShowTitle = (): boolean => {
-    return options.textMode !== 'value' && options.textMode !== 'none';
+    return options?.textMode !== 'value' && options?.textMode !== 'none';
   };
 
   const shouldShowValue = (): boolean => {
-    return options.textMode !== 'name' && options.textMode !== 'none';
+    return options?.textMode !== 'name' && options?.textMode !== 'none';
   };
 
   const getJustifyClass = (): string => {
-    switch (options.justifyMode) {
+    switch (options?.justifyMode) {
       case 'center': return 'justify-center text-center';
       default: return 'justify-start text-left';
     }
   };
 
   const getOrientationClass = (): string => {
-    if (options.orientation === 'horizontal') {
+    if (options?.orientation === 'horizontal') {
       return 'flex-row items-center space-x-4';
     }
     return 'flex-col items-start space-y-2';
@@ -179,29 +179,29 @@ export default function StatPanel({
   return (
     <div 
       className={`h-full w-full rounded-lg border border-gray-200 ${getBackgroundColor()} ${
-        options.transparent ? 'bg-transparent border-transparent' : ''
+        options?.transparent ? 'bg-transparent border-transparent' : ''
       }`}
       style={{ width, height }}
     >
       <div className={`h-full flex ${getOrientationClass()} ${getJustifyClass()} p-4`}>
         {shouldShowTitle() && (
           <div className={`${getTitleSize()} font-medium text-gray-600 truncate`}>
-            {fieldConfig.defaults.displayName || 'Stat'}
+            {fieldConfig?.defaults?.displayName || 'Stat'}
           </div>
         )}
         
         {shouldShowValue() && (
           <div className="flex flex-col items-start space-y-1">
             <div className={`${getValueSize()} font-bold ${getValueColor()} leading-none`}>
-              {formatValue(statData.value)}
+              {formatValue(statData?.value)}
             </div>
             
-            {statData.trend && statData.trend !== 'stable' && (
+            {statData?.trend && statData?.trend !== 'stable' && (
               <div className="flex items-center space-x-2">
                 {getTrendIcon()}
-                {statData.previousValue !== undefined && (
+                {statData?.previousValue !== undefined && (
                   <span className="text-xs text-gray-500">
-                    from {formatValue(statData.previousValue)}
+                    from {formatValue(statData?.previousValue)}
                   </span>
                 )}
               </div>
@@ -210,20 +210,20 @@ export default function StatPanel({
         )}
 
         {/* Mini graph for graphMode */}
-        {options.graphMode === 'area' && data[0]?.fields[0]?.values.length > 1 && (
+        {options?.graphMode === 'area' && data?.[0]?.fields?.[0]?.values?.length > 1 && (
           <div className="flex-1 min-h-0">
             <MiniSparkline 
-              values={data[0].fields[0].values.slice(-20)} 
+              values={data[0].fields[0].values?.slice(-20)} 
               color={getValueColor()}
               mode="area"
             />
           </div>
         )}
         
-        {options.graphMode === 'line' && data[0]?.fields[0]?.values.length > 1 && (
+        {options?.graphMode === 'line' && data?.[0]?.fields?.[0]?.values?.length > 1 && (
           <div className="flex-1 min-h-0">
             <MiniSparkline 
-              values={data[0].fields[0].values.slice(-20)} 
+              values={data[0].fields[0].values?.slice(-20)} 
               color={getValueColor()}
               mode="line"
             />
@@ -245,7 +245,7 @@ function MiniSparkline({
   mode: 'line' | 'area'; 
 }) {
   const svgPath = useMemo(() => {
-    if (values.length < 2) return '';
+    if (values?.length < 2) return '';
     
     const min = Math.min(...values);
     const max = Math.max(...values);
@@ -256,13 +256,13 @@ function MiniSparkline({
     const width = 100;
     const height = 20;
     
-    const points = values.map((value, index) => {
-      const x = (index / (values.length - 1)) * width;
+    const points = values?.map((value, index) => {
+      const x = (index / (values?.length - 1)) * width;
       const y = height - ((value - min) / range) * height;
       return `${x},${y}`;
     });
     
-    const pathData = `M ${points.join(' L ')}`;
+    const pathData = `M ${points?.join(' L ')}`;
     
     if (mode === 'area') {
       return `${pathData} L ${width},${height} L 0,${height} Z`;

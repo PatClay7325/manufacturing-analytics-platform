@@ -18,7 +18,7 @@ This document outlines a comprehensive testing strategy for the Manufacturing An
 ## Overview
 
 The Manufacturing Analytics Platform requires a robust testing strategy to ensure:
-- High reliability of critical manufacturing data and analytics
+- High reliability of critical manufacturing data and Analytics
 - Accurate real-time monitoring and alerting
 - Seamless user experience across all features
 - Data integrity and security

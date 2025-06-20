@@ -12,11 +12,11 @@ import {
   DataTransformer, 
   TransformationResult, 
   TransformationRule 
-} from '../interfaces/DataTransformer';
+} from './interfaces/DataTransformer';
 import { 
   IntegrationDataPacket, 
   IntegrationErrorType 
-} from '../types';
+} from './types';
 
 // Using lightweight XML parsing/serialization libraries
 // These would need to be added to the project dependencies
@@ -81,10 +81,10 @@ export class XmlTransformer implements DataTransformer {
       // Create standardized data packet
       const dataPacket: IntegrationDataPacket<TargetType> = {
         id: uuidv4(),
-        source: context?.source as string || 'xml-source',
+        source: context.source as string || 'xml-source',
         timestamp: new Date(),
         payload: transformedData as unknown as TargetType,
-        schemaVersion: context?.schemaVersion as string,
+        schemaVersion: context.schemaVersion as string,
         metadata: {
           originalFormat: 'xml',
           ...context?.metadata as Record<string, unknown>

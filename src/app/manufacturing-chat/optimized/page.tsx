@@ -20,24 +20,24 @@ export default function OptimizedChatPage() {
 
   // Initialize session
   useEffect(() => {
-    const session = streamingChatService.createSession('Optimized Chat');
-    sessionIdRef.current = session.id;
+    const session = streamingChatService?.createSession('Optimized Chat');
+    sessionIdRef.current = session?.id;
   }, []);
 
   // Scroll to bottom only when near bottom and new messages are added
   useEffect(() => {
-    const scrollContainer = messagesEndRef.current?.parentElement;
-    if (scrollContainer && messages.length > 0) {
-      const isNearBottom = scrollContainer.scrollHeight - scrollContainer.scrollTop - scrollContainer.clientHeight < 100;
+    const scrollContainer = messagesEndRef?.current?.parentElement;
+    if (scrollContainer && messages?.length > 0) {
+      const isNearBottom = scrollContainer?.scrollHeight - scrollContainer?.scrollTop - scrollContainer?.clientHeight < 100;
       // Only auto-scroll if user is near bottom or it's a new conversation
-      if (isNearBottom || messages.length <= 2) {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      if (isNearBottom || messages?.length <= 2) {
+        messagesEndRef?.current?.scrollIntoView({ behavior: 'smooth' });
       }
     }
-  }, [messages.length]); // Only trigger on message count change
+  }, [messages?.length]); // Only trigger on message count change
 
   const handleSendMessage = async (content: string) => {
-    if (!content.trim() || isLoading) return;
+    if (!content?.trim() || isLoading) return;
 
     setError(null);
     setIsLoading(true);
@@ -66,8 +66,8 @@ export default function OptimizedChatPage() {
       }]);
 
       // Send message with streaming
-      await streamingChatService.sendStreamingMessage(
-        sessionIdRef.current,
+      await streamingChatService?.sendStreamingMessage(
+        sessionIdRef?.current,
         content,
         {
           onToken: (token) => {
@@ -75,29 +75,29 @@ export default function OptimizedChatPage() {
           },
           onComplete: (fullResponse) => {
             // Update the assistant message with final content
-            setMessages(prev => prev.map(msg => 
-              msg.id === tempAssistantId 
+            setMessages(prev => prev?.map(msg => 
+              msg?.id === tempAssistantId 
                 ? { ...msg, content: fullResponse }
                 : msg
             ));
             setStreamingContent('');
           },
           onError: (error) => {
-            setError(error.message);
+            setError(error?.message);
             // Remove the empty assistant message on error
-            setMessages(prev => prev.filter(msg => msg.id !== tempAssistantId));
+            setMessages(prev => prev?.filter(msg => msg?.id !== tempAssistantId));
           },
         }
       );
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to send message');
+      setError(err instanceof Error ? err?.message : 'Failed to send message');
     } finally {
       setIsLoading(false);
     }
   };
 
   // Performance stats display
-  const stats = streamingChatService.getPerformanceStats();
+  const stats = streamingChatService?.getPerformanceStats();
 
   return (
     <PageLayout 
@@ -110,12 +110,12 @@ export default function OptimizedChatPage() {
           <div className="bg-white rounded-lg shadow-lg h-[600px] flex flex-col">
             {/* Messages Area */}
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
-              {messages.map((message) => (
+              {messages?.map((message) => (
                 <ChatMessage 
-                  key={message.id} 
+                  key={message?.id} 
                   message={{
                     ...message,
-                    content: message.role === 'assistant' && message.id === messages[messages.length - 1]?.id && streamingContent
+                    content: message.role === 'assistant' && message?.id === messages[messages?.length - 1]?.id && streamingContent
                       ? streamingContent
                       : message.content
                   }} 
@@ -159,16 +159,16 @@ export default function OptimizedChatPage() {
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-600">Active Sessions:</span>
-                <span className="font-medium">{stats.activeSessions}</span>
+                <span className="font-medium">{stats?.activeSessions}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Active Streams:</span>
-                <span className="font-medium">{stats.activeStreams}</span>
+                <span className="font-medium">{stats?.activeStreams}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Memory Usage:</span>
                 <span className="font-medium">
-                  {(stats.memoryUsage / 1024).toFixed(1)} KB
+                  {(stats?.memoryUsage / 1024).toFixed(1)} KB
                 </span>
               </div>
             </div>
@@ -249,7 +249,7 @@ export default function OptimizedChatPage() {
             <div className="space-y-2">
               <button
                 onClick={() => {
-                  streamingChatService.clearOldSessions();
+                  streamingChatService?.clearOldSessions();
                   alert('Old sessions cleared');
                 }}
                 className="w-full px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded transition-colors"
@@ -257,7 +257,7 @@ export default function OptimizedChatPage() {
                 Clear Old Sessions
               </button>
               <button
-                onClick={() => router.push('/test-chat')}
+                onClick={() => router?.push('/test-chat')}
                 className="w-full px-3 py-2 text-sm bg-blue-100 hover:bg-blue-200 text-blue-700 rounded transition-colors"
               >
                 Test API Endpoints

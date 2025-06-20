@@ -55,7 +55,7 @@ export default function DashboardsPage() {
       setState(prev => ({ ...prev, loading: true, error: null }));
       
       // This would typically come from an API
-      const dashboards = await dashboardEngine.searchDashboards('', state.selectedTags);
+      const dashboards = await dashboardEngine?.searchDashboards('', state?.selectedTags);
       
       setState(prev => ({ 
         ...prev, 
@@ -66,54 +66,54 @@ export default function DashboardsPage() {
       setState(prev => ({ 
         ...prev, 
         loading: false, 
-        error: error instanceof Error ? error.message : 'Failed to load dashboards' 
+        error: error instanceof Error ? error?.message : 'Failed to load dashboards' 
       }));
     }
   };
 
   // Filter and sort dashboards
   const filteredDashboards = useMemo(() => {
-    let filtered = state.dashboards;
+    let filtered = state?.dashboards;
 
     // Apply search filter
-    if (state.searchQuery) {
-      const query = state.searchQuery.toLowerCase();
-      filtered = filtered.filter(dashboard => 
-        dashboard.title.toLowerCase().includes(query) ||
-        dashboard.description?.toLowerCase().includes(query) ||
-        dashboard.tags.some(tag => tag.toLowerCase().includes(query))
+    if (state?.searchQuery) {
+      const query = state?.searchQuery.toLowerCase();
+      filtered = filtered?.filter(dashboard => 
+        dashboard?.title.toLowerCase().includes(query) ||
+        dashboard?.description?.toLowerCase().includes(query) ||
+        dashboard?.tags.some(tag => tag?.toLowerCase().includes(query))
       );
     }
 
     // Apply tag filter
-    if (state.selectedTags.length > 0) {
-      filtered = filtered.filter(dashboard =>
-        state.selectedTags.every(tag => dashboard.tags.includes(tag))
+    if (state?.selectedTags.length > 0) {
+      filtered = filtered?.filter(dashboard =>
+        state?.selectedTags.every(tag => dashboard?.tags.includes(tag))
       );
     }
 
     // Apply sorting
-    filtered.sort((a, b) => {
+    filtered?.sort((a, b) => {
       let aValue: any, bValue: any;
       
-      switch (state.sortBy) {
+      switch (state?.sortBy) {
         case 'name':
-          aValue = a.title.toLowerCase();
-          bValue = b.title.toLowerCase();
+          aValue = a?.title.toLowerCase();
+          bValue = b?.title.toLowerCase();
           break;
         case 'updated':
-          aValue = new Date(a.meta.updated || 0).getTime();
-          bValue = new Date(b.meta.updated || 0).getTime();
+          aValue = new Date(a?.meta.updated || 0).getTime();
+          bValue = new Date(b?.meta.updated || 0).getTime();
           break;
         case 'created':
-          aValue = new Date(a.meta.created || 0).getTime();
-          bValue = new Date(b.meta.created || 0).getTime();
+          aValue = new Date(a?.meta.created || 0).getTime();
+          bValue = new Date(b?.meta.created || 0).getTime();
           break;
         default:
           return 0;
       }
 
-      if (state.sortDirection === 'asc') {
+      if (state?.sortDirection === 'asc') {
         return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
       } else {
         return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
@@ -121,16 +121,16 @@ export default function DashboardsPage() {
     });
 
     return filtered;
-  }, [state.dashboards, state.searchQuery, state.selectedTags, state.sortBy, state.sortDirection]);
+  }, [state?.dashboards, state?.searchQuery, state?.selectedTags, state?.sortBy, state?.sortDirection]);
 
   // Get all unique tags from dashboards
   const availableTags = useMemo(() => {
     const tags = new Set<string>();
-    state.dashboards.forEach(dashboard => {
-      dashboard.tags.forEach(tag => tags.add(tag));
+    state?.dashboards.forEach(dashboard => {
+      dashboard?.tags.forEach(tag => tags?.add(tag));
     });
     return Array.from(tags).sort();
-  }, [state.dashboards]);
+  }, [state?.dashboards]);
 
   const handleSearch = (query: string) => {
     setState(prev => ({ ...prev, searchQuery: query }));
@@ -140,22 +140,22 @@ export default function DashboardsPage() {
     setState(prev => ({ ...prev, selectedTags: tags }));
   };
 
-  const handleSort = (sortBy: typeof state.sortBy, direction: typeof state.sortDirection) => {
+  const handleSort = (sortBy: 'name' | 'updated' | 'created', direction: 'asc' | 'desc') => {
     setState(prev => ({ ...prev, sortBy, sortDirection: direction }));
   };
 
-  const handleViewModeChange = (viewMode: typeof state.viewMode) => {
+  const handleViewModeChange = (viewMode: 'grid' | 'list') => {
     setState(prev => ({ ...prev, viewMode }));
   };
 
   const handleCreateDashboard = async (dashboardData: any) => {
     try {
-      const newDashboard = dashboardEngine.createDashboard(
-        dashboardData.title,
-        dashboardData.manufacturingConfig
+      const newDashboard = dashboardEngine?.createDashboard(
+        dashboardData?.title,
+        dashboardData?.manufacturingConfig
       );
       
-      await dashboardEngine.saveDashboard(newDashboard);
+      await dashboardEngine?.saveDashboard(newDashboard);
       await loadDashboards();
       
       setState(prev => ({ ...prev, showCreateModal: false }));
@@ -167,7 +167,7 @@ export default function DashboardsPage() {
   const handleImportDashboard = async (dashboardJson: string) => {
     try {
       const dashboardData = JSON.parse(dashboardJson);
-      await dashboardEngine.saveDashboard(dashboardData);
+      await dashboardEngine?.saveDashboard(dashboardData);
       await loadDashboards();
       
       setState(prev => ({ ...prev, showImportModal: false }));
@@ -182,7 +182,7 @@ export default function DashboardsPage() {
     }
 
     try {
-      await dashboardEngine.deleteDashboard(uid);
+      await dashboardEngine?.deleteDashboard(uid);
       await loadDashboards();
     } catch (error) {
       console.error('Failed to delete dashboard:', error);
@@ -191,14 +191,14 @@ export default function DashboardsPage() {
 
   const handleDuplicateDashboard = async (uid: string) => {
     try {
-      await dashboardEngine.duplicateDashboard(uid);
+      await dashboardEngine?.duplicateDashboard(uid);
       await loadDashboards();
     } catch (error) {
       console.error('Failed to duplicate dashboard:', error);
     }
   };
 
-  if (state.loading) {
+  if (state?.loading) {
     return (
       <PageLayout>
         <div className="container py-8">
@@ -210,13 +210,13 @@ export default function DashboardsPage() {
     );
   }
 
-  if (state.error) {
+  if (state?.error) {
     return (
       <PageLayout>
         <div className="container py-8">
           <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
             <h3 className="text-lg font-medium text-red-800 mb-2">Error Loading Dashboards</h3>
-            <p className="text-red-600 mb-4">{state.error}</p>
+            <p className="text-red-600 mb-4">{state?.error}</p>
             <button
               onClick={loadDashboards}
               className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
@@ -263,17 +263,17 @@ export default function DashboardsPage() {
         {/* Search and Filters */}
         <div className="mb-6 space-y-4">
           <DashboardSearch
-            value={state.searchQuery}
+            value={state?.searchQuery}
             onChange={handleSearch}
             placeholder="Search dashboards by name, description, or tags..."
           />
           
           <DashboardFilters
             availableTags={availableTags}
-            selectedTags={state.selectedTags}
-            sortBy={state.sortBy}
-            sortDirection={state.sortDirection}
-            viewMode={state.viewMode}
+            selectedTags={state?.selectedTags}
+            sortBy={state?.sortBy}
+            sortDirection={state?.sortDirection}
+            viewMode={state?.viewMode}
             onTagFilter={handleTagFilter}
             onSort={handleSort}
             onViewModeChange={handleViewModeChange}
@@ -291,7 +291,7 @@ export default function DashboardsPage() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Dashboards</p>
-                <p className="text-2xl font-semibold text-gray-900">{state.dashboards.length}</p>
+                <p className="text-2xl font-semibold text-gray-900">{state?.dashboards.length}</p>
               </div>
             </div>
           </div>
@@ -306,7 +306,7 @@ export default function DashboardsPage() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Manufacturing</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  {state.dashboards.filter(d => d.tags.includes('manufacturing')).length}
+                  {state?.dashboards.filter(d => d?.tags.includes('manufacturing')).length}
                 </p>
               </div>
             </div>
@@ -322,7 +322,7 @@ export default function DashboardsPage() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Equipment</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  {state.dashboards.filter(d => d.tags.includes('equipment')).length}
+                  {state?.dashboards.filter(d => d?.tags.includes('equipment')).length}
                 </p>
               </div>
             </div>
@@ -338,7 +338,7 @@ export default function DashboardsPage() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Quality</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  {state.dashboards.filter(d => d.tags.includes('quality')).length}
+                  {state?.dashboards.filter(d => d?.tags.includes('quality')).length}
                 </p>
               </div>
             </div>
@@ -353,11 +353,11 @@ export default function DashboardsPage() {
             </div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">No dashboards found</h3>
             <p className="text-gray-600 mb-6">
-              {state.searchQuery || state.selectedTags.length > 0 
+              {state?.searchQuery || state?.selectedTags.length > 0 
                 ? 'Try adjusting your search or filters'
                 : 'Get started by creating your first dashboard'}
             </p>
-            {!state.searchQuery && state.selectedTags.length === 0 && (
+            {!state?.searchQuery && state?.selectedTags.length === 0 && (
               <button
                 onClick={() => setState(prev => ({ ...prev, showCreateModal: true }))}
                 className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
@@ -368,15 +368,15 @@ export default function DashboardsPage() {
           </div>
         ) : (
           <div className={
-            state.viewMode === 'grid' 
+            state?.viewMode === 'grid' 
               ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
               : 'space-y-4'
           }>
-            {filteredDashboards.map((dashboard) => (
+            {filteredDashboards?.map((dashboard) => (
               <DashboardCard
-                key={dashboard.uid}
+                key={dashboard?.uid}
                 dashboard={dashboard}
-                viewMode={state.viewMode}
+                viewMode={state?.viewMode}
                 onDelete={handleDeleteDashboard}
                 onDuplicate={handleDuplicateDashboard}
               />
@@ -385,14 +385,14 @@ export default function DashboardsPage() {
         )}
 
         {/* Modals */}
-        {state.showCreateModal && (
+        {state?.showCreateModal && (
           <CreateDashboardModal
             onClose={() => setState(prev => ({ ...prev, showCreateModal: false }))}
             onCreate={handleCreateDashboard}
           />
         )}
 
-        {state.showImportModal && (
+        {state?.showImportModal && (
           <DashboardImportModal
             onClose={() => setState(prev => ({ ...prev, showImportModal: false }))}
             onImport={handleImportDashboard}

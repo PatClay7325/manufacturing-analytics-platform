@@ -31,7 +31,7 @@ The Manufacturing Engineering Agent implementation consists of:
 1. **Mock Agent Service**: `src/lib/agents/AgentTestService.ts` provides test responses
 2. **API Endpoints**: REST and streaming endpoints for the agent
 3. **Chat Interface**: Fully functional chat interface at `/manufacturing-chat`
-4. **Visualization Integration**: Grafana dashboard integration
+4. **Visualization Integration**: Analytics Dashboard Integration
 
 ## API Endpoints
 
@@ -70,7 +70,7 @@ The Manufacturing Engineering Agent returns responses in the following format:
     chartId: string,     // Unique ID for the chart
     title: string,       // Chart title
     description: string, // Chart description
-    panelId?: number     // Grafana panel ID
+    panelId?: number     // Analytics panel ID
   }],
   references: [{         // Reference materials and standards
     type: string,        // Reference type ('standard', 'document', etc.)
@@ -90,7 +90,7 @@ The Manufacturing Engineering Agent is fully integrated with the Manufacturing C
 
 1. **Agent API Connection**: The chat interface connects to the agent's streaming API endpoint
 2. **Streaming Responses**: Content is displayed incrementally as it's generated
-3. **Visualization Mapping**: Agent responses include visualization details that map to Grafana panels
+3. **Visualization Mapping**: Agent responses include visualization details that map to Analytics panels
 4. **Example Queries**: Pre-defined example queries demonstrate different capabilities
 
 ## Testing
@@ -121,7 +121,7 @@ Quick testing steps:
 
 - Implement real-time data connection to manufacturing database
 - Enhance visualization capabilities with custom components
-- Add predictive analytics for manufacturing performance
+- Add predictive Analytics for manufacturing performance
 - Integrate with ERP and MES systems
 - Support for multi-site manufacturing intelligence
 

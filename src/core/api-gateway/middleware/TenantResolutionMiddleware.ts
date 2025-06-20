@@ -5,9 +5,9 @@
  * incoming API requests and setting the tenant context.
  */
 
-import { TenantResolver, TenantIdentificationContext } from '../../multi-tenancy/interfaces/TenantResolver';
-import { TenantContext } from '../../multi-tenancy/interfaces/TenantContext';
-import { ApiRequest, ApiResponse } from '../types';
+import { TenantResolver, TenantIdentificationContext } from './multi-tenancy/interfaces/TenantResolver';
+import { TenantContext } from './multi-tenancy/interfaces/TenantContext';
+import { ApiRequest, ApiResponse } from './types';
 
 /**
  * Tenant resolution middleware

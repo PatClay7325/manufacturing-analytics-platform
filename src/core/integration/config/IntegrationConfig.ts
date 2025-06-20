@@ -5,8 +5,8 @@
  * in the Manufacturing Analytics Platform.
  */
 
-import { LoggerService } from '../../architecture/interfaces';
-import { IntegrationConfig, IntegrationSystemType } from '../types';
+import { LoggerService } from './architecture/interfaces';
+import { IntegrationConfig, IntegrationSystemType } from './types';
 
 /**
  * Credential encryption options
@@ -548,7 +548,7 @@ export class IntegrationConfigManager {
    * @param environment Environment name
    */
   setEnvironment(environment: string): void {
-    this.logger.info(`Changing environment from ${this.environment} to ${environment}`);
+    this.logger.info(`Changing environment from environment} to ${environment}`);
     this.environment = environment;
   }
   

@@ -45,8 +45,8 @@ export async function POST(request: NextRequest) {
         tableCount: Number(tableCount[0]?.count || 0),
         recentMigrations: migrations.map((m: any) => ({
           ...m,
-          started_at: m.started_at?.toISOString?.() || m.started_at,
-          finished_at: m.finished_at?.toISOString?.() || m.finished_at
+          started_at: m.started_at?.toISOString() || m.started_at,
+          finished_at: m.finished_at?.toISOString() || m.finished_at
         })),
         connectionPool: {
           metrics: poolStats,

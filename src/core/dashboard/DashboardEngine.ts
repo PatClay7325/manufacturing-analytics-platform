@@ -154,6 +154,10 @@ export class DashboardEngine extends EventEmitter {
       }
     };
 
+    // Add to dashboard cache
+    this.dashboards.set(dashboard.uid, dashboard);
+    this.setActiveDashboard(dashboard);
+    
     this.emit('dashboardCreated', dashboard);
     return dashboard;
   }
@@ -196,7 +200,8 @@ export class DashboardEngine extends EventEmitter {
   addPanel(dashboardUid: string, panel: Omit<Panel, 'id' | 'gridPos'>): Panel {
     const dashboard = this.dashboards.get(dashboardUid);
     if (!dashboard) {
-      throw new Error('Dashboard not found');
+      console.error(`Dashboard with UID ${dashboardUid} not found in cache. Available dashboards:`, Array.from(this.dashboards.keys()));
+      throw new Error(`Dashboard not found: ${dashboardUid}`);
     }
 
     const newPanel: Panel = {
@@ -659,7 +664,7 @@ class PanelRenderer {
 
 class DashboardStorage {
   async load(identifier: string): Promise<string> {
-    // Load dashboard from storage (could be API, local storage, etc.)
+    // Load dashboard from )
     throw new Error('Not implemented');
   }
 

@@ -18,8 +18,8 @@ export default function SupportPage() {
           <div className="text-4xl mb-4">📧</div>
           <h3 className="text-xl font-semibold mb-2">Email Support</h3>
           <p className="text-gray-600 mb-4">Lorem ipsum dolor sit amet consectetur</p>
-          <a href="mailto:support@adaptivefactory.ai" className="text-blue-600 hover:text-blue-800 font-medium">
-            support@adaptivefactory.ai
+          <a href="mailto:support@adaptivefactory?.ai" className="text-blue-600 hover:text-blue-800 font-medium">
+            support@adaptivefactory?.ai
           </a>
         </div>
 
@@ -148,7 +148,7 @@ export default function SupportPage() {
                 id="email"
                 name="email"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="lorem@ipsum.com"
+                placeholder="lorem@ipsum?.com"
               />
             </div>
           </div>

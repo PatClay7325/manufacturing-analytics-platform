@@ -9,7 +9,7 @@ The platform integrates with the following Docker services:
 1. **PostgreSQL** - Database for storing manufacturing data
 2. **Ollama** - LLM service for AI-powered insights
 3. **Prometheus** - Metrics collection and storage
-4. **Grafana** - Visualization dashboards
+4. **Analytics** - Visualization dashboards
 5. **Node Exporter** - System metrics collection
 6. **Metrics Simulator** - Generates sample manufacturing metrics
 
@@ -26,7 +26,7 @@ All services are connected to the `manufacturing-network` Docker network to enab
 - **PostgreSQL**: Data is persisted in the `postgres-data` volume
 - **Ollama**: Model data is stored in the `ollama-data` volume
 - **Prometheus**: Metrics data is stored in the `prometheus-data` volume
-- **Grafana**: Dashboard configurations are stored in the `grafana-data` volume
+- **Analytics**: Dashboard configurations are stored in the `grafana-data` volume
 
 ## Usage Instructions
 
@@ -56,7 +56,7 @@ docker-compose ps
 - **Prometheus**: Available at `http://localhost:9090`
   - Metrics endpoint: http://localhost:9090/metrics
 
-- **Grafana**: Available at `http://localhost:3003`
+- **Analytics**: Available at `http://localhost:3003`
   - Username: admin
   - Password: admin
 
@@ -71,7 +71,7 @@ The platform includes a metrics simulator that generates realistic manufacturing
 - Downtime reasons
 - Failure modes (ISO 14224 compliant)
 
-These metrics are automatically collected by Prometheus and can be visualized in Grafana.
+These metrics are automatically collected by Prometheus and can be visualized in Analytics.
 
 ## Integration with Next.js Application
 
@@ -79,7 +79,7 @@ The Next.js application integrates with the Docker services as follows:
 
 1. **PostgreSQL**: Connected via Prisma ORM using the DATABASE_URL environment variable
 2. **Ollama**: Connected via HTTP API for AI-powered insights
-3. **Grafana**: Dashboards are embedded in the application using iframe integration
+3. **Analytics**: Dashboards are embedded in the application using iframe integration
 
 ### Environment Configuration
 
@@ -92,7 +92,7 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:5432/manufacturing
 # Ollama
 OLLAMA_HOST=http://localhost:11434
 
-# Grafana
+# Analytics
 GRAFANA_URL=http://localhost:3003
 ```
 
@@ -110,9 +110,9 @@ docker exec -it manufacturing-ollama ollama pull llama2
 docker exec -it manufacturing-ollama ollama create manufacturing-intelligence -f Modelfile
 ```
 
-### Adding Custom Grafana Dashboards
+### Adding Custom Analytics Dashboards
 
-To add custom dashboards to Grafana, place JSON dashboard files in the `monitoring/grafana/dashboards` directory and update the dashboard provisioning configuration.
+To add custom dashboards to Analytics, place JSON dashboard files in the `monitoring/grafana/dashboards` directory and update the dashboard provisioning configuration.
 
 ## Troubleshooting
 

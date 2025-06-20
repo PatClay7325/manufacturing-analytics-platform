@@ -217,7 +217,7 @@ const generateQualityTrend = (days = 30) => {
     date.setDate(date.getDate() - (days - 1 - i));
     
     // Base reject rate with improvement trend and some random variation
-    const baseRate = 3.5 - (i / days) * 1; // Improving trend from ~3.5% to ~2.5%
+    const baseRate = 3.5 - (i / days) * 1; // Improving trend from 5%
     const randomFactor = (Math.random() - 0.5) * 0.6; // Random factor between -0.3 and 0.3
     
     let rejectRate = baseRate + randomFactor;

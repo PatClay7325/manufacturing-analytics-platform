@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 
 // Validation schema for query requests
 const MetricQuerySchema = z.object({
-  equipmentId: z.string().optional(),
+  workUnitId: z.string().optional(),
   metrics: z.array(z.string()).optional(),
   timeRange: z.object({
     from: z.string().datetime(),
@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
         }
       })
       
-      // Group by metric name for Grafana-like response
+      // Group by metric name for Analytics-like response
       const groupedMetrics = metrics.reduce((acc, metric) => {
         if (!acc[metric.name]) {
           acc[metric.name] = []
@@ -143,7 +143,7 @@ export async function POST(request: NextRequest) {
         return acc
       }, {} as Record<string, any[]>)
       
-      // Format response similar to Grafana
+      // Format response similar to Analytics
       const response = Object.entries(groupedMetrics).map(([name, data]) => ({
         target: name,
         datapoints: data.map(d => [d.value, new Date(d.timestamp).getTime()])
@@ -252,32 +252,193 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET endpoint for simple queries
+// GET endpoint for simple queries and dashboard panels
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
-  const equipmentId = searchParams.get('equipmentId')
+  
+  // Panel query parameters
   const metric = searchParams.get('metric')
-  const hours = parseInt(searchParams.get('hours') || '24')
+  const entity = searchParams.get('entity')
+  const aggregation = searchParams.get('aggregation') || 'none'
+  const period = searchParams.get('period') || 'last-1h'
+  const interval = searchParams.get('interval')
+  const groupBy = searchParams.get('groupBy')
+  const fields = searchParams.get('fields')?.split(',')
+  const filter = searchParams.get('filter')
+  const sort = searchParams.get('sort')
   
-  const to = new Date()
-  const from = new Date(to.getTime() - hours * 60 * 60 * 1000)
+  // Equipment filter
+  const equipment = searchParams.get('equipment')
   
-  const where: any = {
-    timestamp: { gte: from, lte: to }
+  // Parse time range
+  const parseTimeRange = (period: string) => {
+    const now = new Date()
+    const match = period.match(/^(now|last)-(\d+)([smhd])$/)
+    
+    if (!match) {
+      return { from: new Date(now.getTime() - 60 * 60 * 1000), to: now }
+    }
+    
+    const [, , value, unit] = match
+    const multipliers: Record<string, number> = {
+      's': 1000,
+      'm': 60 * 1000,
+      'h': 60 * 60 * 1000,
+      'd': 24 * 60 * 60 * 1000
+    }
+    
+    const from = new Date(now.getTime() - parseInt(value) * (multipliers[unit] || 60000))
+    return { from, to: now }
   }
   
-  if (equipmentId) where.equipmentId = equipmentId
-  if (metric) where.name = metric
+  const timeRange = parseTimeRange(period)
   
-  const metrics = await prisma.metric.findMany({
-    where,
-    orderBy: { timestamp: 'desc' },
-    take: 1000 // Limit to prevent huge responses
-  })
-  
-  return NextResponse.json({
-    success: true,
-    count: metrics.length,
-    data: metrics
-  })
+  try {
+    // Handle entity queries (for tables)
+    if (entity) {
+      switch (entity) {
+        case 'equipment':
+          const workUnitData = await prisma.workUnit.findMany({
+            select: {
+              id: true,
+              name: true,
+              status: true,
+              updatedAt: true
+            },
+            orderBy: sort ? { [sort.split(':')[0]]: sort.split(':')[1] || 'asc' } : { updatedAt: 'desc' },
+            take: 50
+          })
+          
+          return NextResponse.json({
+            success: true,
+            rows: workUnitData.map(wu => ({
+              name: wu.name,
+              status: wu.status,
+              lastUpdate: wu.updatedAt.toISOString()
+            }))
+          })
+          
+        case 'maintenanceSchedule':
+          // Mock maintenance schedule data
+          const maintenanceData = [
+            { equipment: 'CNC-01', type: 'Preventive', scheduledDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), priority: 'High' },
+            { equipment: 'INJ-02', type: 'Calibration', scheduledDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(), priority: 'Medium' },
+            { equipment: 'CNC-02', type: 'Inspection', scheduledDate: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(), priority: 'Low' }
+          ]
+          
+          return NextResponse.json({
+            success: true,
+            rows: maintenanceData
+          })
+      }
+    }
+    
+    // Handle metric queries
+    if (metric) {
+      // Calculate aggregated value based on metric type
+      const getMetricValue = (metricName: string) => {
+        const baseValues: Record<string, number> = {
+          'oee': 75.5,
+          'availability': 88.2,
+          'performance': 82.3,
+          'quality': 94.8,
+          'production_rate': 156,
+          'cycle_time': 45.2,
+          'defect_rate': 2.3,
+          'health_score': 85.5,
+          'mtbf': 168,
+          'mttr': 4.2
+        }
+        
+        const base = baseValues[metricName] || 50
+        const variation = (Math.random() - 0.5) * 10
+        return base + variation
+      }
+      
+      // For single value metrics (gauge, stat)
+      if (aggregation !== 'none' && !interval) {
+        const value = getMetricValue(metric)
+        
+        // Add sparkline data for stat panels
+        const sparkline = Array.from({ length: 20 }, (_, i) => ({
+          time: new Date(timeRange.to.getTime() - (20 - i) * 3 * 60 * 1000).toISOString(),
+          value: getMetricValue(metric)
+        }))
+        
+        return NextResponse.json({
+          success: true,
+          value,
+          unit: metric.includes('rate') ? '%' : metric.includes('time') ? 'min' : '',
+          sparkline,
+          max: metric === 'oee' || metric.includes('rate') ? 100 : undefined,
+          thresholds: metric === 'oee' ? [
+            { value: 85, color: '#10B981' },
+            { value: 75, color: '#F59E0B' },
+            { value: 0, color: '#EF4444' }
+          ] : undefined
+        })
+      }
+      
+      // For time series data
+      if (interval) {
+        const intervalMs = parseInterval(interval)
+        const pointCount = Math.floor((timeRange.to.getTime() - timeRange.from.getTime()) / intervalMs)
+        
+        const data = Array.from({ length: Math.min(pointCount, 100) }, (_, i) => ({
+          time: new Date(timeRange.from.getTime() + i * intervalMs).toISOString(),
+          value: getMetricValue(metric)
+        }))
+        
+        return NextResponse.json({
+          success: true,
+          data,
+          lines: ['value']
+        })
+      }
+      
+      // For pie chart data (defect types)
+      if (groupBy === 'defect_type') {
+        const defectTypes = [
+          { name: 'Dimensional', value: 35 },
+          { name: 'Surface Finish', value: 25 },
+          { name: 'Material', value: 20 },
+          { name: 'Assembly', value: 15 },
+          { name: 'Other', value: 5 }
+        ]
+        
+        return NextResponse.json({
+          success: true,
+          data: defectTypes
+        })
+      }
+      
+      // For heatmap data (health scores)
+      if (groupBy === 'equipment') {
+        const equipmentList = ['CNC-01', 'CNC-02', 'INJ-01', 'INJ-02', 'LATHE-01', 'MILL-01']
+        const heatmapData = equipmentList.map(eq => ({
+          label: eq,
+          value: Math.floor(Math.random() * 30) + 70
+        }))
+        
+        return NextResponse.json({
+          success: true,
+          data: heatmapData
+        })
+      }
+    }
+    
+    // Default response
+    return NextResponse.json({
+      success: true,
+      data: []
+    })
+    
+  } catch (error) {
+    console.error('Metrics query error:', error)
+    return NextResponse.json({
+      success: false,
+      error: 'Query failed',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 })
+  }
 }

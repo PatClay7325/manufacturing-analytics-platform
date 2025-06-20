@@ -5,16 +5,16 @@
  * a service wrapper around the IntegrationManager.
  */
 
-import { LoggerService } from '../../architecture/interfaces';
-import { ConfigService } from '../../architecture/ConfigService';
-import { BaseModularService } from '../../services/BaseModularService';
-import { ServiceCapability, ServiceDependencies, ServiceResult } from '../../services/types';
-import { EventBus, EventProducer } from '../../events/interfaces';
+import { LoggerService } from './architecture/interfaces';
+import { ConfigService } from './architecture/ConfigService';
+import { BaseModularService } from './services/BaseModularService';
+import { ServiceCapability, ServiceDependencies, ServiceResult } from './services/types';
+import { EventBus, EventProducer } from './events/interfaces';
 import { IntegrationService } from './IntegrationService';
-import { IntegrationAdapter } from '../interfaces/IntegrationAdapter';
-import { IntegrationDataPacket, IntegrationSystemType, IntegrationConfig } from '../types';
-import { IntegrationManager, AdapterHealthStatus, IntegrationManagerConfig } from '../IntegrationManager';
-import { IntegrationPipeline } from '../pipeline/IntegrationPipeline';
+import { IntegrationAdapter } from './interfaces/IntegrationAdapter';
+import { IntegrationDataPacket, IntegrationSystemType, IntegrationConfig } from './types';
+import { IntegrationManager, AdapterHealthStatus, IntegrationManagerConfig } from './IntegrationManager';
+import { IntegrationPipeline } from './pipeline/IntegrationPipeline';
 
 /**
  * Implementation of the Integration Service
@@ -455,11 +455,11 @@ export class IntegrationServiceImpl extends BaseModularService implements Integr
         message: `Disconnected successfully from integration ${integrationId}`
       };
     } catch (error) {
-      this.logger.error(`Failed to disconnect from integration: ${error.message}`, error);
+      this.logger.error(`Failed to disconnect from message}`, error);
       
       return {
         success: false,
-        message: `Failed to disconnect from integration: ${error.message}`,
+        message: `Failed to disconnect from message}`,
         error
       };
     }

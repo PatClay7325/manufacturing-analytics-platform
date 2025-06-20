@@ -5,7 +5,7 @@ This document outlines the organized structure of the Manufacturing Analytics Pl
 ## Root Directory Structure
 
 ```
-manufacturing-analytics-platform/
+manufacturing-Analytics-platform/
 ├── .github/                    # GitHub specific files
 │   └── workflows/             # CI/CD workflows
 ├── deployment/                # Deployment configurations

@@ -38,7 +38,7 @@ test.describe('Comprehensive UI Testing - Every Page, Button, and Field', () => 
       const realTimeLink = page.getByRole('link', { name: /real-time monitoring/i });
       await expect(realTimeLink).toBeVisible();
       
-      const predictiveLink = page.getByRole('link', { name: /predictive analytics/i });
+      const predictiveLink = page.getByRole('link', { name: /predictive Analytics/i });
       await expect(predictiveLink).toBeVisible();
       
       const qualityLink = page.getByRole('link', { name: /quality management/i });

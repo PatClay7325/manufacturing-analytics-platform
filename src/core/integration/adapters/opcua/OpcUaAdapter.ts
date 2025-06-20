@@ -25,17 +25,17 @@ import {
   ClientMonitoredItemGroup
 } from 'node-opcua';
 import { v4 as uuidv4 } from 'uuid';
-import { AbstractIntegrationAdapter } from '../../abstract/AbstractIntegrationAdapter';
-import { DataTransformer } from '../../interfaces/DataTransformer';
-import { DataValidator } from '../../interfaces/DataValidator';
-import { LoggerService } from '../../../architecture/interfaces';
-import { BaseConfig } from '../../../architecture/types';
+import { AbstractIntegrationAdapter } from './abstract/AbstractIntegrationAdapter';
+import { DataTransformer } from './interfaces/DataTransformer';
+import { DataValidator } from './interfaces/DataValidator';
+import { LoggerService } from './architecture/interfaces';
+import { BaseConfig } from './architecture/types';
 import { 
   IntegrationConfig, 
   IntegrationDataPacket, 
   ConnectionStatus,
   IntegrationErrorType
-} from '../../types';
+} from './types';
 
 /**
  * OPC UA connection parameters
@@ -407,7 +407,7 @@ export class OpcUaAdapter extends AbstractIntegrationAdapter {
     } catch (error) {
       this.setLastError(
         IntegrationErrorType.CONNECTION,
-        `Failed to disconnect from OPC UA server: ${error.message}`,
+        `Failed to disconnect from message}`,
         error
       );
       throw error;
@@ -493,7 +493,7 @@ export class OpcUaAdapter extends AbstractIntegrationAdapter {
         value: new Variant({
           value: transformedData.payload,
           // Use dataType from options if provided
-          dataType: options?.dataType as number
+          dataType: options.dataType as number
         })
       });
       
@@ -618,7 +618,7 @@ export class OpcUaAdapter extends AbstractIntegrationAdapter {
     }
     
     try {
-      this.logger.debug(`Unsubscribing from OPC UA node: ${subscription.nodeId}`);
+      this.logger.debug(`Unsubscribing from nodeId}`);
       
       // Terminate monitored item if exists
       if (subscription.monitoredItem) {
@@ -632,7 +632,7 @@ export class OpcUaAdapter extends AbstractIntegrationAdapter {
       // Remove from subscriptions map
       this.subscriptions.delete(subscriptionId);
       
-      this.logger.info(`Successfully unsubscribed from OPC UA node: ${subscription.nodeId}`);
+      this.logger.info(`Successfully unsubscribed from nodeId}`);
     } catch (error) {
       this.setLastError(
         IntegrationErrorType.COMMUNICATION,

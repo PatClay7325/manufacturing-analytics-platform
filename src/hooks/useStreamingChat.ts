@@ -187,7 +187,7 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}) {
       // Add error message to chat
       const errorMessage: ChatMessage = {
         id: `error-${Date.now()}`,
-        sessionId: session?.id || '',
+        sessionId: session.id || '',
         role: 'assistant',
         content: 'I apologize, but I encountered an error. Please try again.',
         timestamp: new Date().toISOString(),

@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
           const context = await manufacturingChatService.processMessage(sessionId, lastMessage.content);
           
           // Enhanced system prompt with database access
-          const SYSTEM_PROMPT = `You are an AI assistant for a manufacturing analytics platform with LIVE DATABASE ACCESS. 
+          const SYSTEM_PROMPT = `You are an AI assistant for a manufacturing Analytics platform with LIVE DATABASE ACCESS. 
 
 You can query and analyze real-time data including:
 - Current OEE (Overall Equipment Effectiveness) calculations
@@ -53,7 +53,7 @@ You can query and analyze real-time data including:
 - Production metrics and quality data
 - Maintenance schedules and history
 
-When users ask for specific data, you have access to the actual current values from the PostgreSQL database via Prisma ORM.
+When users ask for specific data, you have access to the actual current values from 
 
 Always provide specific numbers when available, and explain what the data means in the manufacturing context.`;
 

@@ -54,7 +54,7 @@ export default function RechartsTimeSeriesPanel({
 
   // Process data when it changes
   useEffect(() => {
-    if (!data || !data.length) {
+    if (!data || !data?.length) {
       setChartData([]);
       setSeriesConfig([]);
       return;
@@ -65,18 +65,18 @@ export default function RechartsTimeSeriesPanel({
     const series: any[] = [];
     const dataMap = new Map<number, any>();
 
-    data.forEach((frame) => {
-      const timeField = frame.fields.find(field => field.type === 'time');
-      const valueFields = frame.fields.filter(field => field.type === 'number');
+    data?.forEach((frame) => {
+      const timeField = frame?.fields.find(field => field?.type === 'time');
+      const valueFields = frame?.fields.filter(field => field?.type === 'number');
       
-      if (!timeField || !valueFields.length) return;
+      if (!timeField || !valueFields?.length) return;
       
-      valueFields.forEach((valueField, index) => {
+      valueFields?.forEach((valueField, index) => {
         // Add series configuration
-        series.push({
+        series?.push({
           dataKey: valueField.name,
-          name: valueField.config?.displayName || valueField.name,
-          color: valueField.config?.color?.fixedColor || MANUFACTURING_COLORS[index % MANUFACTURING_COLORS.length],
+          name: valueField.config?.displayName || valueField?.name,
+          color: valueField.config?.color?.fixedColor || MANUFACTURING_COLORS[index % MANUFACTURING_COLORS?.length],
           strokeWidth: valueField.config?.custom?.lineWidth || 2,
           dot: false,
           activeDot: { r: 4 },
@@ -84,54 +84,54 @@ export default function RechartsTimeSeriesPanel({
         });
 
         // Process data points
-        for (let i = 0; i < Math.min(timeField.values.length, valueField.values.length); i++) {
-          const timestamp = new Date(timeField.values[i]).getTime();
-          const value = valueField.values[i];
+        for (let i = 0; i < Math.min(timeField?.values.length, valueField?.values.length); i++) {
+          const timestamp = new Date(timeField?.values[i]).getTime();
+          const value = valueField?.values[i];
           
           if (!isNaN(timestamp) && value !== null && value !== undefined) {
-            if (!dataMap.has(timestamp)) {
-              dataMap.set(timestamp, { timestamp });
+            if (!dataMap?.has(timestamp)) {
+              dataMap?.set(timestamp, { timestamp });
             }
-            dataMap.get(timestamp)[valueField.name] = value;
+            dataMap?.get(timestamp)[valueField?.name] = value;
           }
         }
       });
     });
 
     // Convert map to sorted array
-    const sortedData = Array.from(dataMap.values()).sort((a, b) => a.timestamp - b.timestamp);
+    const sortedData = Array.from(dataMap?.values()).sort((a, b) => a?.timestamp - b?.timestamp);
     setChartData(sortedData);
     setSeriesConfig(series);
   }, [data]);
 
   // Determine which chart component to use
   const ChartComponent = useMemo(() => {
-    const chartType = options.tooltip?.mode || 'line';
+    const chartType = options?.tooltip?.mode || 'line';
     switch (chartType) {
       case 'area': return AreaChart;
       case 'bar': return BarChart;
       case 'scatter': return ScatterChart;
       default: return LineChart;
     }
-  }, [options.tooltip?.mode]);
+  }, [options?.tooltip?.mode]);
 
   // Render appropriate series component
   const renderSeries = () => {
-    const chartType = options.tooltip?.mode || 'line';
+    const chartType = options?.tooltip?.mode || 'line';
     
-    return seriesConfig.map((series) => {
+    return seriesConfig?.map((series) => {
       switch (chartType) {
         case 'area':
           return (
             <Area
-              key={series.dataKey}
+              key={series?.dataKey}
               type="monotone"
-              dataKey={series.dataKey}
-              name={series.name}
-              stroke={series.color}
-              fill={series.color}
+              dataKey={series?.dataKey}
+              name={series?.name}
+              stroke={series?.color}
+              fill={series?.color}
               fillOpacity={0.3}
-              strokeWidth={series.strokeWidth}
+              strokeWidth={series?.strokeWidth}
               dot={false}
               activeDot={{ r: 4 }}
             />
@@ -139,32 +139,32 @@ export default function RechartsTimeSeriesPanel({
         case 'bar':
           return (
             <Bar
-              key={series.dataKey}
-              dataKey={series.dataKey}
-              name={series.name}
-              fill={series.color}
+              key={series?.dataKey}
+              dataKey={series?.dataKey}
+              name={series?.name}
+              fill={series?.color}
             />
           );
         case 'scatter':
           return (
             <Scatter
-              key={series.dataKey}
-              dataKey={series.dataKey}
-              name={series.name}
-              fill={series.color}
+              key={series?.dataKey}
+              dataKey={series?.dataKey}
+              name={series?.name}
+              fill={series?.color}
             />
           );
         default:
           return (
             <Line
-              key={series.dataKey}
+              key={series?.dataKey}
               type="monotone"
-              dataKey={series.dataKey}
-              name={series.name}
-              stroke={series.color}
-              strokeWidth={series.strokeWidth}
-              dot={series.dot}
-              activeDot={series.activeDot}
+              dataKey={series?.dataKey}
+              name={series?.name}
+              stroke={series?.color}
+              strokeWidth={series?.strokeWidth}
+              dot={series?.dot}
+              activeDot={series?.activeDot}
               connectNulls={false}
             />
           );
@@ -174,12 +174,12 @@ export default function RechartsTimeSeriesPanel({
 
   // Custom tooltip formatter
   const customTooltip = ({ active, payload, label }: any) => {
-    if (!active || !payload || !payload.length) return null;
+    if (!active || !payload || !payload?.length) return null;
 
-    const sortedPayload = options.tooltip?.sort === 'asc' 
-      ? [...payload].sort((a: any, b: any) => a.value - b.value)
+    const sortedPayload = options?.tooltip?.sort === 'asc' 
+      ? [...payload].sort((a: any, b: any) => a?.value - b?.value)
       : options.tooltip?.sort === 'desc'
-      ? [...payload].sort((a: any, b: any) => b.value - a.value)
+      ? [...payload].sort((a: any, b: any) => b?.value - a?.value)
       : payload;
 
     return (
@@ -187,9 +187,9 @@ export default function RechartsTimeSeriesPanel({
         <p className="text-sm font-semibold mb-1">
           {new Date(label).toLocaleString()}
         </p>
-        {sortedPayload.map((entry: any, index: number) => (
+        {sortedPayload?.map((entry: any, index: number) => (
           <p key={index} className="text-sm" style={{ color: entry.color }}>
-            {entry.name}: {entry.value?.toFixed(2)} {seriesConfig.find(s => s.dataKey === entry.dataKey)?.unit || ''}
+            {entry?.name}: {entry?.value?.toFixed(2)} {seriesConfig?.find(s => s?.dataKey === entry?.dataKey)?.unit || ''}
           </p>
         ))}
       </div>
@@ -197,7 +197,7 @@ export default function RechartsTimeSeriesPanel({
   };
 
   // Render empty state
-  if (!chartData.length) {
+  if (!chartData?.length) {
     return (
       <div className="h-full w-full flex items-center justify-center text-gray-500">
         No data available
@@ -209,15 +209,15 @@ export default function RechartsTimeSeriesPanel({
     <div className="h-full w-full">
       <ResponsiveContainer width="100%" height="100%">
         <ChartComponent data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-          {options.legend?.showLegend !== false && (
+          {options?.legend?.showLegend !== false && (
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
           )}
           <XAxis 
             dataKey="timestamp"
             type="number"
             domain={[
-              timeRange ? new Date(timeRange.from).getTime() : 'dataMin',
-              timeRange ? new Date(timeRange.to).getTime() : 'dataMax'
+              timeRange ? new Date(timeRange?.from).getTime() : 'dataMin',
+              timeRange ? new Date(timeRange?.to).getTime() : 'dataMax'
             ]}
             tickFormatter={(value) => new Date(value).toLocaleTimeString()}
             stroke="#6b7280"
@@ -232,9 +232,9 @@ export default function RechartsTimeSeriesPanel({
             content={customTooltip}
             wrapperStyle={{ outline: 'none' }}
           />
-          {options.legend?.showLegend && (
+          {options?.legend?.showLegend && (
             <Legend 
-              verticalAlign={options.legend?.placement === 'bottom' ? 'bottom' : 'top'}
+              verticalAlign={options?.legend?.placement === 'bottom' ? 'bottom' : 'top'}
               height={36}
               iconType="line"
               wrapperStyle={{ fontSize: '12px' }}

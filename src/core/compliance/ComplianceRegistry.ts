@@ -7,14 +7,14 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
-import { AbstractBaseService } from '../architecture/BaseService';
+import { AbstractBaseService } from './architecture/BaseService';
 import { ComplianceRegistry } from './interfaces';
 import {
   ComplianceStandard,
   ComplianceRequirement,
   ComplianceProfile,
 } from './types';
-import { TenantContext } from '../multi-tenancy/interfaces/TenantContext';
+import { TenantContext } from './multi-tenancy/interfaces/TenantContext';
 
 /**
  * Compliance registry implementation

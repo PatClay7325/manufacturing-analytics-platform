@@ -5,7 +5,7 @@
  * a convenient way for services to consume events.
  */
 
-import { AbstractBaseService } from '../architecture/BaseService';
+import { AbstractBaseService } from './architecture/BaseService';
 import { EventConsumer } from './interfaces';
 import { Event, EventHandler, SubscriptionOptions } from './types';
 import { InMemoryEventBus } from './InMemoryEventBus';
@@ -77,7 +77,7 @@ export class BaseEventConsumer extends AbstractBaseService implements EventConsu
     for (const [handlerId, subscriptionIds] of this.subscriptions.entries()) {
       try {
         await this.eventBus.unsubscribeMany(subscriptionIds);
-        console.log(`Unsubscribed handler: ${handlerId} from ${subscriptionIds.length} event types`);
+        console.log(`Unsubscribed handler: ${handlerId} from length} event types`);
       } catch (error) {
         console.error(`Error unsubscribing handler ${handlerId}:`, error);
       }

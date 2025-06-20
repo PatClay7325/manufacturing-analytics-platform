@@ -5,7 +5,7 @@
  * compliance framework.
  */
 
-import { ModularService } from '../services/interfaces';
+import { ModularService } from './services/interfaces';
 import {
   ComplianceStandard,
   ComplianceRequirement,

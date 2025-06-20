@@ -8,8 +8,8 @@
 
 import { BaseService, ServiceDiscovery } from './interfaces';
 import { ServiceStatus, ServiceInfo } from './types';
-import { IntegrationService } from '../integration/service/IntegrationService';
-import { TenantContext } from '../multi-tenancy/interfaces/TenantContext';
+import { IntegrationService } from './integration/service/IntegrationService';
+import { TenantContext } from './multi-tenancy/interfaces/TenantContext';
 
 /**
  * In-memory implementation of the service registry

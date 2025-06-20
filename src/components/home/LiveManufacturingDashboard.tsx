@@ -45,10 +45,10 @@ const generateTimeSeriesData = (points = 12) => {
   const now = new Date();
   
   for (let i = points - 1; i >= 0; i--) {
-    const time = new Date(now.getTime() - i * 5 * 60 * 1000); // 5-minute intervals
+    const time = new Date(now?.getTime() - i * 5 * 60 * 1000); // 5-minute intervals
     const metrics = generateMetrics();
     
-    data.push({
+    data?.push({
       time: time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
       timestamp: time.getTime(),
       oee: metrics.oee,
@@ -71,15 +71,15 @@ const GAUGE_COLORS = {
 
 const getGaugeColor = (value: number, metric: string) => {
   if (metric === 'quality') {
-    if (value >= 99) return GAUGE_COLORS.excellent;
-    if (value >= 97) return GAUGE_COLORS.good;
-    if (value >= 95) return GAUGE_COLORS.warning;
-    return GAUGE_COLORS.critical;
+    if (value >= 99) return GAUGE_COLORS?.excellent;
+    if (value >= 97) return GAUGE_COLORS?.good;
+    if (value >= 95) return GAUGE_COLORS?.warning;
+    return GAUGE_COLORS?.critical;
   } else {
-    if (value >= 90) return GAUGE_COLORS.excellent;
-    if (value >= 80) return GAUGE_COLORS.good;
-    if (value >= 70) return GAUGE_COLORS.warning;
-    return GAUGE_COLORS.critical;
+    if (value >= 90) return GAUGE_COLORS?.excellent;
+    if (value >= 80) return GAUGE_COLORS?.good;
+    if (value >= 70) return GAUGE_COLORS?.warning;
+    return GAUGE_COLORS?.critical;
   }
 };
 
@@ -95,11 +95,11 @@ export default function LiveManufacturingDashboard() {
       
       // Update time series data
       setTimeSeriesData(prevData => {
-        const newData = [...prevData.slice(1)];
+        const newData = [...prevData?.slice(1)];
         const now = new Date();
         const newMetrics = generateMetrics();
         
-        newData.push({
+        newData?.push({
           time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
           timestamp: now.getTime(),
           oee: newMetrics.oee,
@@ -120,38 +120,38 @@ export default function LiveManufacturingDashboard() {
     {
       name: 'OEE',
       value: metrics.oee,
-      fill: getGaugeColor(metrics.oee, 'oee'),
+      fill: getGaugeColor(metrics?.oee, 'oee'),
       fullMark: 100
     },
     {
       name: 'Availability',
       value: metrics.availability,
-      fill: getGaugeColor(metrics.availability, 'availability'),
+      fill: getGaugeColor(metrics?.availability, 'availability'),
       fullMark: 100
     },
     {
       name: 'Performance',
       value: metrics.performance,
-      fill: getGaugeColor(metrics.performance, 'performance'),
+      fill: getGaugeColor(metrics?.performance, 'performance'),
       fullMark: 100
     },
     {
       name: 'Quality',
       value: metrics.quality,
-      fill: getGaugeColor(metrics.quality, 'quality'),
+      fill: getGaugeColor(metrics?.quality, 'quality'),
       fullMark: 100
     }
   ];
 
   // Custom tooltip for radial chart
   const RadialTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
+    if (active && payload && payload?.length) {
       const data = payload[0];
       return (
         <div className="bg-white p-2 border border-gray-200 rounded shadow-lg">
-          <p className="text-sm font-semibold">{data.payload.name}</p>
+          <p className="text-sm font-semibold">{data?.payload.name}</p>
           <p className="text-lg font-bold" style={{ color: data.payload.fill }}>
-            {data.value}%
+            {data?.value}%
           </p>
         </div>
       );
@@ -161,13 +161,13 @@ export default function LiveManufacturingDashboard() {
 
   // Custom tooltip for time series
   const TimeSeriesToolTip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
+    if (active && payload && payload?.length) {
       return (
         <div className="bg-white p-3 border border-gray-200 rounded shadow-lg">
           <p className="text-sm font-semibold mb-1">{label}</p>
-          {payload.map((entry: any, index: number) => (
+          {payload?.map((entry: any, index: number) => (
             <p key={index} className="text-xs" style={{ color: entry.color }}>
-              {entry.name}: {entry.value}{entry.name === 'Production' ? ' units/hr' : '%'}
+              {entry?.name}: {entry?.value}{entry?.name === 'Production' ? ' units/hr' : '%'}
             </p>
           ))}
         </div>
@@ -219,11 +219,11 @@ export default function LiveManufacturingDashboard() {
           
           {/* KPI Labels */}
           <div className="grid grid-cols-2 gap-2 mt-2">
-            {radialData.map((item, index) => (
+            {radialData?.map((item, index) => (
               <div key={index} className="text-center">
-                <div className="text-xs text-gray-500">{item.name}</div>
+                <div className="text-xs text-gray-500">{item?.name}</div>
                 <div className="text-lg font-bold" style={{ color: item.fill }}>
-                  {item.value}%
+                  {item?.value}%
                 </div>
               </div>
             ))}
@@ -302,19 +302,19 @@ export default function LiveManufacturingDashboard() {
         <div className="bg-gray-100 rounded p-2 text-center">
           <div className="text-xs text-gray-600">Production Rate</div>
           <div className="text-lg font-bold text-blue-600">
-            {metrics.production} units/hr
+            {metrics?.production} units/hr
           </div>
         </div>
         <div className="bg-gray-100 rounded p-2 text-center">
           <div className="text-xs text-gray-600">Defect Rate</div>
           <div className="text-lg font-bold text-green-600">
-            {metrics.defects} ppm
+            {metrics?.defects} ppm
           </div>
         </div>
         <div className="bg-gray-100 rounded p-2 text-center">
           <div className="text-xs text-gray-600">Downtime</div>
           <div className="text-lg font-bold text-orange-600">
-            {metrics.downtime} min
+            {metrics?.downtime} min
           </div>
         </div>
       </div>

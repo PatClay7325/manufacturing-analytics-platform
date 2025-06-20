@@ -13,95 +13,14 @@ export default function Documentation() {
         </p>
       </div>
 
-      {/* Documentation Navigation */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-12">
-        <div className="md:col-span-3 lg:col-span-2">
-          <div className="sticky top-20">
-            <nav className="space-y-1">
-              <h3 className="font-medium text-gray-900 mb-2">Getting Started</h3>
-              <ul className="mb-6 space-y-1">
-                <li>
-                  <a href="#introduction" className="text-blue-600 hover:text-blue-800 block py-1">Introduction</a>
-                </li>
-                <li>
-                  <a href="#installation" className="text-blue-600 hover:text-blue-800 block py-1">Installation</a>
-                </li>
-                <li>
-                  <a href="#quick-start" className="text-blue-600 hover:text-blue-800 block py-1">Quick Start</a>
-                </li>
-              </ul>
-
-              <h3 className="font-medium text-gray-900 mb-2">Core Concepts</h3>
-              <ul className="mb-6 space-y-1">
-                <li>
-                  <a href="#architecture" className="text-blue-600 hover:text-blue-800 block py-1">Architecture</a>
-                </li>
-                <li>
-                  <a href="#data-model" className="text-blue-600 hover:text-blue-800 block py-1">Data Model</a>
-                </li>
-                <li>
-                  <a href="#integration-framework" className="text-blue-600 hover:text-blue-800 block py-1">Integration Framework</a>
-                </li>
-              </ul>
-
-              <h3 className="font-medium text-gray-900 mb-2">Key Features</h3>
-              <ul className="mb-6 space-y-1">
-                <li>
-                  <a href="#dashboard" className="text-blue-600 hover:text-blue-800 block py-1">Dashboard</a>
-                </li>
-                <li>
-                  <a href="#equipment-monitoring" className="text-blue-600 hover:text-blue-800 block py-1">Equipment Monitoring</a>
-                </li>
-                <li>
-                  <a href="#alerts-system" className="text-blue-600 hover:text-blue-800 block py-1">Alerts System</a>
-                </li>
-                <li>
-                  <a href="#manufacturing-chat" className="text-blue-600 hover:text-blue-800 block py-1">Manufacturing Chat</a>
-                </li>
-              </ul>
-
-              <h3 className="font-medium text-gray-900 mb-2">Advanced Topics</h3>
-              <ul className="mb-6 space-y-1">
-                <li>
-                  <a href="#ai-integration" className="text-blue-600 hover:text-blue-800 block py-1">AI Integration</a>
-                </li>
-                <li>
-                  <a href="#security" className="text-blue-600 hover:text-blue-800 block py-1">Security</a>
-                </li>
-                <li>
-                  <a href="#deployment" className="text-blue-600 hover:text-blue-800 block py-1">Deployment</a>
-                </li>
-                <li>
-                  <a href="#customization" className="text-blue-600 hover:text-blue-800 block py-1">Customization</a>
-                </li>
-              </ul>
-
-              <h3 className="font-medium text-gray-900 mb-2">References</h3>
-              <ul className="mb-6 space-y-1">
-                <li>
-                  <Link href="/documentation/api-reference" className="text-blue-600 hover:text-blue-800 block py-1">API Reference</Link>
-                </li>
-                <li>
-                  <a href="#configuration" className="text-blue-600 hover:text-blue-800 block py-1">Configuration</a>
-                </li>
-                <li>
-                  <a href="#troubleshooting" className="text-blue-600 hover:text-blue-800 block py-1">Troubleshooting</a>
-                </li>
-                <li>
-                  <a href="#faq" className="text-blue-600 hover:text-blue-800 block py-1">FAQ</a>
-                </li>
-              </ul>
-            </nav>
-          </div>
-        </div>
-
-        <div className="md:col-span-9 lg:col-span-10">
+      {/* Documentation Content */}
+      <div className="mb-12">
           <div className="prose prose-blue max-w-none">
             {/* Introduction */}
             <section id="introduction" className="mb-12">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Introduction</h2>
               <p>
-                Adaptive Factory AI Solutions is a comprehensive platform designed to provide manufacturing organizations with advanced analytics, 
+                Adaptive Factory AI Solutions is a comprehensive platform designed to provide manufacturing organizations with advanced Analytics, 
                 real-time monitoring, and AI-driven insights. The platform integrates with existing manufacturing equipment and systems to 
                 collect, analyze, and visualize operational data, enabling improved decision-making and operational efficiency.
               </p>
@@ -132,7 +51,7 @@ export default function Documentation() {
               
               <h3 className="text-xl font-semibold text-gray-800 mt-6 mb-3">Prerequisites</h3>
               <ul className="list-disc pl-5 mb-4">
-                <li>Node.js 18.17 or later</li>
+                <li>Node?.js 18.17 or later</li>
                 <li>npm or yarn package manager</li>
                 <li>Docker and Docker Compose (for local development)</li>
                 <li>Kubernetes (for production deployments)</li>
@@ -144,8 +63,8 @@ export default function Documentation() {
               <pre className="bg-gray-800 text-white p-4 rounded-md overflow-x-auto">
                 <code>
 {`# Clone the repository
-git clone https://github.com/your-org/manufacturing-analytics-platform.git
-cd manufacturing-analytics-platform
+git clone https://github?.com/your-org/manufacturing-Analytics-platform?.git
+cd manufacturing-Analytics-platform
 
 # Install dependencies
 npm install
@@ -166,10 +85,10 @@ npm run dev`}
               <pre className="bg-gray-800 text-white p-4 rounded-md overflow-x-auto">
                 <code>
 {`# Deploy to AWS with Kubernetes
-./deployment/scripts/deploy.sh --cloud aws --env prod --type kubernetes
+./deployment/scripts/deploy?.sh --cloud aws --env prod --type kubernetes
 
 # Deploy on-premise with Docker Compose
-./deployment/scripts/deploy.sh --cloud on-premise --env prod --type docker`}
+./deployment/scripts/deploy?.sh --cloud on-premise --env prod --type docker`}
                 </code>
               </pre>
               
@@ -299,7 +218,7 @@ npm run dev`}
 │  ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐  │
 │  │    Monitoring   │    │     Logging     │    │    Backups      │  │
 │  │  Prometheus +   │    │   ELK Stack     │    │                 │  │
-│  │    Grafana      │    │                 │    │                 │  │
+│  │    Analytics      │    │                 │    │                 │  │
 │  └─────────────────┘    └─────────────────┘    └─────────────────┘  │
 │                                                                      │
 └─────────────────────────────────────────────────────────────────────┘`}
@@ -310,7 +229,7 @@ npm run dev`}
               
               <h4 className="text-lg font-semibold text-gray-700 mt-4 mb-2">Frontend Layer</h4>
               <p>
-                The frontend layer is built with Next.js, React, and TypeScript, providing a responsive and 
+                The frontend layer is built with Next?.js, React, and TypeScript, providing a responsive and 
                 interactive user interface. Key components include:
               </p>
               <ul className="list-disc pl-5 mb-4">
@@ -563,7 +482,7 @@ interface EquipmentMetric {
               <pre className="bg-gray-800 text-white p-4 rounded-md overflow-x-auto text-sm">
                 <code>
 {`// Create a data processing pipeline
-const pipeline = integrationManager.createPipeline(
+const pipeline = integrationManager?.createPipeline(
   'temperature-monitoring-pipeline',
   'Temperature Monitoring Pipeline',
   {
@@ -599,7 +518,7 @@ const pipeline = integrationManager.createPipeline(
         type: PipelineStageType.FILTER,
         componentId: 'threshold-filter',
         config: {
-          condition: 'data.payload.temperature > 80'
+          condition: 'data?.payload.temperature > 80'
         }
       },
       {
@@ -621,7 +540,7 @@ const pipeline = integrationManager.createPipeline(
 );
 
 // Start the pipeline
-await pipeline.start();`}
+await pipeline?.start();`}
                 </code>
               </pre>
 
@@ -851,14 +770,13 @@ await pipeline.start();`}
                 </a>
                 <a href="#" className="inline-flex items-center px-4 py-2 border border-gray-300 bg-white rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                   <svg className="mr-2 h-5 w-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 2H8.828a2 2 0 00-1.414.586L6.293 3.707A1 1 0 015.586 4H4zm.5 2A.5.5 0 004 6.5v7a.5.5 0 00.5.5h11a.5.5 0 00.5-.5v-7a.5.5 0 00-.5-.5h-11z" clipRule="evenodd" />
+                    <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 2H8.828a2 2 0 00-1.414.586L6.293 3.707A1 1 0 015.586 4H4zm?.5 2A?.5.5 0 004 6.5v7a.5.5 0 00.5.5h11a?.5.5 0 00.5-.5v-7a?.5.5 0 00-.5-.5h-11z" clipRule="evenodd" />
                   </svg>
                   Markdown
                 </a>
               </div>
             </section>
           </div>
-        </div>
       </div>
     </div>
   );

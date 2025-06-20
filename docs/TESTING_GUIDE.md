@@ -27,7 +27,7 @@ npm run test:ui
 ## Test Structure
 
 ```
-manufacturing-analytics-platform/
+manufacturing-Analytics-platform/
 ├── src/
 │   ├── __tests__/           # Unit tests
 │   │   ├── components/      # Component tests

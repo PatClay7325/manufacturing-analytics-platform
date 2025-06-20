@@ -24,8 +24,8 @@ const generateMockData = () => {
   const data = [];
   
   for (let i = 24; i >= 0; i--) {
-    const timestamp = new Date(now.getTime() - i * 60 * 60 * 1000);
-    data.push({
+    const timestamp = new Date(now?.getTime() - i * 60 * 60 * 1000);
+    data?.push({
       timestamp: timestamp.getTime(),
       time: timestamp.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
       production: Math.floor(Math.random() * 50) + 750,
@@ -47,11 +47,11 @@ export default function ProductionChart() {
   useEffect(() => {
     const interval = setInterval(() => {
       setData(prevData => {
-        const newData = [...prevData.slice(1)];
-        const lastTimestamp = newData[newData.length - 1]?.timestamp || Date.now();
+        const newData = [...prevData?.slice(1)];
+        const lastTimestamp = newData[newData?.length - 1]?.timestamp || Date.now();
         const newTimestamp = new Date(lastTimestamp + 60 * 60 * 1000);
         
-        newData.push({
+        newData?.push({
           timestamp: newTimestamp.getTime(),
           time: newTimestamp.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
           production: Math.floor(Math.random() * 50) + 750,
@@ -69,13 +69,13 @@ export default function ProductionChart() {
 
   // Custom tooltip
   const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
+    if (active && payload && payload?.length) {
       return (
         <div className="bg-white p-3 border border-gray-200 rounded shadow-lg">
           <p className="text-sm font-semibold mb-1">{label}</p>
-          {payload.map((entry: any, index: number) => (
+          {payload?.map((entry: any, index: number) => (
             <p key={index} className="text-xs" style={{ color: entry.color }}>
-              {entry.name}: {entry.value} {entry.name === 'efficiency' || entry.name === 'quality' ? '%' : 'units'}
+              {entry?.name}: {entry?.value} {entry?.name === 'efficiency' || entry?.name === 'quality' ? '%' : 'units'}
             </p>
           ))}
         </div>

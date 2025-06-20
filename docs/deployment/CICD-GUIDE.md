@@ -153,6 +153,6 @@ If a workflow fails:
 4. **Set up status badges**: Add workflow status badges to your README
 
 ```markdown
-![CI](https://github.com/PatClay7325/manufacturing-analytics-platform/actions/workflows/ci.yml/badge.svg)
-![CD](https://github.com/PatClay7325/manufacturing-analytics-platform/actions/workflows/cd.yml/badge.svg)
+![CI](https://github.com/PatClay7325/manufacturing-Analytics-platform/actions/workflows/ci.yml/badge.svg)
+![CD](https://github.com/PatClay7325/manufacturing-Analytics-platform/actions/workflows/cd.yml/badge.svg)
 ```

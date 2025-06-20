@@ -54,7 +54,7 @@ The Manufacturing Analytics Platform deployment strategy is designed to be:
 | Frontend | 1 core | 2 GB | 10 GB | SSD recommended |
 | API Service | 2 cores | 4 GB | 20 GB | SSD recommended |
 | Database | 2 cores | 8 GB | 50 GB | SSD required |
-| Monitoring | 2 cores | 4 GB | 30 GB | For Prometheus, Grafana |
+| Monitoring | 2 cores | 4 GB | 30 GB | For Prometheus, Analytics |
 | Logging | 2 cores | 4 GB | 50 GB | For ELK stack |
 
 #### Recommended Requirements (Production)
@@ -64,7 +64,7 @@ The Manufacturing Analytics Platform deployment strategy is designed to be:
 | Frontend | 2+ cores | 4 GB | 20 GB | SSD recommended |
 | API Service | 4+ cores | 8 GB | 40 GB | SSD recommended |
 | Database | 4+ cores | 16 GB | 100+ GB | SSD required |
-| Monitoring | 4 cores | 8 GB | 100 GB | For Prometheus, Grafana |
+| Monitoring | 4 cores | 8 GB | 100 GB | For Prometheus, Analytics |
 | Logging | 4 cores | 8 GB | 200+ GB | For ELK stack |
 
 ### Software Prerequisites
@@ -99,7 +99,7 @@ The Manufacturing Analytics Platform deployment strategy is designed to be:
 |---------|------|----------|---------|
 | Frontend | 80, 443 | HTTP, HTTPS | Web UI access |
 | API Service | 4000 | HTTP | API endpoints |
-| Monitoring UI | 3001 | HTTP | Grafana dashboards |
+| Monitoring UI | 3001 | HTTP | Analytics Dashboards |
 | Logging UI | 5601 | HTTP | Kibana interface |
 
 #### Outbound Connectivity
@@ -123,8 +123,8 @@ Local development setup is designed for developers to quickly set up and test th
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/manufacturing-analytics-platform.git
-cd manufacturing-analytics-platform
+git clone https://github.com/your-org/manufacturing-Analytics-platform.git
+cd manufacturing-Analytics-platform
 
 # Start local development environment
 docker-compose up -d
@@ -151,7 +151,7 @@ Key characteristics:
 - All components on a single server
 - Docker Compose orchestration
 - Persistent volumes for data storage
-- Basic monitoring with Prometheus and Grafana
+- Basic monitoring with Prometheus and Analytics
 - Basic logging with ELK stack
 - Limited scaling capabilities
 - Optional multi-tenancy support
@@ -258,8 +258,8 @@ Key considerations:
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/your-org/manufacturing-analytics-platform.git
-   cd manufacturing-analytics-platform
+   git clone https://github.com/your-org/manufacturing-Analytics-platform.git
+   cd manufacturing-Analytics-platform
    ```
 
 2. **Install Required Tools**
@@ -645,7 +645,7 @@ When horizontal scaling reaches limits or for components that don't horizontally
    - Implement proper indexes
    - Use connection pooling
    - Optimize query patterns
-   - Consider materialized views for complex analytics
+   - Consider materialized views for complex Analytics
 
 3. **Frontend Optimization**
    - JavaScript bundle optimization
@@ -795,7 +795,7 @@ When horizontal scaling reaches limits or for components that don't horizontally
 
 ### Setting up Monitoring
 
-The platform includes a comprehensive monitoring solution based on Prometheus and Grafana:
+The platform includes a comprehensive monitoring solution based on Prometheus and Analytics:
 
 1. **Infrastructure Monitoring**
 
@@ -808,7 +808,7 @@ The platform includes a comprehensive monitoring solution based on Prometheus an
 
    Components deployed:
    - Prometheus for metrics collection
-   - Grafana for visualization
+   - Analytics for visualization
    - AlertManager for alerting
    - Node Exporter for host metrics
    - Blackbox Exporter for endpoint monitoring
@@ -1278,7 +1278,7 @@ Deployment Architecture Diagram:
 │  ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐  │
 │  │    Monitoring   │    │     Logging     │    │    Backups      │  │
 │  │  Prometheus +   │    │   ELK Stack     │    │                 │  │
-│  │    Grafana      │    │                 │    │                 │  │
+│  │    Analytics      │    │                 │    │                 │  │
 │  └─────────────────┘    └─────────────────┘    └─────────────────┘  │
 │                                                                      │
 └─────────────────────────────────────────────────────────────────────┘

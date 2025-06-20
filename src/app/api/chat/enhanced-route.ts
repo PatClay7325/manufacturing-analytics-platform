@@ -35,9 +35,9 @@ When users ask questions, ALWAYS:
 
 For example:
 - User: "What's my OEE?"
-- You: "Your enterprise-wide OEE is currently 78.5%. This is calculated from 7 work units across 2 sites. Your best performing site is North America at 82.3% OEE."
+- You: "Your enterprise-wide OEE is currently 78.5%. This is calculated from "
 
-Remember: You're looking at REAL DATA from their actual manufacturing operation. Use it!`;
+Remember: You're looking at REAL DATA from  Use it!`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
         content: `LIVE MANUFACTURING DATA (Use this data to answer the user's questions):
 ${JSON.stringify(context, null, 2)}
 
-Remember: These are the user's ACTUAL metrics. When they ask "What's my OEE?", tell them the specific OEE values from this data.`
+Remember: These are the user's ACTUAL metrics. When they ask "What's my OEE?", tell them the specific OEE values from `
       },
       ...messages
     ];
@@ -177,7 +177,7 @@ async function getComprehensiveManufacturingData(query: string) {
 
     return {
       summary: {
-        enterpriseName: enterprise?.name || 'Manufacturing Enterprise',
+        enterpriseName: enterprise.name || 'Manufacturing Enterprise',
         currentTime: new Date().toISOString(),
         overallOEE: Number(totalOEE.toFixed(1)),
         totalWorkUnits: workUnits.length,
@@ -198,7 +198,7 @@ async function getComprehensiveManufacturingData(query: string) {
           totalDefects: enterprise.kpiSummary.totalDefects,
         } : null,
       } : null,
-      sites: enterprise?.sites.map(site => ({
+      sites: enterprise.sites.map(site => ({
         name: site.name,
         location: site.location,
         kpi: site.kpiSummary ? {

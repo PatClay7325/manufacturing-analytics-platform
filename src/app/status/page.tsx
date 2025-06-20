@@ -80,7 +80,7 @@ export default function StatusPage() {
     }
   };
 
-  const overallStatus = services.every(s => s.status === 'operational') ? 'operational' : 'partial';
+  const overallStatus = services?.every(s => s?.status === 'operational') ? 'operational' : 'partial';
 
   return (
     <div className="container mx-auto px-4 py-12 max-w-6xl">
@@ -111,32 +111,32 @@ export default function StatusPage() {
 
       {/* Service Status Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-        {services.map((service) => (
-          <div key={service.name} className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
+        {services?.map((service) => (
+          <div key={service?.name} className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h3 className="text-xl font-semibold mb-1">{service.name}</h3>
-                <p className="text-gray-600 text-sm">{service.description}</p>
+                <h3 className="text-xl font-semibold mb-1">{service?.name}</h3>
+                <p className="text-gray-600 text-sm">{service?.description}</p>
               </div>
-              <span className="text-2xl">{getStatusIcon(service.status)}</span>
+              <span className="text-2xl">{getStatusIcon(service?.status)}</span>
             </div>
             
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-gray-500">Status</span>
-                <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(service.status)}`}>
-                  {service.status.charAt(0).toUpperCase() + service.status.slice(1)}
+                <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(service?.status)}`}>
+                  {service?.status.charAt(0).toUpperCase() + service?.status.slice(1)}
                 </span>
               </div>
               
               <div className="flex items-center justify-between">
                 <span className="text-gray-500">Uptime (30d)</span>
-                <span className="font-medium">{service.uptime}</span>
+                <span className="font-medium">{service?.uptime}</span>
               </div>
               
               <div className="flex items-center justify-between">
                 <span className="text-gray-500">Last Incident</span>
-                <span className="text-sm">{service.lastIncident}</span>
+                <span className="text-sm">{service?.lastIncident}</span>
               </div>
             </div>
           </div>
@@ -220,7 +220,7 @@ export default function StatusPage() {
         <div className="flex max-w-md mx-auto">
           <input
             type="email"
-            placeholder="lorem@ipsum.com"
+            placeholder="lorem@ipsum?.com"
             className="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
           <button className="bg-blue-600 text-white px-6 py-2 rounded-r-lg hover:bg-blue-700 transition-colors">

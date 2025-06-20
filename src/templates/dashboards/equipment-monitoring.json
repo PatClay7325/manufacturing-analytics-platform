@@ -1,0 +1,346 @@
+{
+  "title": "Equipment Monitoring Dashboard",
+  "description": "Real-time equipment status, performance, and health monitoring",
+  "tags": ["equipment", "monitoring", "maintenance"],
+  "timezone": "browser",
+  "schemaVersion": 1,
+  "version": 1,
+  "time": {
+    "from": "now-3h",
+    "to": "now"
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "equipment_type",
+        "label": "Equipment Type",
+        "type": "query",
+        "datasource": "postgres",
+        "query": "SELECT DISTINCT equipment_type FROM equipment ORDER BY equipment_type",
+        "refresh": 1,
+        "multi": true,
+        "includeAll": true
+      },
+      {
+        "name": "equipment_id",
+        "label": "Equipment",
+        "type": "query",
+        "datasource": "postgres",
+        "query": "SELECT equipment_id, equipment_name FROM equipment WHERE equipment_type IN ($equipment_type) ORDER BY equipment_name",
+        "refresh": 2,
+        "multi": false,
+        "includeAll": false
+      },
+      {
+        "name": "metric_interval",
+        "label": "Aggregation",
+        "type": "interval",
+        "options": [
+          {"text": "1m", "value": "1m"},
+          {"text": "5m", "value": "5m"},
+          {"text": "10m", "value": "10m"},
+          {"text": "30m", "value": "30m"},
+          {"text": "1h", "value": "1h"}
+        ],
+        "current": {
+          "text": "5m",
+          "value": "5m"
+        }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Equipment Status Overview",
+      "type": "state-timeline",
+      "gridPos": {"x": 0, "y": 0, "w": 24, "h": 6},
+      "targets": [
+        {
+          "datasource": "postgres",
+          "query": "SELECT time, equipment_name, status FROM equipment_status WHERE equipment_type IN ($equipment_type) AND time > $__timeFrom AND time < $__timeTo ORDER BY equipment_name, time"
+        }
+      ],
+      "options": {
+        "mergeValues": false,
+        "showValue": "never",
+        "alignValue": "center",
+        "rowHeight": 0.9
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "lineWidth": 0,
+            "fillOpacity": 70
+          },
+          "mappings": [
+            {"type": "value", "value": "running", "text": "Running", "color": "green"},
+            {"type": "value", "value": "idle", "text": "Idle", "color": "yellow"},
+            {"type": "value", "value": "maintenance", "text": "Maintenance", "color": "orange"},
+            {"type": "value", "value": "error", "text": "Error", "color": "red"},
+            {"type": "value", "value": "offline", "text": "Offline", "color": "gray"}
+          ]
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "Current Status",
+      "type": "stat",
+      "gridPos": {"x": 0, "y": 6, "w": 4, "h": 4},
+      "targets": [
+        {
+          "datasource": "postgres",
+          "query": "SELECT status as value FROM equipment WHERE equipment_id = '$equipment_id' LIMIT 1"
+        }
+      ],
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {"type": "value", "value": "running", "text": "RUNNING", "color": "green"},
+            {"type": "value", "value": "idle", "text": "IDLE", "color": "yellow"},
+            {"type": "value", "value": "maintenance", "text": "MAINTENANCE", "color": "orange"},
+            {"type": "value", "value": "error", "text": "ERROR", "color": "red"},
+            {"type": "value", "value": "offline", "text": "OFFLINE", "color": "gray"}
+          ]
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "Utilization Rate",
+      "type": "gauge",
+      "gridPos": {"x": 4, "y": 6, "w": 5, "h": 4},
+      "targets": [
+        {
+          "datasource": "postgres",
+          "query": "SELECT (sum(runtime_minutes) / sum(available_minutes)) * 100 as value FROM equipment_utilization WHERE equipment_id = '$equipment_id' AND time > now() - interval '24 hours'"
+        }
+      ],
+      "options": {
+        "orientation": "horizontal",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "min": 0,
+        "max": 100,
+        "unit": "percent"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "red", "value": 0},
+              {"color": "yellow", "value": 50},
+              {"color": "green", "value": 75}
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "Temperature",
+      "type": "timeseries",
+      "gridPos": {"x": 9, "y": 6, "w": 7, "h": 8},
+      "targets": [
+        {
+          "datasource": "influxdb",
+          "query": "SELECT mean(temperature) as \"Temperature\" FROM equipment_sensors WHERE equipment_id = '$equipment_id' AND time > $__timeFrom AND time < $__timeTo GROUP BY time($metric_interval) fill(previous)"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "hidden"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "custom": {
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "thresholdsStyle": {
+              "mode": "line"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "green", "value": 0},
+              {"color": "yellow", "value": 70},
+              {"color": "red", "value": 85}
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 5,
+      "title": "Vibration Analysis",
+      "type": "timeseries",
+      "gridPos": {"x": 16, "y": 6, "w": 8, "h": 8},
+      "targets": [
+        {
+          "datasource": "influxdb",
+          "query": "SELECT mean(vibration_x) as \"X-Axis\", mean(vibration_y) as \"Y-Axis\", mean(vibration_z) as \"Z-Axis\" FROM equipment_sensors WHERE equipment_id = '$equipment_id' AND time > $__timeFrom AND time < $__timeTo GROUP BY time($metric_interval) fill(previous)"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "velocityms",
+          "custom": {
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "fillOpacity": 0,
+            "pointSize": 0
+          }
+        }
+      }
+    },
+    {
+      "id": 6,
+      "title": "Performance Metrics",
+      "type": "timeseries",
+      "gridPos": {"x": 0, "y": 14, "w": 12, "h": 8},
+      "targets": [
+        {
+          "datasource": "postgres",
+          "query": "SELECT time, oee_percentage as \"OEE\", availability_rate as \"Availability\", performance_rate as \"Performance\", quality_rate as \"Quality\" FROM equipment_metrics WHERE equipment_id = '$equipment_id' AND time > $__timeFrom AND time < $__timeTo ORDER BY time"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "values": ["last", "mean", "max"]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "custom": {
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "opacity"
+          }
+        }
+      }
+    },
+    {
+      "id": 7,
+      "title": "Maintenance Schedule",
+      "type": "table",
+      "gridPos": {"x": 12, "y": 14, "w": 12, "h": 8},
+      "targets": [
+        {
+          "datasource": "postgres",
+          "query": "SELECT maintenance_type as \"Type\", scheduled_date as \"Scheduled Date\", last_performed as \"Last Performed\", CASE WHEN scheduled_date < NOW() THEN 'Overdue' WHEN scheduled_date < NOW() + interval '7 days' THEN 'Upcoming' ELSE 'Scheduled' END as \"Status\" FROM maintenance_schedule WHERE equipment_id = '$equipment_id' ORDER BY scheduled_date"
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      },
+      "fieldConfig": {
+        "overrides": [
+          {
+            "matcher": {"id": "byName", "options": "Status"},
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "color-background"
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {"type": "value", "value": "Overdue", "color": "red"},
+                  {"type": "value", "value": "Upcoming", "color": "yellow"},
+                  {"type": "value", "value": "Scheduled", "color": "green"}
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "title": "Energy Consumption",
+      "type": "timeseries",
+      "gridPos": {"x": 0, "y": 22, "w": 16, "h": 6},
+      "targets": [
+        {
+          "datasource": "influxdb",
+          "query": "SELECT mean(power_consumption) as \"Power (kW)\" FROM equipment_sensors WHERE equipment_id = '$equipment_id' AND time > $__timeFrom AND time < $__timeTo GROUP BY time($metric_interval) fill(previous)"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "hidden"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "kwatt",
+          "custom": {
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 20,
+            "gradientMode": "opacity",
+            "showPoints": "never"
+          }
+        }
+      }
+    },
+    {
+      "id": 9,
+      "title": "Recent Alarms",
+      "type": "logs",
+      "gridPos": {"x": 16, "y": 22, "w": 8, "h": 6},
+      "targets": [
+        {
+          "datasource": "postgres",
+          "query": "SELECT time, severity, message FROM equipment_alarms WHERE equipment_id = '$equipment_id' AND time > now() - interval '24 hours' ORDER BY time DESC LIMIT 50"
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "showLabels": false,
+        "showCommonLabels": false,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": false,
+        "enableLogDetails": true,
+        "sortOrder": "Descending"
+      }
+    }
+  ]
+}

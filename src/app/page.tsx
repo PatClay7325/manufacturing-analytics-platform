@@ -12,7 +12,7 @@ export default function Home() {
             </h1>
             <p className="text-lg text-gray-600 mb-6">
               Optimize your manufacturing operations with real-time insights, 
-              advanced analytics, and AI-driven recommendations.
+              advanced Analytics, and AI-driven recommendations.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link 

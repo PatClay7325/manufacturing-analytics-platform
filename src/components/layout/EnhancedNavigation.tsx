@@ -166,40 +166,40 @@ export default function EnhancedNavigation({ simplified = false }: NavigationPro
 
   const hasActiveSubmenu = (submenu?: NavLink[]): boolean => {
     if (!submenu) return false;
-    return submenu.some(item => isActivePath(item.href));
+    return submenu?.some(item => isActivePath(item?.href));
   };
 
   const toggleSubmenu = (linkName: string) => {
     setExpandedMenus(prev => 
-      prev.includes(linkName) 
-        ? prev.filter(name => name !== linkName)
+      prev?.includes(linkName) 
+        ? prev?.filter(name => name !== linkName)
         : [...prev, linkName]
     );
   };
 
   const renderNavLink = (link: NavLink, isMobile = false) => {
-    const hasSubmenu = link.submenu && link.submenu.length > 0;
-    const isExpanded = expandedMenus.includes(link.name);
-    const isActive = isActivePath(link.href);
-    const hasActiveChild = hasActiveSubmenu(link.submenu);
+    const hasSubmenu = link?.submenu && link?.submenu.length > 0;
+    const isExpanded = expandedMenus?.includes(link?.name);
+    const isActive = isActivePath(link?.href);
+    const hasActiveChild = hasActiveSubmenu(link?.submenu);
 
     if (hasSubmenu) {
       return (
-        <div key={link.name} className="relative group">
+        <div key={link?.name} className="relative group">
           <button
-            onClick={() => isMobile && toggleSubmenu(link.name)}
+            onClick={() => isMobile && toggleSubmenu(link?.name)}
             className={`flex items-center justify-between w-full px-3 py-2 text-sm font-medium rounded-md transition-colors ${
               isActive || hasActiveChild
                 ? 'bg-blue-100 text-blue-900'
                 : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
-            } ${link.manufacturing ? 'border-l-2 border-blue-500' : ''}`}
+            } ${link?.manufacturing ? 'border-l-2 border-blue-500' : ''}`}
           >
             <div className="flex items-center space-x-2">
-              {link.icon && <span className="text-lg">{link.icon}</span>}
-              <span>{link.name}</span>
-              {link.badge && (
+              {link?.icon && <span className="text-lg">{link?.icon}</span>}
+              <span>{link?.name}</span>
+              {link?.badge && (
                 <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                  {link.badge}
+                  {link?.badge}
                 </span>
               )}
             </div>
@@ -214,19 +214,19 @@ export default function EnhancedNavigation({ simplified = false }: NavigationPro
           {!isMobile && (
             <div className="absolute left-0 mt-1 w-64 bg-white rounded-md shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
               <div className="py-2">
-                {link.submenu!.map((subLink) => (
+                {link?.submenu!.map((subLink) => (
                   <Link
-                    key={subLink.href}
-                    href={subLink.href}
+                    key={subLink?.href}
+                    href={subLink?.href}
                     className={`block px-4 py-2 text-sm transition-colors ${
-                      isActivePath(subLink.href)
+                      isActivePath(subLink?.href)
                         ? 'bg-blue-50 text-blue-900 border-r-2 border-blue-500'
                         : 'text-gray-700 hover:bg-gray-50'
                     }`}
                   >
                     <div className="flex items-center space-x-2">
-                      {subLink.icon && <span>{subLink.icon}</span>}
-                      <span>{subLink.name}</span>
+                      {subLink?.icon && <span>{subLink?.icon}</span>}
+                      <span>{subLink?.name}</span>
                     </div>
                   </Link>
                 ))}
@@ -237,20 +237,20 @@ export default function EnhancedNavigation({ simplified = false }: NavigationPro
           {/* Mobile Submenu */}
           {isMobile && isExpanded && (
             <div className="ml-4 mt-2 space-y-1">
-              {link.submenu!.map((subLink) => (
+              {link?.submenu!.map((subLink) => (
                 <Link
-                  key={subLink.href}
-                  href={subLink.href}
+                  key={subLink?.href}
+                  href={subLink?.href}
                   className={`block px-3 py-2 text-sm rounded-md transition-colors ${
-                    isActivePath(subLink.href)
+                    isActivePath(subLink?.href)
                       ? 'bg-blue-100 text-blue-900'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                   }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <div className="flex items-center space-x-2">
-                    {subLink.icon && <span>{subLink.icon}</span>}
-                    <span>{subLink.name}</span>
+                    {subLink?.icon && <span>{subLink?.icon}</span>}
+                    <span>{subLink?.name}</span>
                   </div>
                 </Link>
               ))}
@@ -262,20 +262,20 @@ export default function EnhancedNavigation({ simplified = false }: NavigationPro
 
     return (
       <Link
-        key={link.href}
-        href={link.href}
+        key={link?.href}
+        href={link?.href}
         className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
           isActive
             ? 'bg-blue-100 text-blue-900'
             : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
-        } ${link.manufacturing ? 'border-l-2 border-blue-500' : ''}`}
+        } ${link?.manufacturing ? 'border-l-2 border-blue-500' : ''}`}
         onClick={() => isMobile && setIsMenuOpen(false)}
       >
-        {link.icon && <span className="text-lg">{link.icon}</span>}
-        <span>{link.name}</span>
-        {link.badge && (
+        {link?.icon && <span className="text-lg">{link?.icon}</span>}
+        <span>{link?.name}</span>
+        {link?.badge && (
           <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-            {link.badge}
+            {link?.badge}
           </span>
         )}
       </Link>
@@ -301,10 +301,10 @@ export default function EnhancedNavigation({ simplified = false }: NavigationPro
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1">
-            {navLinks.slice(0, 6).map(link => renderNavLink(link))}
+            {navLinks?.slice(0, 6).map(link => renderNavLink(link))}
             
             {/* More Menu for Additional Items */}
-            {navLinks.length > 6 && (
+            {navLinks?.length > 6 && (
               <div className="relative group">
                 <button className="flex items-center space-x-1 px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md">
                   <span>More</span>
@@ -312,19 +312,19 @@ export default function EnhancedNavigation({ simplified = false }: NavigationPro
                 </button>
                 <div className="absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                   <div className="py-2">
-                    {navLinks.slice(6).map((link) => (
+                    {navLinks?.slice(6).map((link) => (
                       <Link
-                        key={link.href}
-                        href={link.href}
+                        key={link?.href}
+                        href={link?.href}
                         className={`block px-4 py-2 text-sm transition-colors ${
-                          isActivePath(link.href)
+                          isActivePath(link?.href)
                             ? 'bg-blue-50 text-blue-900'
                             : 'text-gray-700 hover:bg-gray-50'
                         }`}
                       >
                         <div className="flex items-center space-x-2">
-                          {link.icon && <span>{link.icon}</span>}
-                          <span>{link.name}</span>
+                          {link?.icon && <span>{link?.icon}</span>}
+                          <span>{link?.name}</span>
                         </div>
                       </Link>
                     ))}
@@ -355,7 +355,7 @@ export default function EnhancedNavigation({ simplified = false }: NavigationPro
       {isMenuOpen && (
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-200">
-            {navLinks.map(link => renderNavLink(link, true))}
+            {navLinks?.map(link => renderNavLink(link, true))}
           </div>
         </div>
       )}

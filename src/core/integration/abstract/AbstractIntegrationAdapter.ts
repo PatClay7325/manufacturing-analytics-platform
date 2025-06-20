@@ -5,18 +5,18 @@
  * common functionality for all integration adapters.
  */
 
-import { BaseConfig, HealthCheckResult, ServiceStatus } from '../../architecture/types';
-import { LoggerService } from '../../architecture/interfaces';
-import { IntegrationAdapter } from '../interfaces/IntegrationAdapter';
-import { DataTransformer } from '../interfaces/DataTransformer';
-import { DataValidator } from '../interfaces/DataValidator';
+import { BaseConfig, HealthCheckResult, ServiceStatus } from './architecture/types';
+import { LoggerService } from './architecture/interfaces';
+import { IntegrationAdapter } from './interfaces/IntegrationAdapter';
+import { DataTransformer } from './interfaces/DataTransformer';
+import { DataValidator } from './interfaces/DataValidator';
 import { 
   ConnectionStatus, 
   IntegrationConfig, 
   IntegrationDataPacket, 
   IntegrationError,
   IntegrationErrorType
-} from '../types';
+} from './types';
 
 /**
  * Abstract integration adapter implementation

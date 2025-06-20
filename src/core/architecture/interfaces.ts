@@ -149,7 +149,7 @@ export interface ConfigService {
   
   /**
    * Load configuration from source
-   * @param source Source to load from (file, environment, etc.)
+   * @param source Source to load from )
    */
   load(source: string): Promise<void>;
   

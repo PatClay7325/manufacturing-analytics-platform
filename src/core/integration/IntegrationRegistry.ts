@@ -6,10 +6,10 @@
  * Supports multi-tenancy with tenant-specific adapters.
  */
 
-import { LoggerService } from '../architecture/interfaces';
+import { LoggerService } from './architecture/interfaces';
 import { IntegrationAdapter } from './interfaces/IntegrationAdapter';
 import { ConnectionStatus, IntegrationSystemType } from './types';
-import { TenantContext } from '../multi-tenancy/interfaces/TenantContext';
+import { TenantContext } from './multi-tenancy/interfaces/TenantContext';
 
 /**
  * Adapter metadata interface
@@ -219,11 +219,11 @@ export class IntegrationRegistry {
         name: adapter.name,
         type: adapter.config.type,
         version: adapter.version,
-        protocol: metadata?.protocol || adapter.config.connectionParams.protocol as string,
-        vendor: metadata?.vendor || adapter.config.connectionParams.vendor as string,
-        model: metadata?.model || adapter.config.connectionParams.model as string,
-        tags: metadata?.tags || adapter.config.connectionParams.tags as string[] || [],
-        capabilities: metadata?.capabilities || adapter.config.connectionParams.capabilities as string[] || [],
+        protocol: metadata.protocol || adapter.config.connectionParams.protocol as string,
+        vendor: metadata.vendor || adapter.config.connectionParams.vendor as string,
+        model: metadata.model || adapter.config.connectionParams.model as string,
+        tags: metadata.tags || adapter.config.connectionParams.tags as string[] || [],
+        capabilities: metadata.capabilities || adapter.config.connectionParams.capabilities as string[] || [],
         registeredAt: now,
         updatedAt: now,
         tenantId: actualTenantId,
@@ -266,11 +266,11 @@ export class IntegrationRegistry {
         name: adapter.name,
         type: adapter.config.type,
         version: adapter.version,
-        protocol: metadata?.protocol || adapter.config.connectionParams.protocol as string,
-        vendor: metadata?.vendor || adapter.config.connectionParams.vendor as string,
-        model: metadata?.model || adapter.config.connectionParams.model as string,
-        tags: metadata?.tags || adapter.config.connectionParams.tags as string[] || [],
-        capabilities: metadata?.capabilities || adapter.config.connectionParams.capabilities as string[] || [],
+        protocol: metadata.protocol || adapter.config.connectionParams.protocol as string,
+        vendor: metadata.vendor || adapter.config.connectionParams.vendor as string,
+        model: metadata.model || adapter.config.connectionParams.model as string,
+        tags: metadata.tags || adapter.config.connectionParams.tags as string[] || [],
+        capabilities: metadata.capabilities || adapter.config.connectionParams.capabilities as string[] || [],
         registeredAt: now,
         updatedAt: now,
         isTenantSpecific: false

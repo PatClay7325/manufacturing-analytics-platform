@@ -6,7 +6,7 @@ Since your repository is private, branch protection rules require a GitHub Team 
 
 ### 1. Access Branch Protection Settings
 
-1. Go to your GitHub repository: https://github.com/PatClay7325/manufacturing-analytics-platform
+1. Go to your GitHub repository: https://github.com/PatClay7325/manufacturing-Analytics-platform
 2. Click on "Settings" (tab with the gear icon)
 3. In the left sidebar, click on "Branches"
 4. Under "Branch protection rules", click "Add rule"

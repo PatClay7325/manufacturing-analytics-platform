@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 
 interface ErrorProps {
-  error: Error & { digest?: string };
+  error?: Error & { digest?: string };
   reset: () => void;
 }
 
@@ -66,8 +66,8 @@ export default function Error({ error, reset }: ErrorProps) {
               Error Details (Development)
             </summary>
             <pre className="mt-2 overflow-auto rounded bg-gray-100 p-4 text-xs text-gray-600">
-              {error.message}
-              {error.stack && `\n\nStack trace:\n${error.stack}`}
+              {error?.message}
+              {error?.stack && `\n\nStack trace:\n${error?.stack}`}
             </pre>
           </details>
         )}

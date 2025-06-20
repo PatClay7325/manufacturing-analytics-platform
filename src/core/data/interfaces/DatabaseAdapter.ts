@@ -4,7 +4,7 @@
  * This interface defines the contract for all database adapters in the system.
  */
 
-import { QueryOptions, QueryResult } from '../types';
+import { QueryOptions, QueryResult } from './types';
 
 /**
  * Database adapter interface

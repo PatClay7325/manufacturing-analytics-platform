@@ -229,7 +229,7 @@ export default function TermsOfServicePage() {
               <strong>Contact Us:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit. For questions about these Terms of Service, please contact us at:
             </p>
             <p className="text-gray-700 mt-2">
-              Email: legal@adaptivefactory.ai<br />
+              Email: legal@adaptivefactory?.ai<br />
               Phone: +1 (555) 123-4567<br />
               Address: 123 Lorem Ipsum St, Dolor Sit, AM 12345
             </p>

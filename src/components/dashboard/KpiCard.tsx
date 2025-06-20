@@ -3,9 +3,9 @@
 import { memo } from 'react';
 
 interface KpiCardProps {
-  id: number | string;
-  name: string;
-  value: string;
+  id?: number | string;
+  name?: string;
+  value?: string;
   trend?: 'up' | 'down' | 'stable';
   change?: string;
 }

@@ -5,7 +5,7 @@
  * functionality for API rate limiting.
  */
 
-import { AbstractBaseService } from '../architecture/BaseService';
+import { AbstractBaseService } from './architecture/BaseService';
 import { RateLimiter } from './interfaces';
 import { ApiRequest } from './types';
 

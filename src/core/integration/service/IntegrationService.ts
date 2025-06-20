@@ -5,12 +5,12 @@
  * which is responsible for managing integrations with external systems.
  */
 
-import { ModularService } from '../../services/interfaces';
-import { ServiceResult } from '../../services/types';
-import { IntegrationAdapter } from '../interfaces/IntegrationAdapter';
-import { IntegrationConfig, IntegrationDataPacket, IntegrationSystemType } from '../types';
-import { IntegrationPipeline } from '../pipeline/IntegrationPipeline';
-import { AdapterHealthStatus } from '../IntegrationManager';
+import { ModularService } from './services/interfaces';
+import { ServiceResult } from './services/types';
+import { IntegrationAdapter } from './interfaces/IntegrationAdapter';
+import { IntegrationConfig, IntegrationDataPacket, IntegrationSystemType } from './types';
+import { IntegrationPipeline } from './pipeline/IntegrationPipeline';
+import { AdapterHealthStatus } from './IntegrationManager';
 
 /**
  * Integration service interface

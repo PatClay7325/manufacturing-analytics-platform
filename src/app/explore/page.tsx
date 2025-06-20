@@ -62,20 +62,20 @@ export default function ExplorePage() {
 
   // Load available data sources
   useEffect(() => {
-    const dataSources = dataSourceRegistry.getAllInstances();
+    const dataSources = dataSourceRegistry?.getAllInstances();
     setAvailableDataSources(dataSources);
     
     // Select first manufacturing data source by default
-    const manufacturingSources = dataSources.filter(ds => 
-      ds.meta.category === 'manufacturing' || ds.meta.category === 'industrial'
+    const manufacturingSources = dataSources?.filter(ds => 
+      ds?.meta.category === 'manufacturing' || ds?.meta.category === 'industrial'
     );
     
-    if (manufacturingSources.length > 0) {
+    if (manufacturingSources?.length > 0) {
       setState(prev => ({ 
         ...prev, 
         selectedDataSource: manufacturingSources[0].uid 
       }));
-    } else if (dataSources.length > 0) {
+    } else if (dataSources?.length > 0) {
       setState(prev => ({ 
         ...prev, 
         selectedDataSource: dataSources[0].uid 
@@ -85,21 +85,21 @@ export default function ExplorePage() {
 
   // Auto-refresh effect
   useEffect(() => {
-    if (!state.autoRefresh || !state.selectedDataSource) return;
+    if (!state?.autoRefresh || !state?.selectedDataSource) return;
 
     const interval = setInterval(() => {
       executeQuery();
-    }, state.refreshInterval);
+    }, state?.refreshInterval);
 
     return () => clearInterval(interval);
-  }, [state.autoRefresh, state.refreshInterval, state.selectedDataSource, state.query]);
+  }, [state?.autoRefresh, state?.refreshInterval, state?.selectedDataSource, state?.query]);
 
   const selectedDataSourceInstance = useMemo(() => {
-    return availableDataSources.find(ds => ds.uid === state.selectedDataSource);
-  }, [availableDataSources, state.selectedDataSource]);
+    return availableDataSources?.find(ds => ds?.uid === state?.selectedDataSource);
+  }, [availableDataSources, state?.selectedDataSource]);
 
   const executeQuery = async () => {
-    if (!state.selectedDataSource || !state.query) return;
+    if (!state?.selectedDataSource || !state?.query) return;
 
     setState(prev => ({ ...prev, loading: true, error: null }));
     
@@ -111,13 +111,13 @@ export default function ExplorePage() {
         requestId: `explore_${Date.now()}`,
         timezone: 'browser',
         range: state.timeRange,
-        targets: [state.query],
+        targets: [state?.query],
         maxDataPoints: 1000,
         intervalMs: 15000,
         startTime: Date.now()
       };
 
-      const response = await dataSourceRegistry.executeQuery(state.selectedDataSource, request);
+      const response = await dataSourceRegistry?.executeQuery(state?.selectedDataSource, request);
       const executionTime = Date.now() - startTime;
 
       // Add to query history
@@ -133,12 +133,12 @@ export default function ExplorePage() {
         ...prev,
         data: response.data,
         loading: false,
-        queryHistory: [historyItem, ...prev.queryHistory.slice(0, 49)] // Keep last 50
+        queryHistory: [historyItem, ...prev?.queryHistory.slice(0, 49)] // Keep last 50
       }));
 
     } catch (error) {
       const executionTime = Date.now() - startTime;
-      const errorMessage = error instanceof Error ? error.message : 'Query failed';
+      const errorMessage = error instanceof Error ? error?.message : 'Query failed';
 
       // Add error to history
       const historyItem: HistoryItem = {
@@ -155,7 +155,7 @@ export default function ExplorePage() {
         data: [],
         loading: false,
         error: errorMessage,
-        queryHistory: [historyItem, ...prev.queryHistory.slice(0, 49)]
+        queryHistory: [historyItem, ...prev?.queryHistory.slice(0, 49)]
       }));
     }
   };
@@ -190,7 +190,7 @@ export default function ExplorePage() {
   };
 
   const toggleAutoRefresh = () => {
-    setState(prev => ({ ...prev, autoRefresh: !prev.autoRefresh }));
+    setState(prev => ({ ...prev, autoRefresh: !prev?.autoRefresh }));
   };
 
   const setRefreshInterval = (interval: number) => {
@@ -199,14 +199,14 @@ export default function ExplorePage() {
 
   const addQueryToDashboard = () => {
     // This would open a modal to select/create dashboard
-    console.log('Add to dashboard:', state.query);
+    console.log('Add to dashboard:', state?.query);
   };
 
   const exportData = () => {
-    if (state.data.length === 0) return;
+    if (state?.data.length === 0) return;
     
     // Convert DataFrame to CSV
-    const csv = convertDataFrameToCSV(state.data[0]);
+    const csv = convertDataFrameToCSV(state?.data[0]);
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -217,21 +217,21 @@ export default function ExplorePage() {
   };
 
   const convertDataFrameToCSV = (dataFrame: DataFrame): string => {
-    if (!dataFrame.fields.length) return '';
+    if (!dataFrame?.fields.length) return '';
     
-    const headers = dataFrame.fields.map(field => field.name).join(',');
+    const headers = (dataFrame?.fields || []).map(field => field?.name).join(',');
     const rows = [];
     
-    for (let i = 0; i < dataFrame.length; i++) {
-      const row = dataFrame.fields.map(field => {
-        const value = field.values[i];
+    for (let i = 0; i < dataFrame?.length; i++) {
+      const row = (dataFrame?.fields || []).map(field => {
+        const value = field?.values[i];
         if (value === null || value === undefined) return '';
-        if (typeof value === 'string' && value.includes(',')) {
-          return `"${value.replace(/"/g, '""')}"`;
+        if (typeof value === 'string' && value?.includes(',')) {
+          return `"${value?.replace(/"/g, '""')}"`;
         }
         return String(value);
       }).join(',');
-      rows.push(row);
+      rows?.push(row);
     }
     
     return [headers, ...rows].join('\n');
@@ -256,17 +256,17 @@ export default function ExplorePage() {
                 <button
                   onClick={toggleAutoRefresh}
                   className={`px-3 py-1 rounded text-sm ${
-                    state.autoRefresh 
+                    state?.autoRefresh 
                       ? 'bg-green-100 text-green-800 border border-green-200' 
                       : 'bg-gray-100 text-gray-600 border border-gray-200'
                   }`}
                 >
-                  Auto-refresh {state.autoRefresh ? 'ON' : 'OFF'}
+                  Auto-refresh {state?.autoRefresh ? 'ON' : 'OFF'}
                 </button>
                 
-                {state.autoRefresh && (
+                {state?.autoRefresh && (
                   <select
-                    value={state.refreshInterval}
+                    value={state?.refreshInterval}
                     onChange={(e) => setRefreshInterval(Number(e.target.value))}
                     className="text-sm border border-gray-300 rounded px-2 py-1"
                   >
@@ -282,7 +282,7 @@ export default function ExplorePage() {
               {/* Export button */}
               <button
                 onClick={exportData}
-                disabled={state.data.length === 0}
+                disabled={state?.data.length === 0}
                 className="px-4 py-2 bg-gray-600 text-white rounded text-sm hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Export CSV
@@ -291,7 +291,7 @@ export default function ExplorePage() {
               {/* Add to dashboard button */}
               <button
                 onClick={addQueryToDashboard}
-                disabled={state.data.length === 0}
+                disabled={state?.data.length === 0}
                 className="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Add to Dashboard
@@ -307,7 +307,7 @@ export default function ExplorePage() {
             <div className="p-4 border-b border-gray-200">
               <DataSourceSelector
                 dataSources={availableDataSources}
-                selectedDataSource={state.selectedDataSource}
+                selectedDataSource={state?.selectedDataSource}
                 onDataSourceChange={handleDataSourceChange}
               />
             </div>
@@ -315,7 +315,7 @@ export default function ExplorePage() {
             {/* Time Range */}
             <div className="p-4 border-b border-gray-200">
               <TimeRangeSelector
-                timeRange={state.timeRange}
+                timeRange={state?.timeRange}
                 onChange={handleTimeRangeChange}
               />
             </div>
@@ -325,10 +325,10 @@ export default function ExplorePage() {
               {selectedDataSourceInstance && (
                 <QueryEditor
                   datasource={selectedDataSourceInstance}
-                  query={state.query}
+                  query={state?.query}
                   onChange={handleQueryChange}
                   onRunQuery={executeQuery}
-                  loading={state.loading}
+                  loading={state?.loading}
                 />
               )}
             </div>
@@ -336,7 +336,7 @@ export default function ExplorePage() {
             {/* Query History */}
             <div className="border-t border-gray-200">
               <QueryHistory
-                history={state.queryHistory}
+                history={state?.queryHistory}
                 onSelectHistory={handleHistorySelect}
               />
             </div>
@@ -355,12 +355,12 @@ export default function ExplorePage() {
                         key={type}
                         onClick={() => handleVisualizationChange(type)}
                         className={`px-3 py-1 text-sm rounded ${
-                          state.visualizationType === type
+                          state?.visualizationType === type
                             ? 'bg-blue-100 text-blue-800 border border-blue-200'
                             : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                         }`}
                       >
-                        {type.charAt(0).toUpperCase() + type.slice(1)}
+                        {type?.charAt(0).toUpperCase() + type?.slice(1)}
                       </button>
                     ))}
                   </div>
@@ -368,10 +368,10 @@ export default function ExplorePage() {
 
                 {/* Metrics */}
                 <ExploreMetrics
-                  data={state.data}
-                  loading={state.loading}
-                  error={state.error}
-                  queryHistory={state.queryHistory}
+                  data={state?.data}
+                  loading={state?.loading}
+                  error={state?.error}
+                  queryHistory={state?.queryHistory}
                 />
               </div>
             </div>
@@ -379,11 +379,11 @@ export default function ExplorePage() {
             {/* Visualization Area */}
             <div className="flex-1 overflow-hidden">
               <ExploreVisualization
-                data={state.data}
-                loading={state.loading}
-                error={state.error}
-                visualizationType={state.visualizationType}
-                timeRange={state.timeRange}
+                data={state?.data}
+                loading={state?.loading}
+                error={state?.error}
+                visualizationType={state?.visualizationType}
+                timeRange={state?.timeRange}
                 onRunQuery={executeQuery}
               />
             </div>

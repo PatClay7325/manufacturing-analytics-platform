@@ -5,7 +5,7 @@
  * functionality for verifying compliance with requirements.
  */
 
-import { AbstractBaseService } from '../architecture/BaseService';
+import { AbstractBaseService } from './architecture/BaseService';
 import { ComplianceChecker } from './interfaces';
 import { ComplianceRegistry } from './interfaces';
 import {

@@ -4,7 +4,7 @@
  * This file defines the interfaces for the modular services architecture.
  */
 
-import { BaseService } from '../architecture/interfaces';
+import { BaseService } from './architecture/interfaces';
 import { ServiceCapability, ServiceConfig, ServiceDependencies, ServiceMetrics, ServiceResult } from './types';
 
 /**

@@ -5,10 +5,10 @@
  * data isolation between tenants according to the configured isolation model.
  */
 
-import { DatabaseAdapter } from '../interfaces/DatabaseAdapter';
-import { TenantContext } from '../../multi-tenancy/interfaces/TenantContext';
-import { Tenant } from '../../multi-tenancy/interfaces/TenantManager';
-import { QueryOptions, QueryResult } from '../types';
+import { DatabaseAdapter } from './interfaces/DatabaseAdapter';
+import { TenantContext } from './multi-tenancy/interfaces/TenantContext';
+import { Tenant } from './multi-tenancy/interfaces/TenantManager';
+import { QueryOptions, QueryResult } from './types';
 
 /**
  * Database connection configuration

@@ -19,7 +19,7 @@ export * from './equipment/EquipmentServiceImpl';
 
 // Export a function to initialize the service system
 import { ServiceFactory } from './ServiceFactory';
-import { DeploymentEnvironment, LogLevel } from '../architecture/types';
+import { DeploymentEnvironment, LogLevel } from './architecture/types';
 import { ServiceConfig } from './types';
 
 /**

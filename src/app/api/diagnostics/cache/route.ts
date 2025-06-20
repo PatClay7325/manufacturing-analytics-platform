@@ -35,12 +35,12 @@ export async function POST(request: NextRequest) {
       const quality = latestMetrics.find(m => m.name === 'quality');
       
       const testData = {
-        oee: oeeData?.value || 0,
+        oee: oeeData.value || 0,
         timestamp: new Date().toISOString(),
         components: { 
-          availability: availability?.value || 0, 
-          performance: performance?.value || 0, 
-          quality: quality?.value || 0 
+          availability: availability.value || 0, 
+          performance: performance.value || 0, 
+          quality: quality.value || 0 
         },
         fromLiveData: true,
       };

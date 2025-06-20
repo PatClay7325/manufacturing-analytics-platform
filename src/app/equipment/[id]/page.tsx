@@ -13,7 +13,7 @@ import equipmentService from '@/services/equipmentService';
 
 export default function EquipmentDetailPage() {
   const params = useParams();
-  const id = params.id as string;
+  const id = params?.id as string;
   
   const [equipment, setEquipment] = useState<Equipment | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -26,7 +26,7 @@ export default function EquipmentDetailPage() {
       setError(null);
       
       try {
-        const data = await equipmentService.getEquipmentById(id);
+        const data = await equipmentService?.getEquipmentById(id);
         setEquipment(data);
       } catch (err) {
         setError('Failed to load equipment details. Please try again.');
@@ -41,7 +41,7 @@ export default function EquipmentDetailPage() {
   // Action button for scheduling maintenance
   const actionButton = (
     <button className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-      <svg className="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg className="-ml-1 mr-2 h-5 w-5" xmlns="http://www?.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
       </svg>
       Schedule Maintenance
@@ -51,7 +51,7 @@ export default function EquipmentDetailPage() {
   // Breadcrumbs for navigation
   const breadcrumbs = [
     { label: 'Equipment', href: '/equipment' },
-    { label: equipment?.name || 'Loading...', href: `/equipment/${id}` }
+    { label: equipment.name || 'Loading...', href: `/equipment/${id}` }
   ];
 
   if (loading) {
@@ -82,7 +82,7 @@ export default function EquipmentDetailPage() {
           <div className="flex">
             <div className="flex-shrink-0">
               <svg className="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h?.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
             <div className="ml-3">
@@ -107,19 +107,19 @@ export default function EquipmentDetailPage() {
 
   return (
     <PageLayout 
-      title={equipment.name} 
+      title={equipment?.name} 
       showBreadcrumbs={true}
       breadcrumbs={updatedBreadcrumbs}
       actionButton={actionButton}
     >
       <div className="mb-6 flex items-center">
-        <EquipmentStatusBadge status={equipment.status} className="text-sm" />
+        <EquipmentStatusBadge status={equipment?.status} className="text-sm" />
         <span className="ml-4 text-gray-500">
-          {equipment.manufacturer} {equipment.model}
+          {equipment?.manufacturer} {equipment?.model}
         </span>
-        {equipment.serialNumber && (
+        {equipment?.serialNumber && (
           <span className="ml-4 text-gray-500">
-            S/N: {equipment.serialNumber}
+            S/N: {equipment?.serialNumber}
           </span>
         )}
       </div>
@@ -183,56 +183,56 @@ export default function EquipmentDetailPage() {
               <dl className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
                 <div>
                   <dt className="text-sm font-medium text-gray-500">Type</dt>
-                  <dd className="mt-1 text-sm text-gray-900">{equipment.type}</dd>
+                  <dd className="mt-1 text-sm text-gray-900">{equipment?.type}</dd>
                 </div>
-                {equipment.department && (
+                {equipment?.department && (
                   <div>
                     <dt className="text-sm font-medium text-gray-500">Department</dt>
-                    <dd className="mt-1 text-sm text-gray-900">{equipment.department}</dd>
+                    <dd className="mt-1 text-sm text-gray-900">{equipment?.department}</dd>
                   </div>
                 )}
-                {equipment.location && (
+                {equipment?.location && (
                   <div>
                     <dt className="text-sm font-medium text-gray-500">Location</dt>
-                    <dd className="mt-1 text-sm text-gray-900">{equipment.location}</dd>
+                    <dd className="mt-1 text-sm text-gray-900">{equipment?.location}</dd>
                   </div>
                 )}
-                {equipment.installationDate && (
+                {equipment?.installationDate && (
                   <div>
                     <dt className="text-sm font-medium text-gray-500">Installation Date</dt>
                     <dd className="mt-1 text-sm text-gray-900">
-                      {new Date(equipment.installationDate).toLocaleDateString()}
+                      {new Date(equipment?.installationDate).toLocaleDateString()}
                     </dd>
                   </div>
                 )}
-                {equipment.lastMaintenanceDate && (
+                {equipment?.lastMaintenanceDate && (
                   <div>
                     <dt className="text-sm font-medium text-gray-500">Last Maintenance</dt>
                     <dd className="mt-1 text-sm text-gray-900">
-                      {new Date(equipment.lastMaintenanceDate).toLocaleDateString()}
+                      {new Date(equipment?.lastMaintenanceDate).toLocaleDateString()}
                     </dd>
                   </div>
                 )}
-                {equipment.nextMaintenanceDate && (
+                {equipment?.nextMaintenanceDate && (
                   <div>
                     <dt className="text-sm font-medium text-gray-500">Next Maintenance</dt>
                     <dd className="mt-1 text-sm text-gray-900">
-                      {new Date(equipment.nextMaintenanceDate).toLocaleDateString()}
+                      {new Date(equipment?.nextMaintenanceDate).toLocaleDateString()}
                     </dd>
                   </div>
                 )}
               </dl>
             </div>
 
-            {equipment.metrics && equipment.metrics.length > 0 && (
-              <EquipmentMetrics metrics={equipment.metrics} />
+            {equipment?.metrics && equipment?.metrics.length > 0 && (
+              <EquipmentMetrics metrics={equipment?.metrics} />
             )}
 
-            {equipment.tags && equipment.tags.length > 0 && (
+            {equipment?.tags && equipment?.tags.length > 0 && (
               <div className="bg-white shadow rounded-lg p-6 md:col-span-2">
                 <h3 className="text-lg font-medium text-gray-900 mb-4">Tags</h3>
                 <div className="flex flex-wrap gap-2">
-                  {equipment.tags.map((tag) => (
+                  {equipment?.(tags || []).map((tag) => (
                     <span
                       key={tag}
                       className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
@@ -244,30 +244,30 @@ export default function EquipmentDetailPage() {
               </div>
             )}
 
-            {equipment.notes && (
+            {equipment?.notes && (
               <div className="bg-white shadow rounded-lg p-6 md:col-span-2">
                 <h3 className="text-lg font-medium text-gray-900 mb-4">Notes</h3>
-                <p className="text-gray-700">{equipment.notes}</p>
+                <p className="text-gray-700">{equipment?.notes}</p>
               </div>
             )}
           </div>
         )}
 
-        {activeTab === 'metrics' && equipment.metrics && (
+        {activeTab === 'metrics' && equipment?.metrics && (
           <div className="bg-white shadow rounded-lg">
-            <EquipmentMetrics metrics={equipment.metrics} />
+            <EquipmentMetrics metrics={equipment?.metrics} />
           </div>
         )}
 
-        {activeTab === 'specifications' && equipment.specifications && (
+        {activeTab === 'specifications' && equipment?.specifications && (
           <div className="bg-white shadow rounded-lg">
-            <EquipmentSpecifications specifications={equipment.specifications} />
+            <EquipmentSpecifications specifications={equipment?.specifications} />
           </div>
         )}
 
-        {activeTab === 'maintenance' && equipment.maintenanceHistory && (
+        {activeTab === 'maintenance' && equipment?.maintenanceHistory && (
           <div className="bg-white shadow rounded-lg">
-            <MaintenanceHistory maintenanceHistory={equipment.maintenanceHistory} />
+            <MaintenanceHistory maintenanceHistory={equipment?.maintenanceHistory} />
           </div>
         )}
       </div>

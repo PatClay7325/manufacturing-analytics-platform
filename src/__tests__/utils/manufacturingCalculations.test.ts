@@ -3,7 +3,7 @@ import {
   calculateOEE,
   calculateMTBF,
   calculateMTTR
-} from '../../utils/calculations';
+} from '@/utils/calculations';
 
 describe('Manufacturing Calculations', () => {
   describe('calculateOEE', () => {

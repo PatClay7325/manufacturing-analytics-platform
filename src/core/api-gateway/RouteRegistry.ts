@@ -5,7 +5,7 @@
  * functionality for managing API routes and versioning.
  */
 
-import { AbstractBaseService } from '../architecture/BaseService';
+import { AbstractBaseService } from './architecture/BaseService';
 import { RouteRegistry } from './interfaces';
 import {
   ApiRoute,

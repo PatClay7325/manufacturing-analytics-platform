@@ -6,7 +6,7 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
-import { AbstractBaseService } from '../architecture/BaseService';
+import { AbstractBaseService } from './architecture/BaseService';
 import { ComplianceAssessor, ComplianceRegistry, ComplianceChecker } from './interfaces';
 import {
   ComplianceAssessment,

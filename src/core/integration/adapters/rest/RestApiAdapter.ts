@@ -10,17 +10,17 @@ import http from 'http';
 import https from 'https';
 import { v4 as uuidv4 } from 'uuid';
 import { URLSearchParams } from 'url';
-import { AbstractIntegrationAdapter } from '../../abstract/AbstractIntegrationAdapter';
-import { DataTransformer } from '../../interfaces/DataTransformer';
-import { DataValidator } from '../../interfaces/DataValidator';
-import { LoggerService } from '../../../architecture/interfaces';
-import { BaseConfig } from '../../../architecture/types';
+import { AbstractIntegrationAdapter } from './abstract/AbstractIntegrationAdapter';
+import { DataTransformer } from './interfaces/DataTransformer';
+import { DataValidator } from './interfaces/DataValidator';
+import { LoggerService } from './architecture/interfaces';
+import { BaseConfig } from './architecture/types';
 import { 
   IntegrationConfig, 
   IntegrationDataPacket, 
   ConnectionStatus,
   IntegrationErrorType
-} from '../../types';
+} from './types';
 
 /**
  * REST API connection parameters
@@ -505,7 +505,7 @@ export class RestApiAdapter extends AbstractIntegrationAdapter {
     } catch (error) {
       this.setLastError(
         IntegrationErrorType.CONNECTION,
-        `Failed to disconnect from REST API: ${error.message}`,
+        `Failed to disconnect from message}`,
         error
       );
       throw error;

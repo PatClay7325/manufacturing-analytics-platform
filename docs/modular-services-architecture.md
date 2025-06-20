@@ -67,7 +67,7 @@ Manages equipment entities and their lifecycle:
 
 ### 2. Metrics Service
 
-Handles performance metrics and analytics:
+Handles performance metrics and Analytics:
 - OEE calculation and tracking
 - Performance metrics collection
 - Trend analysis
@@ -109,7 +109,7 @@ Services expose capabilities that can be enabled or disabled based on configurat
 
 - Metrics Service
   - Basic metrics
-  - Advanced analytics
+  - Advanced Analytics
   - Real-time monitoring
   - Trend prediction
 

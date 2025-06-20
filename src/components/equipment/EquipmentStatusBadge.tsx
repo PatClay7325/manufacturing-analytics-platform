@@ -2,7 +2,7 @@ import React from 'react';
 import { EquipmentStatus } from '@/models/equipment';
 
 interface EquipmentStatusBadgeProps {
-  status: EquipmentStatus;
+  status?: EquipmentStatus;
   showLabel?: boolean;
   className?: string;
 }

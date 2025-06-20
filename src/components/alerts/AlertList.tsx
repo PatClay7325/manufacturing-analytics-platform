@@ -76,7 +76,7 @@ export default function AlertList({
     setError(null);
     
     try {
-      const data = await alertService.filterAlerts(filter);
+      const data = await alertService?.filterAlerts(filter);
       setAlerts(data);
     } catch (err) {
       setError('Failed to load alerts. Please try again.');
@@ -91,27 +91,27 @@ export default function AlertList({
     let filtered = [...initialAlerts];
     
     // Apply severity filter
-    if (filter.severity && filter.severity.length > 0) {
-      filtered = filtered.filter(a => filter.severity?.includes(a.severity));
+    if (filter?.severity && filter?.severity.length > 0) {
+      filtered = filtered?.filter(a => filter?.severity?.includes(a?.severity));
     }
     
     // Apply status filter
-    if (filter.status && filter.status.length > 0) {
-      filtered = filtered.filter(a => filter.status?.includes(a.status));
+    if (filter?.status && filter?.status.length > 0) {
+      filtered = filtered?.filter(a => filter?.status?.includes(a?.status));
     }
     
     // Apply source filter
-    if (filter.source && filter.source.length > 0) {
-      filtered = filtered.filter(a => filter.source?.includes(a.source));
+    if (filter?.source && filter?.source.length > 0) {
+      filtered = filtered?.filter(a => filter?.source?.includes(a?.source));
     }
     
     // Apply search filter
-    if (filter.search) {
-      const searchLower = filter.search.toLowerCase();
-      filtered = filtered.filter(a => 
-        a.title.toLowerCase().includes(searchLower) ||
-        ('description' in a && a.description.toLowerCase().includes(searchLower)) ||
-        a.sourceName?.toLowerCase().includes(searchLower)
+    if (filter?.search) {
+      const searchLower = filter?.search.toLowerCase();
+      filtered = filtered?.filter(a => 
+        a?.title.toLowerCase().includes(searchLower) ||
+        ('description' in a && a?.description.toLowerCase().includes(searchLower)) ||
+        a?.sourceName?.toLowerCase().includes(searchLower)
       );
     }
     
@@ -120,9 +120,9 @@ export default function AlertList({
   
   const handleSeverityChange = (severity: AlertSeverity) => {
     setFilter(prev => {
-      const newSeverity = prev.severity?.includes(severity)
-        ? prev.severity.filter(s => s !== severity)
-        : [...(prev.severity || []), severity];
+      const newSeverity = prev?.severity?.includes(severity)
+        ? prev?.severity.filter(s => s !== severity)
+        : [...(prev?.severity || []), severity];
       
       return { ...prev, severity: newSeverity };
     });
@@ -130,9 +130,9 @@ export default function AlertList({
   
   const handleStatusChange = (status: AlertStatus) => {
     setFilter(prev => {
-      const newStatus = prev.status?.includes(status)
-        ? prev.status.filter(s => s !== status)
-        : [...(prev.status || []), status];
+      const newStatus = prev?.status?.includes(status)
+        ? prev?.status.filter(s => s !== status)
+        : [...(prev?.status || []), status];
       
       return { ...prev, status: newStatus };
     });
@@ -140,9 +140,9 @@ export default function AlertList({
   
   const handleSourceChange = (source: AlertSource) => {
     setFilter(prev => {
-      const newSource = prev.source?.includes(source)
-        ? prev.source.filter(s => s !== source)
-        : [...(prev.source || []), source];
+      const newSource = prev?.source?.includes(source)
+        ? prev?.source.filter(s => s !== source)
+        : [...(prev?.source || []), source];
       
       return { ...prev, source: newSource };
     });
@@ -158,15 +158,15 @@ export default function AlertList({
   
   const hasActiveFilters = () => {
     return (
-      (filter.severity && filter.severity.length > 0) ||
-      (filter.status && filter.status.length > 0) ||
-      (filter.source && filter.source.length > 0) ||
-      (filter.search && filter.search.length > 0)
+      (filter?.severity && filter?.severity.length > 0) ||
+      (filter?.status && filter?.status.length > 0) ||
+      (filter?.source && filter?.source.length > 0) ||
+      (filter?.search && filter?.search.length > 0)
     );
   };
   
   return (
-    <div data-testid="alert-list">
+    <div data-testid="alerts-list">
       {(showFilters || showSearch) && (
         <div className="mb-6 bg-white rounded-lg shadow p-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
@@ -190,37 +190,63 @@ export default function AlertList({
                 <input
                   type="text"
                   id="search"
-                  value={filter.search || ''}
+                  value={filter?.search || ''}
                   onChange={handleSearchChange}
                   placeholder="Search alerts..."
                   className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  data-testid="alert-search"
+                  data-testid="alert-search-input"
                 />
               </div>
             )}
             
             {showFilters && (
               <>
+                {/* Equipment Filter */}
+                <div className="mb-4">
+                  <button
+                    className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                    data-testid="equipment-filter-button"
+                  >
+                    Equipment Filter
+                  </button>
+                  <button
+                    className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                    data-testid="date-filter-button"
+                  >
+                    Date Range
+                  </button>
+                  <select
+                    className="ml-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    data-testid="sort-alerts-select"
+                  >
+                    <option value="timestamp-desc">Newest First</option>
+                    <option value="timestamp-asc">Oldest First</option>
+                    <option value="severity-desc">Severity (High to Low)</option>
+                    <option value="equipment">Equipment Name</option>
+                  </select>
+                </div>
+                
                 <div>
                   <h4 className="block text-sm font-medium text-gray-700 mb-1">Severity</h4>
                   <div className="flex flex-wrap gap-2" data-testid="severity-filter">
-                    {severityOptions.map(option => (
+                    {severityOptions?.map(option => (
                       <button
-                        key={option.value}
-                        onClick={() => handleSeverityChange(option.value)}
+                        key={option?.value}
+                        onClick={() => handleSeverityChange(option?.value)}
                         className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium transition
-                          ${filter.severity?.includes(option.value)
+                          ${filter?.severity?.includes(option?.value)
                             ? 'bg-blue-100 text-blue-800 border border-blue-300'
                             : 'bg-gray-100 text-gray-800 border border-gray-200 hover:bg-gray-200'
                           }`}
+                        data-testid={`filter-severity-${option?.value}`}
                       >
                         <AlertBadge 
                           type="severity" 
-                          value={option.value} 
+                          value={option?.value} 
                           showLabel={false} 
                           className="mr-1.5" 
                         />
-                        {option.label}
+                        {option?.label}
                       </button>
                     ))}
                   </div>
@@ -229,23 +255,24 @@ export default function AlertList({
                 <div>
                   <h4 className="block text-sm font-medium text-gray-700 mb-1">Status</h4>
                   <div className="flex flex-wrap gap-2" data-testid="status-filter">
-                    {statusOptions.map(option => (
+                    {statusOptions?.map(option => (
                       <button
-                        key={option.value}
-                        onClick={() => handleStatusChange(option.value)}
+                        key={option?.value}
+                        onClick={() => handleStatusChange(option?.value)}
                         className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium transition
-                          ${filter.status?.includes(option.value)
+                          ${filter?.status?.includes(option?.value)
                             ? 'bg-blue-100 text-blue-800 border border-blue-300'
                             : 'bg-gray-100 text-gray-800 border border-gray-200 hover:bg-gray-200'
                           }`}
+                        data-testid={`filter-status-${option?.value}`}
                       >
                         <AlertBadge 
                           type="status" 
-                          value={option.value} 
+                          value={option?.value} 
                           showLabel={false} 
                           className="mr-1.5" 
                         />
-                        {option.label}
+                        {option?.label}
                       </button>
                     ))}
                   </div>
@@ -254,17 +281,17 @@ export default function AlertList({
                 <div>
                   <h4 className="block text-sm font-medium text-gray-700 mb-1">Source</h4>
                   <div className="flex flex-wrap gap-2" data-testid="source-filter">
-                    {sourceOptions.map(option => (
+                    {sourceOptions?.map(option => (
                       <button
-                        key={option.value}
-                        onClick={() => handleSourceChange(option.value)}
+                        key={option?.value}
+                        onClick={() => handleSourceChange(option?.value)}
                         className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium transition
-                          ${filter.source?.includes(option.value)
+                          ${filter?.source?.includes(option?.value)
                             ? 'bg-blue-100 text-blue-800 border border-blue-300'
                             : 'bg-gray-100 text-gray-800 border border-gray-200 hover:bg-gray-200'
                           }`}
                       >
-                        {option.label}
+                        {option?.label}
                       </button>
                     ))}
                   </div>
@@ -309,9 +336,9 @@ export default function AlertList({
         </div>
       ) : (
         <div className={`grid grid-cols-1 ${compact ? 'md:grid-cols-2 lg:grid-cols-3' : 'md:grid-cols-2'} gap-6`}>
-          {alerts.map(alert => (
+          {alerts?.map(alert => (
             <AlertCard 
-              key={alert.id} 
+              key={alert?.id} 
               alert={alert} 
               compact={compact} 
             />

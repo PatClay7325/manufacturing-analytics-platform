@@ -4,7 +4,7 @@
  * This file defines the interfaces for the API gateway.
  */
 
-import { ModularService } from '../services/interfaces';
+import { ModularService } from './services/interfaces';
 import {
   ApiVersion,
   ApiRoute,

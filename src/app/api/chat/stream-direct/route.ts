@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
         
         try {
           // Add manufacturing context to messages
-          const SYSTEM_PROMPT = `You are an AI assistant for a manufacturing analytics platform. You help users understand and analyze manufacturing metrics including OEE (Overall Equipment Effectiveness), equipment performance, quality metrics, and production data.
+          const SYSTEM_PROMPT = `You are an AI assistant for a manufacturing Analytics platform. You help users understand and analyze manufacturing metrics including OEE (Overall Equipment Effectiveness), equipment performance, quality metrics, and production data.
 
 When asked about specific metrics:
 - For OEE: Explain it equals Availability × Performance × Quality, with world-class being 85%+

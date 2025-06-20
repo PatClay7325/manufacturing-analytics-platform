@@ -120,7 +120,7 @@ export default function PrivacyPolicyPage() {
             <h3 className="font-semibold mb-2">Contact Information</h3>
             <p className="text-gray-700">
               Lorem ipsum dolor sit amet:<br />
-              Email: privacy@adaptivefactory.ai<br />
+              Email: privacy@adaptivefactory?.ai<br />
               Phone: +1 (555) 123-4567<br />
               Address: 123 Lorem Ipsum St, Dolor Sit, AM 12345
             </p>

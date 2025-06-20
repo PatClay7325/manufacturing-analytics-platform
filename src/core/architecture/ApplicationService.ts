@@ -10,7 +10,7 @@ import { BaseService } from './interfaces';
 import { ServiceRegistry } from './ServiceRegistry';
 import { ConfigurationService } from './ConfigService';
 import { BaseConfig, ServiceStatus } from './types';
-import { IntegrationService } from '../integration/service/IntegrationService';
+import { IntegrationService } from './integration/service/IntegrationService';
 
 /**
  * Application service for managing the application lifecycle

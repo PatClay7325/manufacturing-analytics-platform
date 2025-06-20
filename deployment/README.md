@@ -78,7 +78,7 @@ To deploy for a specific tenant, use the `--tenant` flag with the deployment scr
 
 Monitoring and logging are set up automatically during deployment:
 
-- Prometheus and Grafana for metrics and visualization
+- Prometheus and Analytics for metrics and visualization
 - ELK stack for centralized logging
 - Cloud provider-specific monitoring integration
 

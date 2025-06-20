@@ -101,8 +101,10 @@ Saving conversation: {
   aiResponse: 'The current temperature of the Robotic Welding Cell 1 is 72.208580001025°C (measured at 6/18/2025, 9...'
 }
  POST /api/chat 200 in 34715ms
-prisma:query SELECT "public"."Enterprise"."id", "public"."Enterprise"."name", "public"."Enterprise"."code", "public"."Enterprise"."createdAt", "public"."Enterprise"."updatedAt" FROM "public"."Enterprise" WHERE 1=1 LIMIT $1 OFFSET $2
-prisma:query SELECT "public"."EnterpriseKPISummary"."id", "public"."EnterpriseKPISummary"."enterpriseId", "public"."EnterpriseKPISummary"."oee", "public"."EnterpriseKPISummary"."availability", "public"."EnterpriseKPISummary"."performance", "public"."EnterpriseKPISummary"."quality", "public"."EnterpriseKPISummary"."mtbf", "public"."EnterpriseKPISummary"."mttr", "public"."EnterpriseKPISummary"."productionCount", "public"."EnterpriseKPISummary"."scrapRate", "public"."EnterpriseKPISummary"."energyConsumption", "public"."EnterpriseKPISummary"."periodStart", "public"."EnterpriseKPISummary"."periodEnd", "public"."EnterpriseKPISummary"."createdAt", "public"."EnterpriseKPISummary"."updatedAt" FROM "public"."EnterpriseKPISummary" WHERE "public"."EnterpriseKPISummary"."enterpriseId" IN ($1) OFFSET $2
+prisma:query SELECT "public"."Enterprise"."id", "public"."Enterprise"."name", "public"."Enterprise"."code", "public"."Enterprise"."createdAt", "public"."Enterprise"."updatedAt" FROM "pu ✓ Compiled in 5.9s (475 modules)
+   Reload env: .env
+ ✓ Compiled in 6.7s (533 modules)
+ummary"."id", "public"."EnterpriseKPISummary"."enterpriseId", "public"."EnterpriseKPISummary"."oee", "public"."EnterpriseKPISummary"."availability", "public"."EnterpriseKPISummary"."performance", "public"."EnterpriseKPISummary"."quality", "public"."EnterpriseKPISummary"."mtbf", "public"."EnterpriseKPISummary"."mttr", "public"."EnterpriseKPISummary"."productionCount", "public"."EnterpriseKPISummary"."scrapRate", "public"."EnterpriseKPISummary"."energyConsumption", "public"."EnterpriseKPISummary"."periodStart", "public"."EnterpriseKPISummary"."periodEnd", "public"."EnterpriseKPISummary"."createdAt", "public"."EnterpriseKPISummary"."updatedAt" FROM "public"."EnterpriseKPISummary" WHERE "public"."EnterpriseKPISummary"."enterpriseId" IN ($1) OFFSET $2
 prisma:query SELECT "public"."Site"."id", "public"."Site"."enterpriseId", "public"."Site"."name", "public"."Site"."code", "public"."Site"."location", "public"."Site"."createdAt", "public"."Site"."updatedAt" FROM "public"."Site" WHERE "public"."Site"."enterpriseId" IN ($1) OFFSET $2
 prisma:query SELECT "public"."SiteKPISummary"."id", "public"."SiteKPISummary"."siteId", "public"."SiteKPISummary"."oee", "public"."SiteKPISummary"."availability", "public"."SiteKPISummary"."performance", "public"."SiteKPISummary"."quality", "public"."SiteKPISummary"."mtbf", "public"."SiteKPISummary"."mttr", "public"."SiteKPISummary"."productionCount", "public"."SiteKPISummary"."scrapRate", "public"."SiteKPISummary"."energyConsumption", "public"."SiteKPISummary"."periodStart", "public"."SiteKPISummary"."periodEnd", "public"."SiteKPISummary"."createdAt", "public"."SiteKPISummary"."updatedAt" FROM "public"."SiteKPISummary" WHERE "public"."SiteKPISummary"."siteId" IN ($1) OFFSET $2
 prisma:query SELECT "public"."WorkUnit"."id", "public"."WorkUnit"."workCenterId", "public"."WorkUnit"."name", "public"."WorkUnit"."code", "public"."WorkUnit"."equipmentType", "public"."WorkUnit"."model", "public"."WorkUnit"."serialNumber", "public"."WorkUnit"."manufacturerCode", "public"."WorkUnit"."installationDate", "public"."WorkUnit"."status", "public"."WorkUnit"."location", "public"."WorkUnit"."description", "public"."WorkUnit"."lastMaintenanceAt", "public"."WorkUnit"."createdAt", "public"."WorkUnit"."updatedAt" FROM "public"."WorkUnit" WHERE 1=1 OFFSET $1
@@ -160,7 +162,8 @@ Saving conversation: {
   aiResponse: "Hello! I'm here to help you understand your manufacturing operations through natural conversation. I..."
 }
  POST /api/chat 200 in 73591ms
-nt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
+[?25h
+urce/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
 <w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
 <w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack-config.js
 <w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack-config.js
@@ -428,3 +431,406 @@ nt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpac
 <w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
 <w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
 <w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+ ✓ Compiled in 4.2s (663 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api'
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/test-db/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/test-db/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/test-db/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js)
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/metrics/ingest/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/metrics/ingest/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/metrics/ingest/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js)
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+   Reload env: .env
+ ✓ Compiled in 9.3s (769 modules)
+ ✓ Compiled in 290ms (697 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db'
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/test-db/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/test-db/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/test-db/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js)
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/metrics/ingest/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/metrics/ingest/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/metrics/ingest/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js)
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/diagnostics/db-queries/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/diagnostics/db-queries/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/diagnostics/db-queries/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js)
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db'
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/test-db/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/test-db/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/test-db/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js)
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/parse-module.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/parse-module.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-flight-client-module-loader.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-flight-client-module-loader.js
+<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-flight-client-module-loader.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/diagnostics/db-queries/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/diagnostics/db-queries/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/diagnostics/db-queries/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js)
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/parse-module.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/parse-module.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-flight-client-module-loader.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-flight-client-module-loader.js
+<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-flight-client-module-loader.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/metrics/ingest/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/metrics/ingest/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/metrics/ingest/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js)
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/parse-module.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/parse-module.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-flight-client-module-loader.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-flight-client-module-loader.js
+<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-flight-client-module-loader.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/diagnostics/db-connection/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-connection/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/diagnostics/db-connection/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/diagnostics/db-connection/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-connection/route.js)
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/parse-module.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/parse-module.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-flight-client-module-loader.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-flight-client-module-loader.js
+<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-flight-client-module-loader.js
+ ✓ Compiled in 2s (697 modules)
+ ✓ Compiled in 498ms (697 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db'
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db'
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/test-db/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/test-db/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/test-db/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js)
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/diagnostics/db-queries/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/diagnostics/db-queries/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/diagnostics/db-queries/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js)
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/metrics/ingest/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/metrics/ingest/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/metrics/ingest/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js)
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/test-db/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/test-db/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/test-db/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js)
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/diagnostics/db-connection/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-connection/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/diagnostics/db-connection/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/diagnostics/db-connection/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-connection/route.js)
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/handle-externals.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/diagnostics/db-queries/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/diagnostics/db-queries/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/diagnostics/db-queries/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js)
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/metrics/ingest/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/metrics/ingest/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/metrics/ingest/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js)
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/diagnostics/db-connection/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-connection/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/diagnostics/db-connection/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/diagnostics/db-connection/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-connection/route.js)
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 2.4s (699 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api'
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/test-db/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/test-db/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/test-db/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js)
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/diagnostics/db-connection/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-connection/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/diagnostics/db-connection/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/diagnostics/db-connection/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-connection/route.js)
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/metrics/ingest/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/metrics/ingest/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/metrics/ingest/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js)
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/diagnostics/db-queries/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/diagnostics/db-queries/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/diagnostics/db-queries/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js)
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/bundle5.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/compiled/webpack/webpack.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/plugins/define-env-plugin.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/swc/index.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api'
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/test-db/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/test-db/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/test-db/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/test-db/route.js)
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/metrics/ingest/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/metrics/ingest/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/metrics/ingest/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/metrics/ingest/route.js)
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/diagnostics/db-queries/route' in /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/diagnostics/db-queries/route' in '/mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/diagnostics/db-queries/route (expected /mnt/d/Source/manufacturing-analytics-platform/.next/server/app/api/diagnostics/db-queries/route.js)
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/require.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at resolve commonjs /mnt/d/Source/manufacturing-analytics-platform/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js

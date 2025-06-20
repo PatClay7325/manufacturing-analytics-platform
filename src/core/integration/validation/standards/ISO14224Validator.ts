@@ -3,8 +3,8 @@ import {
   ValidationOptions, 
   ValidationResult, 
   ValidationWarning 
-} from '../BaseValidator';
-import { Schema, SchemaValidator, SchemaValidationOptions } from '../SchemaValidator';
+} from './BaseValidator';
+import { Schema, SchemaValidator, SchemaValidationOptions } from './SchemaValidator';
 
 /**
  * ISO14224 data categories

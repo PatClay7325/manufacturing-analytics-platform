@@ -5,7 +5,7 @@
  * functionality for processing API requests.
  */
 
-import { AbstractBaseService } from '../architecture/BaseService';
+import { AbstractBaseService } from './architecture/BaseService';
 import { RequestHandler } from './interfaces';
 import {
   ApiRequest,

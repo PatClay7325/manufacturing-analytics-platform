@@ -2,9 +2,9 @@
  * TenantService interface defines the contract for tenant-related operations
  * that can be performed by the application.
  */
-import { Tenant, TenantConfiguration } from '../interfaces/TenantManager';
-import { TenantIdentificationContext, TenantResolutionResult } from '../interfaces/TenantResolver';
-import { TenantContextData } from '../interfaces/TenantContext';
+import { Tenant, TenantConfiguration } from './interfaces/TenantManager';
+import { TenantIdentificationContext, TenantResolutionResult } from './interfaces/TenantResolver';
+import { TenantContextData } from './interfaces/TenantContext';
 
 export interface TenantRegistrationData {
   name: string;

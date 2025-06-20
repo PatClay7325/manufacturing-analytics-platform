@@ -215,7 +215,7 @@ This document outlines the detailed implementation plan for the Manufacturing In
 |------|-------|-----------------|
 | 1    | Foundation | Database schema, tRPC setup, Core architecture |
 | 2    | Core Features | Equipment management, Performance metrics, Alerts system |
-| 3    | Intelligence | AI integration, Agents, Advanced analytics |
+| 3    | Intelligence | AI integration, Agents, Advanced Analytics |
 | 4    | Visualization | Highcharts dashboards, Enhanced chat, Mobile optimization |
 | 5    | Quality & Deployment | Testing, Documentation, Azure deployment |
 

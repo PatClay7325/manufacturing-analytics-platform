@@ -15,7 +15,7 @@ describe('Basic test suite', () => {
     expect('hello ' + 'world').toBe('hello world');
     expect('Manufacturing'.toLowerCase()).toBe('manufacturing');
     expect('  trimmed  '.trim()).toBe('trimmed');
-    expect('analytics'.toUpperCase()).toBe('ANALYTICS');
+    expect('Analytics'.toUpperCase()).toBe('Analytics');
   });
 
   it('should handle array operations', () => {

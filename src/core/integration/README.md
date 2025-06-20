@@ -50,7 +50,7 @@ await integrationManager.registerIntegrationConfig({
   connectionParams: {
     host: 'mqtt.factory.example.com',
     port: 1883,
-    clientId: 'manufacturing-analytics-platform',
+    clientId: 'manufacturing-Analytics-platform',
     keepalive: 60
   },
   authParams: {
@@ -69,7 +69,7 @@ await integrationManager.connect('mqtt-factory-floor');
 // Create a data packet
 const dataPacket: IntegrationDataPacket<unknown> = {
   id: uuidv4(),
-  source: 'analytics-platform',
+  source: 'Analytics-platform',
   timestamp: new Date(),
   payload: {
     command: 'start',

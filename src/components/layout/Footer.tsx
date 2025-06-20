@@ -11,7 +11,7 @@ export default function Footer() {
           <div className="col-span-1 md:col-span-2">
             <h3 className="text-lg font-semibold mb-4">Adaptive Factory AI Solutions, Inc.</h3>
             <p className="text-gray-300 mb-4">
-              Advanced analytics and AI-driven insights for modern manufacturing operations.
+              Advanced Analytics and AI-driven insights for modern manufacturing operations.
             </p>
             <p className="text-gray-400 text-sm">
               © {currentYear} Adaptive Factory AI Solutions, Inc. All rights reserved.

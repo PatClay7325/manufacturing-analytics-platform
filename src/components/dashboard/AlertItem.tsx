@@ -3,10 +3,10 @@
 import { memo } from 'react';
 
 interface AlertItemProps {
-  id: number | string;
-  severity: 'high' | 'medium' | 'low';
-  message: string;
-  time: string;
+  id?: number | string;
+  severity?: 'high' | 'medium' | 'low';
+  message?: string;
+  time?: string;
 }
 
 // Memoized Alert Item component to prevent unnecessary re-renders

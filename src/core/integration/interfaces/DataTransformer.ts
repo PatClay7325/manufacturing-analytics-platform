@@ -6,7 +6,7 @@
  * and the internal standardized format used by the Manufacturing Analytics Platform.
  */
 
-import { IntegrationDataPacket, IntegrationErrorType } from '../types';
+import { IntegrationDataPacket, IntegrationErrorType } from './types';
 
 /**
  * Transformation result interface

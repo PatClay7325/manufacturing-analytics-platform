@@ -4,7 +4,7 @@ import alertService from '@/services/alertService';
 import { formatDistanceToNow } from 'date-fns';
 
 interface AlertTimelineProps {
-  alertId: string;
+  alertId?: string;
   className?: string;
 }
 
@@ -19,7 +19,7 @@ export default function AlertTimeline({ alertId, className = '' }: AlertTimeline
       setError(null);
       
       try {
-        const data = await alertService.getAlertResponses(alertId);
+        const data = await alertService?.getAlertResponses(alertId);
         setResponses(data);
       } catch (err) {
         setError('Failed to load alert timeline.');
@@ -46,7 +46,7 @@ export default function AlertTimeline({ alertId, className = '' }: AlertTimeline
       case 'acknowledge':
         return (
           <div className="h-8 w-8 rounded-full bg-yellow-100 flex items-center justify-center ring-8 ring-white">
-            <svg className="h-5 w-5 text-yellow-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="h-5 w-5 text-yellow-600" xmlns="http://www?.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
@@ -54,7 +54,7 @@ export default function AlertTimeline({ alertId, className = '' }: AlertTimeline
       case 'resolve':
         return (
           <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center ring-8 ring-white">
-            <svg className="h-5 w-5 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="h-5 w-5 text-green-600" xmlns="http://www?.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
@@ -62,7 +62,7 @@ export default function AlertTimeline({ alertId, className = '' }: AlertTimeline
       case 'assign':
         return (
           <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center ring-8 ring-white">
-            <svg className="h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="h-5 w-5 text-blue-600" xmlns="http://www?.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11" />
             </svg>
           </div>
@@ -70,7 +70,7 @@ export default function AlertTimeline({ alertId, className = '' }: AlertTimeline
       case 'escalate':
         return (
           <div className="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center ring-8 ring-white">
-            <svg className="h-5 w-5 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="h-5 w-5 text-red-600" xmlns="http://www?.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
@@ -79,8 +79,8 @@ export default function AlertTimeline({ alertId, className = '' }: AlertTimeline
       default:
         return (
           <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center ring-8 ring-white">
-            <svg className="h-5 w-5 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            <svg className="h-5 w-5 text-gray-600" xmlns="http://www?.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h?.01M12 12h?.01M16 12h?.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
           </div>
         );
@@ -132,7 +132,7 @@ export default function AlertTimeline({ alertId, className = '' }: AlertTimeline
 
   // Sort responses by timestamp (newest first)
   const sortedResponses = [...responses].sort((a, b) => 
-    new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    new Date(b?.timestamp).getTime() - new Date(a?.timestamp).getTime()
   );
 
   return (
@@ -143,42 +143,42 @@ export default function AlertTimeline({ alertId, className = '' }: AlertTimeline
       <div className="p-6">
         <div className="flow-root">
           <ul className="-mb-8">
-            {sortedResponses.map((response, responseIdx) => (
-              <li key={response.id}>
+            {sortedResponses?.map((response, responseIdx) => (
+              <li key={response?.id}>
                 <div className="relative pb-8">
-                  {responseIdx !== sortedResponses.length - 1 ? (
+                  {responseIdx !== sortedResponses?.length - 1 ? (
                     <span className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
                   ) : null}
                   <div className="relative flex space-x-3">
                     <div>
-                      {getResponseIcon(response.type)}
+                      {getResponseIcon(response?.type)}
                     </div>
                     <div className="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
                       <div>
                         <p className="text-sm text-gray-900">
-                          {response.type === 'acknowledge' && 'Acknowledged by '}
-                          {response.type === 'resolve' && 'Resolved by '}
-                          {response.type === 'assign' && 'Assigned to '}
-                          {response.type === 'escalate' && 'Escalated by '}
-                          {response.type === 'comment' && 'Comment from '}
-                          <span className="font-medium">{response.userName}</span>
+                          {response?.type === 'acknowledge' && 'Acknowledged by '}
+                          {response?.type === 'resolve' && 'Resolved by '}
+                          {response?.type === 'assign' && 'Assigned to '}
+                          {response?.type === 'escalate' && 'Escalated by '}
+                          {response?.type === 'comment' && 'Comment from '}
+                          <span className="font-medium">{response?.userName}</span>
                           
-                          {response.type === 'assign' && (
-                            <span> to <span className="font-medium">{response.assignedTo}</span></span>
+                          {response?.type === 'assign' && (
+                            <span> to <span className="font-medium">{response?.assignedTo}</span></span>
                           )}
                           
-                          {response.type === 'escalate' && (
-                            <span> to <span className="font-medium">{response.escalatedTo}</span></span>
+                          {response?.type === 'escalate' && (
+                            <span> to <span className="font-medium">{response?.escalatedTo}</span></span>
                           )}
                         </p>
-                        {response.comment && (
+                        {response?.comment && (
                           <p className="mt-1 text-sm text-gray-600">
-                            {response.comment}
+                            {response?.comment}
                           </p>
                         )}
                       </div>
                       <div className="text-right text-sm whitespace-nowrap text-gray-500">
-                        <time dateTime={response.timestamp}>{getRelativeTime(response.timestamp)}</time>
+                        <time dateTime={response?.timestamp}>{getRelativeTime(response?.timestamp)}</time>
                       </div>
                     </div>
                   </div>

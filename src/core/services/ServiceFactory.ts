@@ -4,11 +4,11 @@
  * This class provides a central point for accessing all services.
  */
 
-import { AbstractBaseService } from '../architecture/BaseService';
+import { AbstractBaseService } from './architecture/BaseService';
 import { ModularService } from './interfaces';
 import { ServiceConfig } from './types';
 import { EquipmentServiceImpl } from './equipment/EquipmentServiceImpl';
-import { ServiceRegistry } from '../architecture/ServiceRegistry';
+import { ServiceRegistry } from './architecture/ServiceRegistry';
 
 /**
  * Service factory for creating and accessing services

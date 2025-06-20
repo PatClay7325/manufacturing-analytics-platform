@@ -5,12 +5,12 @@
  * functionality for API authentication.
  */
 
-import { AbstractBaseService } from '../architecture/BaseService';
+import { AbstractBaseService } from './architecture/BaseService';
 import { AuthManager } from './interfaces';
 import { ApiRequest } from './types';
 import { v4 as uuidv4 } from 'uuid';
 
-import { TenantContext } from '../multi-tenancy/interfaces/TenantContext';
+import { TenantContext } from './multi-tenancy/interfaces/TenantContext';
 
 // For JWT handling, we would typically use a library like jsonwebtoken
 // For simplicity in this implementation, we'll use a placeholder

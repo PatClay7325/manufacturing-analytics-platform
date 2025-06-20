@@ -126,7 +126,7 @@ export class ConfigurationService extends AbstractBaseService implements ConfigS
   
   /**
    * Load configuration from source
-   * @param source Source to load from (file, environment, etc.)
+   * @param source Source to load from )
    */
   public async load(source: string): Promise<void> {
     try {

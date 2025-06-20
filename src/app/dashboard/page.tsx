@@ -32,7 +32,7 @@ export default function Dashboard() {
     // Update the current time
     const updateTime = () => {
       const now = new Date();
-      setCurrentTime(now.toLocaleString());
+      setCurrentTime(now?.toLocaleString());
     };
     
     updateTime();
@@ -45,13 +45,13 @@ export default function Dashboard() {
   const actionButton = (
     <div className="flex space-x-4">
       <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        <svg xmlns="http://www?.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h?.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
         </svg>
         Refresh Data
       </button>
       <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg xmlns="http://www?.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
         </svg>
         Add Widget
@@ -68,17 +68,17 @@ export default function Dashboard() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {mockKpis.map((kpi) => (
-          <div key={kpi.id} className="bg-white rounded-lg shadow p-6">
+        {mockKpis?.map((kpi) => (
+          <div key={kpi?.id} className="bg-white rounded-lg shadow p-6">
             <div className="flex justify-between items-center">
-              <h3 className="text-gray-500 text-sm font-medium">{kpi.name}</h3>
+              <h3 className="text-gray-500 text-sm font-medium">{kpi?.name}</h3>
               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                kpi.trend === 'up' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                kpi?.trend === 'up' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
               }`}>
-                {kpi.trend === 'up' ? '↑' : '↓'} {kpi.change}
+                {kpi?.trend === 'up' ? '↑' : '↓'} {kpi?.change}
               </span>
             </div>
-            <div className="mt-2 text-3xl font-semibold text-gray-900">{kpi.value}</div>
+            <div className="mt-2 text-3xl font-semibold text-gray-900">{kpi?.value}</div>
           </div>
         ))}
       </div>
@@ -90,16 +90,15 @@ export default function Dashboard() {
             <h3 className="text-lg font-medium text-gray-900">Active Alerts</h3>
           </div>
           <div className="divide-y divide-gray-200">
-            {mockAlerts.map((alert) => (
-              <div key={alert.id} className="px-6 py-4">
+            {mockAlerts?.map((alert) => (
+              <div key={alert?.id} className="px-6 py-4">
                 <div className="flex items-center">
                   <div className={`h-3 w-3 rounded-full mr-3 ${
-                    alert.severity === 'high' ? 'bg-red-500' : 
-                    alert.severity === 'medium' ? 'bg-yellow-500' : 'bg-blue-500'
+                    alert?.severity === 'high' ? 'bg-red-500' : alert.severity === 'medium' ? 'bg-yellow-500' : 'bg-blue-500'
                   }`}></div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">{alert.message}</p>
-                    <p className="text-xs text-gray-500">{alert.time}</p>
+                    <p className="text-sm font-medium text-gray-900">{alert?.message}</p>
+                    <p className="text-xs text-gray-500">{alert?.time}</p>
                   </div>
                 </div>
               </div>
@@ -118,21 +117,20 @@ export default function Dashboard() {
             <h3 className="text-lg font-medium text-gray-900">Equipment Status</h3>
           </div>
           <div className="divide-y divide-gray-200">
-            {mockEquipment.map((equipment) => (
-              <div key={equipment.id} className="px-6 py-4 flex items-center justify-between">
+            {mockEquipment?.map((equipment) => (
+              <div key={equipment?.id} className="px-6 py-4 flex items-center justify-between">
                 <div className="flex items-center">
                   <div className={`h-3 w-3 rounded-full mr-3 ${
-                    equipment.status === 'running' ? 'bg-green-500' : 
-                    equipment.status === 'maintenance' ? 'bg-orange-500' : 'bg-gray-500'
+                    equipment?.status === 'running' ? 'bg-green-500' : equipment.status === 'maintenance' ? 'bg-orange-500' : 'bg-gray-500'
                   }`}></div>
-                  <span className="text-sm font-medium text-gray-900">{equipment.name}</span>
+                  <span className="text-sm font-medium text-gray-900">{equipment?.name}</span>
                 </div>
                 <div className="flex items-center">
                   <span className="text-sm text-gray-500 mr-4">
-                    Uptime: {equipment.uptime}
+                    Uptime: {equipment?.uptime}
                   </span>
                   <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-gray-100 text-gray-800 capitalize">
-                    {equipment.status}
+                    {equipment?.status}
                   </span>
                 </div>
               </div>

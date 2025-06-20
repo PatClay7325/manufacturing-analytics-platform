@@ -172,6 +172,26 @@ export interface DataSourcePluginMeta {
   tracing?: boolean;
   explore?: boolean;
   tables?: boolean;
+  category?: string;
+}
+
+// Data source instance settings
+export interface DataSourceInstanceSettings<T extends DataSourceJsonData = DataSourceJsonData> {
+  id: number;
+  uid: string;
+  type: string;
+  name: string;
+  url?: string;
+  jsonData: T;
+  secureJsonFields: { [key: string]: boolean };
+  meta: DataSourcePluginMeta;
+  readOnly?: boolean;
+}
+
+// Data source reference
+export interface DataSourceRef {
+  type?: string;
+  uid?: string;
 }
 
 export interface PluginMetaInfo {
@@ -221,6 +241,73 @@ export interface PluginDependency {
 // ============================================================================
 // QUERY AND REQUEST TYPES
 // ============================================================================
+
+// Core app types
+export type CoreApp = 'explore' | 'dashboard' | 'alerting' | 'panel';
+
+// Loading state
+export enum LoadingState {
+  NotStarted = 'NotStarted',
+  Loading = 'Loading',
+  Streaming = 'Streaming',
+  Done = 'Done',
+  Error = 'Error'
+}
+
+// Scoped variables
+export interface ScopedVars {
+  [key: string]: {
+    text?: string;
+    value?: string | number | boolean;
+  };
+}
+
+// Query result metadata
+export interface QueryResultMeta {
+  type?: 'timeseries' | 'table' | 'logs' | 'trace' | 'nodeGraph';
+  custom?: Record<string, any>;
+  preferredVisualisationType?: string;
+  notices?: QueryResultMetaNotice[];
+  stats?: QueryStats[];
+  searchWords?: string[];
+  executedQueryString?: string;
+  frames?: number;
+  traceId?: string;
+}
+
+export interface QueryResultMetaNotice {
+  severity: 'info' | 'warning' | 'error';
+  text: string;
+  link?: string;
+}
+
+export interface QueryStats {
+  displayName?: string;
+  value: number;
+  unit?: string;
+  decimals?: number;
+}
+
+// Data query error
+export interface DataQueryError {
+  message?: string;
+  status?: string;
+  statusText?: string;
+  refId?: string;
+  data?: {
+    message?: string;
+    error?: string;
+  };
+}
+
+// Display processor
+export type DisplayProcessor = (value: any) => string;
+
+// Data frame field index
+export interface DataFrameFieldIndex {
+  frameIndex: number;
+  fieldIndex: number;
+}
 
 export interface DataSourceRequest<T extends DataQuery = DataQuery> {
   app: CoreApp;

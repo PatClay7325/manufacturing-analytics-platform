@@ -3,8 +3,8 @@ import {
   ValidationOptions, 
   ValidationResult, 
   ValidationWarning 
-} from '../BaseValidator';
-import { Schema, SchemaValidator, SchemaValidationOptions } from '../SchemaValidator';
+} from './BaseValidator';
+import { Schema, SchemaValidator, SchemaValidationOptions } from './SchemaValidator';
 
 /**
  * ISO22400 KPI categories
@@ -288,7 +288,7 @@ export class ISO22400Validator extends SchemaValidator {
       if (deviation > 20) {
         warnings.push(this.createWarning(
           'iso22400.significantTargetDeviation',
-          `Value ${data.value} for KPI '${data.name}' deviates ${deviation.toFixed(1)}% from target ${data.target}`,
+          `Value ${data.value} for KPI '${data.name}' deviates ${deviation.toFixed(1)}% from target}`,
           '/value',
           data.value
         ));

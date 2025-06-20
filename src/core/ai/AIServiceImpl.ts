@@ -6,7 +6,7 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
-import { BaseModularService } from '../services/BaseModularService';
+import { BaseModularService } from './services/BaseModularService';
 import { AIService, AIProvider } from './interfaces';
 import { 
   AIModel, 

@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: config.ollamaModel,
-        prompt: 'Count from 1 to 5 slowly.',
+        prompt: 'Count from ',
         stream: true,
         options: {
           temperature: 0.1,

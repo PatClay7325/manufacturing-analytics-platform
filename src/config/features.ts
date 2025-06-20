@@ -8,7 +8,7 @@ export interface FeatureFlags {
 // Default feature flags
 const defaultFlags: FeatureFlags = {
   enableWebSocket: false, // WebSocket disabled by default
-  enableMetricsTest: true, // Show metrics test page
+  enableMetricsTest: false, // Metrics test page disabled
   useHighcharts: true, // Always use Highcharts
 }
 

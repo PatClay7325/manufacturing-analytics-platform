@@ -16,132 +16,91 @@ const ChatRequestSchema = z.object({
 const OLLAMA_API_URL = process.env.OLLAMA_API_URL || 'http://localhost:11434';
 const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'gemma:2b';
 
-// Enhanced system prompt for conversational manufacturing assistant
-const SYSTEM_PROMPT = `You are a friendly and knowledgeable manufacturing assistant with real-time access to a manufacturing enterprise database. You help users understand their manufacturing operations through natural conversation.
-
-IMPORTANT: You have LIVE ACCESS to the following data:
-- Enterprise-wide KPIs (OEE, availability, performance, quality)
-- Site performance metrics across all locations
-- Work center and equipment status in real-time
-- Active alerts and maintenance schedules
-- Production orders and quality metrics
-
-ISO 22400 KPI KNOWLEDGE:
-You are an expert on ISO 22400-2:2014 Manufacturing Operations Management Key Performance Indicators. The standard defines KPIs including:
-- Overall Equipment Effectiveness (OEE) = Availability × Performance × Quality
-- Availability Rate (A) = Operating Time / Planned Production Time
-- Performance Rate (P) = (Ideal Cycle Time × Total Count) / Operating Time
-- Quality Rate (Q) = Good Count / Total Count
-- Overall Throughput Effectiveness (OTE)
-- Net Equipment Effectiveness (NEE)
-
-When users ask questions, ALWAYS:
-1. Use the actual data provided in the context
-2. Be specific with numbers and names from the database
-3. Explain what the metrics mean in simple terms
-4. For ISO 22400 questions, reference the standard definitions
-5. Suggest actionable insights based on the data
-6. Be conversational and helpful
-
-For example:
-- User: "What's my OEE?"
-- You: "Your enterprise-wide OEE is currently 78.5%. According to ISO 22400-2, this represents Availability × Performance × Quality. Your breakdown shows..."
-
-Remember: You're looking at REAL DATA from their actual manufacturing operation. Use it!`;
-
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { sessionId = 'default', messages } = ChatRequestSchema.parse(body);
-
-    // Always get comprehensive context for every query
-    const lastUserMessage = messages.filter(m => m.role === 'user').pop()?.content || '';
-    
-    // Get ALL relevant manufacturing data
-    const context = await getComprehensiveManufacturingData(lastUserMessage);
-
-    // Build enhanced messages with context
-    const messagesWithContext = [
-      { role: 'system' as const, content: SYSTEM_PROMPT },
-      { 
-        role: 'system' as const, 
-        content: `LIVE MANUFACTURING DATA (Use this data to answer the user's questions):
-${JSON.stringify(context, null, 2)}
-
-Remember: These are the user's ACTUAL metrics. When they ask "What's my OEE?", tell them the specific OEE values from this data.`
-      },
-      ...messages
-    ];
-
-    // Call Ollama API
-    const ollamaResponse = await fetch(`${OLLAMA_API_URL}/api/chat`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: OLLAMA_MODEL,
-        messages: messagesWithContext,
-        stream: false,
-        options: {
-          temperature: 0.3, // Lower temperature for more factual responses
-          num_predict: 500, // Moderate response length for better quality
-          top_k: 40,
-          top_p: 0.9,
-        },
-      }),
-    });
-
-    if (!ollamaResponse.ok) {
-      // Fallback with data summary
-      const summary = generateDataSummary(context);
-      return NextResponse.json({
-        message: {
-          role: 'assistant',
-          content: `I'm having trouble connecting to the AI service, but I can show you your current data:\n\n${summary}`,
-        },
-      });
-    }
-
-    const ollamaData = await ollamaResponse.json();
-    
-    // Check if the response is too generic or doesn't answer the question
-    const aiResponse = ollamaData.message?.content || '';
-    const userQuery = lastUserMessage.toLowerCase();
-    
-    // If asking about temperature and AI didn't provide specific answer
-    if (userQuery.includes('temperature') && !aiResponse.includes('°C') && !aiResponse.includes('celsius')) {
-      // Find temperature data
-      const equipment = context.equipment?.[0];
-      const temp = equipment?.latestMetrics?.temperature;
-      
-      if (temp) {
-        ollamaData.message.content = `The current temperature of the ${equipment.name} is ${temp.value}°C (measured at ${new Date(temp.timestamp).toLocaleString()}).\n\nThis is within normal operating range for welding equipment.`;
-      }
-    }
-
-    // Save conversation
-    await saveConversation(sessionId, messages, ollamaData.message);
-
-    return NextResponse.json({
-      message: ollamaData.message,
-      context: context,
-    });
-  } catch (error) {
-    console.error('Chat API error:', error);
-    return NextResponse.json(
-      { error: 'Failed to process chat request' },
-      { status: 500 }
-    );
+// Intelligent query classification
+const QUERY_PATTERNS = {
+  EQUIPMENT_SPECIFIC: {
+    patterns: ['cnc', 'welder', 'welding', 'robot', 'machine', 'pump', 'compressor', 'grinder', 'mill'],
+    keywords: ['equipment', 'machine', 'unit', 'device']
+  },
+  SITE_SPECIFIC: {
+    patterns: ['detroit', 'michigan', 'north america', 'stuttgart', 'germany', 'europe', 'yokohama', 'japan', 'asia'],
+    keywords: ['site', 'location', 'facility', 'plant']
+  },
+  METRICS_SPECIFIC: {
+    patterns: ['temperature', 'pressure', 'vibration', 'speed', 'power', 'flow', 'torque', 'acoustic'],
+    keywords: ['metric', 'sensor', 'reading', 'measurement', 'value']
+  },
+  KPI_SPECIFIC: {
+    patterns: ['oee', 'availability', 'performance', 'quality', 'efficiency', 'productivity'],
+    keywords: ['kpi', 'indicator', 'ratio', 'percentage']
+  },
+  ALERTS_SPECIFIC: {
+    patterns: ['alert', 'alarm', 'issue', 'problem', 'fault', 'error', 'maintenance', 'repair'],
+    keywords: ['alert', 'warning', 'critical', 'urgent']
+  },
+  QUALITY_SPECIFIC: {
+    patterns: ['quality', 'defect', 'scrap', 'rework', 'specification', 'tolerance', 'deviation'],
+    keywords: ['quality', 'conformance', 'standard', 'spec']
+  },
+  TIME_SPECIFIC: {
+    patterns: ['today', 'yesterday', 'week', 'month', 'hour', 'recent', 'latest', 'current', 'now'],
+    keywords: ['time', 'period', 'date', 'when']
   }
-}
+};
 
-// Get comprehensive manufacturing data regardless of query
-async function getComprehensiveManufacturingData(query: string) {
+// Enhanced system prompt for truly conversational AI
+const SYSTEM_PROMPT = `You are an intelligent manufacturing assistant with real-time database access to a comprehensive manufacturing enterprise.
+
+CRITICAL INSTRUCTIONS:
+1. You have LIVE ACCESS to actual manufacturing data - use it!
+2. Always reference specific data from the context provided
+3. Be conversational but precise with numbers and names
+4. When users ask questions, provide specific answers using the actual data
+5. If data is missing, explain what you cannot find and suggest alternatives
+
+AVAILABLE DATA TYPES:
+- Real-time equipment metrics (temperature, pressure, vibration, etc.)
+- Performance KPIs (OEE, availability, performance, quality)
+- Active alerts and maintenance issues
+- Quality measurements and deviations
+- Multi-site operations data
+- Equipment specifications and status
+
+RESPONSE STYLE:
+- Start with direct answers using real data
+- Include specific numbers, names, and timestamps
+- Explain what the data means in context
+- Suggest actionable insights when appropriate
+- Be helpful and conversational, not robotic
+
+Remember: You're looking at REAL manufacturing data. Use it to provide valuable insights!`;
+
+// Intelligent data fetching based on query analysis
+async function getIntelligentManufacturingData(query: string) {
   const queryLower = query.toLowerCase();
+  console.log(`🔍 Analyzing query: "${query}"`);
   
   try {
-    // Always get enterprise overview
+    let context: any = {
+      queryAnalysis: {
+        originalQuery: query,
+        detectedPatterns: [],
+        dataFetched: []
+      }
+    };
+
+    // Analyze query patterns
+    const detectedPatterns = [];
+    for (const [category, patterns] of Object.entries(QUERY_PATTERNS)) {
+      const hasPattern = patterns.patterns.some(p => queryLower.includes(p)) || 
+                        patterns.keywords.some(k => queryLower.includes(k));
+      if (hasPattern) {
+        detectedPatterns.push(category);
+      }
+    }
+    context.queryAnalysis.detectedPatterns = detectedPatterns;
+
+    // Always get basic enterprise info (lightweight)
     const enterprise = await prisma.enterprise.findFirst({
       include: {
         EnterpriseKPISummary: true,
@@ -152,236 +111,607 @@ async function getComprehensiveManufacturingData(query: string) {
         },
       },
     });
+    context.enterprise = enterprise;
+    context.queryAnalysis.dataFetched.push('enterprise');
 
-    // Get all work units with their metrics
-    const workUnits = await prisma.workUnit.findMany({
-      include: {
-        WorkCenter: {
-          include: {
-            Area: {
-              include: {
-                Site: true,
+    // Equipment-specific queries
+    if (detectedPatterns.includes('EQUIPMENT_SPECIFIC')) {
+      console.log('🏭 Fetching equipment-specific data...');
+      
+      // Build dynamic where clause based on equipment mentioned
+      let equipmentWhere: any = {};
+      
+      if (queryLower.includes('cnc')) {
+        equipmentWhere.equipmentType = { contains: 'CNC' };
+      } else if (queryLower.includes('weld')) {
+        equipmentWhere.equipmentType = { contains: 'Welding' };
+      } else if (queryLower.includes('robot')) {
+        equipmentWhere.equipmentType = { contains: 'Robot' };
+      } else if (queryLower.includes('paint')) {
+        equipmentWhere.equipmentType = { contains: 'Paint' };
+      } else if (queryLower.includes('grind')) {
+        equipmentWhere.equipmentType = { contains: 'Grinding' };
+      }
+
+      const equipment = await prisma.workUnit.findMany({
+        where: equipmentWhere,
+        take: queryLower.includes('all') ? 50 : 5,
+        include: {
+          WorkCenter: {
+            include: {
+              Area: {
+                include: {
+                  Site: true,
+                },
+              },
+            },
+          },
+          Alert: {
+            where: { status: 'active' },
+            take: 3,
+          },
+          PerformanceMetric: {
+            orderBy: { timestamp: 'desc' },
+            take: 1,
+          },
+        },
+      });
+      
+      context.equipment = equipment;
+      context.queryAnalysis.dataFetched.push('equipment');
+    }
+
+    // Site-specific queries
+    if (detectedPatterns.includes('SITE_SPECIFIC')) {
+      console.log('🌍 Fetching site-specific data...');
+      
+      let siteWhere: any = {};
+      if (queryLower.includes('detroit') || queryLower.includes('america') || queryLower.includes('us')) {
+        siteWhere.code = 'NA-HUB';
+      } else if (queryLower.includes('stuttgart') || queryLower.includes('germany') || queryLower.includes('europe')) {
+        siteWhere.code = 'EU-CENTER';
+      } else if (queryLower.includes('yokohama') || queryLower.includes('japan') || queryLower.includes('asia')) {
+        siteWhere.code = 'APAC-FAC';
+      }
+
+      const sites = await prisma.site.findMany({
+        where: siteWhere,
+        include: {
+          SiteKPISummary: true,
+          Area: {
+            include: {
+              WorkCenter: {
+                include: {
+                  WorkUnit: {
+                    take: 3,
+                    include: {
+                      PerformanceMetric: {
+                        orderBy: { timestamp: 'desc' },
+                        take: 1,
+                      },
+                    },
+                  },
+                },
               },
             },
           },
         },
-        Alert: {
-          where: { status: 'active' },
-        },
-        PerformanceMetric: {
-          where: {
-            timestamp: {
-              gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // Last 7 days
-            },
-          },
-          orderBy: {
-            timestamp: 'desc',
-          },
-          take: 50,
-        },
-        Metric: {
-          where: {
-            timestamp: {
-              gte: new Date(Date.now() - 24 * 60 * 60 * 1000), // Last 24 hours
-            },
-          },
-          orderBy: {
-            timestamp: 'desc',
-          },
-          take: 20,
-        },
-      },
-    });
+      });
+      
+      context.sites = sites;
+      context.queryAnalysis.dataFetched.push('sites');
+    }
 
-    // Get active alerts
-    const activeAlerts = await prisma.alert.findMany({
-      where: { status: 'active' },
-      include: {
-        WorkUnit: true,
-      },
-      orderBy: {
-        severity: 'desc',
-      },
-    });
+    // Metrics-specific queries
+    if (detectedPatterns.includes('METRICS_SPECIFIC')) {
+      console.log('📊 Fetching sensor metrics...');
+      
+      let metricNames = [];
+      if (queryLower.includes('temperature')) metricNames.push('TEMPERATURE');
+      if (queryLower.includes('pressure')) metricNames.push('PRESSURE');
+      if (queryLower.includes('vibration')) metricNames.push('VIBRATION');
+      if (queryLower.includes('speed')) metricNames.push('SPEED');
+      if (queryLower.includes('power')) metricNames.push('POWER_CONSUMPTION');
+      if (queryLower.includes('flow')) metricNames.push('FLOW_RATE');
+      if (queryLower.includes('torque')) metricNames.push('TORQUE');
 
-    // Get recent production metrics
-    const recentMetrics = await prisma.metric.findMany({
-      where: {
-        timestamp: {
-          gte: new Date(Date.now() - 24 * 60 * 60 * 1000), // Last 24 hours
-        },
-      },
-      orderBy: {
-        timestamp: 'desc',
-      },
-      take: 100,
-    });
-
-    // Calculate aggregated metrics from performance data
-    let totalOEE = 0;
-    let totalAvailability = 0;
-    let totalPerformance = 0;
-    let totalQuality = 0;
-    let unitCount = 0;
-    
-    workUnits.forEach(unit => {
-      if (unit.PerformanceMetric && unit.PerformanceMetric.length > 0) {
-        const metrics = unit.PerformanceMetric;
-        const avgOEE = metrics.reduce((sum, m) => sum + (m.oeeScore || 0), 0) / metrics.length;
-        const avgAvailability = metrics.reduce((sum, m) => sum + (m.availability || 0), 0) / metrics.length;
-        const avgPerformance = metrics.reduce((sum, m) => sum + (m.performance || 0), 0) / metrics.length;
-        const avgQuality = metrics.reduce((sum, m) => sum + (m.quality || 0), 0) / metrics.length;
-        
-        totalOEE += avgOEE;
-        totalAvailability += avgAvailability;
-        totalPerformance += avgPerformance;
-        totalQuality += avgQuality;
-        unitCount++;
+      const timeFilter = new Date();
+      if (queryLower.includes('hour')) {
+        timeFilter.setHours(timeFilter.getHours() - 1);
+      } else if (queryLower.includes('today')) {
+        timeFilter.setHours(0, 0, 0, 0);
+      } else {
+        timeFilter.setHours(timeFilter.getHours() - 4); // Default 4 hours
       }
-    });
-    
-    const overallOEE = unitCount > 0 ? totalOEE / unitCount : 0;
-    const overallAvailability = unitCount > 0 ? totalAvailability / unitCount : 0;
-    const overallPerformance = unitCount > 0 ? totalPerformance / unitCount : 0;
-    const overallQuality = unitCount > 0 ? totalQuality / unitCount : 0;
-    
-    const operationalUnits = workUnits.filter(u => u.status === 'operational').length;
-    const maintenanceUnits = workUnits.filter(u => u.status === 'maintenance').length;
-    const offlineUnits = workUnits.filter(u => u.status === 'offline').length;
 
-    return {
-      summary: {
-        enterpriseName: enterprise?.name || 'Manufacturing Enterprise',
-        currentTime: new Date().toISOString(),
-        overallOEE: Number(overallOEE.toFixed(1)),
-        totalWorkUnits: workUnits.length,
-        operationalUnits,
-        maintenanceUnits,
-        offlineUnits,
-        activeAlerts: activeAlerts.length,
-      },
-      enterprise: enterprise ? {
-        name: enterprise.name,
-        code: enterprise.code,
-        kpi: {
-          oee: Number(overallOEE.toFixed(1)),
-          availability: Number(overallAvailability.toFixed(1)),
-          performance: Number(overallPerformance.toFixed(1)),
-          quality: Number(overallQuality.toFixed(1)),
-          totalProduction: '0',
-          totalDefects: 0,
+      const metrics = await prisma.metric.findMany({
+        where: {
+          name: metricNames.length > 0 ? { in: metricNames } : undefined,
+          timestamp: { gte: timeFilter },
         },
-      } : null,
-      sites: enterprise?.Site.map(site => ({
-        name: site.name,
-        location: site.location,
-        kpi: {
-          oee: Number(overallOEE.toFixed(1)),
-          availability: Number(overallAvailability.toFixed(1)),
-          performance: Number(overallPerformance.toFixed(1)),
-          quality: Number(overallQuality.toFixed(1)),
+        include: {
+          WorkUnit: {
+            select: {
+              name: true,
+              code: true,
+              equipmentType: true,
+            },
+          },
         },
-      })) || [],
-      equipment: workUnits.map(unit => {
-        // Calculate KPIs from performance metrics
-        let unitKpi = null;
-        if (unit.PerformanceMetric && unit.PerformanceMetric.length > 0) {
-          const metrics = unit.PerformanceMetric;
-          unitKpi = {
-            oee: Number((metrics.reduce((sum, m) => sum + (m.oeeScore || 0), 0) / metrics.length).toFixed(1)),
-            availability: Number((metrics.reduce((sum, m) => sum + (m.availability || 0), 0) / metrics.length).toFixed(1)),
-            performance: Number((metrics.reduce((sum, m) => sum + (m.performance || 0), 0) / metrics.length).toFixed(1)),
-            quality: Number((metrics.reduce((sum, m) => sum + (m.quality || 0), 0) / metrics.length).toFixed(1)),
-            mtbf: 720, // Default values
-            mttr: 2,
-          };
-        }
-        
-        // Get latest metrics for this unit
-        const latestMetrics: any = {};
-        if (unit.Metric && unit.Metric.length > 0) {
-          // Group metrics by name and get the latest value
-          unit.Metric.forEach((metric: any) => {
-            if (!latestMetrics[metric.name] || metric.timestamp > latestMetrics[metric.name].timestamp) {
-              latestMetrics[metric.name] = {
-                value: metric.value,
-                unit: metric.unit,
-                timestamp: metric.timestamp
-              };
-            }
-          });
-        }
-        
-        return {
-          id: unit.id,
-          name: unit.name,
-          code: unit.code,
-          type: unit.equipmentType,
-          status: unit.status,
-          location: `${unit.WorkCenter.Area.Site.name} > ${unit.WorkCenter.Area.name} > ${unit.WorkCenter.name}`,
-          kpi: unitKpi,
-          activeAlerts: unit.Alert.length,
-          latestMetrics: latestMetrics,
-        };
-      }),
-      alerts: activeAlerts.map(alert => ({
-        id: alert.id,
-        type: alert.alertType,
-        severity: alert.severity,
-        message: alert.message,
-        equipment: alert.WorkUnit?.name || 'Unknown',
-        timestamp: alert.timestamp,
-      })),
-      recentMetrics: {
-        count: recentMetrics.length,
-        latestTimestamp: recentMetrics[0]?.timestamp,
-        categories: [...new Set(recentMetrics.map(m => m.name))],
-      },
-    };
+        orderBy: { timestamp: 'desc' },
+        take: 20,
+      });
+      
+      context.metrics = metrics;
+      context.queryAnalysis.dataFetched.push('metrics');
+    }
+
+    // Alerts-specific queries
+    if (detectedPatterns.includes('ALERTS_SPECIFIC')) {
+      console.log('🚨 Fetching alerts...');
+      
+      let alertWhere: any = { status: 'active' };
+      if (queryLower.includes('critical') || queryLower.includes('high')) {
+        alertWhere.severity = 'high';
+      } else if (queryLower.includes('medium')) {
+        alertWhere.severity = 'medium';
+      }
+
+      const alerts = await prisma.alert.findMany({
+        where: alertWhere,
+        include: {
+          WorkUnit: {
+            select: {
+              name: true,
+              code: true,
+              equipmentType: true,
+            },
+          },
+        },
+        orderBy: [
+          { severity: 'desc' },
+          { timestamp: 'desc' },
+        ],
+        take: 10,
+      });
+      
+      context.alerts = alerts;
+      context.queryAnalysis.dataFetched.push('alerts');
+    }
+
+    // Quality-specific queries
+    if (detectedPatterns.includes('QUALITY_SPECIFIC')) {
+      console.log('🎯 Fetching quality data...');
+      
+      const qualityMetrics = await prisma.qualityMetric.findMany({
+        where: {
+          timestamp: {
+            gte: new Date(Date.now() - 24 * 60 * 60 * 1000), // Last 24 hours
+          },
+          isWithinSpec: queryLower.includes('issue') || queryLower.includes('problem') ? false : undefined,
+        },
+        include: {
+          WorkUnit: {
+            select: {
+              name: true,
+              code: true,
+              equipmentType: true,
+            },
+          },
+        },
+        orderBy: { timestamp: 'desc' },
+        take: 15,
+      });
+      
+      context.qualityMetrics = qualityMetrics;
+      context.queryAnalysis.dataFetched.push('quality');
+    }
+
+    // KPI-specific queries
+    if (detectedPatterns.includes('KPI_SPECIFIC')) {
+      console.log('📈 Fetching KPI data...');
+      
+      const performanceData = await prisma.performanceMetric.findMany({
+        where: {
+          timestamp: {
+            gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // Last 7 days
+          },
+        },
+        include: {
+          WorkUnit: {
+            select: {
+              name: true,
+              code: true,
+              equipmentType: true,
+              status: true,
+            },
+          },
+        },
+        orderBy: { timestamp: 'desc' },
+        take: 30,
+      });
+      
+      context.performanceData = performanceData;
+      context.queryAnalysis.dataFetched.push('kpis');
+    }
+
+    // If no specific patterns detected, get a general overview
+    if (detectedPatterns.length === 0) {
+      console.log('📋 Fetching general overview...');
+      
+      const [generalEquipment, generalAlerts, recentMetrics] = await Promise.all([
+        prisma.workUnit.findMany({
+          take: 5,
+          include: {
+            PerformanceMetric: {
+              orderBy: { timestamp: 'desc' },
+              take: 1,
+            },
+            Alert: {
+              where: { status: 'active' },
+              take: 1,
+            },
+          },
+        }),
+        prisma.alert.findMany({
+          where: { status: 'active' },
+          take: 5,
+          orderBy: { severity: 'desc' },
+          include: {
+            WorkUnit: {
+              select: { name: true, equipmentType: true },
+            },
+          },
+        }),
+        prisma.metric.findMany({
+          take: 10,
+          orderBy: { timestamp: 'desc' },
+          include: {
+            WorkUnit: {
+              select: { name: true, equipmentType: true },
+            },
+          },
+        }),
+      ]);
+      
+      context.overview = {
+        equipment: generalEquipment,
+        alerts: generalAlerts,
+        recentMetrics: recentMetrics,
+      };
+      context.queryAnalysis.dataFetched.push('overview');
+    }
+
+    console.log(`✅ Data fetched: ${context.queryAnalysis.dataFetched.join(', ')}`);
+    return context;
+
   } catch (error) {
-    console.error('Error fetching manufacturing data:', error);
+    console.error('❌ Error fetching intelligent data:', error);
     return {
-      error: 'Unable to fetch data',
-      message: 'Please check database connection',
+      error: 'Unable to fetch manufacturing data',
+      queryAnalysis: {
+        originalQuery: query,
+        error: error.message,
+      },
     };
   }
 }
 
-// Generate a human-readable summary of the data
-function generateDataSummary(context: any): string {
-  if (!context || context.error) {
-    return 'Unable to access manufacturing data at this time.';
-  }
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { sessionId = 'default', messages } = ChatRequestSchema.parse(body);
 
-  const { summary, equipment, alerts } = context;
-  
-  let response = `Here's your current manufacturing status:\n\n`;
-  response += `📊 **Overall Performance**\n`;
-  response += `- Enterprise OEE: ${summary.overallOEE}%\n`;
-  response += `- Operational Equipment: ${summary.operationalUnits}/${summary.totalWorkUnits}\n`;
-  response += `- Active Alerts: ${summary.activeAlerts}\n\n`;
+    const lastUserMessage = messages.filter(m => m.role === 'user').pop()?.content || '';
+    
+    // Check if this is a manufacturing engineering query
+    const isManufacturingQuery = isManufacturingEngineeringQuery(lastUserMessage);
+    
+    if (isManufacturingQuery) {
+      console.log('🤖 Routing to Manufacturing Engineering Agent...');
+      
+      // Call the Manufacturing Engineering Agent
+      const agentResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api'}/agents/manufacturing-engineering/execute`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: lastUserMessage,
+          parameters: {
+            sessionId,
+            context: { messages }
+          }
+        }),
+      });
 
-  if (equipment && equipment.length > 0) {
-    response += `⚙️ **Equipment Status**\n`;
-    equipment.slice(0, 5).forEach((eq: any) => {
-      response += `- ${eq.name}: ${eq.status.toUpperCase()} (OEE: ${eq.kpi?.oee || 'N/A'}%)\n`;
+      if (agentResponse.ok) {
+        const agentResult = await agentResponse.json();
+        
+        return NextResponse.json({
+          message: {
+            role: 'assistant',
+            content: agentResult.data.content
+          },
+          agentResponse: agentResult.data,
+          isAgentResponse: true,
+        });
+      } else {
+        console.warn('Agent failed, falling back to Ollama...');
+      }
+    }
+
+    // Fallback to original intelligent query processing
+    console.log('🤖 Using standard intelligent query processing...');
+    const context = await getIntelligentManufacturingData(lastUserMessage);
+
+    // Build enhanced messages with context
+    const messagesWithContext = [
+      { role: 'system' as const, content: SYSTEM_PROMPT },
+      { 
+        role: 'system' as const, 
+        content: `LIVE MANUFACTURING DATA (Use this specific data to answer the user's question):
+
+Query Analysis: ${JSON.stringify(context.queryAnalysis, null, 2)}
+
+Manufacturing Context: ${JSON.stringify(context, null, 2)}
+
+IMPORTANT: The user asked: "${lastUserMessage}"
+Use the specific data provided above to give a precise, helpful answer. Reference actual equipment names, numbers, and timestamps from `
+      },
+      ...messages
+    ];
+
+    // Call Ollama API with intelligent context
+    const ollamaResponse = await fetch(`${OLLAMA_API_URL}/api/chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: OLLAMA_MODEL,
+        messages: messagesWithContext,
+        stream: false,
+        options: {
+          temperature: 0.2, // Lower for more factual responses
+          num_predict: 1000, // Increased for detailed responses
+          top_k: 40,
+          top_p: 0.9,
+          num_ctx: 4096, // Larger context window for complex data
+          repeat_penalty: 1.1,
+        },
+        keep_alive: '5m',
+      }),
     });
-  }
 
-  if (alerts && alerts.length > 0) {
-    response += `\n🔔 **Active Alerts**\n`;
-    alerts.slice(0, 3).forEach((alert: any) => {
-      response += `- ${alert.severity.toUpperCase()}: ${alert.message} (${alert.equipment})\n`;
+    if (!ollamaResponse.ok) {
+      console.error('Ollama API error:', ollamaResponse.statusText);
+      return NextResponse.json(
+        { error: 'AI service temporarily unavailable' },
+        { status: 503 }
+      );
+    }
+
+    const ollamaData = await ollamaResponse.json();
+
+    return NextResponse.json({
+      message: ollamaData.message,
+      context: context,
+      debug: {
+        patternsDetected: context.queryAnalysis?.detectedPatterns || [],
+        dataFetched: context.queryAnalysis?.dataFetched || [],
+        queryAnalyzed: lastUserMessage,
+      },
     });
-  }
 
-  return response;
+  } catch (error) {
+    console.error('❌ Chat API error:', error);
+    return NextResponse.json(
+      { error: 'Failed to process chat request' },
+      { status: 500 }
+    );
+  }
 }
 
-// Save conversation to database
+// Advanced Manufacturing Engineering Query Classification
+interface QueryPattern {
+  patterns: (string | RegExp)[];
+  weight: number;
+  category: string;
+}
+
+const MANUFACTURING_PATTERNS: QueryPattern[] = [
+  // OEE and Performance Analysis
+  {
+    patterns: [
+      /\b(oee|overall equipment effectiveness)\b/i,
+      /\b(equipment|machine|unit).*(performance|efficiency)\b/i,
+      /\b(availability|performance|quality).*(rate|ratio|percentage)\b/i,
+      /\bhow.*(efficient|performing|effective)\b/i
+    ],
+    weight: 10,
+    category: 'oee_analysis'
+  },
+  
+  // Downtime Analysis - CRITICAL for your use case
+  {
+    patterns: [
+      /\b(major|main|primary|biggest|top|worst).*(downtime|contributor|cause|issue|problem)\b/i,
+      /\bwhat.*(causing|contributor|downtime|issue|problem)\b/i,
+      /\b(downtime|failure|breakdown).*(analysis|contributor|cause|reason)\b/i,
+      /\bwhich.*(equipment|machine|unit).*(down|failing|broken|issues)\b/i,
+      /\bwhy.*(down|failing|stopped|not working)\b/i,
+      /\b(unplanned|unexpected).*(downtime|stoppage|failure)\b/i
+    ],
+    weight: 15,
+    category: 'downtime_analysis'
+  },
+  
+  // Quality Analysis
+  {
+    patterns: [
+      /\b(quality|defect|scrap|rework).*(issue|problem|analysis|rate)\b/i,
+      /\bwhat.*(quality|defect|scrap)\b/i,
+      /\b(out of spec|non.?conforming|reject)\b/i,
+      /\b(first pass yield|fpy|quality rate)\b/i
+    ],
+    weight: 10,
+    category: 'quality_analysis'
+  },
+  
+  // Maintenance Analysis
+  {
+    patterns: [
+      /\b(maintenance|mtbf|mttr|reliability).*(analysis|schedule|due|required)\b/i,
+      /\bwhen.*(maintenance|service|repair)\b/i,
+      /\b(preventive|predictive|condition).*(maintenance)\b/i,
+      /\b(bearing|motor|pump|valve).*(wear|condition|health)\b/i
+    ],
+    weight: 10,
+    category: 'maintenance_analysis'
+  },
+  
+  // Production Analysis
+  {
+    patterns: [
+      /\b(production|output|throughput).*(rate|analysis|performance)\b/i,
+      /\bhow much.*(producing|output|making)\b/i,
+      /\b(cycle time|takt time|production speed)\b/i
+    ],
+    weight: 8,
+    category: 'production_analysis'
+  },
+  
+  // Root Cause Analysis
+  {
+    patterns: [
+      /\b(root cause|why|reason|cause).*(analysis|investigation)\b/i,
+      /\bwhat.*(causing|reason|root cause)\b/i,
+      /\b(fishbone|pareto|5 why|cause and effect)\b/i,
+      /\banalyze.*(problem|issue|failure)\b/i
+    ],
+    weight: 12,
+    category: 'root_cause_analysis'
+  },
+  
+  // Equipment-Specific Queries
+  {
+    patterns: [
+      /\b(cnc|welder|robot|pump|compressor|machine|equipment).*(status|condition|performance)\b/i,
+      /\bshow me.*(equipment|machine|cnc|welder|robot)\b/i,
+      /\bwhich.*(equipment|machine|unit).*(need|require|have)\b/i,
+      /\b(temperature|pressure|vibration|speed).*(reading|data|sensor)\b/i
+    ],
+    weight: 8,
+    category: 'equipment_analysis'
+  },
+  
+  // Trend Analysis
+  {
+    patterns: [
+      /\b(trend|trending|history|over time|historical)\b/i,
+      /\bshow.*(trend|history|past|previous)\b/i,
+      /\bhow.*(changed|improved|degraded|evolved)\b/i
+    ],
+    weight: 6,
+    category: 'trending_analysis'
+  },
+  
+  // ISO Standards References
+  {
+    patterns: [
+      /\biso.?(22400|14224|9001)\b/i,
+      /\b(standard|benchmark|best practice)\b/i
+    ],
+    weight: 12,
+    category: 'standards_compliance'
+  }
+];
+
+// Advanced query classification function
+function isManufacturingEngineeringQuery(query: string): boolean {
+  const queryLower = query.toLowerCase().trim();
+  
+  // Quick reject for very short queries or obviously non-manufacturing queries
+  if (queryLower.length < 3) return false;
+  
+  let totalScore = 0;
+  const detectedCategories = new Set<string>();
+  
+  // Score against all patterns
+  for (const patternGroup of MANUFACTURING_PATTERNS) {
+    let groupScore = 0;
+    
+    for (const pattern of patternGroup.patterns) {
+      if (typeof pattern === 'string') {
+        if (queryLower.includes(pattern.toLowerCase())) {
+          groupScore = Math.max(groupScore, patternGroup.weight);
+          detectedCategories.add(patternGroup.category);
+        }
+      } else if (pattern instanceof RegExp) {
+        if (pattern.test(queryLower)) {
+          groupScore = Math.max(groupScore, patternGroup.weight);
+          detectedCategories.add(patternGroup.category);
+        }
+      }
+    }
+    
+    totalScore += groupScore;
+  }
+  
+  // Additional scoring for question patterns that indicate analysis requests
+  const analysisIndicators = [
+    /^(what|which|how|why|show|analyze|explain|tell me)/i,
+    /\?(analysis|data|information|details|status)/i,
+    /(help|assist|show|display|provide).*(with|me)/i
+  ];
+  
+  for (const indicator of analysisIndicators) {
+    if (indicator.test(queryLower)) {
+      totalScore += 2;
+    }
+  }
+  
+  // Manufacturing context words boost
+  const contextWords = [
+    'manufacturing', 'factory', 'plant', 'production', 'operations',
+    'equipment', 'machine', 'line', 'process', 'facility'
+  ];
+  
+  for (const word of contextWords) {
+    if (queryLower.includes(word)) {
+      totalScore += 3;
+    }
+  }
+  
+  // Debug logging for development
+  console.log(`🔍 Query Classification Debug:
+    Query: "${query}"
+    Total Score: ${totalScore}
+    Categories: ${Array.from(detectedCategories).join(', ')}
+    Threshold: 8
+    Will Use Agent: ${totalScore >= 8}`);
+  
+  // Threshold for routing to Manufacturing Engineering Agent
+  return totalScore >= 8;
+}
+
+// Fallback keyword detection for backward compatibility
+function hasManufacturingKeywords(query: string): boolean {
+  const queryLower = query.toLowerCase();
+  
+  const criticalKeywords = [
+    'oee', 'downtime', 'quality', 'maintenance', 'efficiency',
+    'equipment', 'production', 'manufacturing', 'analysis'
+  ];
+  
+  return criticalKeywords.some(keyword => queryLower.includes(keyword));
+}
+
+// Save conversation to database (placeholder)
 async function saveConversation(sessionId: string, messages: any[], aiResponse: any) {
   try {
-    console.log('Saving conversation:', {
+    console.log('💾 Saving conversation:', {
       sessionId,
       messageCount: messages.length,
       aiResponse: aiResponse.content?.substring(0, 100) + '...',

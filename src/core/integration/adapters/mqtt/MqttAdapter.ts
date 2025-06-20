@@ -7,17 +7,17 @@
 
 import mqtt, { MqttClient, IClientOptions, IClientPublishOptions, IClientSubscribeOptions } from 'mqtt';
 import { v4 as uuidv4 } from 'uuid';
-import { AbstractIntegrationAdapter } from '../../abstract/AbstractIntegrationAdapter';
-import { DataTransformer } from '../../interfaces/DataTransformer';
-import { DataValidator } from '../../interfaces/DataValidator';
-import { LoggerService } from '../../../architecture/interfaces';
-import { BaseConfig } from '../../../architecture/types';
+import { AbstractIntegrationAdapter } from './abstract/AbstractIntegrationAdapter';
+import { DataTransformer } from './interfaces/DataTransformer';
+import { DataValidator } from './interfaces/DataValidator';
+import { LoggerService } from './architecture/interfaces';
+import { BaseConfig } from './architecture/types';
 import { 
   IntegrationConfig, 
   IntegrationDataPacket, 
   ConnectionStatus,
   IntegrationErrorType
-} from '../../types';
+} from './types';
 
 /**
  * MQTT connection parameters
@@ -430,7 +430,7 @@ export class MqttAdapter extends AbstractIntegrationAdapter {
     } catch (error) {
       this.setLastError(
         IntegrationErrorType.CONNECTION,
-        `Failed to disconnect from MQTT broker: ${error.message}`,
+        `Failed to disconnect from message}`,
         error
       );
       throw error;
@@ -593,7 +593,7 @@ export class MqttAdapter extends AbstractIntegrationAdapter {
     }
     
     try {
-      this.logger.debug(`Unsubscribing from MQTT topic: ${subscription.topic}`);
+      this.logger.debug(`Unsubscribing from topic}`);
       
       // Unsubscribe from the topic
       await new Promise<void>((resolve, reject) => {
@@ -604,10 +604,10 @@ export class MqttAdapter extends AbstractIntegrationAdapter {
         
         this.client.unsubscribe(subscription.topic, (err) => {
           if (err) {
-            this.logger.error(`Failed to unsubscribe from MQTT topic: ${err.message}`, err);
+            this.logger.error(`Failed to unsubscribe from message}`, err);
             reject(err);
           } else {
-            this.logger.info(`Successfully unsubscribed from MQTT topic: ${subscription.topic}`);
+            this.logger.info(`Successfully unsubscribed from topic}`);
             resolve();
           }
         });

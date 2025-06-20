@@ -100,7 +100,7 @@ const sessions: ChatSession[] = [
   }
 ];
 
-// Common sample questions for manufacturing analytics
+// Common sample questions for manufacturing Analytics
 const sampleQuestions = [
   'What is the current OEE for production line A?',
   'Show me the top 3 causes of downtime this week',

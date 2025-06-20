@@ -1,727 +1,617 @@
 import { PrismaClient } from '@prisma/client';
-import { hash } from 'bcrypt';
+import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
-/**
- * Seed script for Manufacturing Intelligence Platform
- * 
- * This script populates the database with initial data for development and testing
- */
 async function main() {
-  console.log('Starting seed process...');
+  console.log('🌱 Starting hierarchical seed process...\n');
 
-  // Clean existing data for a fresh start
-  await cleanDatabase();
+  try {
+    // Clean database
+    await cleanDatabase();
 
-  // Create Equipment data
-  await seedEquipment();
+    // Create hierarchical structure
+    const enterprise = await createEnterprise();
+    const sites = await createSites(enterprise.id);
+    const areas = await createAreas(sites);
+    const workCenters = await createWorkCenters(areas);
+    const workUnits = await createWorkUnits(workCenters);
+    
+    // Create supporting data
+    await createUsers(sites);
+    await createPerformanceMetrics(workUnits);
+    await createAlerts(workUnits);
+    await createMaintenanceRecords(workUnits);
+    await createProductionOrders(workCenters);
+    await createMetrics(workUnits);
+    await createKPISummaries(enterprise, sites, areas, workCenters, workUnits);
 
-  // Create Production Lines
-  await seedProductionLines();
-
-  // Create Performance Metrics
-  await seedPerformanceMetrics();
-
-  // Create Maintenance Records
-  await seedMaintenanceRecords();
-
-  // Create Quality Metrics
-  await seedQualityMetrics();
-
-  // Create Alerts
-  await seedAlerts();
-
-  // Create Users
-  await seedUsers();
-
-  // Create Settings
-  await seedSettings();
-
-  console.log('Seed completed successfully!');
+    console.log('\n✅ Hierarchical seed completed successfully!');
+  } catch (error) {
+    console.error('❌ Error during seeding:', error);
+    throw error;
+  }
 }
 
-/**
- * Clean the database for a fresh seed
- */
 async function cleanDatabase() {
-  console.log('Cleaning database...');
+  console.log('🧹 Cleaning database...');
   
-  // Delete in order to respect foreign key constraints
-  await prisma.metric.deleteMany({}); // Delete metrics first (they reference equipment)
+  // Delete in correct order to respect foreign key constraints
+  await prisma.dashboard.deleteMany({});
+  await prisma.setting.deleteMany({});
   await prisma.qualityCheck.deleteMany({});
+  await prisma.productionOrder.deleteMany({});
+  await prisma.metric.deleteMany({});
   await prisma.qualityMetric.deleteMany({});
-  await prisma.performanceMetric.deleteMany({});
   await prisma.maintenanceRecord.deleteMany({});
   await prisma.alert.deleteMany({});
-  await prisma.productionOrder.deleteMany({});
-  await prisma.equipment.deleteMany({});
-  await prisma.productionLine.deleteMany({});
-  await prisma.dashboard.deleteMany({});
+  await prisma.performanceMetric.deleteMany({});
+  await prisma.product.deleteMany({});
+  await prisma.productionData.deleteMany({});
+  await prisma.downtimeCause.deleteMany({});
+  await prisma.workUnitKPISummary.deleteMany({});
+  await prisma.workCenterKPISummary.deleteMany({});
+  await prisma.areaKPISummary.deleteMany({});
+  await prisma.siteKPISummary.deleteMany({});
+  await prisma.enterpriseKPISummary.deleteMany({});
+  await prisma.workUnit.deleteMany({});
+  await prisma.workCenter.deleteMany({});
+  await prisma.area.deleteMany({});
   await prisma.user.deleteMany({});
-  await prisma.setting.deleteMany({});
+  await prisma.site.deleteMany({});
+  await prisma.enterprise.deleteMany({});
   
-  console.log('Database cleaned.');
+  console.log('✅ Database cleaned\n');
 }
 
-/**
- * Seed Equipment data
- */
-async function seedEquipment() {
-  console.log('Seeding equipment...');
+async function createEnterprise() {
+  console.log('🏢 Creating Enterprise...');
   
-  const equipmentData = [
-    {
-      name: 'CNC Machine 1',
-      type: 'CNC',
-      manufacturerCode: 'HAAS-F1',
-      serialNumber: 'CNC-12345',
-      installationDate: new Date('2022-01-15'),
-      status: 'operational',
-      location: 'Building A, Floor 1',
-      model: 'HAAS VF-2',
+  const enterprise = await prisma.enterprise.create({
+    data: {
+      id: 'ent-001',
+      name: 'AdaptiveFactory Global Manufacturing',
+      code: 'ENT-001',
+      updatedAt: new Date(),
     },
-    {
-      name: 'Injection Molder 2',
-      type: 'Injection Molding',
-      manufacturerCode: 'ENGEL-IM',
-      serialNumber: 'IM-54321',
-      installationDate: new Date('2021-11-05'),
-      status: 'maintenance',
-      location: 'Building B, Floor 2',
-      model: 'ENGEL E-motion 160',
-    },
-    {
-      name: 'Assembly Robot 3',
-      type: 'Robot',
-      manufacturerCode: 'FANUC-R2000',
-      serialNumber: 'ROB-67890',
-      installationDate: new Date('2022-03-20'),
-      status: 'operational',
-      location: 'Building A, Floor 2',
-      model: 'FANUC R-2000iC',
-    },
-    {
-      name: 'Conveyor System A',
-      type: 'Conveyor',
-      manufacturerCode: 'DORNER-CV',
-      serialNumber: 'CNV-24680',
-      installationDate: new Date('2021-08-10'),
-      status: 'operational',
-      location: 'Building A, Floor 1',
-      model: 'Dorner 2200',
-    },
-    {
-      name: 'Packaging Machine 5',
-      type: 'Packaging',
-      manufacturerCode: 'BOSCH-PM',
-      serialNumber: 'PKG-13579',
-      installationDate: new Date('2022-02-08'),
-      status: 'error',
-      location: 'Building C, Floor 1',
-      model: 'Bosch Pack 301',
-    }
-  ];
+  });
   
-  for (const equipment of equipmentData) {
-    await prisma.equipment.create({
-      data: equipment
-    });
-  }
-  
-  console.log(`Created ${equipmentData.length} equipment records.`);
+  console.log(`✅ Created Enterprise: ${enterprise.name}`);
+  return enterprise;
 }
 
-/**
- * Seed Production Lines data
- */
-async function seedProductionLines() {
-  console.log('Seeding production lines...');
+async function createSites(enterpriseId: string) {
+  console.log('\n🏭 Creating Sites...');
   
-  // Get equipment IDs for associations
-  const equipment = await prisma.equipment.findMany();
+  const sites = await Promise.all([
+    prisma.site.create({
+      data: {
+        id: 'site-na001',
+        enterpriseId,
+        name: 'North America Manufacturing',
+        code: 'SITE-NA001',
+        location: 'Detroit, MI, USA',
+        updatedAt: new Date(),
+      },
+    }),
+    prisma.site.create({
+      data: {
+        id: 'site-ap001',
+        enterpriseId,
+        name: 'Asia Pacific Manufacturing',
+        code: 'SITE-AP001',
+        location: 'Shanghai, China',
+        updatedAt: new Date(),
+      },
+    }),
+  ]);
   
-  const productionLinesData = [
-    {
-      name: 'Main Assembly Line',
-      department: 'Assembly',
-      description: 'Primary assembly line for product A and B',
-      status: 'active',
-      equipment: {
-        connect: [
-          { id: equipment[0].id },
-          { id: equipment[2].id },
-          { id: equipment[3].id }
-        ]
-      }
-    },
-    {
-      name: 'Packaging Line 1',
-      department: 'Packaging',
-      description: 'Packaging line for finished products',
-      status: 'active',
-      equipment: {
-        connect: [
-          { id: equipment[3].id },
-          { id: equipment[4].id }
-        ]
-      }
-    },
-    {
-      name: 'Injection Molding Line',
-      department: 'Manufacturing',
-      description: 'Plastic parts production',
-      status: 'maintenance',
-      equipment: {
-        connect: [
-          { id: equipment[1].id }
-        ]
-      }
-    }
-  ];
-  
-  for (const line of productionLinesData) {
-    await prisma.productionLine.create({
-      data: line
-    });
-  }
-  
-  console.log(`Created ${productionLinesData.length} production lines.`);
-  
-  // Now create some production orders
-  const productionLines = await prisma.productionLine.findMany();
-  
-  const productionOrdersData = [
-    {
-      orderNumber: 'PO-2023-001',
-      productionLineId: productionLines[0].id,
-      product: 'Product A',
-      quantity: 5000,
-      targetStartDate: new Date('2023-05-01'),
-      targetEndDate: new Date('2023-05-03'),
-      actualStartDate: new Date('2023-05-01'),
-      actualEndDate: new Date('2023-05-04'),
-      status: 'completed',
-      priority: 2
-    },
-    {
-      orderNumber: 'PO-2023-002',
-      productionLineId: productionLines[0].id,
-      product: 'Product B',
-      quantity: 3000,
-      targetStartDate: new Date('2023-05-05'),
-      targetEndDate: new Date('2023-05-07'),
-      actualStartDate: new Date('2023-05-05'),
-      status: 'in-progress',
-      priority: 1
-    },
-    {
-      orderNumber: 'PO-2023-003',
-      productionLineId: productionLines[1].id,
-      product: 'Product C',
-      quantity: 8000,
-      targetStartDate: new Date('2023-05-10'),
-      targetEndDate: new Date('2023-05-15'),
-      status: 'scheduled',
-      priority: 3
-    }
-  ];
-  
-  for (const order of productionOrdersData) {
-    await prisma.productionOrder.create({
-      data: order
-    });
-  }
-  
-  console.log(`Created ${productionOrdersData.length} production orders.`);
+  console.log(`✅ Created ${sites.length} sites`);
+  return sites;
 }
 
-/**
- * Seed Performance Metrics data
- */
-async function seedPerformanceMetrics() {
-  console.log('Seeding performance metrics...');
+async function createAreas(sites: any[]) {
+  console.log('\n🏭 Creating Areas...');
   
-  // Get equipment and production lines for associations
-  const equipment = await prisma.equipment.findMany();
-  const productionLines = await prisma.productionLine.findMany();
+  const [northAmericaSite, asiaPacificSite] = sites;
   
-  // Generate metrics for the last 30 days
+  const areas = await Promise.all([
+    // North America Areas
+    prisma.area.create({
+      data: {
+        id: 'area-na001-aut',
+        siteId: northAmericaSite.id,
+        name: 'Automotive Assembly',
+        code: 'AREA-NA001-AUT',
+        updatedAt: new Date(),
+      },
+    }),
+    prisma.area.create({
+      data: {
+        id: 'area-na001-qc',
+        siteId: northAmericaSite.id,
+        name: 'Quality Control',
+        code: 'AREA-NA001-QC',
+        updatedAt: new Date(),
+      },
+    }),
+    // Asia Pacific Areas
+    prisma.area.create({
+      data: {
+        id: 'area-ap001-elec',
+        siteId: asiaPacificSite.id,
+        name: 'Electronics Manufacturing',
+        code: 'AREA-AP001-ELEC',
+        updatedAt: new Date(),
+      },
+    }),
+    prisma.area.create({
+      data: {
+        id: 'area-ap001-semi',
+        siteId: asiaPacificSite.id,
+        name: 'Semiconductor Fabrication',
+        code: 'AREA-AP001-SEMI',
+        updatedAt: new Date(),
+      },
+    }),
+  ]);
+  
+  console.log(`✅ Created ${areas.length} areas`);
+  return areas;
+}
+
+async function createWorkCenters(areas: any[]) {
+  console.log('\n🔧 Creating Work Centers...');
+  
+  const [automotiveArea, qualityControlArea, electronicsArea, semiconductorArea] = areas;
+  
+  const workCenters = await Promise.all([
+    // Automotive Work Centers
+    prisma.workCenter.create({
+      data: {
+        id: 'wc-na001-aut-ba',
+        areaId: automotiveArea.id,
+        name: 'Body Assembly',
+        code: 'WC-NA001-AUT-BA',
+        updatedAt: new Date(),
+      },
+    }),
+    prisma.workCenter.create({
+      data: {
+        id: 'wc-na001-aut-pt',
+        areaId: automotiveArea.id,
+        name: 'Painting',
+        code: 'WC-NA001-AUT-PT',
+        updatedAt: new Date(),
+      },
+    }),
+    // Quality Control Work Centers
+    prisma.workCenter.create({
+      data: {
+        id: 'wc-na001-qc-di',
+        areaId: qualityControlArea.id,
+        name: 'Dimensional Inspection',
+        code: 'WC-NA001-QC-DI',
+        updatedAt: new Date(),
+      },
+    }),
+    // Electronics Work Centers
+    prisma.workCenter.create({
+      data: {
+        id: 'wc-ap001-elec-pcb',
+        areaId: electronicsArea.id,
+        name: 'PCB Assembly',
+        code: 'WC-AP001-ELEC-PCB',
+        updatedAt: new Date(),
+      },
+    }),
+    prisma.workCenter.create({
+      data: {
+        id: 'wc-ap001-elec-fa',
+        areaId: electronicsArea.id,
+        name: 'Final Assembly',
+        code: 'WC-AP001-ELEC-FA',
+        updatedAt: new Date(),
+      },
+    }),
+    // Semiconductor Work Centers
+    prisma.workCenter.create({
+      data: {
+        id: 'wc-ap001-semi-wp',
+        areaId: semiconductorArea.id,
+        name: 'Wafer Processing',
+        code: 'WC-AP001-SEMI-WP',
+        updatedAt: new Date(),
+      },
+    }),
+  ]);
+  
+  console.log(`✅ Created ${workCenters.length} work centers`);
+  return workCenters;
+}
+
+async function createWorkUnits(workCenters: any[]) {
+  console.log('\n⚙️ Creating Work Units...');
+  
+  const workUnits = [];
+  
+  // Body Assembly Work Units
+  workUnits.push(
+    await prisma.workUnit.create({
+      data: {
+        id: 'wu-na001-aut-ba-rw1',
+        workCenterId: workCenters[0].id,
+        name: 'Robotic Welding Cell 1',
+        code: 'WU-NA001-AUT-BA-RW1',
+        equipmentType: 'Robotic Welder',
+        model: 'Fanuc R-2000iC',
+        serialNumber: 'RW-2024-001',
+        manufacturerCode: 'FANUC-R2K-001',
+        installationDate: new Date('2022-01-15'),
+        status: 'operational',
+        location: 'Bay A1',
+        description: 'High-precision robotic welding cell for body panel assembly',
+        updatedAt: new Date(),
+      },
+    }),
+    await prisma.workUnit.create({
+      data: {
+        id: 'wu-na001-aut-ba-rw2',
+        workCenterId: workCenters[0].id,
+        name: 'Robotic Welding Cell 2',
+        code: 'WU-NA001-AUT-BA-RW2',
+        equipmentType: 'Robotic Welder',
+        model: 'Fanuc R-2000iC',
+        serialNumber: 'RW-2024-002',
+        manufacturerCode: 'FANUC-R2K-002',
+        installationDate: new Date('2022-01-20'),
+        status: 'operational',
+        location: 'Bay A2',
+        description: 'High-precision robotic welding cell for body panel assembly',
+        updatedAt: new Date(),
+      },
+    })
+  );
+  
+  // Paint Work Units
+  workUnits.push(
+    await prisma.workUnit.create({
+      data: {
+        id: 'wu-na001-aut-pt-pb1',
+        workCenterId: workCenters[1].id,
+        name: 'Paint Booth 1',
+        code: 'WU-NA001-AUT-PT-PB1',
+        equipmentType: 'Paint Booth',
+        model: 'Durr EcoRP E133',
+        serialNumber: 'PB-2024-001',
+        manufacturerCode: 'DURR-ERP-001',
+        installationDate: new Date('2022-02-01'),
+        status: 'operational',
+        location: 'Paint Shop East',
+        description: 'Automated paint booth with electrostatic application system',
+        updatedAt: new Date(),
+      },
+    })
+  );
+  
+  // Quality Control Work Units
+  workUnits.push(
+    await prisma.workUnit.create({
+      data: {
+        id: 'wu-na001-qc-di-cmm1',
+        workCenterId: workCenters[2].id,
+        name: 'CMM Station 1',
+        code: 'WU-NA001-QC-DI-CMM1',
+        equipmentType: 'Coordinate Measuring Machine',
+        model: 'Zeiss PRISMO 10',
+        serialNumber: 'CMM-2024-001',
+        manufacturerCode: 'ZEISS-P10-001',
+        installationDate: new Date('2022-03-01'),
+        status: 'operational',
+        location: 'Quality Lab 1',
+        description: 'High-accuracy coordinate measuring machine for dimensional verification',
+        updatedAt: new Date(),
+      },
+    })
+  );
+  
+  // PCB Assembly Work Units
+  workUnits.push(
+    await prisma.workUnit.create({
+      data: {
+        id: 'wu-ap001-elec-pcb-smt1',
+        workCenterId: workCenters[3].id,
+        name: 'SMT Line 1',
+        code: 'WU-AP001-ELEC-PCB-SMT1',
+        equipmentType: 'SMT Line',
+        model: 'Fuji NXT III',
+        serialNumber: 'SMT-2024-001',
+        manufacturerCode: 'FUJI-NXT3-001',
+        installationDate: new Date('2022-04-01'),
+        status: 'operational',
+        location: 'PCB Floor East',
+        description: 'High-speed surface mount technology line for PCB assembly',
+        updatedAt: new Date(),
+      },
+    })
+  );
+  
+  console.log(`✅ Created ${workUnits.length} work units`);
+  return workUnits;
+}
+
+async function createUsers(sites: any[]) {
+  console.log('\n👥 Creating Users...');
+  
+  const hashedPassword = await bcrypt.hash('password123', 10);
+  
+  const users = await Promise.all([
+    prisma.user.create({
+      data: {
+        email: 'admin@adaptivefactory.com',
+        name: 'System Administrator',
+        role: 'admin',
+        department: 'IT',
+        passwordHash: hashedPassword,
+        siteId: sites[0].id,
+      },
+    }),
+    prisma.user.create({
+      data: {
+        email: 'operator@adaptivefactory.com',
+        name: 'Production Operator',
+        role: 'operator',
+        department: 'Production',
+        passwordHash: hashedPassword,
+        siteId: sites[0].id,
+      },
+    }),
+    prisma.user.create({
+      data: {
+        email: 'manager@adaptivefactory.com',
+        name: 'Production Manager',
+        role: 'manager',
+        department: 'Production',
+        passwordHash: hashedPassword,
+        siteId: sites[1].id,
+      },
+    }),
+  ]);
+  
+  console.log(`✅ Created ${users.length} users`);
+  return users;
+}
+
+async function createPerformanceMetrics(workUnits: any[]) {
+  console.log('\n📊 Creating Performance Metrics...');
+  
+  let metricsCount = 0;
   const now = new Date();
-  const metrics = [];
   
-  // For each equipment
-  for (const equip of equipment) {
-    // If status is operational, generate 30 days of data
-    if (equip.status === 'operational') {
-      for (let i = 0; i < 30; i++) {
-        const date = new Date(now);
-        date.setDate(date.getDate() - i);
+  for (const workUnit of workUnits) {
+    // Create metrics for last 7 days
+    for (let day = 0; day < 7; day++) {
+      for (let hour = 0; hour < 24; hour += 4) {
+        const availability = 85 + Math.random() * 15;
+        const performance = 80 + Math.random() * 20;
+        const quality = 95 + Math.random() * 5;
+        const oeeScore = (availability * performance * quality) / 10000;
         
-        // Generate slightly randomized metrics
-        const availability = 0.85 + (Math.random() * 0.1);
-        const performance = 0.8 + (Math.random() * 0.15);
-        const quality = 0.95 + (Math.random() * 0.05);
-        const oeeScore = availability * performance * quality;
-        
-        metrics.push({
-          equipmentId: equip.id,
-          timestamp: date,
-          availability,
-          performance,
-          quality,
-          oeeScore,
-          runTime: 480 - (Math.random() * 50),  // Out of 8 hours (480 minutes)
-          plannedDowntime: 30 + (Math.random() * 20),
-          unplannedDowntime: Math.random() * 30,
-          idealCycleTime: 30,
-          actualCycleTime: 30 + (Math.random() * 5),
-          totalParts: 500 + Math.floor(Math.random() * 100),
-          goodParts: 485 + Math.floor(Math.random() * 15),
-          shift: i % 3 === 0 ? 'morning' : i % 3 === 1 ? 'afternoon' : 'night',
-          operator: `Operator ${(i % 5) + 1}`
+        await prisma.performanceMetric.create({
+          data: {
+            workUnitId: workUnit.id,
+            timestamp: new Date(now.getTime() - (day * 24 + hour) * 60 * 60 * 1000),
+            availability,
+            performance,
+            quality,
+            oeeScore,
+            runTime: 200 + Math.random() * 40,
+            plannedDowntime: Math.random() * 30,
+            unplannedDowntime: Math.random() * 20,
+            idealCycleTime: 45 + Math.random() * 10,
+            actualCycleTime: 50 + Math.random() * 15,
+            totalParts: Math.floor(150 + Math.random() * 100),
+            goodParts: Math.floor(140 + Math.random() * 90),
+            shift: hour < 8 ? 'Night' : hour < 16 ? 'Day' : 'Evening',
+            operator: `Operator-${Math.floor(Math.random() * 10) + 1}`,
+          },
         });
+        metricsCount++;
       }
     }
   }
   
-  // For each production line
-  for (const line of productionLines) {
-    if (line.status === 'active') {
-      for (let i = 0; i < 30; i++) {
-        const date = new Date(now);
-        date.setDate(date.getDate() - i);
-        
-        // Generate slightly different metrics for production lines
-        const availability = 0.8 + (Math.random() * 0.15);
-        const performance = 0.75 + (Math.random() * 0.2);
-        const quality = 0.9 + (Math.random() * 0.09);
-        const oeeScore = availability * performance * quality;
-        
-        metrics.push({
-          productionLineId: line.id,
-          timestamp: date,
-          availability,
-          performance,
-          quality,
-          oeeScore,
-          runTime: 460 - (Math.random() * 60),
-          plannedDowntime: 40 + (Math.random() * 20),
-          unplannedDowntime: 10 + (Math.random() * 40),
-          shift: i % 3 === 0 ? 'morning' : i % 3 === 1 ? 'afternoon' : 'night'
-        });
-      }
-    }
-  }
-  
-  // Create all metrics
-  await prisma.performanceMetric.createMany({
-    data: metrics
-  });
-  
-  console.log(`Created ${metrics.length} performance metrics.`);
+  console.log(`✅ Created ${metricsCount} performance metrics`);
 }
 
-/**
- * Seed Maintenance Records data
- */
-async function seedMaintenanceRecords() {
-  console.log('Seeding maintenance records...');
+async function createAlerts(workUnits: any[]) {
+  console.log('\n🚨 Creating Alerts...');
   
-  const equipment = await prisma.equipment.findMany();
-  const maintenanceRecords = [];
+  const alertTypes = ['Temperature High', 'Vibration Abnormal', 'Pressure Low', 'Quality Issue', 'Maintenance Due'];
+  const severities = ['low', 'medium', 'high', 'critical'];
+  const statuses = ['active', 'acknowledged', 'resolved'];
   
-  // Generate past maintenance records
-  for (const equip of equipment) {
-    // Create completed records
-    for (let i = 0; i < 3; i++) {
-      const date = new Date();
-      date.setMonth(date.getMonth() - i);
-      
-      const startTime = new Date(date);
-      const endTime = new Date(date);
-      endTime.setHours(endTime.getHours() + 2 + Math.floor(Math.random() * 3));
-      
-      maintenanceRecords.push({
-        equipmentId: equip.id,
-        maintenanceType: i % 3 === 0 ? 'preventive' : i % 3 === 1 ? 'corrective' : 'predictive',
-        description: `${i % 3 === 0 ? 'Regular' : i % 3 === 1 ? 'Emergency' : 'Scheduled'} maintenance for ${equip.name}`,
-        technician: `Technician ${(i % 3) + 1}`,
-        startTime,
-        endTime,
-        status: 'completed',
-        notes: 'Maintenance completed successfully',
-        parts: i % 2 === 0 ? ['Filter', 'Lubricant'] : ['Belt', 'Bearing', 'Sensor']
-      });
-    }
-    
-    // Create one scheduled maintenance for the future
-    const futureDate = new Date();
-    futureDate.setDate(futureDate.getDate() + 7 + Math.floor(Math.random() * 14));
-    
-    maintenanceRecords.push({
-      equipmentId: equip.id,
-      maintenanceType: 'preventive',
-      description: `Scheduled maintenance for ${equip.name}`,
-      technician: `Technician ${Math.floor(Math.random() * 3) + 1}`,
-      startTime: futureDate,
-      status: 'scheduled',
-      notes: 'Regular preventive maintenance',
-      parts: ['Filter', 'Lubricant', 'Seals']
-    });
-    
-    // If equipment is currently in maintenance, add an in-progress record
-    if (equip.status === 'maintenance') {
-      const today = new Date();
-      
-      maintenanceRecords.push({
-        equipmentId: equip.id,
-        maintenanceType: 'corrective',
-        description: `Urgent repair for ${equip.name}`,
-        technician: `Technician ${Math.floor(Math.random() * 3) + 1}`,
-        startTime: today,
-        status: 'in-progress',
-        notes: 'Addressing unexpected issues with the equipment',
-        parts: ['Controller', 'Motor', 'Wiring']
-      });
-    }
-  }
-  
-  // Create all maintenance records
-  await prisma.maintenanceRecord.createMany({
-    data: maintenanceRecords
-  });
-  
-  console.log(`Created ${maintenanceRecords.length} maintenance records.`);
-}
-
-/**
- * Seed Quality Metrics data
- */
-async function seedQualityMetrics() {
-  console.log('Seeding quality metrics...');
-  
-  const equipment = await prisma.equipment.findMany();
-  const qualityMetrics = [];
-  
-  // Parameters to measure
-  const parameters = [
-    { name: 'dimension', nominal: 100, lowerLimit: 99.5, upperLimit: 100.5, uom: 'mm' },
-    { name: 'weight', nominal: 500, lowerLimit: 495, upperLimit: 505, uom: 'g' },
-    { name: 'surface_finish', nominal: 1.6, lowerLimit: 0.8, upperLimit: 3.2, uom: 'Ra' },
-    { name: 'hardness', nominal: 45, lowerLimit: 40, upperLimit: 50, uom: 'HRC' },
-    { name: 'color_consistency', nominal: 0, lowerLimit: -0.5, upperLimit: 0.5, uom: 'dE' }
-  ];
-  
-  // Generate quality metrics for each equipment
-  for (const equip of equipment) {
-    // Generate 50 quality measurements per equipment
-    for (let i = 0; i < 50; i++) {
-      // Select a random parameter
-      const paramIndex = Math.floor(Math.random() * parameters.length);
-      const param = parameters[paramIndex];
-      
-      // Generate a value that's usually within spec but occasionally out
-      let value;
-      const isWithinSpec = Math.random() < 0.95; // 95% within spec
-      
-      if (isWithinSpec) {
-        // Within spec
-        value = param.nominal + (Math.random() * (param.upperLimit - param.lowerLimit) - (param.upperLimit - param.nominal));
-      } else {
-        // Out of spec
-        if (Math.random() < 0.5) {
-          // Below lower limit
-          value = param.lowerLimit - (Math.random() * param.lowerLimit * 0.05);
-        } else {
-          // Above upper limit
-          value = param.upperLimit + (Math.random() * param.upperLimit * 0.05);
-        }
-      }
-      
-      // Calculate deviation
-      const deviation = value - param.nominal;
-      
-      // Create timestamp within last 30 days
-      const date = new Date();
-      date.setDate(date.getDate() - Math.floor(Math.random() * 30));
-      
-      qualityMetrics.push({
-        equipmentId: equip.id,
-        timestamp: date,
-        parameter: param.name,
-        value,
-        uom: param.uom,
-        lowerLimit: param.lowerLimit,
-        upperLimit: param.upperLimit,
-        nominal: param.nominal,
-        isWithinSpec: value >= param.lowerLimit && value <= param.upperLimit,
-        deviation
-      });
-    }
-  }
-  
-  // Create all quality metrics
-  await prisma.qualityMetric.createMany({
-    data: qualityMetrics
-  });
-  
-  console.log(`Created ${qualityMetrics.length} quality metrics.`);
-  
-  // Create some quality checks for production orders
-  const productionOrders = await prisma.productionOrder.findMany();
-  const qualityChecks = [];
-  
-  for (const order of productionOrders) {
-    // Only create checks for in-progress or completed orders
-    if (order.status === 'in-progress' || order.status === 'completed') {
-      // Create in-process checks
-      for (let i = 0; i < 3; i++) {
-        const date = new Date();
-        date.setDate(date.getDate() - (10 - i * 3));
-        
-        const passed = Math.random() < 0.9; // 90% pass rate
-        
-        qualityChecks.push({
-          productionOrderId: order.id,
-          checkType: 'in-process',
-          inspector: `Inspector ${(i % 3) + 1}`,
-          timestamp: date,
-          result: passed ? 'pass' : 'fail',
-          notes: passed ? 'All specifications met' : 'Issues found during inspection',
-          defectTypes: passed ? [] : ['Dimensional', 'Surface finish'],
-          defectCounts: passed ? [] : [2, 1]
-        });
-      }
-      
-      // Create final check for completed orders
-      if (order.status === 'completed') {
-        const date = new Date(order.actualEndDate!);
-        
-        qualityChecks.push({
-          productionOrderId: order.id,
-          checkType: 'final',
-          inspector: 'QA Manager',
-          timestamp: date,
-          result: 'pass', // Completed orders always passed final QC
-          notes: 'Final quality check passed. Product approved for shipment.',
-          defectTypes: [],
-          defectCounts: []
-        });
-      }
-    }
-  }
-  
-  await prisma.qualityCheck.createMany({
-    data: qualityChecks
-  });
-  
-  console.log(`Created ${qualityChecks.length} quality checks.`);
-}
-
-/**
- * Seed Alerts data
- */
-async function seedAlerts() {
-  console.log('Seeding alerts...');
-  
-  const equipment = await prisma.equipment.findMany();
   const alerts = [];
   
-  // Alert types and messages
-  const alertTypes = [
-    { type: 'maintenance', severity: 'medium', message: 'Scheduled maintenance due' },
-    { type: 'maintenance', severity: 'high', message: 'Critical maintenance required' },
-    { type: 'quality', severity: 'medium', message: 'Quality metrics approaching threshold' },
-    { type: 'quality', severity: 'high', message: 'Quality metrics exceeding threshold' },
-    { type: 'performance', severity: 'low', message: 'Performance below target' },
-    { type: 'performance', severity: 'medium', message: 'Significant performance drop detected' },
-    { type: 'safety', severity: 'critical', message: 'Emergency stop triggered' }
-  ];
-  
-  // For each equipment, create some alerts
-  for (const equip of equipment) {
-    // Create 1-3 alerts per equipment
-    const alertCount = Math.floor(Math.random() * 3) + 1;
+  for (let i = 0; i < 15; i++) {
+    const workUnit = workUnits[Math.floor(Math.random() * workUnits.length)];
+    const alertType = alertTypes[Math.floor(Math.random() * alertTypes.length)];
+    const severity = severities[Math.floor(Math.random() * severities.length)];
+    const status = statuses[Math.floor(Math.random() * statuses.length)];
     
-    for (let i = 0; i < alertCount; i++) {
-      // Pick a random alert type
-      const alertInfo = alertTypes[Math.floor(Math.random() * alertTypes.length)];
-      
-      // Create a timestamp within the last 3 days
-      const date = new Date();
-      date.setHours(date.getHours() - Math.floor(Math.random() * 72));
-      
-      // Determine status - newer alerts are more likely to be active
-      let status;
-      const hoursAgo = (new Date().getTime() - date.getTime()) / (1000 * 60 * 60);
-      
-      if (hoursAgo < 24) {
-        status = Math.random() < 0.7 ? 'active' : 'acknowledged';
-      } else if (hoursAgo < 48) {
-        status = Math.random() < 0.4 ? 'active' : Math.random() < 0.7 ? 'acknowledged' : 'resolved';
-      } else {
-        status = Math.random() < 0.2 ? 'active' : Math.random() < 0.4 ? 'acknowledged' : 'resolved';
-      }
-      
-      // For acknowledged and resolved alerts, add the relevant information
-      let acknowledgedBy, acknowledgedAt, resolvedBy, resolvedAt;
-      
-      if (status === 'acknowledged' || status === 'resolved') {
-        acknowledgedBy = `User ${Math.floor(Math.random() * 3) + 1}`;
-        acknowledgedAt = new Date(date.getTime() + 1000 * 60 * (Math.floor(Math.random() * 60) + 15));
-      }
-      
-      if (status === 'resolved') {
-        resolvedBy = `User ${Math.floor(Math.random() * 3) + 1}`;
-        resolvedAt = new Date(acknowledgedAt!.getTime() + 1000 * 60 * (Math.floor(Math.random() * 120) + 30));
-      }
-      
-      alerts.push({
-        equipmentId: equip.id,
-        alertType: alertInfo.type,
-        severity: alertInfo.severity,
-        message: `${alertInfo.message} for ${equip.name}`,
+    const alert = await prisma.alert.create({
+      data: {
+        alertType,
+        severity,
+        message: `${alertType} detected on ${workUnit.name}`,
         status,
-        timestamp: date,
-        acknowledgedBy,
-        acknowledgedAt,
-        resolvedBy,
-        resolvedAt,
-        notes: status === 'resolved' ? 'Issue has been addressed' : undefined
-      });
-    }
+        timestamp: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000),
+        workUnitId: workUnit.id,
+        notes: status !== 'active' ? `Handled by maintenance team` : null,
+        acknowledgedBy: status !== 'active' ? 'Operator-1' : null,
+        acknowledgedAt: status !== 'active' ? new Date() : null,
+        resolvedBy: status === 'resolved' ? 'Technician-1' : null,
+        resolvedAt: status === 'resolved' ? new Date() : null,
+      },
+    });
+    alerts.push(alert);
+  }
+  
+  console.log(`✅ Created ${alerts.length} alerts`);
+  return alerts;
+}
+
+async function createMaintenanceRecords(workUnits: any[]) {
+  console.log('\n🔧 Creating Maintenance Records...');
+  
+  const maintenanceTypes = ['Preventive', 'Corrective', 'Predictive', 'Emergency'];
+  const statuses = ['scheduled', 'in-progress', 'completed', 'cancelled'];
+  
+  const records = [];
+  
+  for (let i = 0; i < 10; i++) {
+    const workUnit = workUnits[Math.floor(Math.random() * workUnits.length)];
+    const maintenanceType = maintenanceTypes[Math.floor(Math.random() * maintenanceTypes.length)];
+    const status = statuses[Math.floor(Math.random() * statuses.length)];
     
-    // If equipment is in error status, add a critical active alert
-    if (equip.status === 'error') {
-      alerts.push({
-        equipmentId: equip.id,
-        alertType: 'maintenance',
-        severity: 'critical',
-        message: `Equipment failure detected on ${equip.name}`,
-        status: 'active',
-        timestamp: new Date(new Date().getTime() - 1000 * 60 * 30) // 30 minutes ago
-      });
+    const record = await prisma.maintenanceRecord.create({
+      data: {
+        workUnitId: workUnit.id,
+        maintenanceType,
+        description: `${maintenanceType} maintenance for ${workUnit.name}`,
+        technician: `Technician-${Math.floor(Math.random() * 5) + 1}`,
+        startTime: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
+        endTime: status === 'completed' ? new Date() : null,
+        status,
+        notes: status === 'completed' ? 'Maintenance completed successfully' : null,
+        parts: ['Filter', 'Oil', 'Belt'],
+      },
+    });
+    records.push(record);
+  }
+  
+  console.log(`✅ Created ${records.length} maintenance records`);
+  return records;
+}
+
+async function createProductionOrders(workCenters: any[]) {
+  console.log('\n📦 Creating Production Orders...');
+  
+  const orders = [];
+  
+  for (let i = 0; i < 5; i++) {
+    const workCenter = workCenters[i % workCenters.length];
+    const order = await prisma.productionOrder.create({
+      data: {
+        orderNumber: `PO-2024-${String(i + 1).padStart(3, '0')}`,
+        workCenterId: workCenter.id,
+        product: `Product ${i + 1}`,
+        quantity: 1000 + i * 100,
+        targetStartDate: new Date(Date.now() + i * 24 * 60 * 60 * 1000),
+        targetEndDate: new Date(Date.now() + (i + 1) * 24 * 60 * 60 * 1000),
+        status: i === 0 ? 'in-progress' : 'scheduled',
+        priority: Math.floor(Math.random() * 5) + 1,
+      },
+    });
+    orders.push(order);
+  }
+  
+  console.log(`✅ Created ${orders.length} production orders`);
+  return orders;
+}
+
+async function createMetrics(workUnits: any[]) {
+  console.log('\n📈 Creating Time-Series Metrics...');
+  
+  const metricNames = ['temperature', 'pressure', 'vibration', 'power_consumption'];
+  const units = { temperature: '°C', pressure: 'bar', vibration: 'mm/s', power_consumption: 'kW' };
+  
+  let metricsCount = 0;
+  const now = new Date();
+  
+  for (const workUnit of workUnits) {
+    // Create metrics for last 24 hours
+    for (let hour = 0; hour < 24; hour++) {
+      for (const metricName of metricNames) {
+        await prisma.metric.create({
+          data: {
+            workUnitId: workUnit.id,
+            timestamp: new Date(now.getTime() - hour * 60 * 60 * 1000),
+            name: metricName,
+            value: metricName === 'temperature' ? 65 + Math.random() * 10 :
+                   metricName === 'pressure' ? 4 + Math.random() * 2 :
+                   metricName === 'vibration' ? 0.5 + Math.random() * 1 :
+                   15 + Math.random() * 5,
+            unit: units[metricName as keyof typeof units],
+            quality: 0.95 + Math.random() * 0.05,
+            source: 'SCADA',
+          },
+        });
+        metricsCount++;
+      }
     }
   }
   
-  // Create all alerts
-  await prisma.alert.createMany({
-    data: alerts
-  });
-  
-  console.log(`Created ${alerts.length} alerts.`);
+  console.log(`✅ Created ${metricsCount} time-series metrics`);
 }
 
-/**
- * Seed Users data
- */
-async function seedUsers() {
-  console.log('Seeding users...');
+async function createKPISummaries(enterprise: any, sites: any[], areas: any[], workCenters: any[], workUnits: any[]) {
+  console.log('\n📊 Creating KPI Summaries...');
   
-  // Create standard password hash for all test users
-  const passwordHash = await hash('Password123!', 10);
+  const periodStart = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const periodEnd = new Date();
   
-  const usersData = [
-    {
-      email: 'admin@example.com',
-      name: 'Admin User',
-      role: 'admin',
-      department: 'IT',
-      passwordHash,
-      lastLogin: new Date()
+  // Enterprise KPI Summary
+  await prisma.enterpriseKPISummary.create({
+    data: {
+      id: 'ekpi-ent-001',
+      enterpriseId: enterprise.id,
+      oee: 82.5,
+      availability: 88.2,
+      performance: 89.1,
+      quality: 95.2,
+      mtbf: 72.5,
+      mttr: 2.8,
+      productionCount: BigInt(125000),
+      scrapRate: 3.2,
+      energyConsumption: BigInt(245000),
+      periodStart,
+      periodEnd,
+      updatedAt: new Date(),
     },
-    {
-      email: 'manager@example.com',
-      name: 'Production Manager',
-      role: 'manager',
-      department: 'Production',
-      passwordHash,
-      lastLogin: new Date(new Date().setDate(new Date().getDate() - 1))
-    },
-    {
-      email: 'engineer@example.com',
-      name: 'Process Engineer',
-      role: 'engineer',
-      department: 'Engineering',
-      passwordHash,
-      lastLogin: new Date(new Date().setDate(new Date().getDate() - 2))
-    },
-    {
-      email: 'operator@example.com',
-      name: 'Machine Operator',
-      role: 'operator',
-      department: 'Production',
-      passwordHash,
-      lastLogin: new Date(new Date().setHours(new Date().getHours() - 8))
-    }
-  ];
-  
-  await prisma.user.createMany({
-    data: usersData
   });
   
-  console.log(`Created ${usersData.length} users.`);
+  // Site KPI Summaries
+  for (const [index, site] of sites.entries()) {
+    await prisma.siteKPISummary.create({
+      data: {
+        id: `skpi-${site.id}`,
+        siteId: site.id,
+        oee: 80 + Math.random() * 10,
+        availability: 85 + Math.random() * 10,
+        performance: 85 + Math.random() * 10,
+        quality: 90 + Math.random() * 8,
+        mtbf: 70 + Math.random() * 20,
+        mttr: 2 + Math.random() * 2,
+        productionCount: BigInt(50000 + index * 25000),
+        scrapRate: 2 + Math.random() * 3,
+        energyConsumption: BigInt(100000 + index * 50000),
+        periodStart,
+        periodEnd,
+        updatedAt: new Date(),
+      },
+    });
+  }
+  
+  console.log('✅ Created KPI summaries');
 }
 
-/**
- * Seed Settings data
- */
-async function seedSettings() {
-  console.log('Seeding settings...');
-  
-  const settingsData = [
-    {
-      key: 'oee_target',
-      value: '85',
-      category: 'system'
-    },
-    {
-      key: 'quality_threshold',
-      value: '99',
-      category: 'system'
-    },
-    {
-      key: 'maintenance_notification_lead_time',
-      value: '48', // hours
-      category: 'notification'
-    },
-    {
-      key: 'dashboard_refresh_interval',
-      value: '5', // minutes
-      category: 'user'
-    },
-    {
-      key: 'ollama_host',
-      value: 'http://localhost:11434',
-      category: 'integration'
-    },
-    {
-      key: 'maintenance_reminder_enabled',
-      value: 'true',
-      category: 'notification'
-    },
-    {
-      key: 'alert_email_notifications',
-      value: 'true',
-      category: 'notification'
-    }
-  ];
-  
-  await prisma.setting.createMany({
-    data: settingsData
-  });
-  
-  console.log(`Created ${settingsData.length} settings.`);
-}
-
-// Execute the main function
+// Execute main function
 main()
   .catch((e) => {
-    console.error('Error during seeding:', e);
+    console.error(e);
     process.exit(1);
   })
   .finally(async () => {
-    // Close Prisma Client at the end
     await prisma.$disconnect();
   });

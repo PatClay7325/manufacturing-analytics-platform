@@ -124,9 +124,9 @@ async function testDatabaseLoad(loadConfig: any) {
         const requestStart = Date.now();
         try {
           await prisma.$transaction([
-            prisma.equipment.count(),
+            prisma.workUnit.count(),
             prisma.metric.findMany({ take: 10 }),
-            prisma.alert.findMany({ where: { status: 'ACTIVE' }, take: 5 }),
+            prisma.alert.findMany({ where: { status: 'active' }, take: 5 }),
           ]);
           
           return {

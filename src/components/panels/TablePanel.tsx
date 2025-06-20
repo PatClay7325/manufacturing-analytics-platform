@@ -31,7 +31,7 @@ export default function TablePanel({
 }: PanelProps<TablePanelOptions>) {
   
   const [sortState, setSortState] = useState<SortState | null>(
-    options.sortBy?.[0] ? {
+    options?.sortBy?.[0] ? {
       field: options.sortBy[0].displayName,
       direction: options.sortBy[0].desc ? 'desc' : 'asc'
     } : null
@@ -42,41 +42,41 @@ export default function TablePanel({
   const rowsPerPage = 50;
 
   const tableData = useMemo(() => {
-    if (!data || !data.length) return { rows: [], fields: [] };
+    if (!data || !data?.length) return { rows: [], fields: [] };
     
-    const frame = data[options.frameIndex] || data[0];
-    if (!frame || !frame.fields.length) return { rows: [], fields: [] };
+    const frame = data[options?.frameIndex] || data[0];
+    if (!frame || !frame?.fields.length) return { rows: [], fields: [] };
 
     // Convert DataFrame to table rows
     const rows: TableRow[] = [];
-    const rowCount = frame.length;
+    const rowCount = frame?.length;
     
     for (let i = 0; i < rowCount; i++) {
       const row: TableRow = { _index: i };
-      frame.fields.forEach(field => {
-        row[field.name] = field.values[i];
+      frame?.fields.forEach(field => {
+        row[field?.name] = field?.values[i];
       });
-      rows.push(row);
+      rows?.push(row);
     }
 
     return { rows, fields: frame.fields };
-  }, [data, options.frameIndex]);
+  }, [data, options?.frameIndex]);
 
   const filteredRows = useMemo(() => {
-    if (!filterText) return tableData.rows;
+    if (!filterText) return tableData?.rows;
     
-    const searchText = filterText.toLowerCase();
-    return tableData.rows.filter(row =>
+    const searchText = filterText?.toLowerCase();
+    return tableData?.rows.filter(row =>
       Object.values(row).some(value =>
         String(value).toLowerCase().includes(searchText)
       )
     );
-  }, [tableData.rows, filterText]);
+  }, [tableData?.rows, filterText]);
 
   const sortedRows = useMemo(() => {
     if (!sortState) return filteredRows;
     
-    const { field, direction } = sortState;
+    const { field, direction  } = sortState || {};
     return [...filteredRows].sort((a, b) => {
       const aVal = a[field];
       const bVal = b[field];
@@ -93,8 +93,8 @@ export default function TablePanel({
       
       if (aVal instanceof Date && bVal instanceof Date) {
         return direction === 'asc' 
-          ? aVal.getTime() - bVal.getTime() 
-          : bVal.getTime() - aVal.getTime();
+          ? aVal?.getTime() - bVal?.getTime() 
+          : bVal.getTime() - aVal?.getTime();
       }
       
       // String comparison
@@ -110,19 +110,19 @@ export default function TablePanel({
   }, [filteredRows, sortState]);
 
   const paginatedRows = useMemo(() => {
-    if (!options.footer?.enablePagination) return sortedRows;
+    if (!options?.footer?.enablePagination) return sortedRows;
     
     const startIndex = currentPage * rowsPerPage;
-    return sortedRows.slice(startIndex, startIndex + rowsPerPage);
-  }, [sortedRows, currentPage, options.footer?.enablePagination]);
+    return sortedRows?.slice(startIndex, startIndex + rowsPerPage);
+  }, [sortedRows, currentPage, options?.footer?.enablePagination]);
 
-  const totalPages = Math.ceil(sortedRows.length / rowsPerPage);
+  const totalPages = Math.ceil(sortedRows?.length / rowsPerPage);
 
   const handleSort = useCallback((fieldName: string) => {
     setSortState(current => {
       if (current?.field === fieldName) {
         // Toggle direction or remove sort
-        if (current.direction === 'asc') {
+        if (current?.direction === 'asc') {
           return { field: fieldName, direction: 'desc' };
         } else {
           return null; // Remove sort
@@ -138,18 +138,18 @@ export default function TablePanel({
     if (value == null) return '';
     
     // Apply field configuration formatting
-    if (field.config?.unit && typeof value === 'number') {
-      return `${value.toLocaleString()}${field.config.unit}`;
+    if (field?.config?.unit && typeof value === 'number') {
+      return `${value?.toLocaleString()}${field?.config.unit}`;
     }
     
-    if (field.type === 'time' && value instanceof Date) {
-      return value.toLocaleString();
+    if (field?.type === 'time' && value instanceof Date) {
+      return value?.toLocaleString();
     }
     
     if (typeof value === 'number') {
-      const decimals = field.config?.decimals;
+      const decimals = field?.config?.decimals;
       return decimals !== undefined 
-        ? value.toFixed(decimals) 
+        ? value?.toFixed(decimals) 
         : value.toLocaleString();
     }
     
@@ -160,17 +160,17 @@ export default function TablePanel({
     let baseClass = 'px-3 py-2 text-sm border-b border-gray-200';
     
     // Apply field color configuration
-    if (field.config?.color?.fixedColor) {
-      baseClass += ` text-[${field.config.color.fixedColor}]`;
+    if (field?.config?.color?.fixedColor) {
+      baseClass += ` text-[${field?.config.color?.fixedColor}]`;
     }
     
     // Apply threshold-based styling
-    if (field.config?.thresholds?.steps && typeof value === 'number') {
-      const thresholds = field.config.thresholds.steps;
-      for (let i = thresholds.length - 1; i >= 0; i--) {
+    if (field?.config?.thresholds?.steps && typeof value === 'number') {
+      const thresholds = field?.config.thresholds?.steps;
+      for (let i = thresholds?.length - 1; i >= 0; i--) {
         const threshold = thresholds[i];
-        if (threshold.value === null || value >= threshold.value) {
-          switch (threshold.color) {
+        if (threshold.value === null || value >= threshold?.value) {
+          switch (threshold?.color) {
             case 'red':
               baseClass += ' bg-red-50 text-red-900';
               break;
@@ -196,43 +196,43 @@ export default function TablePanel({
     
     return (
       <span className="text-blue-600 ml-1">
-        {sortState.direction === 'asc' ? '↑' : '↓'}
+        {sortState?.direction === 'asc' ? '↑' : '↓'}
       </span>
     );
   };
 
   const calculateFooterValues = (): Record<string, any> => {
-    if (!options.footer?.show || !options.footer?.reducer?.length) {
+    if (!options?.footer?.show || !options?.footer?.reducer?.length) {
       return {};
     }
     
     const calculations: Record<string, any> = {};
     
-    tableData.fields.forEach(field => {
-      if (field.type === 'number') {
-        const numericValues = tableData.rows
-          .map(row => row[field.name])
+    tableData?.fields.forEach(field => {
+      if (field?.type === 'number') {
+        const numericValues = tableData?.rows
+          .map(row => row[field?.name])
           .filter(val => typeof val === 'number' && !isNaN(val));
         
-        options.footer.reducer.forEach(calc => {
-          const key = `${field.name}_${calc}`;
+        options?.footer.reducer?.forEach(calc => {
+          const key = `${field?.name}_${calc}`;
           switch (calc) {
             case 'sum':
-              calculations[key] = numericValues.reduce((sum, val) => sum + val, 0);
+              calculations[key] = numericValues?.reduce((sum, val) => sum + val, 0);
               break;
             case 'avg':
-              calculations[key] = numericValues.length > 0 
-                ? numericValues.reduce((sum, val) => sum + val, 0) / numericValues.length 
+              calculations[key] = numericValues?.length > 0 
+                ? numericValues?.reduce((sum, val) => sum + val, 0) / numericValues?.length 
                 : 0;
               break;
             case 'min':
-              calculations[key] = numericValues.length > 0 ? Math.min(...numericValues) : 0;
+              calculations[key] = numericValues?.length > 0 ? Math.min(...numericValues) : 0;
               break;
             case 'max':
-              calculations[key] = numericValues.length > 0 ? Math.max(...numericValues) : 0;
+              calculations[key] = numericValues?.length > 0 ? Math.max(...numericValues) : 0;
               break;
             case 'count':
-              calculations[key] = numericValues.length;
+              calculations[key] = numericValues?.length;
               break;
           }
         });
@@ -244,7 +244,7 @@ export default function TablePanel({
 
   const footerValues = calculateFooterValues();
 
-  if (!tableData.fields.length) {
+  if (!tableData?.fields.length) {
     return (
       <div className="h-full w-full flex items-center justify-center text-gray-500">
         No data available
@@ -261,7 +261,7 @@ export default function TablePanel({
             type="text"
             placeholder="Filter data..."
             value={filterText}
-            onChange={(e) => setFilterText(e.target.value)}
+            onChange={(e) => setFilterText(e?.target.value)}
             className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {filterText && (
@@ -275,28 +275,28 @@ export default function TablePanel({
         </div>
         
         <div className="text-sm text-gray-600">
-          {sortedRows.length} rows {filterText && `(filtered from ${tableData.rows.length})`}
+          {sortedRows?.length} rows {filterText && `(filtered from ${tableData?.rows.length})`}
         </div>
       </div>
 
       {/* Table */}
       <div className="flex-1 overflow-auto">
         <table className="w-full">
-          {options.showHeader && (
+          {options?.showHeader && (
             <thead className="bg-gray-50 sticky top-0">
               <tr>
-                {tableData.fields.map((field) => (
+                {tableData?.(fields || []).map((field) => (
                   <th
-                    key={field.name}
+                    key={field?.name}
                     className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                    onClick={() => handleSort(field.name)}
+                    onClick={() => handleSort(field?.name)}
                   >
                     <div className="flex items-center">
-                      {field.config?.displayName || field.name}
-                      {getSortIcon(field.name)}
-                      {options.showTypeIcons && (
+                      {field?.config?.displayName || field?.name}
+                      {getSortIcon(field?.name)}
+                      {options?.showTypeIcons && (
                         <span className="ml-2 text-gray-400">
-                          {getTypeIcon(field.type)}
+                          {getTypeIcon(field?.type)}
                         </span>
                       )}
                     </div>
@@ -307,17 +307,17 @@ export default function TablePanel({
           )}
           
           <tbody>
-            {paginatedRows.map((row, index) => (
+            {paginatedRows?.map((row, index) => (
               <tr 
-                key={row._index}
+                key={row?._index}
                 className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
               >
-                {tableData.fields.map((field) => (
+                {tableData?.(fields || []).map((field) => (
                   <td
-                    key={field.name}
-                    className={getCellStyle(field, row[field.name])}
+                    key={field?.name}
+                    className={getCellStyle(field, row[field?.name])}
                   >
-                    {formatCellValue(field, row[field.name])}
+                    {formatCellValue(field, row[field?.name])}
                   </td>
                 ))}
               </tr>
@@ -325,18 +325,18 @@ export default function TablePanel({
           </tbody>
           
           {/* Footer with calculations */}
-          {options.footer?.show && (
+          {options?.footer?.show && (
             <tfoot className="bg-gray-100 border-t border-gray-300">
               <tr>
-                {tableData.fields.map((field) => (
+                {tableData?.(fields || []).map((field) => (
                   <td
-                    key={field.name}
+                    key={field?.name}
                     className="px-3 py-2 text-sm font-medium text-gray-700 border-b border-gray-200"
                   >
-                    {field.type === 'number' && options.footer?.reducer?.length ? (
+                    {field?.type === 'number' && options?.footer?.reducer?.length ? (
                       <div className="space-y-1">
-                        {options.footer.reducer.map(calc => {
-                          const value = footerValues[`${field.name}_${calc}`];
+                        {options?.footer.reducer?.map(calc => {
+                          const value = footerValues[`${field?.name}_${calc}`];
                           return (
                             <div key={calc} className="text-xs">
                               {calc}: {formatCellValue(field, value)}
@@ -354,10 +354,10 @@ export default function TablePanel({
       </div>
 
       {/* Pagination */}
-      {options.footer?.enablePagination && totalPages > 1 && (
+      {options?.footer?.enablePagination && totalPages > 1 && (
         <div className="flex items-center justify-between p-3 border-t border-gray-200">
           <div className="text-sm text-gray-600">
-            Showing {currentPage * rowsPerPage + 1} to {Math.min((currentPage + 1) * rowsPerPage, sortedRows.length)} of {sortedRows.length} rows
+            Showing {currentPage * rowsPerPage + 1} to {Math.min((currentPage + 1) * rowsPerPage, sortedRows?.length)} of {sortedRows?.length} rows
           </div>
           
           <div className="flex space-x-2">

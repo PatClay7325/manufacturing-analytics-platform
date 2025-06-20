@@ -35,7 +35,7 @@ export default function EquipmentList({
   ];
   
   const typeOptions = Array.from(
-    new Set((initialEquipment || []).map(e => e.type))
+    new Set((initialEquipment || []).map(e => e?.type))
   ).map(type => ({ value: type, label: type }));
   
   // Fetch equipment if not provided
@@ -59,7 +59,7 @@ export default function EquipmentList({
     setError(null);
     
     try {
-      const data = await equipmentService.filterEquipment(filter);
+      const data = await equipmentService?.filterEquipment(filter);
       setEquipment(data);
     } catch (err) {
       setError('Failed to load equipment. Please try again.');
@@ -74,22 +74,22 @@ export default function EquipmentList({
     let filtered = [...initialEquipment];
     
     // Apply status filter
-    if (filter.status && filter.status.length > 0) {
-      filtered = filtered.filter(e => filter.status?.includes(e.status));
+    if (filter?.status && filter?.status.length > 0) {
+      filtered = filtered?.filter(e => filter?.status?.includes(e?.status));
     }
     
     // Apply type filter
-    if (filter.type && filter.type.length > 0) {
-      filtered = filtered.filter(e => filter.type?.includes(e.type));
+    if (filter?.type && filter?.type.length > 0) {
+      filtered = filtered?.filter(e => filter?.type?.includes(e?.type));
     }
     
     // Apply search filter
-    if (filter.search) {
-      const searchLower = filter.search.toLowerCase();
-      filtered = filtered.filter(e => 
-        e.name.toLowerCase().includes(searchLower) ||
-        e.type.toLowerCase().includes(searchLower) ||
-        e.location?.toLowerCase().includes(searchLower)
+    if (filter?.search) {
+      const searchLower = filter?.search.toLowerCase();
+      filtered = filtered?.filter(e => 
+        e?.name.toLowerCase().includes(searchLower) ||
+        e?.type.toLowerCase().includes(searchLower) ||
+        e?.location?.toLowerCase().includes(searchLower)
       );
     }
     
@@ -98,9 +98,9 @@ export default function EquipmentList({
   
   const handleStatusChange = (status: string) => {
     setFilter(prev => {
-      const newStatus = prev.status?.includes(status as any)
-        ? prev.status.filter(s => s !== status)
-        : [...(prev.status || []), status as any];
+      const newStatus = prev?.status?.includes(status as any)
+        ? prev?.status.filter(s => s !== status)
+        : [...(prev?.status || []), status as any];
       
       return { ...prev, status: newStatus };
     });
@@ -108,9 +108,9 @@ export default function EquipmentList({
   
   const handleTypeChange = (type: string) => {
     setFilter(prev => {
-      const newType = prev.type?.includes(type)
-        ? prev.type.filter(t => t !== type)
-        : [...(prev.type || []), type];
+      const newType = prev?.type?.includes(type)
+        ? prev?.type.filter(t => t !== type)
+        : [...(prev?.type || []), type];
       
       return { ...prev, type: newType };
     });
@@ -126,9 +126,9 @@ export default function EquipmentList({
   
   const hasActiveFilters = () => {
     return (
-      (filter.status && filter.status.length > 0) ||
-      (filter.type && filter.type.length > 0) ||
-      (filter.search && filter.search.length > 0)
+      (filter?.status && filter?.status.length > 0) ||
+      (filter?.type && filter?.type.length > 0) ||
+      (filter?.search && filter?.search.length > 0)
     );
   };
   
@@ -157,7 +157,7 @@ export default function EquipmentList({
                 <input
                   type="text"
                   id="search"
-                  value={filter.search}
+                  value={filter?.search}
                   onChange={handleSearchChange}
                   placeholder="Search equipment..."
                   className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
@@ -171,42 +171,42 @@ export default function EquipmentList({
                 <div>
                   <h4 className="block text-sm font-medium text-gray-700 mb-1">Status</h4>
                   <div className="flex flex-wrap gap-2" data-testid="status-filter">
-                    {statusOptions.map(option => (
+                    {statusOptions?.map(option => (
                       <button
-                        key={option.value}
-                        onClick={() => handleStatusChange(option.value)}
+                        key={option?.value}
+                        onClick={() => handleStatusChange(option?.value)}
                         className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium transition
-                          ${filter.status?.includes(option.value as any)
+                          ${filter?.status?.includes(option?.value as any)
                             ? 'bg-blue-100 text-blue-800 border border-blue-300'
                             : 'bg-gray-100 text-gray-800 border border-gray-200 hover:bg-gray-200'
                           }`}
                       >
                         <EquipmentStatusBadge 
-                          status={option.value as any} 
+                          status={option?.value as any} 
                           showLabel={false} 
                           className="mr-1.5" 
                         />
-                        {option.label}
+                        {option?.label}
                       </button>
                     ))}
                   </div>
                 </div>
                 
-                {typeOptions.length > 0 && (
+                {typeOptions?.length > 0 && (
                   <div>
                     <h4 className="block text-sm font-medium text-gray-700 mb-1">Type</h4>
                     <div className="flex flex-wrap gap-2" data-testid="type-filter">
-                      {typeOptions.map(option => (
+                      {typeOptions?.map(option => (
                         <button
-                          key={option.value}
-                          onClick={() => handleTypeChange(option.value)}
+                          key={option?.value}
+                          onClick={() => handleTypeChange(option?.value)}
                           className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium transition
-                            ${filter.type?.includes(option.value)
+                            ${filter?.type?.includes(option?.value)
                               ? 'bg-blue-100 text-blue-800 border border-blue-300'
                               : 'bg-gray-100 text-gray-800 border border-gray-200 hover:bg-gray-200'
                             }`}
                         >
-                          {option.label}
+                          {option?.label}
                         </button>
                       ))}
                     </div>
@@ -230,7 +230,7 @@ export default function EquipmentList({
           <div className="flex">
             <div className="flex-shrink-0">
               <svg className="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h?.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
             <div className="ml-3">
@@ -252,8 +252,8 @@ export default function EquipmentList({
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {equipment.map(item => (
-            <EquipmentCard key={item.id} equipment={item} />
+          {equipment?.map(item => (
+            <EquipmentCard key={item?.id} equipment={item} />
           ))}
         </div>
       )}

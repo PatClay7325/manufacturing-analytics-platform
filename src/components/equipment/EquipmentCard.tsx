@@ -4,7 +4,7 @@ import { Equipment, EquipmentSummary } from '@/models/equipment';
 import EquipmentStatusBadge from './EquipmentStatusBadge';
 
 interface EquipmentCardProps {
-  equipment: Equipment | EquipmentSummary;
+  equipment?: Equipment | EquipmentSummary;
   className?: string;
 }
 
@@ -21,23 +21,23 @@ export default function EquipmentCard({ equipment, className = '' }: EquipmentCa
               className="text-lg font-medium text-gray-900 mb-1" 
               data-testid="equipment-name"
             >
-              {equipment.name}
+              {equipment?.name}
             </h3>
             <p 
               className="text-sm text-gray-500 mb-3" 
               data-testid="equipment-type"
             >
-              {equipment.type}
+              {equipment?.type}
             </p>
           </div>
-          <EquipmentStatusBadge status={equipment.status} />
+          <EquipmentStatusBadge status={equipment?.status} />
         </div>
 
         <div className="mt-4 space-y-2">
-          {equipment.location && (
+          {equipment?.location && (
             <div className="flex items-start">
               <svg 
-                xmlns="http://www.w3.org/2000/svg" 
+                xmlns="http://www?.w3.org/2000/svg" 
                 className="h-5 w-5 text-gray-400 mt-0.5 mr-2" 
                 fill="none" 
                 viewBox="0 0 24 24" 
@@ -56,14 +56,14 @@ export default function EquipmentCard({ equipment, className = '' }: EquipmentCa
                   d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" 
                 />
               </svg>
-              <span className="text-sm text-gray-600">{equipment.location}</span>
+              <span className="text-sm text-gray-600">{equipment?.location}</span>
             </div>
           )}
 
-          {equipment.nextMaintenanceDate && (
+          {equipment?.nextMaintenanceDate && (
             <div className="flex items-start">
               <svg 
-                xmlns="http://www.w3.org/2000/svg" 
+                xmlns="http://www?.w3.org/2000/svg" 
                 className="h-5 w-5 text-gray-400 mt-0.5 mr-2" 
                 fill="none" 
                 viewBox="0 0 24 24" 
@@ -77,19 +77,19 @@ export default function EquipmentCard({ equipment, className = '' }: EquipmentCa
                 />
               </svg>
               <span className="text-sm text-gray-600">
-                Next Maintenance: {new Date(equipment.nextMaintenanceDate).toLocaleDateString()}
+                Next Maintenance: {new Date(equipment?.nextMaintenanceDate).toLocaleDateString()}
               </span>
             </div>
           )}
           
-          {'metrics' in equipment && equipment.metrics && (
+          {'metrics' in equipment && equipment?.metrics && (
             (() => {
               // Check if it's EquipmentSummary with metrics object
-              if (!Array.isArray(equipment.metrics) && 'oee' in equipment.metrics && equipment.metrics.oee !== undefined) {
+              if (!Array.isArray(equipment?.metrics) && 'oee' in equipment?.metrics && equipment?.metrics.oee !== undefined) {
                 return (
                   <div className="flex items-start">
                     <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
+                      xmlns="http://www?.w3.org/2000/svg" 
                       className="h-5 w-5 text-gray-400 mt-0.5 mr-2" 
                       fill="none" 
                       viewBox="0 0 24 24" 
@@ -103,19 +103,19 @@ export default function EquipmentCard({ equipment, className = '' }: EquipmentCa
                       />
                     </svg>
                     <span className="text-sm text-gray-600">
-                      OEE: {equipment.metrics.oee}%
+                      OEE: {equipment?.metrics.oee}%
                     </span>
                   </div>
                 );
               }
               // Check if it's Equipment with metrics array
-              if (Array.isArray(equipment.metrics)) {
-                const oeeMetric = equipment.metrics.find(m => m.name.toLowerCase() === 'oee');
+              if (Array.isArray(equipment?.metrics)) {
+                const oeeMetric = equipment?.metrics.find(m => m?.name.toLowerCase() === 'oee');
                 if (oeeMetric) {
                   return (
                     <div className="flex items-start">
                       <svg 
-                        xmlns="http://www.w3.org/2000/svg" 
+                        xmlns="http://www?.w3.org/2000/svg" 
                         className="h-5 w-5 text-gray-400 mt-0.5 mr-2" 
                         fill="none" 
                         viewBox="0 0 24 24" 
@@ -129,7 +129,7 @@ export default function EquipmentCard({ equipment, className = '' }: EquipmentCa
                         />
                       </svg>
                       <span className="text-sm text-gray-600">
-                        OEE: {oeeMetric.value}%
+                        OEE: {oeeMetric?.value}%
                       </span>
                     </div>
                   );
@@ -143,7 +143,7 @@ export default function EquipmentCard({ equipment, className = '' }: EquipmentCa
       
       <div className="bg-gray-50 px-5 py-3 border-t border-gray-200">
         <Link 
-          href={`/equipment/${equipment.id}`}
+          href={`/equipment/${equipment?.id}`}
           className="text-sm font-medium text-blue-600 hover:text-blue-800 transition"
         >
           View Details &rarr;
