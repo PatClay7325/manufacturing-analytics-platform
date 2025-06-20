@@ -210,170 +210,173 @@ export default function AdminPage() {
     }
   };
 
-  const renderOverview = () => (
-    <div className="space-y-6">
-      {/* System Status Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${getStatusColor(state?.systemHealth.status)}`}>
-                <span className="text-lg">🏥</span>
+  const renderOverview = () => {
+    return (
+      <div className="space-y-6">
+        {/* System Status Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${getStatusColor(state?.systemHealth.status)}`}>
+                  <span className="text-lg">🏥</span>
+                </div>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">System Status</p>
+                <p className="text-2xl font-semibold text-gray-900 capitalize">
+                  {state?.systemHealth.status}
+                </p>
               </div>
             </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">System Status</p>
-              <p className="text-2xl font-semibold text-gray-900 capitalize">
-                {state?.systemHealth.status}
-              </p>
+          </div>
+
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <span className="text-blue-600 text-lg">⏱️</span>
+                </div>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Uptime</p>
+                <p className="text-2xl font-semibold text-gray-900">
+                  {formatUptime(state?.systemHealth.uptime)}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <span className="text-purple-600 text-lg">🧠</span>
+                </div>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Memory Usage</p>
+                <p className="text-2xl font-semibold text-gray-900">
+                  {state?.systemHealth.memory?.percentage.toFixed(1)}%
+                </p>
+                <p className="text-xs text-gray-500">
+                  {formatBytes(state?.systemHealth.memory?.used)} / {formatBytes(state?.systemHealth.memory?.total)}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                  <span className="text-green-600 text-lg">📊</span>
+                </div>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Data Sources</p>
+                <p className="text-2xl font-semibold text-gray-900">
+                  {state?.dataSourceHealth.filter(ds => ds?.status === 'healthy').length} / {state?.dataSourceHealth.length}
+                </p>
+                <p className="text-xs text-gray-500">Active</p>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                <span className="text-blue-600 text-lg">⏱️</span>
-              </div>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Uptime</p>
-              <p className="text-2xl font-semibold text-gray-900">
-                {formatUptime(state?.systemHealth.uptime)}
-              </p>
-            </div>
+        {/* Services Status */}
+        <div className="bg-white rounded-lg shadow">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h3 className="text-lg font-medium text-gray-900">Services Status</h3>
           </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                <span className="text-purple-600 text-lg">🧠</span>
-              </div>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Memory Usage</p>
-              <p className="text-2xl font-semibold text-gray-900">
-                {state?.systemHealth.memory?.percentage.toFixed(1)}%
-              </p>
-              <p className="text-xs text-gray-500">
-                {formatBytes(state?.systemHealth.memory?.used)} / {formatBytes(state?.systemHealth.memory?.total)}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                <span className="text-green-600 text-lg">📊</span>
-              </div>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Data Sources</p>
-              <p className="text-2xl font-semibold text-gray-900">
-                {state?.dataSourceHealth.filter(ds => ds?.status === 'healthy').length} / {state?.dataSourceHealth.length}
-              </p>
-              <p className="text-xs text-gray-500">Active</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Services Status */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900">Services Status</h3>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Service</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Uptime</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Memory</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">CPU</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {state?.systemHealth.services?.map((service) => (
-                <tr key={service?.name}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {service?.name}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(service?.status)}`}>
-                      {service?.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatUptime(service?.uptime)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatBytes(service?.memory)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {service?.cpu.toFixed(1)}%
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Service</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Uptime</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Memory</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">CPU</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {state?.systemHealth.services?.map((service) => (
+                  <tr key={service?.name}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {service?.name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(service?.status)}`}>
+                        {service?.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {formatUptime(service?.uptime)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {formatBytes(service?.memory)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {service?.cpu.toFixed(1)}%
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <button
+            onClick={() => setState(prev => ({ ...prev, activeTab: 'datasources' }))}
+            className="bg-white rounded-lg shadow p-6 text-left hover:shadow-md transition-shadow"
+          >
+            <div className="flex items-center">
+              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                <span className="text-blue-600 text-lg">🔌</span>
+              </div>
+              <div className="ml-4">
+                <h4 className="text-lg font-medium text-gray-900">Manage Data Sources</h4>
+                <p className="text-sm text-gray-600">Configure and monitor data connections</p>
+              </div>
+            </div>
+          </button>
+
+          <button
+            onClick={() => setState(prev => ({ ...prev, activeTab: 'plugins' }))}
+            className="bg-white rounded-lg shadow p-6 text-left hover:shadow-md transition-shadow"
+          >
+            <div className="flex items-center">
+              <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                <span className="text-purple-600 text-lg">🧩</span>
+              </div>
+              <div className="ml-4">
+                <h4 className="text-lg font-medium text-gray-900">Plugin Manager</h4>
+                <p className="text-sm text-gray-600">Install and manage system plugins</p>
+              </div>
+            </div>
+          </button>
+
+          <button
+            onClick={() => setState(prev => ({ ...prev, activeTab: 'configuration' }))}
+            className="bg-white rounded-lg shadow p-6 text-left hover:shadow-md transition-shadow"
+          >
+            <div className="flex items-center">
+              <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                <span className="text-green-600 text-lg">⚙️</span>
+              </div>
+              <div className="ml-4">
+                <h4 className="text-lg font-medium text-gray-900">System Configuration</h4>
+                <p className="text-sm text-gray-600">Manage platform settings</p>
+              </div>
+            </div>
+          </button>
         </div>
       </div>
-
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <button
-          onClick={() => setState(prev => ({ ...prev, activeTab: 'datasources' }))}
-          className="bg-white rounded-lg shadow p-6 text-left hover:shadow-md transition-shadow"
-        >
-          <div className="flex items-center">
-            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-              <span className="text-blue-600 text-lg">🔌</span>
-            </div>
-            <div className="ml-4">
-              <h4 className="text-lg font-medium text-gray-900">Manage Data Sources</h4>
-              <p className="text-sm text-gray-600">Configure and monitor data connections</p>
-            </div>
-          </div>
-        </button>
-
-        <button
-          onClick={() => setState(prev => ({ ...prev, activeTab: 'plugins' }))}
-          className="bg-white rounded-lg shadow p-6 text-left hover:shadow-md transition-shadow"
-        >
-          <div className="flex items-center">
-            <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-              <span className="text-purple-600 text-lg">🧩</span>
-            </div>
-            <div className="ml-4">
-              <h4 className="text-lg font-medium text-gray-900">Plugin Manager</h4>
-              <p className="text-sm text-gray-600">Install and manage system plugins</p>
-            </div>
-          </div>
-        </button>
-
-        <button
-          onClick={() => setState(prev => ({ ...prev, activeTab: 'configuration' }))}
-          className="bg-white rounded-lg shadow p-6 text-left hover:shadow-md transition-shadow"
-        >
-          <div className="flex items-center">
-            <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-              <span className="text-green-600 text-lg">⚙️</span>
-            </div>
-            <div className="ml-4">
-              <h4 className="text-lg font-medium text-gray-900">System Configuration</h4>
-              <p className="text-sm text-gray-600">Manage platform settings</p>
-            </div>
-          </div>
-        </button>
-      </div>
-  );
+    );
+  };
 
   const renderTabContent = () => {
     switch (state?.activeTab) {

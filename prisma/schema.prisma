@@ -32,16 +32,55 @@ model ProductionOrder {
   @@index([workCenterId])
 }
 
+// Enhanced Maintenance Records with ISO 14224 compliance for reliability analysis
 model MaintenanceRecord {
   id              String    @id @default(cuid())
-  maintenanceType String
+  
+  // Maintenance Classification (ISO 14224)
+  maintenanceType String    // preventive, corrective, predictive, emergency
+  subType         String?   // planned, unplanned, condition-based, calendar-based
+  failureMode     String?   // mechanical, electrical, software, operator error
+  failureCause    String?   // wear, fatigue, corrosion, design, installation
+  
+  // Work Details
   description     String
+  workOrderNumber String?   @unique
+  priority        String    @default("medium") // critical, high, medium, low
+  
+  // Personnel
   technician      String
+  supervisor      String?
+  team            String?
+  
+  // Timing (for MTBF/MTTR calculations)
   startTime       DateTime
   endTime         DateTime?
-  status          String    @default("scheduled")
+  plannedDuration Float?    // Planned maintenance duration (hours)
+  actualDuration  Float?    // Actual maintenance duration (hours)
+  
+  // Status Tracking
+  status          String    @default("scheduled") // scheduled, in_progress, completed, cancelled
+  
+  // Parts and Costs
+  parts           String[]  // Part numbers used
+  partsCost       Float?    // Total cost of parts
+  laborCost       Float?    // Labor cost
+  contractorCost  Float?    // External contractor cost
+  totalCost       Float?    // Total maintenance cost
+  
+  // Reliability Data (ISO 14224)
+  downtimeHours   Float?    // Equipment downtime caused
+  restoreTime     Float?    // Time to restore to operation
+  testTime        Float?    // Time for post-maintenance testing
+  
+  // Quality and Effectiveness
+  effectiveness   String?   // successful, partially_successful, unsuccessful
+  rootCauseFound  Boolean   @default(false)
+  preventiveMeasures String? // Actions to prevent recurrence
+  
   notes           String?
-  parts           String[]
+  attachments     String[]  // URLs to photos, documents, etc.
+  
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   workUnitId      String
@@ -50,44 +89,122 @@ model MaintenanceRecord {
   @@index([status])
   @@index([maintenanceType])
   @@index([workUnitId])
+  @@index([failureMode])
+  @@index([startTime])
+  @@index([workOrderNumber])
 }
 
+// Enhanced OEE and Performance Metrics following ISO 22400 standards
 model PerformanceMetric {
   id                String   @id @default(cuid())
   timestamp         DateTime @default(now())
-  availability      Float?
-  performance       Float?
-  quality           Float?
-  oeeScore          Float?
-  runTime           Float?
-  plannedDowntime   Float?
-  unplannedDowntime Float?
-  idealCycleTime    Float?
-  actualCycleTime   Float?
-  totalParts        Int?
-  goodParts         Int?
-  shift             String?
-  operator          String?
-  notes             String?
+  
+  // Core OEE Components (ISO 22400 compliant)
+  availability      Float?   // Operating Time / Planned Production Time
+  performance       Float?   // (Actual Production / Standard Production)
+  quality           Float?   // Good Units / Total Units
+  oeeScore          Float?   // Availability × Performance × Quality
+  
+  // Detailed Time Measurements (minutes)
+  plannedProductionTime Float? // Total planned time for production
+  operatingTime     Float?   // Time equipment was actually running
+  runTime           Float?   // Actual production runtime
+  plannedDowntime   Float?   // Scheduled maintenance/breaks
+  unplannedDowntime Float?   // Breakdowns, changeovers, minor stops
+  changeoverTime    Float?   // Setup and changeover time
+  
+  // Cycle Time Analysis
+  idealCycleTime    Float?   // Theoretical fastest cycle time
+  actualCycleTime   Float?   // Real average cycle time
+  standardCycleTime Float?   // Engineering standard cycle time
+  
+  // Production Counts
+  totalParts        Int?     // Total parts produced
+  goodParts         Int?     // Parts meeting quality standards
+  rejectedParts     Int?     // Parts failing quality checks
+  reworkParts       Int?     // Parts requiring rework
+  plannedProduction Int?     // Target production for period
+  
+  // Contextual Information
+  shift             String?  // Shift identifier (A, B, C, etc.)
+  operator          String?  // Operator/team responsible
+  productType       String?  // Product being manufactured
+  lotNumber         String?  // Production lot/batch identifier
+  notes             String?  // Additional context or issues
+  
+  // Quality Metrics Integration
+  firstPassYield    Float?   // Percentage of parts right first time
+  scrapRate         Float?   // Percentage of parts scrapped
+  reworkRate        Float?   // Percentage of parts requiring rework
+  
+  // Performance Indicators
+  throughputRate    Float?   // Parts per hour actual
+  targetThroughput  Float?   // Parts per hour target
+  speedLoss         Float?   // Performance loss percentage
+  
   createdAt         DateTime @default(now())
   workUnitId        String
   WorkUnit          WorkUnit @relation(fields: [workUnitId], references: [id])
 
   @@index([timestamp])
   @@index([workUnitId, timestamp])
+  @@index([shift, timestamp])
+  @@index([productType, timestamp])
 }
 
+// Enhanced Quality Metrics for Statistical Process Control (SPC)
 model QualityMetric {
   id           String   @id @default(cuid())
   timestamp    DateTime @default(now())
-  parameter    String
-  value        Float
-  uom          String
-  lowerLimit   Float?
-  upperLimit   Float?
-  nominal      Float?
-  isWithinSpec Boolean
-  deviation    Float?
+  
+  // Measurement Details
+  parameter    String   // Quality characteristic being measured
+  value        Float    // Measured value
+  uom          String   // Unit of measurement
+  
+  // Control Limits (Statistical Process Control)
+  lowerLimit   Float?   // Lower specification limit (LSL)
+  upperLimit   Float?   // Upper specification limit (USL)
+  nominal      Float?   // Target/nominal value
+  lowerControlLimit Float? // Lower control limit (LCL)
+  upperControlLimit Float? // Upper control limit (UCL)
+  
+  // Statistical Analysis
+  isWithinSpec Boolean  // Within specification limits
+  isInControl  Boolean  @default(true) // Within control limits
+  deviation    Float?   // Deviation from nominal
+  zScore       Float?   // Statistical Z-score
+  cpk          Float?   // Process capability index
+  
+  // Quality Classification
+  qualityGrade String?  // A, B, C grade or pass/fail
+  defectType   String?  // Type of defect if any
+  defectSeverity String? // critical, major, minor
+  inspectionType String? // incoming, in-process, final, audit
+  
+  // Contextual Information
+  batchNumber  String?  // Production batch/lot
+  serialNumber String?  // Part serial number
+  inspector    String?  // Person who performed inspection
+  shift        String?  // Production shift
+  operator     String?  // Production operator
+  
+  // Measurement Equipment
+  measurementDevice String? // Gauge/instrument used
+  calibrationDate DateTime? // Last calibration date
+  measurementAccuracy Float? // Instrument accuracy
+  
+  // Statistical Process Control Alerts
+  spcViolation String?  // Type of SPC rule violation
+  controlChartType String? // X-bar, R, I-MR, p, np, c, u
+  
+  // Rework and Disposition
+  disposition  String?  // accept, reject, rework, use-as-is
+  reworkReason String?  // Reason for rework if applicable
+  reworkCost   Float?   // Cost of rework
+  
+  notes        String?  // Additional observations
+  
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   workUnitId   String
@@ -95,7 +212,12 @@ model QualityMetric {
 
   @@index([parameter])
   @@index([isWithinSpec])
+  @@index([isInControl])
   @@index([workUnitId, timestamp])
+  @@index([batchNumber])
+  @@index([defectType])
+  @@index([inspectionType])
+  @@index([timestamp])
 }
 
 model QualityCheck {
@@ -117,27 +239,74 @@ model QualityCheck {
   @@index([checkType])
 }
 
+// Enhanced Alert System for Real-time Manufacturing Monitoring
 model Alert {
   id             String    @id @default(cuid())
-  alertType      String
-  severity       String
-  message        String
-  status         String    @default("active")
+  
+  // Alert Classification
+  alertType      String    // quality, equipment, production, safety, maintenance
+  subType        String?   // specific alert subtype
+  severity       String    // critical, high, medium, low, info
+  priority       String    @default("medium") // urgent, high, medium, low
+  
+  // Alert Content
+  title          String?   // Short alert title
+  message        String    // Detailed alert message
+  
+  // Alert Context
+  metricName     String?   // Name of metric that triggered alert
+  currentValue   Float?    // Current value of the metric
+  thresholdValue Float?    // Threshold that was exceeded
+  unit           String?   // Unit of measurement
+  
+  // Status and Lifecycle
+  status         String    @default("active") // active, acknowledged, resolved, dismissed
   timestamp      DateTime  @default(now())
+  
+  // Alert Handling
   acknowledgedBy String?
   acknowledgedAt DateTime?
   resolvedBy     String?
   resolvedAt     DateTime?
+  dismissedBy    String?
+  dismissedAt    DateTime?
+  
+  // Resolution Details
+  resolutionTime Float?    // Time to resolve (minutes)
+  rootCause      String?   // Identified root cause
+  correctiveAction String? // Action taken to resolve
+  
+  // Escalation
+  escalated      Boolean   @default(false)
+  escalatedTo    String?   // Person/team escalated to
+  escalatedAt    DateTime?
+  
+  // Notification Tracking
+  notificationsSent String[] // List of notification methods used
+  recipientsList String[]    // List of people notified
+  
   notes          String?
+  tags           String[]  // Categorization tags
+  
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
+  
+  // Relationships
   workUnitId     String?
   WorkUnit       WorkUnit? @relation(fields: [workUnitId], references: [id])
+  
+  // Parent-child alert relationships
+  parentAlertId  String?
+  ParentAlert    Alert?    @relation("AlertHierarchy", fields: [parentAlertId], references: [id])
+  ChildAlerts    Alert[]   @relation("AlertHierarchy")
 
   @@index([alertType])
   @@index([severity])
   @@index([status])
   @@index([workUnitId])
+  @@index([timestamp])
+  @@index([metricName])
+  @@index([escalated])
 }
 
 model User {
@@ -335,22 +504,57 @@ model EnterpriseKPISummary {
   @@index([enterpriseId, periodStart, periodEnd])
 }
 
+// Real-time Equipment and Production Metrics
 model Metric {
-  id         String   @id
+  id         String   @id @default(cuid())
   workUnitId String
   timestamp  DateTime @default(now())
-  name       String
-  value      Float
-  unit       String?
-  tags       Json?
-  source     String?
-  quality    Float?
+  
+  // Metric Identification
+  name       String   // Metric name (temperature, pressure, speed, etc.)
+  category   String?  // equipment, production, quality, energy, safety
+  
+  // Value and Quality
+  value      Float    // Current metric value
+  unit       String?  // Unit of measurement
+  quality    Float?   // Data quality score (0-100)
+  confidence Float?   // Confidence in measurement (0-100)
+  
+  // Contextual Information
+  tags       Json?    // Additional metadata tags
+  source     String?  // Data source (sensor, manual, calculated)
+  sensorId   String?  // Specific sensor identifier
+  
+  // Statistical Information
+  minValue   Float?   // Minimum expected value
+  maxValue   Float?   // Maximum expected value
+  avgValue   Float?   // Running average
+  stdDev     Float?   // Standard deviation
+  
+  // Thresholds and Alerts
+  warningMin Float?   // Warning threshold (low)
+  warningMax Float?   // Warning threshold (high)
+  alarmMin   Float?   // Alarm threshold (low)
+  alarmMax   Float?   // Alarm threshold (high)
+  
+  // Data Validation
+  isValid    Boolean  @default(true)
+  validationErrors String[] // Any validation issues
+  
+  // Processing Information
+  rawValue   Float?   // Original raw value before processing
+  processed  Boolean  @default(false)
+  algorithm  String?  // Processing algorithm used
+  
   createdAt  DateTime @default(now())
   WorkUnit   WorkUnit @relation(fields: [workUnitId], references: [id])
 
   @@index([name, timestamp(sort: Desc)])
   @@index([timestamp(sort: Desc)])
   @@index([workUnitId, name, timestamp(sort: Desc)])
+  @@index([category, timestamp(sort: Desc)])
+  @@index([source])
+  @@index([isValid])
 }
 
 model Product {
@@ -478,6 +682,8 @@ model WorkUnit {
   lastMaintenanceAt  DateTime?
   createdAt          DateTime            @default(now())
   updatedAt          DateTime
+  
+  // Existing relationships
   Alert              Alert[]
   DowntimeCause      DowntimeCause[]
   MaintenanceRecord  MaintenanceRecord[]
@@ -487,6 +693,12 @@ model WorkUnit {
   QualityMetric      QualityMetric[]
   WorkCenter         WorkCenter          @relation(fields: [workCenterId], references: [id])
   WorkUnitKPISummary WorkUnitKPISummary?
+  
+  // New relationships for enhanced metrics
+  EquipmentHealth    EquipmentHealth?
+  EnergyMetric       EnergyMetric[]
+  ProcessParameter   ProcessParameter[]
+  CostMetric         CostMetric[]
 
   @@index([code])
   @@index([equipmentType])
@@ -601,4 +813,287 @@ model DashboardSnapshot {
   @@index([dashboardId, createdAt])
   @@index([userId])
   @@index([isPublic, expiresAt])
+}
+
+// Equipment Health and Reliability Models (ISO 14224 Compliant)
+model EquipmentHealth {
+  id              String   @id @default(cuid())
+  workUnitId      String   @unique
+  
+  // Health Score Components
+  overallHealth   Float    // Overall health score (0-100)
+  mechanicalHealth Float?  // Mechanical systems health
+  electricalHealth Float?  // Electrical systems health
+  softwareHealth  Float?   // Software/control systems health
+  
+  // Reliability Metrics (ISO 14224)
+  mtbf            Float?   // Mean Time Between Failures (hours)
+  mttr            Float?   // Mean Time To Repair (hours)
+  availability    Float?   // Equipment availability percentage
+  reliability     Float?   // Reliability percentage
+  
+  // Failure Analysis
+  totalFailures   Int      @default(0)
+  criticalFailures Int     @default(0)
+  minorFailures   Int      @default(0)
+  
+  // Time Tracking
+  operatingHours  Float    @default(0)
+  totalDowntime   Float    @default(0)
+  plannedDowntime Float    @default(0)
+  unplannedDowntime Float  @default(0)
+  
+  // Predictive Indicators
+  vibrationLevel  Float?   // Current vibration level
+  temperature     Float?   // Operating temperature
+  lubricationStatus String? // good, fair, poor, critical
+  wearLevel       Float?   // Wear level percentage
+  
+  // Maintenance Planning
+  nextMaintenanceDue DateTime?
+  maintenanceScore Float?  // Maintenance urgency score
+  riskLevel       String   @default("low") // low, medium, high, critical
+  
+  // Condition Monitoring
+  sensorStatus    String   @default("operational") // operational, degraded, failed
+  dataQuality     Float    @default(100) // Data quality percentage
+  
+  lastCalculated  DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  WorkUnit        WorkUnit @relation(fields: [workUnitId], references: [id])
+
+  @@index([workUnitId])
+  @@index([overallHealth])
+  @@index([riskLevel])
+  @@index([nextMaintenanceDue])
+}
+
+// Production Line Metrics and Flow Analysis
+model ProductionLineMetric {
+  id              String   @id @default(cuid())
+  lineId          String   // Production line identifier
+  timestamp       DateTime @default(now())
+  
+  // Throughput Metrics
+  actualThroughput Float?  // Parts per hour actual
+  targetThroughput Float?  // Parts per hour target
+  throughputEfficiency Float? // Actual/Target ratio
+  
+  // Flow Analysis
+  bottleneckStation String? // Station causing bottleneck
+  flowRate        Float?   // Overall line flow rate
+  balanceEfficiency Float? // Line balance percentage
+  
+  // Cycle Time Analysis
+  totalCycleTime  Float?   // Total line cycle time
+  taktTime        Float?   // Target takt time
+  cycleTimeVariance Float? // Variation in cycle times
+  
+  // Station Performance
+  stationUtilization Json? // Utilization per station
+  stationCycleTimes Json? // Cycle times per station
+  stationDowntime Json?   // Downtime per station
+  
+  // Quality at Line Level
+  firstPassYield  Float?   // Line-level first pass yield
+  lineYield       Float?   // Overall line yield
+  qualityIssues   String[] // Quality issues on line
+  
+  // Changeover Analysis
+  changeoverTime  Float?   // Time for product changeover
+  changeoverCount Int      @default(0)
+  setupTime       Float?   // Setup time for new products
+  
+  // Material Flow
+  materialUtilization Float? // Material usage efficiency
+  wasteGenerated  Float?   // Waste produced
+  recycledMaterial Float?  // Material recycled
+  
+  // Energy Consumption
+  energyConsumption Float? // kWh consumed
+  energyEfficiency Float?  // Energy per unit produced
+  
+  shift           String?  // Production shift
+  productType     String?  // Product being manufactured
+  
+  createdAt       DateTime @default(now())
+
+  @@index([lineId, timestamp])
+  @@index([timestamp])
+  @@index([productType, timestamp])
+  @@index([shift, timestamp])
+}
+
+// Energy Consumption and Sustainability Metrics
+model EnergyMetric {
+  id              String   @id @default(cuid())
+  workUnitId      String
+  timestamp       DateTime @default(now())
+  
+  // Energy Consumption
+  electricalConsumption Float? // kWh consumed
+  gasConsumption  Float?       // Gas consumption
+  steamConsumption Float?      // Steam consumption
+  compressedAirConsumption Float? // Compressed air usage
+  waterConsumption Float?      // Water consumption
+  
+  // Energy Efficiency
+  energyPerUnit   Float?       // Energy per unit produced
+  powerFactor     Float?       // Electrical power factor
+  peakDemand      Float?       // Peak power demand
+  
+  // Cost Analysis
+  energyCost      Float?       // Total energy cost
+  costPerUnit     Float?       // Energy cost per unit
+  
+  // Sustainability Metrics
+  carbonFootprint Float?       // CO2 equivalent
+  renewablePercent Float?      // Renewable energy percentage
+  wasteGenerated  Float?       // Waste produced
+  
+  // Time-of-Use Analysis
+  peakHourUsage   Float?       // Usage during peak hours
+  offPeakUsage    Float?       // Usage during off-peak
+  
+  productionVolume Int?        // Units produced in period
+  shift           String?      // Production shift
+  
+  createdAt       DateTime     @default(now())
+  WorkUnit        WorkUnit     @relation(fields: [workUnitId], references: [id])
+
+  @@index([workUnitId, timestamp])
+  @@index([timestamp])
+  @@index([shift, timestamp])
+}
+
+// Process Parameters and Control
+model ProcessParameter {
+  id              String   @id @default(cuid())
+  workUnitId      String
+  timestamp       DateTime @default(now())
+  
+  // Parameter Details
+  parameterName   String   // Temperature, pressure, speed, etc.
+  value           Float    // Current value
+  unit            String   // Unit of measurement
+  
+  // Control Limits
+  setpoint        Float?   // Target setpoint
+  lowerLimit      Float?   // Lower control limit
+  upperLimit      Float?   // Upper control limit
+  tolerance       Float?   // Acceptable tolerance
+  
+  // Control Status
+  isInControl     Boolean  @default(true)
+  controlAction   String?  // Auto, manual, cascade
+  controllerOutput Float?  // Controller output value
+  
+  // Process Analysis
+  processNoise    Float?   // Process variability
+  stability       Float?   // Process stability index
+  capability      Float?   // Process capability
+  
+  // Alarm Management
+  alarmState      String   @default("normal") // normal, warning, alarm
+  alarmPriority   String?  // low, medium, high, critical
+  
+  operator        String?  // Current operator
+  shift           String?  // Production shift
+  recipe          String?  // Process recipe/procedure
+  
+  createdAt       DateTime @default(now())
+  WorkUnit        WorkUnit @relation(fields: [workUnitId], references: [id])
+
+  @@index([workUnitId, parameterName, timestamp])
+  @@index([timestamp])
+  @@index([parameterName])
+  @@index([alarmState])
+  @@index([isInControl])
+}
+
+// Shift and Operator Performance
+model ShiftReport {
+  id              String   @id @default(cuid())
+  shiftId         String   @unique
+  date            DateTime
+  shift           String   // A, B, C, etc.
+  
+  // Shift Personnel
+  supervisor      String
+  operators       String[] // List of operators
+  staffingLevel   Float?   // Percentage of full staffing
+  
+  // Production Performance
+  targetProduction Int?    // Target units for shift
+  actualProduction Int?    // Actual units produced
+  productionEfficiency Float? // Actual/Target ratio
+  
+  // Quality Performance
+  qualityTarget   Float?   // Target quality percentage
+  actualQuality   Float?   // Actual quality achieved
+  qualityIssues   String[] // Quality problems encountered
+  
+  // Equipment Performance
+  equipmentUptime Float?   // Equipment uptime percentage
+  breakdowns      Int      @default(0)
+  maintenanceIssues String[] // Maintenance problems
+  
+  // Safety and Compliance
+  safetyIncidents Int      @default(0)
+  nearMisses      Int      @default(0)
+  complianceIssues String[] // Regulatory compliance issues
+  
+  // Continuous Improvement
+  improvements    String[] // Improvements implemented
+  suggestions     String[] // Suggestions for next shift
+  
+  // Handover Information
+  handoverNotes   String?  // Notes for next shift
+  openIssues      String[] // Issues requiring follow-up
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([date, shift])
+  @@index([shift])
+  @@index([supervisor])
+}
+
+// Cost Tracking and Analysis
+model CostMetric {
+  id              String   @id @default(cuid())
+  workUnitId      String
+  timestamp       DateTime @default(now())
+  
+  // Cost Categories
+  laborCost       Float?   // Direct labor cost
+  materialCost    Float?   // Raw material cost
+  energyCost      Float?   // Energy consumption cost
+  maintenanceCost Float?   // Maintenance cost
+  overheadCost    Float?   // Overhead allocation
+  qualityCost     Float?   // Cost of quality issues
+  
+  // Cost per Unit
+  costPerUnit     Float?   // Total cost per unit
+  targetCostPerUnit Float? // Target cost per unit
+  costVariance    Float?   // Variance from target
+  
+  // Waste and Efficiency
+  wasteCost       Float?   // Cost of waste/scrap
+  reworkCost      Float?   // Cost of rework
+  efficiencyLoss  Float?   // Cost of inefficiency
+  
+  // Production Context
+  unitsProduced   Int?     // Units produced in period
+  productType     String?  // Product manufactured
+  shift           String?  // Production shift
+  
+  createdAt       DateTime @default(now())
+  WorkUnit        WorkUnit @relation(fields: [workUnitId], references: [id])
+
+  @@index([workUnitId, timestamp])
+  @@index([timestamp])
+  @@index([productType, timestamp])
 }

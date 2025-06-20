@@ -110,7 +110,8 @@ export default function UnifiedDashboardPage() {
             return (
               <Card key={metric?.title} className="p-6">
                 <div className="flex items-center justify-between">
-                                      <p className="text-sm text-gray-600">{metric?.title}</p>
+                  <div>
+                    <p className="text-sm text-gray-600">{metric?.title}</p>
                     <p className="text-2xl font-bold text-gray-900 mt-1">
                       {metric?.value}
                     </p>
@@ -278,5 +279,6 @@ export default function UnifiedDashboardPage() {
           </div>
         )}
       </div>
+    </div>
   );
 }

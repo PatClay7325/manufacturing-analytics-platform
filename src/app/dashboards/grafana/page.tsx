@@ -182,5 +182,6 @@ export default function ManufacturingDashboardsPage() {
           />
         </div>
       </div>
+    </div>
   );
 }

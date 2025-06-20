@@ -11,7 +11,7 @@ export default function RootCauseAnalysisPage() {
         title="Root Cause Analysis Dashboard"
         defaultTimeRange="last30d"
         defaultEquipment="all"
-        defaultTabIndex={5} />/ Start on Root Cause Analysis tab
+        defaultTabIndex={5} // Start on Root Cause Analysis tab
       />
     </DashboardLayout>
   );

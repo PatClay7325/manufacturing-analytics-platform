@@ -1,393 +1,482 @@
 /**
- * Adaptive Factory Manufacturing Intelligence Platform
- * Explore Page - Data exploration and query interface
- * 
- * Original implementation for manufacturing data exploration
+ * Explore Page - Grafana-compatible data exploration interface
+ * /explore route
  */
 
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { dataSourceRegistry } from '@/core/datasources/DataSourceRegistry';
-import { DataSourceInstanceSettings, DataFrame, DataQuery } from '@/types/datasource';
-import { TimeRange } from '@/types/dashboard';
-import PageLayout from '@/components/layout/PageLayout';
-import DataSourceSelector from '@/components/explore/DataSourceSelector';
-import QueryEditor from '@/components/explore/QueryEditor';
-import TimeRangeSelector from '@/components/explore/TimeRangeSelector';
-import ExploreVisualization from '@/components/explore/ExploreVisualization';
-import QueryHistory from '@/components/explore/QueryHistory';
-import ExploreMetrics from '@/components/explore/ExploreMetrics';
+import { useState, useEffect, useRef } from 'react';
+import { 
+  Search, Play, Clock, Download, Split, Eye, EyeOff, 
+  Plus, X, ChevronDown, ChevronUp, Database 
+} from 'lucide-react';
+import { PageLayout } from '@/components/layout/PageLayout';
+import { TimeRangePicker } from '@/components/dashboard/TimeRangePicker';
+import { RefreshPicker } from '@/components/dashboard/RefreshPicker';
+import { QueryEditor } from '@/components/explore/QueryEditor';
+import { ExploreVisualization } from '@/components/explore/ExploreVisualization';
+import { QueryHistory } from '@/components/explore/QueryHistory';
+import { cn } from '@/lib/utils';
+import { DataFrame, LoadingState } from '@/core/plugins/types';
+import { getPluginRegistry } from '@/core/plugins/PluginRegistry';
 
-interface ExploreState {
-  selectedDataSource: string | null;
-  query: DataQuery;
-  timeRange: TimeRange;
-  data: DataFrame[];
-  loading: boolean;
-  error: string | null;
-  queryHistory: HistoryItem[];
-  visualizationType: 'table' | 'timeseries' | 'logs' | 'raw';
-  autoRefresh: boolean;
-  refreshInterval: number;
+interface Query {
+  refId: string;
+  datasource: {
+    type: string;
+    uid: string;
+  };
+  expr?: string;
+  hide?: boolean;
+  instant?: boolean;
+  range?: boolean;
+  format?: string;
+  intervalFactor?: number;
 }
 
-interface HistoryItem {
+interface ExplorePane {
   id: string;
-  query: DataQuery;
-  datasource: string;
-  timestamp: Date;
-  execution_time: number;
-  error?: string;
+  datasource: {
+    type: string;
+    uid: string;
+    name: string;
+  } | null;
+  queries: Query[];
+  range: {
+    from: string;
+    to: string;
+  };
+  mode: 'metrics' | 'logs' | 'traces';
+  showGraph: boolean;
+  showTable: boolean;
+  showLogs: boolean;
+  loading: boolean;
+  data: DataFrame[];
 }
 
 export default function ExplorePage() {
-  const [state, setState] = useState<ExploreState>({
-    selectedDataSource: null,
-    query: { refId: 'A' },
-    timeRange: {
-      from: 'now-1h',
-      to: 'now'
+  const [panes, setPanes] = useState<ExplorePane[]>([
+    {
+      id: '1',
+      datasource: null,
+      queries: [{
+        refId: 'A',
+        datasource: { type: '', uid: '' },
+        expr: '',
+      }],
+      range: {
+        from: 'now-1h',
+        to: 'now',
+      },
+      mode: 'metrics',
+      showGraph: true,
+      showTable: false,
+      showLogs: false,
+      loading: false,
+      data: [],
     },
-    data: [],
-    loading: false,
-    error: null,
-    queryHistory: [],
-    visualizationType: 'table',
-    autoRefresh: false,
-    refreshInterval: 30000
-  });
+  ]);
+  const [splitView, setSplitView] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [datasources, setDatasources] = useState<any[]>([]);
+  const queryHistoryRef = useRef<Array<{
+    timestamp: number;
+    datasource: string;
+    queries: Query[];
+    duration: number;
+  }>>([]);
 
-  const [availableDataSources, setAvailableDataSources] = useState<DataSourceInstanceSettings[]>([]);
-
-  // Load available data sources
   useEffect(() => {
-    const dataSources = dataSourceRegistry?.getAllInstances();
-    setAvailableDataSources(dataSources);
-    
-    // Select first manufacturing data source by default
-    const manufacturingSources = dataSources?.filter(ds => 
-      ds?.meta.category === 'manufacturing' || ds?.meta.category === 'industrial'
-    );
-    
-    if (manufacturingSources?.length > 0) {
-      setState(prev => ({ 
-        ...prev, 
-        selectedDataSource: manufacturingSources[0].uid 
-      }));
-    } else if (dataSources?.length > 0) {
-      setState(prev => ({ 
-        ...prev, 
-        selectedDataSource: dataSources[0].uid 
-      }));
-    }
+    fetchDatasources();
   }, []);
 
-  // Auto-refresh effect
-  useEffect(() => {
-    if (!state?.autoRefresh || !state?.selectedDataSource) return;
-
-    const interval = setInterval(() => {
-      executeQuery();
-    }, state?.refreshInterval);
-
-    return () => clearInterval(interval);
-  }, [state?.autoRefresh, state?.refreshInterval, state?.selectedDataSource, state?.query]);
-
-  const selectedDataSourceInstance = useMemo(() => {
-    return availableDataSources?.find(ds => ds?.uid === state?.selectedDataSource);
-  }, [availableDataSources, state?.selectedDataSource]);
-
-  const executeQuery = async () => {
-    if (!state?.selectedDataSource || !state?.query) return;
-
-    setState(prev => ({ ...prev, loading: true, error: null }));
-    
-    const startTime = Date.now();
-    
+  const fetchDatasources = async () => {
     try {
+      const response = await fetch('/api/datasources');
+      if (response.ok) {
+        const data = await response.json();
+        setDatasources(data);
+        
+        // Set default datasource if available
+        const defaultDs = data.find((ds: any) => ds.isDefault);
+        if (defaultDs && panes[0].datasource === null) {
+          updatePane(panes[0].id, {
+            datasource: {
+              type: defaultDs.type,
+              uid: defaultDs.uid,
+              name: defaultDs.name,
+            },
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch datasources:', error);
+    }
+  };
+
+  const updatePane = (paneId: string, updates: Partial<ExplorePane>) => {
+    setPanes(panes.map(pane => 
+      pane.id === paneId ? { ...pane, ...updates } : pane
+    ));
+  };
+
+  const addQuery = (paneId: string) => {
+    const pane = panes.find(p => p.id === paneId);
+    if (!pane) return;
+
+    const newQuery: Query = {
+      refId: getNextRefId(pane.queries),
+      datasource: pane.datasource ? {
+        type: pane.datasource.type,
+        uid: pane.datasource.uid,
+      } : { type: '', uid: '' },
+      expr: '',
+    };
+
+    updatePane(paneId, {
+      queries: [...pane.queries, newQuery],
+    });
+  };
+
+  const updateQuery = (paneId: string, refId: string, updates: Partial<Query>) => {
+    const pane = panes.find(p => p.id === paneId);
+    if (!pane) return;
+
+    updatePane(paneId, {
+      queries: pane.queries.map(q => 
+        q.refId === refId ? { ...q, ...updates } : q
+      ),
+    });
+  };
+
+  const removeQuery = (paneId: string, refId: string) => {
+    const pane = panes.find(p => p.id === paneId);
+    if (!pane || pane.queries.length <= 1) return;
+
+    updatePane(paneId, {
+      queries: pane.queries.filter(q => q.refId !== refId),
+    });
+  };
+
+  const runQueries = async (paneId: string) => {
+    const pane = panes.find(p => p.id === paneId);
+    if (!pane || !pane.datasource) return;
+
+    updatePane(paneId, { loading: true });
+
+    const startTime = Date.now();
+
+    try {
+      // Create data source instance
+      const registry = getPluginRegistry();
+      const dsInstance = registry.createDataSourceInstance({
+        type: pane.datasource.type,
+        uid: pane.datasource.uid,
+        name: pane.datasource.name,
+        jsonData: {},
+      });
+
+      // Execute queries
       const request = {
-        app: 'explore' as const,
-        requestId: `explore_${Date.now()}`,
+        app: 'explore',
+        requestId: `explore-${paneId}`,
         timezone: 'browser',
-        range: state.timeRange,
-        targets: [state?.query],
-        maxDataPoints: 1000,
-        intervalMs: 15000,
-        startTime: Date.now()
+        range: {
+          from: pane.range.from,
+          to: pane.range.to,
+          raw: pane.range,
+        },
+        interval: '30s',
+        intervalMs: 30000,
+        targets: pane.queries.filter(q => !q.hide && q.expr),
+        scopedVars: {},
+        startTime,
       };
 
-      const response = await dataSourceRegistry?.executeQuery(state?.selectedDataSource, request);
-      const executionTime = Date.now() - startTime;
-
-      // Add to query history
-      const historyItem: HistoryItem = {
-        id: `history_${Date.now()}`,
-        query: state.query,
-        datasource: state.selectedDataSource,
-        timestamp: new Date(),
-        execution_time: executionTime
-      };
-
-      setState(prev => ({
-        ...prev,
+      const response = await dsInstance.query(request as any);
+      
+      updatePane(paneId, {
         data: response.data,
         loading: false,
-        queryHistory: [historyItem, ...prev?.queryHistory.slice(0, 49)] // Keep last 50
-      }));
+      });
+
+      // Add to history
+      const duration = Date.now() - startTime;
+      queryHistoryRef.current.unshift({
+        timestamp: Date.now(),
+        datasource: pane.datasource.name,
+        queries: pane.queries.filter(q => !q.hide && q.expr),
+        duration,
+      });
+
+      // Keep only last 50 queries
+      if (queryHistoryRef.current.length > 50) {
+        queryHistoryRef.current = queryHistoryRef.current.slice(0, 50);
+      }
 
     } catch (error) {
-      const executionTime = Date.now() - startTime;
-      const errorMessage = error instanceof Error ? error?.message : 'Query failed';
-
-      // Add error to history
-      const historyItem: HistoryItem = {
-        id: `history_${Date.now()}`,
-        query: state.query,
-        datasource: state.selectedDataSource,
-        timestamp: new Date(),
-        execution_time: executionTime,
-        error: errorMessage
-      };
-
-      setState(prev => ({
-        ...prev,
-        data: [],
+      console.error('Query failed:', error);
+      updatePane(paneId, {
         loading: false,
-        error: errorMessage,
-        queryHistory: [historyItem, ...prev?.queryHistory.slice(0, 49)]
-      }));
+        data: [],
+      });
     }
   };
 
-  const handleDataSourceChange = (datasourceUid: string) => {
-    setState(prev => ({ 
-      ...prev, 
-      selectedDataSource: datasourceUid,
-      data: [],
-      error: null
-    }));
-  };
-
-  const handleQueryChange = (newQuery: DataQuery) => {
-    setState(prev => ({ ...prev, query: newQuery }));
-  };
-
-  const handleTimeRangeChange = (newTimeRange: TimeRange) => {
-    setState(prev => ({ ...prev, timeRange: newTimeRange }));
-  };
-
-  const handleVisualizationChange = (type: typeof state.visualizationType) => {
-    setState(prev => ({ ...prev, visualizationType: type }));
-  };
-
-  const handleHistorySelect = (historyItem: HistoryItem) => {
-    setState(prev => ({
-      ...prev,
-      query: historyItem.query,
-      selectedDataSource: historyItem.datasource
-    }));
-  };
-
-  const toggleAutoRefresh = () => {
-    setState(prev => ({ ...prev, autoRefresh: !prev?.autoRefresh }));
-  };
-
-  const setRefreshInterval = (interval: number) => {
-    setState(prev => ({ ...prev, refreshInterval: interval }));
-  };
-
-  const addQueryToDashboard = () => {
-    // This would open a modal to select/create dashboard
-    console.log('Add to dashboard:', state?.query);
-  };
-
-  const exportData = () => {
-    if (state?.data.length === 0) return;
-    
-    // Convert DataFrame to CSV
-    const csv = convertDataFrameToCSV(state?.data[0]);
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `explore_data_${Date.now()}.csv`;
-    a.click();
-    window.URL.revokeObjectURL(url);
-  };
-
-  const convertDataFrameToCSV = (dataFrame: DataFrame): string => {
-    if (!dataFrame?.fields.length) return '';
-    
-    const headers = (dataFrame?.fields || []).map(field => field?.name).join(',');
-    const rows = [];
-    
-    for (let i = 0; i < dataFrame?.length; i++) {
-      const row = (dataFrame?.fields || []).map(field => {
-        const value = field?.values[i];
-        if (value === null || value === undefined) return '';
-        if (typeof value === 'string' && value?.includes(',')) {
-          return `"${value?.replace(/"/g, '""')}"`;
-        }
-        return String(value);
-      }).join(',');
-      rows?.push(row);
+  const toggleSplitView = () => {
+    if (!splitView) {
+      // Add second pane
+      setPanes([
+        ...panes,
+        {
+          id: '2',
+          datasource: panes[0].datasource,
+          queries: [{
+            refId: 'A',
+            datasource: panes[0].datasource ? {
+              type: panes[0].datasource.type,
+              uid: panes[0].datasource.uid,
+            } : { type: '', uid: '' },
+            expr: '',
+          }],
+          range: panes[0].range,
+          mode: 'metrics',
+          showGraph: true,
+          showTable: false,
+          showLogs: false,
+          loading: false,
+          data: [],
+        },
+      ]);
+    } else {
+      // Remove second pane
+      setPanes([panes[0]]);
     }
-    
-    return [headers, ...rows].join('\n');
+    setSplitView(!splitView);
   };
 
-  return (
-    <PageLayout>
-      <div className="h-screen flex flex-col">
-        {/* Header */}
-        <div className="bg-white border-b border-gray-200 px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Explore</h1>
-              <p className="text-sm text-gray-600">
-                Query and explore manufacturing data from multiple sources
-              </p>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              {/* Auto-refresh toggle */}
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={toggleAutoRefresh}
-                  className={`px-3 py-1 rounded text-sm ${
-                    state?.autoRefresh 
-                      ? 'bg-green-100 text-green-800 border border-green-200' 
-                      : 'bg-gray-100 text-gray-600 border border-gray-200'
-                  }`}
-                >
-                  Auto-refresh {state?.autoRefresh ? 'ON' : 'OFF'}
-                </button>
-                
-                {state?.autoRefresh && (
-                  <select
-                    value={state?.refreshInterval}
-                    onChange={(e) => setRefreshInterval(Number(e.target.value))}
-                    className="text-sm border border-gray-300 rounded px-2 py-1"
-                  >
-                    <option value={5000}>5s</option>
-                    <option value={10000}>10s</option>
-                    <option value={30000}>30s</option>
-                    <option value={60000}>1m</option>
-                    <option value={300000}>5m</option>
-                  </select>
-                )}
-              </div>
-              
-              {/* Export button */}
-              <button
-                onClick={exportData}
-                disabled={state?.data.length === 0}
-                className="px-4 py-2 bg-gray-600 text-white rounded text-sm hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Export CSV
-              </button>
-              
-              {/* Add to dashboard button */}
-              <button
-                onClick={addQueryToDashboard}
-                disabled={state?.data.length === 0}
-                className="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Add to Dashboard
-              </button>
-            </div>
+  const getNextRefId = (queries: Query[]): string => {
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    for (const letter of letters) {
+      if (!queries.find(q => q.refId === letter)) {
+        return letter;
+      }
+    }
+    return 'A';
+  };
+
+  const renderPane = (pane: ExplorePane) => {
+    return (
+      <div key={pane.id} className="flex-1 flex flex-col h-full">
+        {/* Datasource selector */}
+        <div className="p-4 border-b">
+          <div className="flex items-center gap-2">
+            <Database className="h-4 w-4 text-muted-foreground" />
+            <select
+              value={pane.datasource?.uid || ''}
+              onChange={(e) => {
+                const ds = datasources.find(d => d.uid === e.target.value);
+                if (ds) {
+                  updatePane(pane.id, {
+                    datasource: {
+                      type: ds.type,
+                      uid: ds.uid,
+                      name: ds.name,
+                    },
+                  });
+                }
+              }}
+              className="flex-1 px-3 py-1.5 border rounded-md"
+            >
+              <option value="">Select data source</option>
+              {datasources.map(ds => (
+                <option key={ds.uid} value={ds.uid}>
+                  {ds.name} ({ds.type})
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
-        <div className="flex-1 flex">
-          {/* Left Sidebar - Query Builder */}
-          <div className="w-80 bg-gray-50 border-r border-gray-200 flex flex-col">
-            {/* Data Source Selection */}
-            <div className="p-4 border-b border-gray-200">
-              <DataSourceSelector
-                dataSources={availableDataSources}
-                selectedDataSource={state?.selectedDataSource}
-                onDataSourceChange={handleDataSourceChange}
-              />
-            </div>
-
-            {/* Time Range */}
-            <div className="p-4 border-b border-gray-200">
-              <TimeRangeSelector
-                timeRange={state?.timeRange}
-                onChange={handleTimeRangeChange}
-              />
-            </div>
-
-            {/* Query Editor */}
-            <div className="flex-1 p-4">
-              {selectedDataSourceInstance && (
-                <QueryEditor
-                  datasource={selectedDataSourceInstance}
-                  query={state?.query}
-                  onChange={handleQueryChange}
-                  onRunQuery={executeQuery}
-                  loading={state?.loading}
-                />
-              )}
-            </div>
-
-            {/* Query History */}
-            <div className="border-t border-gray-200">
-              <QueryHistory
-                history={state?.queryHistory}
-                onSelectHistory={handleHistorySelect}
-              />
-            </div>
-          </div>
-
-          {/* Main Content Area */}
-          <div className="flex-1 flex flex-col">
-            {/* Visualization Controls */}
-            <div className="bg-white border-b border-gray-200 px-6 py-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <span className="text-sm font-medium text-gray-700">View as:</span>
-                  <div className="flex space-x-1">
-                    {(['table', 'timeseries', 'logs', 'raw'] as const).map((type) => (
-                      <button
-                        key={type}
-                        onClick={() => handleVisualizationChange(type)}
-                        className={`px-3 py-1 text-sm rounded ${
-                          state?.visualizationType === type
-                            ? 'bg-blue-100 text-blue-800 border border-blue-200'
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
-                      >
-                        {type?.charAt(0).toUpperCase() + type?.slice(1)}
-                      </button>
-                    ))}
+        {/* Queries */}
+        <div className="flex-1 overflow-auto">
+          <div className="p-4 space-y-4">
+            {pane.queries.map((query, index) => (
+              <div key={query.refId} className="border rounded-lg">
+                <div className="p-3 flex items-center justify-between bg-muted/50">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-sm font-medium">
+                      {query.refId}
+                    </span>
+                    <button
+                      onClick={() => updateQuery(pane.id, query.refId, { hide: !query.hide })}
+                      className="p-1 hover:bg-accent rounded"
+                    >
+                      {query.hide ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
                   </div>
+                  
+                  {pane.queries.length > 1 && (
+                    <button
+                      onClick={() => removeQuery(pane.id, query.refId)}
+                      className="p-1 hover:bg-accent rounded text-destructive"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
                 </div>
-
-                {/* Metrics */}
-                <ExploreMetrics
-                  data={state?.data}
-                  loading={state?.loading}
-                  error={state?.error}
-                  queryHistory={state?.queryHistory}
-                />
+                
+                <div className="p-3">
+                  {pane.datasource && (
+                    <QueryEditor
+                      query={query}
+                      datasource={pane.datasource}
+                      onChange={(updates) => updateQuery(pane.id, query.refId, updates)}
+                      onRunQuery={() => runQueries(pane.id)}
+                    />
+                  )}
+                </div>
               </div>
-            </div>
+            ))}
+            
+            <button
+              onClick={() => addQuery(pane.id)}
+              className="flex items-center gap-2 px-3 py-1.5 text-sm border rounded-md hover:bg-accent"
+            >
+              <Plus className="h-4 w-4" />
+              Add query
+            </button>
+          </div>
 
-            {/* Visualization Area */}
-            <div className="flex-1 overflow-hidden">
+          {/* Results */}
+          {pane.data.length > 0 && (
+            <div className="border-t">
+              <div className="p-2 flex items-center gap-2 bg-muted/50">
+                <button
+                  onClick={() => updatePane(pane.id, { showGraph: !pane.showGraph })}
+                  className={cn(
+                    'px-3 py-1 text-sm rounded',
+                    pane.showGraph ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'
+                  )}
+                >
+                  Graph
+                </button>
+                <button
+                  onClick={() => updatePane(pane.id, { showTable: !pane.showTable })}
+                  className={cn(
+                    'px-3 py-1 text-sm rounded',
+                    pane.showTable ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'
+                  )}
+                >
+                  Table
+                </button>
+                <button
+                  onClick={() => updatePane(pane.id, { showLogs: !pane.showLogs })}
+                  className={cn(
+                    'px-3 py-1 text-sm rounded',
+                    pane.showLogs ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'
+                  )}
+                >
+                  Logs
+                </button>
+              </div>
+              
               <ExploreVisualization
-                data={state?.data}
-                loading={state?.loading}
-                error={state?.error}
-                visualizationType={state?.visualizationType}
-                timeRange={state?.timeRange}
-                onRunQuery={executeQuery}
+                data={pane.data}
+                showGraph={pane.showGraph}
+                showTable={pane.showTable}
+                showLogs={pane.showLogs}
+                timeRange={pane.range}
               />
             </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <PageLayout
+      title="Explore"
+      description="Explore your data"
+      fullWidth
+    >
+      <div className="flex flex-col h-[calc(100vh-8rem)]">
+        {/* Toolbar */}
+        <div className="flex items-center justify-between p-4 border-b">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleSplitView}
+              className={cn(
+                'flex items-center gap-2 px-3 py-1.5 text-sm border rounded-md hover:bg-accent',
+                splitView && 'bg-accent'
+              )}
+            >
+              <Split className="h-4 w-4" />
+              Split
+            </button>
+            
+            <button
+              onClick={() => setShowHistory(!showHistory)}
+              className={cn(
+                'flex items-center gap-2 px-3 py-1.5 text-sm border rounded-md hover:bg-accent',
+                showHistory && 'bg-accent'
+              )}
+            >
+              <Clock className="h-4 w-4" />
+              History
+            </button>
           </div>
+
+          <div className="flex items-center gap-2">
+            <TimeRangePicker
+              value={{
+                from: panes[0].range.from,
+                to: panes[0].range.to,
+              }}
+              onChange={(range) => {
+                panes.forEach(pane => {
+                  updatePane(pane.id, { range });
+                });
+              }}
+            />
+            
+            <button
+              onClick={() => panes.forEach(pane => runQueries(pane.id))}
+              disabled={panes.some(p => p.loading)}
+              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50"
+            >
+              <Play className="h-4 w-4" />
+              Run query
+            </button>
+          </div>
+        </div>
+
+        {/* Main content */}
+        <div className="flex-1 flex">
+          {/* Panes */}
+          <div className={cn(
+            'flex-1 flex',
+            splitView ? 'divide-x' : ''
+          )}>
+            {panes.map(renderPane)}
+          </div>
+
+          {/* History sidebar */}
+          {showHistory && (
+            <div className="w-80 border-l">
+              <QueryHistory
+                history={queryHistoryRef.current}
+                onSelect={(item) => {
+                  // Apply selected query to active pane
+                  const pane = panes[0];
+                  updatePane(pane.id, {
+                    queries: item.queries,
+                  });
+                }}
+              />
+            </div>
+          )}
         </div>
       </div>
     </PageLayout>

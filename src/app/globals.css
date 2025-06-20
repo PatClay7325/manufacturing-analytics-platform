@@ -210,3 +210,39 @@ body {
 .transition-number {
   transition: all 0.3s ease-out;
 }
+
+/* Kiosk Mode Styles */
+body.kiosk-mode {
+  overflow: hidden;
+}
+
+/* TV mode - hides header and nav */
+body.kiosk-mode-tv .app-header,
+body.kiosk-mode-tv .app-navigation,
+body.kiosk-mode-tv .dashboard-toolbar {
+  display: none !important;
+}
+
+body.kiosk-mode-tv .app-content {
+  padding: 0 !important;
+  height: 100vh !important;
+}
+
+/* Full mode - hides everything except panels */
+body.kiosk-mode-full .app-header,
+body.kiosk-mode-full .app-navigation,
+body.kiosk-mode-full .dashboard-toolbar,
+body.kiosk-mode-full .panel-header,
+body.kiosk-mode-full .panel-menu {
+  display: none !important;
+}
+
+body.kiosk-mode-full .app-content {
+  padding: 0 !important;
+  height: 100vh !important;
+}
+
+body.kiosk-mode-full .panel-container {
+  border: none !important;
+  background: transparent !important;
+}

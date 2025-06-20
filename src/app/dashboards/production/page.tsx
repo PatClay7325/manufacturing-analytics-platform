@@ -11,7 +11,7 @@ export default function ProductionDashboardPage() {
         title="Production Lines Dashboard"
         defaultTimeRange="last24h"
         defaultEquipment="all"
-        defaultTabIndex={2} />/ Start on Production tab
+        defaultTabIndex={2} // Start on Production tab
       />
     </DashboardLayout>
   );

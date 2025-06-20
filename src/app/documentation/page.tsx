@@ -774,6 +774,8 @@ await pipeline?.start();`}
               </div>
             </section>
           </div>
+        </div>
       </div>
+    </div>
   );
 }

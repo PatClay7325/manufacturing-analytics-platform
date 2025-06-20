@@ -181,35 +181,41 @@ export default function EquipmentDetailPage() {
             <div className="bg-white shadow rounded-lg p-6">
               <h3 className="text-lg font-medium text-gray-900 mb-4">Details</h3>
               <dl className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
-                                  <dt className="text-sm font-medium text-gray-500">Type</dt>
+                <div>
+                  <dt className="text-sm font-medium text-gray-500">Type</dt>
                   <dd className="mt-1 text-sm text-gray-900">{equipment?.type}</dd>
                 </div>
                 {equipment?.department && (
-                                      <dt className="text-sm font-medium text-gray-500">Department</dt>
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500">Department</dt>
                     <dd className="mt-1 text-sm text-gray-900">{equipment?.department}</dd>
                   </div>
                 )}
                 {equipment?.location && (
-                                      <dt className="text-sm font-medium text-gray-500">Location</dt>
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500">Location</dt>
                     <dd className="mt-1 text-sm text-gray-900">{equipment?.location}</dd>
                   </div>
                 )}
                 {equipment?.installationDate && (
-                                      <dt className="text-sm font-medium text-gray-500">Installation Date</dt>
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500">Installation Date</dt>
                     <dd className="mt-1 text-sm text-gray-900">
                       {new Date(equipment?.installationDate).toLocaleDateString()}
                     </dd>
                   </div>
                 )}
                 {equipment?.lastMaintenanceDate && (
-                                      <dt className="text-sm font-medium text-gray-500">Last Maintenance</dt>
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500">Last Maintenance</dt>
                     <dd className="mt-1 text-sm text-gray-900">
                       {new Date(equipment?.lastMaintenanceDate).toLocaleDateString()}
                     </dd>
                   </div>
                 )}
                 {equipment?.nextMaintenanceDate && (
-                                      <dt className="text-sm font-medium text-gray-500">Next Maintenance</dt>
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500">Next Maintenance</dt>
                     <dd className="mt-1 text-sm text-gray-900">
                       {new Date(equipment?.nextMaintenanceDate).toLocaleDateString()}
                     </dd>

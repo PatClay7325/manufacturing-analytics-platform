@@ -195,7 +195,7 @@ export default function CookiePolicyPage() {
           <div className="bg-gray-100 rounded-lg p-6">
             <p className="text-gray-700">
               <strong>Adaptive Factory AI Solutions, Inc.</strong><br />
-              Email: privacy@adaptivefactory?.ai<br />
+              Email: privacy@adaptivefactory.ai<br />
               Phone: +1 (555) 123-4567<br />
               Address: 123 Lorem Ipsum St, Dolor Sit, AM 12345
             </p>
@@ -212,5 +212,6 @@ export default function CookiePolicyPage() {
           </button>
         </div>
       </div>
+    </div>
   );
 }

@@ -11,7 +11,7 @@ export default function QualityDashboardPage() {
         title="Quality Control Dashboard"
         defaultTimeRange="last7d"
         defaultEquipment="all"
-        defaultTabIndex={3} />/ Start on Quality tab
+        defaultTabIndex={3} // Start on Quality tab
       />
     </DashboardLayout>
   );
