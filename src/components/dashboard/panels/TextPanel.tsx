@@ -10,7 +10,7 @@ interface TextPanelProps {
   width?: string | number;
 }
 
-export default function TextPanel({ panel, height, width }: TextPanelProps) {
+function TextPanel({ panel, height, width }: TextPanelProps) {
   const content = panel?.options?.content || '';
   const mode = panel?.options?.mode || 'markdown';
 
@@ -52,3 +52,6 @@ export default function TextPanel({ panel, height, width }: TextPanelProps) {
     </div>
   );
 }
+
+export default TextPanel;
+export { TextPanel };

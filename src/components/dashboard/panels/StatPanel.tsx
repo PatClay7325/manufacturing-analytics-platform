@@ -97,12 +97,12 @@ export default function StatPanel({
   return (
     <div 
       style={{ width, height }} 
-      className="flex flex-col justify-center items-center p-4"
+      className="flex flex-col justify-center items-center p-2"
     >
       <div className="w-full max-w-md">
         {/* Title */}
         {options?.displayName !== false && panel?.title && (
-          <h3 className="text-sm font-medium text-gray-400 text-center mb-2">
+          <h3 className="text-sm font-medium text-gray-700 text-center mb-3">
             {panel?.title}
           </h3>
         )}
@@ -120,7 +120,7 @@ export default function StatPanel({
           <div 
             className="font-bold leading-none"
             style={{
-              fontSize: options.textSize || '3rem'
+              fontSize: options.textSize || '2.5rem'
             }}
           >
             {formatValue(value)}
@@ -164,7 +164,7 @@ export default function StatPanel({
 
         {/* Subtitle */}
         {options?.text && (
-          <p className="text-xs text-gray-500 text-center mt-2">
+          <p className="text-xs text-gray-600 text-center mt-2 font-medium">
             {options?.text}
           </p>
         )}
@@ -172,3 +172,4 @@ export default function StatPanel({
     </div>
   );
 }
+

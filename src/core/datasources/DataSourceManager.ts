@@ -2,18 +2,18 @@
  * Data Source Manager - Central registry for all data source instances
  */
 
-import { DataSourceApi, DataSourceInstanceSettings, DataSourceSettings } from './types';
-import { PrometheusDataSource } from './PrometheusDataSource';
+import { DataSourcePlugin, DataSourceInstanceSettings } from './DataSourcePlugin';
+import { PrometheusDataSource } from './plugins/PrometheusDataSource';
 
 export interface DataSourceConstructor {
-  new (instanceSettings: DataSourceInstanceSettings): DataSourceApi;
+  new (instanceSettings: DataSourceInstanceSettings): DataSourcePlugin;
 }
 
 class DataSourceRegistry {
   private static instance: DataSourceRegistry;
-  private dataSources = new Map<string, DataSourceApi>();
+  private dataSources = new Map<string, DataSourcePlugin>();
   private dataSourceTypes = new Map<string, DataSourceConstructor>();
-  private settings = new Map<string, DataSourceSettings>();
+  private settings = new Map<string, DataSourceInstanceSettings>();
 
   private constructor() {
     this.registerBuiltInDataSources();
@@ -31,12 +31,16 @@ class DataSourceRegistry {
     console.log('Registered built-in data sources: prometheus');
   }
 
-  getDataSource(uid: string): DataSourceApi | null {
+  getDataSource(uid: string): DataSourcePlugin | null {
+    // First check if it's already instantiated
     if (this.dataSources.has(uid)) {
       return this.dataSources.get(uid)!;
     }
 
-    const settings = this.settings.get(uid);
+    // Try to find by name if uid doesn't match
+    const settingsByName = Array.from(this.settings.values()).find(s => s.name === uid);
+    const settings = this.settings.get(uid) || settingsByName;
+    
     if (!settings) {
       console.error(`Data source settings not found for uid: ${uid}`);
       return null;
@@ -49,27 +53,8 @@ class DataSourceRegistry {
     }
 
     try {
-      const instanceSettings: DataSourceInstanceSettings = {
-        id: settings.id,
-        uid: settings.uid,
-        type: settings.type,
-        name: settings.name,
-        url: settings.url,
-        access: settings.access,
-        basicAuth: settings.basicAuth,
-        basicAuthUser: settings.basicAuthUser,
-        basicAuthPassword: settings.basicAuthPassword,
-        withCredentials: settings.withCredentials,
-        isDefault: settings.isDefault,
-        jsonData: settings.jsonData,
-        secureJsonData: settings.secureJsonData,
-        readOnly: settings.readOnly,
-        database: settings.database,
-        user: settings.user,
-      };
-
-      const dataSource = new Constructor(instanceSettings);
-      this.dataSources.set(uid, dataSource);
+      const dataSource = new Constructor(settings);
+      this.dataSources.set(settings.uid, dataSource);
       
       console.log(`Created data source instance: ${settings.name} (${settings.type})`);
       return dataSource;
@@ -79,7 +64,7 @@ class DataSourceRegistry {
     }
   }
 
-  addDataSource(settings: DataSourceSettings): void {
+  addDataSource(settings: DataSourceInstanceSettings): void {
     this.settings.set(settings.uid, settings);
     if (this.dataSources.has(settings.uid)) {
       this.dataSources.delete(settings.uid);
@@ -88,22 +73,20 @@ class DataSourceRegistry {
   }
 
   initializeDefaults(): void {
-    const prometheusSettings: DataSourceSettings = {
+    const prometheusSettings: DataSourceInstanceSettings = {
       id: 1,
       uid: 'prometheus-manufacturing',
       type: 'prometheus',
       name: 'Manufacturing Prometheus',
-      url: 'http://localhost:9090',
-      access: 'proxy',
-      basicAuth: false,
-      withCredentials: false,
-      isDefault: true,
+      url: process.env.NEXT_PUBLIC_PROMETHEUS_URL || 'http://localhost:9090',
       jsonData: {
         timeInterval: '30s',
         queryTimeout: '60s',
         httpMethod: 'GET',
       },
-      readOnly: false,
+      basicAuth: false,
+      withCredentials: false,
+      isDefault: true,
       version: 1,
     };
 
@@ -111,11 +94,11 @@ class DataSourceRegistry {
     console.log('Initialized default data sources');
   }
 
-  getAllDataSources(): DataSourceSettings[] {
+  getAllDataSources(): DataSourceInstanceSettings[] {
     return Array.from(this.settings.values());
   }
 
-  getDefaultDataSource(): DataSourceApi | null {
+  getDefaultDataSource(): DataSourcePlugin | null {
     const defaultSettings = Array.from(this.settings.values()).find(s => s.isDefault);
     return defaultSettings ? this.getDataSource(defaultSettings.uid) : null;
   }
@@ -123,3 +106,8 @@ class DataSourceRegistry {
 
 export const dataSourceManager = DataSourceRegistry.getInstance();
 dataSourceManager.initializeDefaults();
+
+// Export function for easier access
+export function getDataSourceManager(): DataSourceRegistry {
+  return dataSourceManager;
+}

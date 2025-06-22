@@ -428,8 +428,8 @@ export class AnnotationManager extends EventEmitter {
       dashboardId,
       userId,
       createdAt: now,
-      expiresAt: options?.expiresAt,
-      isPublic: options?.isPublic || false,
+      expiresAt: options.expiresAt,
+      isPublic: options.isPublic || false,
       data: {
         dashboard: dashboardData,
         panels: panelData,
@@ -443,7 +443,7 @@ export class AnnotationManager extends EventEmitter {
       metadata: {
         title: name,
         description,
-        tags: options?.tags || [],
+        tags: options.tags || [],
         size: JSON.stringify(dashboardData).length + JSON.stringify(panelData).length,
         panelCount: Object.keys(panelData).length,
         annotationCount: this.getAnnotations({ dashboardId }).length,

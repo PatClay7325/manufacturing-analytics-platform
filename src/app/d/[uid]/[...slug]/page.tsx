@@ -8,7 +8,6 @@
 import React from 'react';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
 import { DashboardViewer } from '@/components/dashboard/DashboardViewer';
 import { useUrlParams } from '@/hooks/useUrlParams';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
@@ -28,19 +27,25 @@ interface Dashboard {
   version: number;
 }
 
-export default function DashboardByUidPage() {
-  const params = useParams();
-  const uid = params.uid as string;
+interface PageProps {
+  params: Promise<{ uid: string; slug: string[] }>;
+}
+
+export default function DashboardByUidPage({ params }: PageProps) {
   const { params: urlParams } = useUrlParams();
   const [dashboard, setDashboard] = useState<Dashboard | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [uid, setUid] = useState<string>('');
 
   useEffect(() => {
-    if (uid) {
-      fetchDashboard(uid);
-    }
-  }, [uid]);
+    params.then(p => {
+      setUid(p.uid);
+      if (p.uid) {
+        fetchDashboard(p.uid);
+      }
+    });
+  }, [params]);
 
   const fetchDashboard = async (dashboardUid: string) => {
     try {

@@ -5,6 +5,8 @@ import { Inter } from 'next/font/google';
 import type { Metadata, Viewport } from 'next';
 import ErrorBoundary from '@/components/common/ErrorBoundary';
 import GrafanaLayout from '@/components/layout/GrafanaLayout';
+import ClientLayout from './ClientLayout';
+import { PreferencesProvider } from '@/contexts/PreferencesContext';
 // import MockServerProvider from '@/components/providers/MockServerProvider';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -68,9 +70,13 @@ export default function RootLayout({
       </head>
       <body className={`${inter?.className} h-full antialiased`}>
         <ErrorBoundary level="critical" context="root-layout">
-          <GrafanaLayout>
-            {children}
-          </GrafanaLayout>
+          <ClientLayout>
+            <PreferencesProvider>
+              <GrafanaLayout>
+                {children}
+              </GrafanaLayout>
+            </PreferencesProvider>
+          </ClientLayout>
         </ErrorBoundary>
         {/* Initialize mock server in development mode */}
         {/* <MockServerProvider /> */}

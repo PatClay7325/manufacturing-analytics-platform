@@ -1,404 +1,254 @@
 /**
- * Adaptive Factory Manufacturing Intelligence Platform
- * Dashboards Management Page
- * 
- * Original implementation for dashboard creation, management and organization
+ * Grafana Dashboards List Page - Dashboard management and navigation
+ * Route: /dashboards - Matches Grafana's dashboards URL pattern
  */
 
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { Dashboard } from '@/types/dashboard';
-import { dashboardEngine } from '@/core/dashboard/DashboardEngine';
-import PageLayout from '@/components/layout/PageLayout';
-import DashboardCard from '@/components/dashboards/DashboardCard';
-import DashboardSearch from '@/components/dashboards/DashboardSearch';
-import DashboardFilters from '@/components/dashboards/DashboardFilters';
-import CreateDashboardModal from '@/components/dashboards/CreateDashboardModal';
-import DashboardImportModal from '@/components/dashboards/DashboardImportModal';
+import { useState } from 'react';
+import { defaultGrafanaConfig } from '@/core/grafana';
 
-interface DashboardsPageState {
-  dashboards: Dashboard[];
-  loading: boolean;
-  error: string | null;
-  searchQuery: string;
-  selectedTags: string[];
-  sortBy: 'name' | 'updated' | 'created';
-  sortDirection: 'asc' | 'desc';
-  viewMode: 'grid' | 'list';
-  showCreateModal: boolean;
-  showImportModal: boolean;
+interface Dashboard {
+  uid: string;
+  title: string;
+  description?: string;
+  tags: string[];
+  isStarred?: boolean;
+  meta: {
+    updated: string;
+    created: string;
+    canEdit: boolean;
+    canSave: boolean;
+    canDelete: boolean;
+  };
 }
 
 export default function DashboardsPage() {
-  const [state, setState] = useState<DashboardsPageState>({
-    dashboards: [],
-    loading: true,
-    error: null,
-    searchQuery: '',
-    selectedTags: [],
-    sortBy: 'updated',
-    sortDirection: 'desc',
-    viewMode: 'grid',
-    showCreateModal: false,
-    showImportModal: false
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+
+  // Mock dashboards - in a real app, these would come from an API
+  const dashboards: Dashboard[] = [
+    {
+      uid: 'manufacturing-overview',
+      title: 'Manufacturing Overview',
+      description: 'Complete manufacturing operations overview with OEE, production metrics, and equipment status',
+      tags: ['manufacturing', 'overview', 'oee'],
+      isStarred: true,
+      meta: {
+        updated: new Date().toISOString(),
+        created: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+        canEdit: true,
+        canSave: true,
+        canDelete: true,
+      }
+    },
+    {
+      uid: 'equipment-monitoring',
+      title: 'Equipment Monitoring',
+      description: 'Real-time equipment health, performance, and maintenance tracking',
+      tags: ['equipment', 'monitoring', 'maintenance'],
+      isStarred: false,
+      meta: {
+        updated: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+        created: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+        canEdit: true,
+        canSave: true,
+        canDelete: true,
+      }
+    },
+    {
+      uid: 'quality-metrics',
+      title: 'Quality Metrics',
+      description: 'Quality control metrics, defect rates, and compliance tracking',
+      tags: ['quality', 'metrics', 'compliance'],
+      isStarred: true,
+      meta: {
+        updated: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+        created: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+        canEdit: true,
+        canSave: true,
+        canDelete: false,
+      }
+    },
+    {
+      uid: 'production-analytics',
+      title: 'Production Analytics',
+      description: 'Production line performance, throughput, and efficiency analysis',
+      tags: ['production', 'analytics', 'efficiency'],
+      isStarred: false,
+      meta: {
+        updated: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+        created: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+        canEdit: true,
+        canSave: true,
+        canDelete: true,
+      }
+    }
+  ];
+
+  // Filter dashboards based on search and tags
+  const filteredDashboards = dashboards.filter(dashboard => {
+    const matchesSearch = !searchQuery || 
+      dashboard.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      dashboard.description?.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesTags = selectedTags.length === 0 ||
+      selectedTags.every(tag => dashboard.tags.includes(tag));
+
+    return matchesSearch && matchesTags;
   });
 
-  // Load dashboards on component mount
-  useEffect(() => {
-    loadDashboards();
-  }, []);
-
-  const loadDashboards = async () => {
-    try {
-      setState(prev => ({ ...prev, loading: true, error: null }));
-      
-      // This would typically come from an API
-      const dashboards = await dashboardEngine?.searchDashboards('', state?.selectedTags);
-      
-      setState(prev => ({ 
-        ...prev, 
-        dashboards, 
-        loading: false 
-      }));
-    } catch (error) {
-      setState(prev => ({ 
-        ...prev, 
-        loading: false, 
-        error: error instanceof Error ? error?.message : 'Failed to load dashboards' 
-      }));
-    }
-  };
-
-  // Filter and sort dashboards
-  const filteredDashboards = useMemo(() => {
-    let filtered = state?.dashboards;
-
-    // Apply search filter
-    if (state?.searchQuery) {
-      const query = state?.searchQuery.toLowerCase();
-      filtered = filtered?.filter(dashboard => 
-        dashboard?.title.toLowerCase().includes(query) ||
-        dashboard?.description?.toLowerCase().includes(query) ||
-        dashboard?.tags.some(tag => tag?.toLowerCase().includes(query))
-      );
-    }
-
-    // Apply tag filter
-    if (state?.selectedTags.length > 0) {
-      filtered = filtered?.filter(dashboard =>
-        state?.selectedTags.every(tag => dashboard?.tags.includes(tag))
-      );
-    }
-
-    // Apply sorting
-    filtered?.sort((a, b) => {
-      let aValue: any, bValue: any;
-      
-      switch (state?.sortBy) {
-        case 'name':
-          aValue = a?.title.toLowerCase();
-          bValue = b?.title.toLowerCase();
-          break;
-        case 'updated':
-          aValue = new Date(a?.meta.updated || 0).getTime();
-          bValue = new Date(b?.meta.updated || 0).getTime();
-          break;
-        case 'created':
-          aValue = new Date(a?.meta.created || 0).getTime();
-          bValue = new Date(b?.meta.created || 0).getTime();
-          break;
-        default:
-          return 0;
-      }
-
-      if (state?.sortDirection === 'asc') {
-        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-      } else {
-        return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
-      }
-    });
-
-    return filtered;
-  }, [state?.dashboards, state?.searchQuery, state?.selectedTags, state?.sortBy, state?.sortDirection]);
-
-  // Get all unique tags from dashboards
-  const availableTags = useMemo(() => {
-    const tags = new Set<string>();
-    state?.dashboards.forEach(dashboard => {
-      dashboard?.tags.forEach(tag => tags?.add(tag));
-    });
-    return Array.from(tags).sort();
-  }, [state?.dashboards]);
-
-  const handleSearch = (query: string) => {
-    setState(prev => ({ ...prev, searchQuery: query }));
-  };
-
-  const handleTagFilter = (tags: string[]) => {
-    setState(prev => ({ ...prev, selectedTags: tags }));
-  };
-
-  const handleSort = (sortBy: 'name' | 'updated' | 'created', direction: 'asc' | 'desc') => {
-    setState(prev => ({ ...prev, sortBy, sortDirection: direction }));
-  };
-
-  const handleViewModeChange = (viewMode: 'grid' | 'list') => {
-    setState(prev => ({ ...prev, viewMode }));
-  };
-
-  const handleCreateDashboard = async (dashboardData: any) => {
-    try {
-      const newDashboard = dashboardEngine?.createDashboard(
-        dashboardData?.title,
-        dashboardData?.manufacturingConfig
-      );
-      
-      await dashboardEngine?.saveDashboard(newDashboard);
-      await loadDashboards();
-      
-      setState(prev => ({ ...prev, showCreateModal: false }));
-    } catch (error) {
-      console.error('Failed to create dashboard:', error);
-    }
-  };
-
-  const handleImportDashboard = async (dashboardJson: string) => {
-    try {
-      const dashboardData = JSON.parse(dashboardJson);
-      await dashboardEngine?.saveDashboard(dashboardData);
-      await loadDashboards();
-      
-      setState(prev => ({ ...prev, showImportModal: false }));
-    } catch (error) {
-      console.error('Failed to import dashboard:', error);
-    }
-  };
-
-  const handleDeleteDashboard = async (uid: string) => {
-    if (!confirm('Are you sure you want to delete this dashboard?')) {
-      return;
-    }
-
-    try {
-      await dashboardEngine?.deleteDashboard(uid);
-      await loadDashboards();
-    } catch (error) {
-      console.error('Failed to delete dashboard:', error);
-    }
-  };
-
-  const handleDuplicateDashboard = async (uid: string) => {
-    try {
-      await dashboardEngine?.duplicateDashboard(uid);
-      await loadDashboards();
-    } catch (error) {
-      console.error('Failed to duplicate dashboard:', error);
-    }
-  };
-
-  if (state?.loading) {
-    return (
-      <PageLayout>
-        <div className="container py-8">
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          </div>
-        </div>
-      </PageLayout>
-    );
-  }
-
-  if (state?.error) {
-    return (
-      <PageLayout>
-        <div className="container py-8">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-            <h3 className="text-lg font-medium text-red-800 mb-2">Error Loading Dashboards</h3>
-            <p className="text-red-600 mb-4">{state?.error}</p>
-            <button
-              onClick={loadDashboards}
-              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-            >
-              Try Again
-            </button>
-          </div>
-        </div>
-      </PageLayout>
-    );
-  }
+  // Get all unique tags
+  const allTags = Array.from(new Set(dashboards.flatMap(d => d.tags))).sort();
 
   return (
-    <PageLayout>
-      <div className="container py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Dashboards</h1>
-            <p className="mt-2 text-gray-600">
-              Create and manage manufacturing intelligence dashboards
-            </p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Dashboards</h1>
+              <p className="text-gray-600 mt-1">
+                Create and manage your manufacturing analytics dashboards
+              </p>
+            </div>
+            <div className="flex items-center space-x-3">
+              <Link
+                href="/grafana-demo"
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                New Dashboard
+              </Link>
+            </div>
           </div>
-          
-          <div className="flex space-x-3">
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center space-x-4">
+          <div className="flex-1">
+            <input
+              type="text"
+              placeholder="Search dashboards..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-gray-600">Tags:</span>
+            {allTags.map(tag => (
+              <button
+                key={tag}
+                onClick={() => {
+                  if (selectedTags.includes(tag)) {
+                    setSelectedTags(selectedTags.filter(t => t !== tag));
+                  } else {
+                    setSelectedTags([...selectedTags, tag]);
+                  }
+                }}
+                className={`px-3 py-1 text-sm rounded-full border ${
+                  selectedTags.includes(tag)
+                    ? 'bg-blue-100 text-blue-800 border-blue-300'
+                    : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'
+                }`}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center space-x-1 border border-gray-300 rounded-md">
             <button
-              onClick={() => setState(prev => ({ ...prev, showImportModal: true }))}
-              className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 flex items-center space-x-2"
+              onClick={() => setViewMode('grid')}
+              className={`px-3 py-2 text-sm ${
+                viewMode === 'grid' ? 'bg-blue-100 text-blue-800' : 'text-gray-600'
+              }`}
             >
-              <span>📥</span>
-              <span>Import</span>
+              Grid
             </button>
-            
             <button
-              onClick={() => setState(prev => ({ ...prev, showCreateModal: true }))}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+              onClick={() => setViewMode('list')}
+              className={`px-3 py-2 text-sm ${
+                viewMode === 'list' ? 'bg-blue-100 text-blue-800' : 'text-gray-600'
+              }`}
             >
-              <span>➕</span>
-              <span>Create Dashboard</span>
+              List
             </button>
           </div>
         </div>
+      </div>
 
-        {/* Search and Filters */}
-        <div className="mb-6 space-y-4">
-          <DashboardSearch
-            value={state?.searchQuery}
-            onChange={handleSearch}
-            placeholder="Search dashboards by name, description, or tags..."
-          />
-          
-          <DashboardFilters
-            availableTags={availableTags}
-            selectedTags={state?.selectedTags}
-            sortBy={state?.sortBy}
-            sortDirection={state?.sortDirection}
-            viewMode={state?.viewMode}
-            onTagFilter={handleTagFilter}
-            onSort={handleSort}
-            onViewModeChange={handleViewModeChange}
-          />
-        </div>
-
-        {/* Dashboard Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <span className="text-blue-600">📊</span>
-                </div>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Dashboards</p>
-                <p className="text-2xl font-semibold text-gray-900">{state?.dashboards.length}</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                  <span className="text-green-600">🏭</span>
-                </div>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Manufacturing</p>
-                <p className="text-2xl font-semibold text-gray-900">
-                  {state?.dashboards.filter(d => d?.tags.includes('manufacturing')).length}
-                </p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
-                  <span className="text-yellow-600">⚙️</span>
-                </div>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Equipment</p>
-                <p className="text-2xl font-semibold text-gray-900">
-                  {state?.dashboards.filter(d => d?.tags.includes('equipment')).length}
-                </p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <span className="text-purple-600">📈</span>
-                </div>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Quality</p>
-                <p className="text-2xl font-semibold text-gray-900">
-                  {state?.dashboards.filter(d => d?.tags.includes('quality')).length}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Dashboards Grid/List */}
+      {/* Dashboard List */}
+      <div className="p-6">
         {filteredDashboards.length === 0 ? (
           <div className="text-center py-12">
-            <div className="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-lg flex items-center justify-center">
-              <span className="text-4xl text-gray-400">📊</span>
+            <div className="text-gray-500 mb-4">
+              {searchQuery || selectedTags.length > 0 ? 'No dashboards match your criteria' : 'No dashboards found'}
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No dashboards found</h3>
-            <p className="text-gray-600 mb-6">
-              {state?.searchQuery || state?.selectedTags.length > 0 
-                ? 'Try adjusting your search or filters'
-                : 'Get started by creating your first dashboard'}
-            </p>
-            {!state?.searchQuery && state?.selectedTags.length === 0 && (
-              <button
-                onClick={() => setState(prev => ({ ...prev, showCreateModal: true }))}
-                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
-              >
-                Create Your First Dashboard
-              </button>
-            )}
+            <Link
+              href="/grafana-demo"
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
+            >
+              Create Your First Dashboard
+            </Link>
           </div>
         ) : (
           <div className={
-            state?.viewMode === 'grid' 
+            viewMode === 'grid' 
               ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
               : 'space-y-4'
           }>
-            {filteredDashboards?.map((dashboard) => (
-              <DashboardCard
-                key={dashboard?.uid}
-                dashboard={dashboard}
-                viewMode={state?.viewMode}
-                onDelete={handleDeleteDashboard}
-                onDuplicate={handleDuplicateDashboard}
-              />
+            {filteredDashboards.map((dashboard) => (
+              <div
+                key={dashboard.uid}
+                className={`bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow ${
+                  viewMode === 'list' ? 'p-4' : 'p-6'
+                }`}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <Link
+                      href={`/d/${dashboard.uid}`}
+                      className="text-lg font-medium text-gray-900 hover:text-blue-600"
+                    >
+                      {dashboard.title}
+                    </Link>
+                    {dashboard.description && (
+                      <p className="text-gray-600 text-sm mt-1">{dashboard.description}</p>
+                    )}
+                    <div className="flex items-center space-x-2 mt-3">
+                      {dashboard.tags.map(tag => (
+                        <span
+                          key={tag}
+                          className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="text-xs text-gray-500 mt-2">
+                      Updated {new Date(dashboard.meta.updated).toLocaleDateString()}
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    {dashboard.isStarred && (
+                      <span className="text-yellow-500">⭐</span>
+                    )}
+                    <button className="text-gray-400 hover:text-gray-600">
+                      •••
+                    </button>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         )}
-
-        {/* Modals */}
-        {state?.showCreateModal && (
-          <CreateDashboardModal
-            onClose={() => setState(prev => ({ ...prev, showCreateModal: false }))}
-            onCreate={handleCreateDashboard}
-          />
-        )}
-
-        {state?.showImportModal && (
-          <DashboardImportModal
-            onClose={() => setState(prev => ({ ...prev, showImportModal: false }))}
-            onImport={handleImportDashboard}
-          />
-        )}
       </div>
-    </PageLayout>
+    </div>
   );
 }

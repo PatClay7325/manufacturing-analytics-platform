@@ -65,8 +65,8 @@ const LogsPanel: React.FC<PanelProps<LogsPanelOptions>> = ({
         logRows.push({
           timestamp: timeField.values.get(i),
           message: messageField.values.get(i),
-          level: levelField?.values.get(i)?.toLowerCase() || 'info',
-          labels: labelsField?.values.get(i) || {},
+          level: levelField.values.get(i)?.toLowerCase() || 'info',
+          labels: labelsField.values.get(i) || {},
           raw: messageField.values.get(i),
         });
       }

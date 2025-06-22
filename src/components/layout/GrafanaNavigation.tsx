@@ -26,7 +26,11 @@ import {
   PuzzlePieceIcon,
   AdjustmentsHorizontalIcon,
   KeyIcon,
-  DocumentTextIcon
+  DocumentTextIcon,
+  ArrowTopRightOnSquareIcon,
+  ChartBarSquareIcon,
+  BugAntIcon,
+  CodeBracketIcon
 } from '@heroicons/react/24/outline';
 import { NavTreeNode, bootstrapManager } from '@/lib/grafana-bootstrap';
 
@@ -58,7 +62,11 @@ const iconMap: Record<string, React.ComponentType<any>> = {
   'key-skeleton-alt': KeyIcon,
   'question-circle': QuestionMarkCircleIcon,
   'document-info': DocumentTextIcon,
-  'chart-bar': ChartBarIcon
+  'chart-bar': ChartBarIcon,
+  'code-branch': CodeBracketIcon,
+  'external-link-alt': ArrowTopRightOnSquareIcon,
+  'chart-line': ChartBarSquareIcon,
+  'bug': BugAntIcon
 };
 
 const getIcon = (iconName?: string) => {
@@ -75,7 +83,7 @@ interface NavItemProps {
 }
 
 function NavItem({ item, level, collapsed, pathname, onNavigate }: NavItemProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(item.id === 'development' || item.id === 'dashboards');
   const hasChildren = item.children && item.children.length > 0;
   const isActive = pathname === item.url || (item.children?.some(child => pathname === child.url));
   const IconComponent = getIcon(item.icon);

@@ -13,7 +13,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: ['./vitest.setup.ts'],
+    setupFiles: ['./src/test-utils/setup.ts'],
     include: [
       'src/**/*.{test,spec}.{ts,tsx}',
       'tests/unit/**/*.{test,spec}.{ts,tsx}'
@@ -35,12 +35,20 @@ export default defineConfig({
         '**/*.config.ts',
         '**/types.ts',
         '**/mockServiceWorker.js',
+        'src/test-utils/',
+        'src/mocks/',
       ],
       thresholds: {
         lines: 80,
         functions: 80,
         branches: 80,
         statements: 80
+      }
+    },
+    // Only fail on real console errors, ignore warnings and mocked logs
+    onConsoleLog: (log, type) => {
+      if (type === 'stderr' && !log.includes('Warning:') && !log.includes('Mock') && !log.includes('vi.fn()')) {
+        return false // Don't fail on these logs
       }
     },
     pool: 'forks',

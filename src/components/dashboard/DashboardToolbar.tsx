@@ -14,12 +14,15 @@ import {
   DocumentDuplicateIcon,
   TrashIcon,
   CodeBracketIcon,
-  ArrowDownTrayIcon
+  ArrowDownTrayIcon,
+  ListBulletIcon
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { Dashboard, TimeRange } from '@/types/dashboard';
 import TimeRangePicker from './TimeRangePicker';
 import RefreshPicker from './RefreshPicker';
+import ShareModal from './ShareModal';
+import AddToPlaylistModal from './AddToPlaylistModal';
 
 interface DashboardToolbarProps {
   dashboard?: Dashboard;
@@ -47,6 +50,8 @@ export default function DashboardToolbar({
   const [isKioskMode, setIsKioskMode] = useState(false);
   const [autoRefreshInterval, setAutoRefreshInterval] = useState<string | null>(dashboard?.refresh || null);
   const [isAutoRefreshing, setIsAutoRefreshing] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [showAddToPlaylistModal, setShowAddToPlaylistModal] = useState(false);
 
   const handleToggleAutoRefresh = () => {
     setIsAutoRefreshing(!isAutoRefreshing);
@@ -160,6 +165,7 @@ export default function DashboardToolbar({
 
           {/* Share */}
           <button
+            onClick={() => setShowShareModal(true)}
             className="p-2 rounded hover:bg-gray-100 text-gray-600"
             title="Share dashboard"
           >
@@ -211,6 +217,16 @@ export default function DashboardToolbar({
                 <div className="absolute right-0 top-10 z-20 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[200px]">
                   <button
                     onClick={() => {
+                      setShowAddToPlaylistModal(true);
+                      setShowMoreMenu(false);
+                    }}
+                    className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100 text-gray-700 text-sm"
+                  >
+                    <ListBulletIcon className="w-4 h-4" />
+                    Add to playlist
+                  </button>
+                  <button
+                    onClick={() => {
                       // TODO: Implement duplicate
                       setShowMoreMenu(false);
                     }}
@@ -256,6 +272,31 @@ export default function DashboardToolbar({
           </div>
         </div>
       </div>
+
+      {/* Share Modal */}
+      {showShareModal && dashboard && (
+        <ShareModal
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          dashboardId={dashboard.id}
+          dashboardTitle={dashboard.title}
+          currentUrl={window.location.href}
+          onShare={(shareConfig) => {
+            console.log('Share config:', shareConfig);
+            // TODO: Implement share logic
+          }}
+        />
+      )}
+
+      {/* Add to Playlist Modal */}
+      {showAddToPlaylistModal && dashboard && (
+        <AddToPlaylistModal
+          isOpen={showAddToPlaylistModal}
+          onClose={() => setShowAddToPlaylistModal(false)}
+          dashboardUid={dashboard.uid}
+          dashboardTitle={dashboard.title}
+        />
+      )}
     </div>
   );
 }

@@ -369,6 +369,7 @@ Current Manufacturing Metrics (Sample):
 - Other downtime: Changeover (32 min), Material shortage (28 min), Quality issues (17 min)
 
 Please answer the user's question based on these sample metrics.`;
+        }
         
         const enhancedMessages = [
           { role: 'system', content: systemPrompt },

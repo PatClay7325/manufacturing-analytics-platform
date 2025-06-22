@@ -13,7 +13,7 @@ interface PieChartPanelProps {
 
 const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#14B8A6', '#F97316'];
 
-export default function PieChartPanel({ panel, data = [], height, width }: PieChartPanelProps) {
+function PieChartPanel({ panel, data = [], height, width }: PieChartPanelProps) {
   const options = panel?.options || {};
   const showLegend = options.legend?.show !== false;
   const showLabels = options.pieType?.show !== false;
@@ -73,3 +73,6 @@ export default function PieChartPanel({ panel, data = [], height, width }: PieCh
     </div>
   );
 }
+
+export default PieChartPanel;
+export { PieChartPanel };

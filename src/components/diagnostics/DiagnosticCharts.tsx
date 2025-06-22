@@ -403,12 +403,12 @@ export default function DiagnosticCharts({ testResults, systemMetrics, logs }: D
                   data={[
                     { 
                       name: 'Used', 
-                      value: systemMetrics?.system?.memory ? 
+                      value: systemMetrics.system?.memory ? 
                         Math.round((systemMetrics.system.memory.used / systemMetrics.system.memory.total) * 100) : 0
                     },
                     { 
                       name: 'Free', 
-                      value: systemMetrics?.system?.memory ? 
+                      value: systemMetrics.system?.memory ? 
                         Math.round(((systemMetrics.system.memory.total - systemMetrics.system.memory.used) / systemMetrics.system.memory.total) * 100) : 100
                     }
                   ]}

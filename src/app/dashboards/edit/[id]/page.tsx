@@ -10,19 +10,23 @@ import { Dashboard } from '@/types/dashboard';
 export default function EditDashboardPage({ 
   params 
 }: { 
-  params: { id: string } 
+  params: Promise<{ id: string }> 
 }) {
   const router = useRouter();
   const [dashboard, setDashboard] = useState<Dashboard | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [dashboardId, setDashboardId] = useState<string>('');
 
   useEffect(() => {
-    loadDashboard();
-  }, [params?.id]);
+    params.then(p => {
+      setDashboardId(p.id);
+      loadDashboard(p.id);
+    });
+  }, [params]);
 
-  const loadDashboard = async () => {
+  const loadDashboard = async (id: string) => {
     try {
       setIsLoading(true);
       // For now, create a sample dashboard since we don't have backend yet

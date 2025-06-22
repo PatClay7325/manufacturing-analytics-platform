@@ -123,7 +123,7 @@ const CandlestickPanel: React.FC<PanelProps<CandlestickPanelOptions>> = ({
         high,
         low,
         close,
-        volume: volumeField?.values.get(i),
+        volume: volumeField.values.get(i),
         color: close >= open ? options.colors.up : options.colors.down,
       });
     }

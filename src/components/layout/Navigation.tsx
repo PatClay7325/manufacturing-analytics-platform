@@ -41,6 +41,7 @@ export default function Navigation() {
     { name: 'Analytics Dashboard', href: '/Analytics-dashboard', icon: '📊' },
     { name: 'Equipment', href: '/equipment', icon: '⚙️' },
     { name: 'Alerts', href: '/alerts', icon: '🔔' },
+    { name: 'Playlists', href: '/playlists', icon: '▶️' },
     { name: 'AI Chat', href: '/manufacturing-chat', icon: '🤖' },
     { name: 'Documentation', href: '/documentation', icon: '📚' },
   ];

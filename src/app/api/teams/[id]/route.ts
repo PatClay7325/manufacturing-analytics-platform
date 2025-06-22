@@ -1,13 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAuth } from '@/lib/auth';
-import { z } from 'zod';
-
-const updateTeamSchema = z.object({
-  name: z.string().min(2).max(50).optional(),
-  description: z.string().optional(),
-  siteId: z.string().nullable().optional(),
-});
+import { verifyAuth, hasPermission } from '@/lib/auth';
+import type { UpdateTeamRequest } from '@/types/user-management';
 
 // GET /api/teams/[id] - Get team by ID
 export async function GET(
@@ -15,34 +9,38 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Check authentication
-    const auth = await requireAuth(request, 'view:team');
-    if (!auth.authenticated) {
-      return NextResponse.json(
-        { error: auth.error || 'Unauthorized' },
-        { status: 401 }
-      );
+    // Verify authentication and permissions
+    const auth = await verifyAuth(request);
+    if (!auth.authenticated || !auth.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (!hasPermission(auth.user.role, 'view:teams')) {
+      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
     const team = await prisma.team.findUnique({
       where: { id: params.id },
-      include: {
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        siteId: true,
+        createdAt: true,
+        updatedAt: true,
         Site: {
           select: {
             id: true,
             name: true,
             code: true,
-            Enterprise: {
-              select: {
-                id: true,
-                name: true,
-                code: true,
-              },
-            },
+            location: true,
           },
         },
         TeamMembers: {
-          include: {
+          select: {
+            userId: true,
+            role: true,
+            joinedAt: true,
             User: {
               select: {
                 id: true,
@@ -51,6 +49,7 @@ export async function GET(
                 role: true,
                 department: true,
                 lastLogin: true,
+                isActive: true,
               },
             },
           },
@@ -62,37 +61,14 @@ export async function GET(
     });
 
     if (!team) {
-      return NextResponse.json(
-        { error: 'Team not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Team not found' }, { status: 404 });
     }
 
-    // Check if user has access to this team
-    if (auth.user?.role !== 'admin' && auth.user?.siteId !== team.siteId) {
-      return NextResponse.json(
-        { error: 'Access denied' },
-        { status: 403 }
-      );
-    }
-
-    return NextResponse.json({
-      id: team.id,
-      name: team.name,
-      description: team.description,
-      site: team.Site,
-      members: team.TeamMembers.map(tm => ({
-        ...tm.User,
-        teamRole: tm.role,
-        joinedAt: tm.joinedAt,
-      })),
-      createdAt: team.createdAt,
-      updatedAt: team.updatedAt,
-    });
+    return NextResponse.json(team);
   } catch (error) {
-    console.error('Get team error:', error);
+    console.error('Error fetching team:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to fetch team' },
       { status: 500 }
     );
   }
@@ -104,84 +80,68 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Check authentication
-    const auth = await requireAuth(request, 'manage:teams');
-    if (!auth.authenticated) {
-      return NextResponse.json(
-        { error: auth.error || 'Unauthorized' },
-        { status: 401 }
-      );
+    // Verify authentication and permissions
+    const auth = await verifyAuth(request);
+    if (!auth.authenticated || !auth.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
-    
-    // Validate input
-    const validationResult = updateTeamSchema.safeParse(body);
-    if (!validationResult.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: validationResult.error.flatten() },
-        { status: 400 }
-      );
+    if (!hasPermission(auth.user.role, 'edit:teams')) {
+      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
-    const { name, description, siteId } = validationResult.data;
+    const teamData: UpdateTeamRequest = await request.json();
 
-    // Check if team exists and user has access
+    // Check if team exists
     const existingTeam = await prisma.team.findUnique({
       where: { id: params.id },
-      include: {
-        TeamMembers: {
-          where: { userId: auth.userId },
-        },
-      },
     });
 
     if (!existingTeam) {
-      return NextResponse.json(
-        { error: 'Team not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Team not found' }, { status: 404 });
     }
 
-    // Check permissions
-    const isTeamAdmin = existingTeam.TeamMembers.some(tm => tm.role === 'admin');
-    if (auth.user?.role !== 'admin' && !isTeamAdmin) {
-      return NextResponse.json(
-        { error: 'Only team admins can update team details' },
-        { status: 403 }
-      );
+    // Check if new name conflicts with existing team
+    if (teamData.name && teamData.name !== existingTeam.name) {
+      const nameConflict = await prisma.team.findFirst({
+        where: {
+          name: teamData.name,
+          NOT: { id: params.id },
+        },
+      });
+
+      if (nameConflict) {
+        return NextResponse.json(
+          { error: 'Team with this name already exists' },
+          { status: 409 }
+        );
+      }
     }
+
+    // Prepare update data
+    const updateData: any = {};
+    if (teamData.name !== undefined) updateData.name = teamData.name;
+    if (teamData.description !== undefined) updateData.description = teamData.description || null;
+    if (teamData.siteId !== undefined) updateData.siteId = teamData.siteId || null;
 
     // Update team
     const updatedTeam = await prisma.team.update({
       where: { id: params.id },
-      data: {
-        ...(name && { name }),
-        ...(description !== undefined && { description }),
-        ...(siteId !== undefined && auth.user?.role === 'admin' && { siteId }),
-      },
-      include: {
-        Site: {
-          select: {
-            id: true,
-            name: true,
-            code: true,
-          },
-        },
+      data: updateData,
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        siteId: true,
+        updatedAt: true,
       },
     });
 
-    return NextResponse.json({
-      id: updatedTeam.id,
-      name: updatedTeam.name,
-      description: updatedTeam.description,
-      site: updatedTeam.Site,
-      updatedAt: updatedTeam.updatedAt,
-    });
+    return NextResponse.json(updatedTeam);
   } catch (error) {
-    console.error('Update team error:', error);
+    console.error('Error updating team:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to update team' },
       { status: 500 }
     );
   }
@@ -193,54 +153,35 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Check authentication
-    const auth = await requireAuth(request, 'manage:teams');
-    if (!auth.authenticated) {
-      return NextResponse.json(
-        { error: auth.error || 'Unauthorized' },
-        { status: 401 }
-      );
+    // Verify authentication and permissions
+    const auth = await verifyAuth(request);
+    if (!auth.authenticated || !auth.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (!hasPermission(auth.user.role, 'delete:teams')) {
+      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
     // Check if team exists
     const team = await prisma.team.findUnique({
       where: { id: params.id },
-      include: {
-        _count: {
-          select: {
-            TeamMembers: true,
-          },
-        },
-      },
     });
 
     if (!team) {
-      return NextResponse.json(
-        { error: 'Team not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Team not found' }, { status: 404 });
     }
 
-    // Only admins can delete teams
-    if (auth.user?.role !== 'admin') {
-      return NextResponse.json(
-        { error: 'Only admins can delete teams' },
-        { status: 403 }
-      );
-    }
-
-    // Delete team (cascading deletes will remove TeamMembers)
+    // Delete team (cascade will handle related records)
     await prisma.team.delete({
       where: { id: params.id },
     });
 
-    return NextResponse.json({
-      message: 'Team deleted successfully',
-    });
+    return NextResponse.json({ message: 'Team deleted successfully' });
   } catch (error) {
-    console.error('Delete team error:', error);
+    console.error('Error deleting team:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to delete team' },
       { status: 500 }
     );
   }

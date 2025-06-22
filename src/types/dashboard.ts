@@ -357,24 +357,141 @@ export interface LibraryPanel {
   description?: string;
   model: Panel;
   version: number;
+  tags: string[];
+  category?: string;
+  folderId?: string;
+  connectedDashboards: number;
+  usageCount: number;
+  lastUsedAt?: string;
+  createdBy: string;
+  updatedBy?: string;
+  createdAt: string;
+  updatedAt: string;
   meta: LibraryPanelMeta;
 }
 
 export interface LibraryPanelMeta {
   canEdit: boolean;
+  canDelete: boolean;
+  canView: boolean;
   connectedDashboards: number;
   created: string;
   updated: string;
   createdBy: LibraryPanelUser;
-  updatedBy: LibraryPanelUser;
-  folderName: string;
-  folderUid: string;
+  updatedBy?: LibraryPanelUser;
+  folderName?: string;
+  folderUid?: string;
+  versions: LibraryPanelVersion[];
+  permissions: LibraryPanelPermissions;
 }
 
 export interface LibraryPanelUser {
-  id: number;
+  id: string;
   name: string;
+  email?: string;
   avatarUrl?: string;
+}
+
+export interface LibraryPanelVersion {
+  id: string;
+  version: number;
+  model: Panel;
+  message?: string;
+  createdBy: string;
+  createdAt: string;
+  creator: LibraryPanelUser;
+}
+
+export interface LibraryPanelUsage {
+  id: string;
+  libraryPanelUid: string;
+  dashboardUid: string;
+  dashboardTitle: string;
+  panelId: number;
+  panelTitle: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LibraryPanelPermissions {
+  canEdit: boolean;
+  canDelete: boolean;
+  canShare: boolean;
+  canCreateVersion: boolean;
+}
+
+// Library Panel API request/response types
+export interface LibraryPanelSearchRequest {
+  query?: string;
+  page?: number;
+  perPage?: number;
+  sort?: 'name' | 'created' | 'updated' | 'type' | 'usage';
+  sortDirection?: 'asc' | 'desc';
+  typeFilter?: string;
+  folderFilter?: string;
+  tagFilter?: string[];
+  excludeUids?: string[];
+}
+
+export interface LibraryPanelSearchResponse {
+  totalCount: number;
+  page: number;
+  perPage: number;
+  result: LibraryPanel[];
+}
+
+export interface CreateLibraryPanelRequest {
+  name: string;
+  type: string;
+  description?: string;
+  model: Panel;
+  tags?: string[];
+  category?: string;
+  folderId?: string;
+}
+
+export interface UpdateLibraryPanelRequest {
+  name?: string;
+  description?: string;
+  model?: Panel;
+  tags?: string[];
+  category?: string;
+  folderId?: string;
+  version?: number;
+  message?: string;
+}
+
+export interface LibraryPanelWithConnections extends LibraryPanel {
+  connections: LibraryPanelUsage[];
+}
+
+// Library Panel Manager state types
+export interface LibraryPanelManagerState {
+  panels: LibraryPanel[];
+  selectedPanel?: LibraryPanel;
+  isLoading: boolean;
+  error?: string;
+  searchQuery: string;
+  filters: LibraryPanelFilters;
+  pagination: LibraryPanelPagination;
+  viewMode: 'grid' | 'list';
+  sortBy: 'name' | 'created' | 'updated' | 'type' | 'usage';
+  sortDirection: 'asc' | 'desc';
+}
+
+export interface LibraryPanelFilters {
+  type?: string;
+  folder?: string;
+  tags: string[];
+  category?: string;
+  showOnlyMine: boolean;
+}
+
+export interface LibraryPanelPagination {
+  page: number;
+  perPage: number;
+  totalCount: number;
+  totalPages: number;
 }
 
 // ============================================================================

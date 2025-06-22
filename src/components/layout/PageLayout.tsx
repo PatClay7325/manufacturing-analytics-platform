@@ -8,7 +8,7 @@ interface PageLayoutProps {
   actionButton?: React.ReactNode;
 }
 
-export default function PageLayout({
+function PageLayout({
   children,
   title,
   showBreadcrumbs = false,
@@ -68,3 +68,6 @@ export default function PageLayout({
     </div>
   );
 }
+
+export default PageLayout;
+export { PageLayout };

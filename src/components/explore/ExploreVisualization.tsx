@@ -213,3 +213,4 @@ const ExploreVisualization: React.FC<ExploreVisualizationProps> = ({
 };
 
 export default ExploreVisualization;
+export { ExploreVisualization };

@@ -23,7 +23,7 @@ interface TabNavigationProps {
   urlParamName?: string;
 }
 
-export default function TabNavigation({
+function TabNavigation({
   tabs,
   activeTab,
   onTabChange,
@@ -132,3 +132,4 @@ export default function TabNavigation({
 }
 
 export default TabNavigation;
+export { TabNavigation };

@@ -38,7 +38,7 @@ const MANUFACTURING_COLORS = [
   '#9333ea', '#c2410c', '#0891b2', '#be123c'
 ];
 
-export default function TimeSeriesPanel({ 
+function TimeSeriesPanel({ 
   data, 
   options, 
   width, 
@@ -287,3 +287,6 @@ export const timeSeriesPanelDefaults: TimeSeriesPanelOptions = {
     calcs: []
   }
 };
+
+export default TimeSeriesPanel;
+export { TimeSeriesPanel };

@@ -10,7 +10,7 @@ interface HeatmapPanelProps {
   width?: string | number;
 }
 
-export default function HeatmapPanel({ panel, data = [], height, width }: HeatmapPanelProps) {
+function HeatmapPanel({ panel, data = [], height, width }: HeatmapPanelProps) {
   const options = panel?.options || {};
   const colorScheme = options.color?.scheme || 'Greens';
   
@@ -119,3 +119,6 @@ function generateSampleData() {
     values: Array.from({ length: cols }, () => Math.floor(Math.random() * 100))
   }));
 }
+
+export default HeatmapPanel;
+export { HeatmapPanel };

@@ -21,70 +21,57 @@ export default function OptimizedChatPage() {
   // Initialize session
   useEffect(() => {
     const session = streamingChatService?.createSession('Optimized Chat');
-    sessionIdRef.current = session?.id;
+    sessionIdRef.current = session?.id || '';
   }, []);
 
-  // Scroll to bottom only when near bottom and new messages are added
+  // Auto-scroll to bottom
   useEffect(() => {
-    const scrollContainer = messagesEndRef?.current?.parentElement;
-    if (scrollContainer && messages?.length > 0) {
-      const isNearBottom = scrollContainer?.scrollHeight - scrollContainer?.scrollTop - scrollContainer?.clientHeight < 100;
-      // Only auto-scroll if user is near bottom or it's a new conversation
-      if (isNearBottom || messages?.length <= 2) {
-        messagesEndRef?.current?.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-  }, [messages?.length]); // Only trigger on message count change
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, streamingContent]);
 
   const handleSendMessage = async (content: string) => {
-    if (!content?.trim() || isLoading) return;
+    if (!content.trim() || isLoading) return;
 
     setError(null);
     setIsLoading(true);
     setStreamingContent('');
 
-    // Add user message immediately
+    // Create user message
     const userMessage: ChatMessageType = {
-      id: `user-${Date.now()}`,
-      sessionId: sessionIdRef.current,
+      id: Date.now().toString(),
       role: 'user',
       content,
-      timestamp: new Date().toISOString(),
+      timestamp: new Date(),
     };
-    
+
     setMessages(prev => [...prev, userMessage]);
 
     try {
-      // Add temporary assistant message for streaming
-      const tempAssistantId = `assistant-${Date.now()}`;
+      const tempAssistantId = (Date.now() + 1).toString();
       setMessages(prev => [...prev, {
         id: tempAssistantId,
-        sessionId: sessionIdRef.current,
         role: 'assistant',
         content: '',
-        timestamp: new Date().toISOString(),
+        timestamp: new Date(),
       }]);
 
-      // Send message with streaming
-      await streamingChatService?.sendStreamingMessage(
-        sessionIdRef?.current,
+      await streamingChatService?.sendMessage(
+        sessionIdRef.current,
         content,
         {
           onToken: (token) => {
             setStreamingContent(prev => prev + token);
           },
           onComplete: (fullResponse) => {
-            // Update the assistant message with final content
+            setStreamingContent('');
             setMessages(prev => prev?.map(msg => 
               msg?.id === tempAssistantId 
                 ? { ...msg, content: fullResponse }
                 : msg
             ));
-            setStreamingContent('');
           },
           onError: (error) => {
             setError(error?.message);
-            // Remove the empty assistant message on error
             setMessages(prev => prev?.filter(msg => msg?.id !== tempAssistantId));
           },
         }
@@ -96,7 +83,6 @@ export default function OptimizedChatPage() {
     }
   };
 
-  // Performance stats display
   const stats = streamingChatService?.getPerformanceStats();
 
   return (
@@ -105,10 +91,8 @@ export default function OptimizedChatPage() {
       description="Resource-efficient streaming chat interface"
     >
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Chat Main Area */}
         <div className="lg:col-span-3">
           <div className="bg-white rounded-lg shadow-lg h-[600px] flex flex-col">
-            {/* Messages Area */}
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               {messages?.map((message) => (
                 <ChatMessage 
@@ -122,7 +106,6 @@ export default function OptimizedChatPage() {
                 />
               ))}
               
-              {/* Loading */}
               {isLoading && !streamingContent && (
                 <div className="flex items-center space-x-2 text-gray-500">
                   <LoadingSpinner />
@@ -130,7 +113,6 @@ export default function OptimizedChatPage() {
                 </div>
               )}
               
-              {/* Error */}
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
                   {error}
@@ -140,7 +122,6 @@ export default function OptimizedChatPage() {
               <div ref={messagesEndRef} />
             </div>
             
-            {/* Input Area */}
             <div className="border-t p-4">
               <ChatInput 
                 onSendMessage={handleSendMessage} 
@@ -151,9 +132,7 @@ export default function OptimizedChatPage() {
           </div>
         </div>
         
-        {/* Sidebar */}
         <div className="lg:col-span-1 space-y-4">
-          {/* Performance Stats */}
           <div className="bg-white rounded-lg shadow p-4">
             <h3 className="font-semibold mb-3">Performance</h3>
             <div className="space-y-2 text-sm">
@@ -167,81 +146,35 @@ export default function OptimizedChatPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Memory Usage:</span>
-                <span className="font-medium">
-                  {(stats?.memoryUsage / 1024).toFixed(1)} KB
-                </span>
+                <span className="font-medium">{stats?.memoryUsage}MB</span>
               </div>
             </div>
           </div>
           
-          {/* Model Info */}
-          <div className="bg-white rounded-lg shadow p-4">
-            <h3 className="font-semibold mb-3">Model Configuration</h3>
-            <div className="space-y-2 text-sm">
-                              <span className="text-gray-600">Model:</span>
-                <div className="font-medium">Gemma:2B</div>
-              </div>
-                              <span className="text-gray-600">Optimizations:</span>
-                <ul className="mt-1 space-y-1 text-xs">
-                  <li className="flex items-center">
-                    <span className="text-green-500 mr-1">✓</span>
-                    Response streaming
-                  </li>
-                  <li className="flex items-center">
-                    <span className="text-green-500 mr-1">✓</span>
-                    Context reduction (2048 tokens)
-                  </li>
-                  <li className="flex items-center">
-                    <span className="text-green-500 mr-1">✓</span>
-                    CPU-only mode
-                  </li>
-                  <li className="flex items-center">
-                    <span className="text-green-500 mr-1">✓</span>
-                    Response caching
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          
-          {/* Sample Questions */}
           <div className="bg-white rounded-lg shadow p-4">
             <h3 className="font-semibold mb-3">Sample Questions</h3>
             <div className="space-y-2">
               <button
                 onClick={() => handleSendMessage("What is the current OEE?")}
-                className="w-full text-left px-3 py-2 text-sm bg-blue-50 hover:bg-blue-100 rounded transition-colors"
+                className="w-full text-left px-3 py-2 text-sm bg-gray-50 hover:bg-gray-100 rounded transition-colors"
               >
-                📊 Current OEE
+                What is the current OEE?
               </button>
               <button
                 onClick={() => handleSendMessage("Show me the equipment status")}
-                className="w-full text-left px-3 py-2 text-sm bg-green-50 hover:bg-green-100 rounded transition-colors"
+                className="w-full text-left px-3 py-2 text-sm bg-gray-50 hover:bg-gray-100 rounded transition-colors"
               >
-                🔧 Equipment Status
+                Show me the equipment status
               </button>
               <button
                 onClick={() => handleSendMessage("Are there any active alerts?")}
-                className="w-full text-left px-3 py-2 text-sm bg-red-50 hover:bg-red-100 rounded transition-colors"
+                className="w-full text-left px-3 py-2 text-sm bg-gray-50 hover:bg-gray-100 rounded transition-colors"
               >
-                🚨 Active Alerts
-              </button>
-              <button
-                onClick={() => handleSendMessage("Show me today's production metrics")}
-                className="w-full text-left px-3 py-2 text-sm bg-purple-50 hover:bg-purple-100 rounded transition-colors"
-              >
-                📈 Production Metrics
-              </button>
-              <button
-                onClick={() => handleSendMessage("Calculate the average performance for the last 24 hours")}
-                className="w-full text-left px-3 py-2 text-sm bg-yellow-50 hover:bg-yellow-100 rounded transition-colors"
-              >
-                ⏱️ Performance Average
+                Are there any active alerts?
               </button>
             </div>
           </div>
           
-          {/* Quick Actions */}
           <div className="bg-white rounded-lg shadow p-4">
             <h3 className="font-semibold mb-3">Quick Actions</h3>
             <div className="space-y-2">

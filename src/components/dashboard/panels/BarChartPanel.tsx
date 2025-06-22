@@ -11,7 +11,7 @@ interface BarChartPanelProps {
   width?: string | number;
 }
 
-export default function BarChartPanel({ panel, data = [], height, width }: BarChartPanelProps) {
+function BarChartPanel({ panel, data = [], height, width }: BarChartPanelProps) {
   const options = panel?.options || {};
   const fieldConfig = panel?.fieldConfig?.defaults || {};
   
@@ -67,3 +67,6 @@ export default function BarChartPanel({ panel, data = [], height, width }: BarCh
     </div>
   );
 }
+
+export default BarChartPanel;
+export { BarChartPanel };

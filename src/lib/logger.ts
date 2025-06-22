@@ -181,12 +181,12 @@ class Logger {
       category,
       message,
       metadata,
-      userId: options?.userId,
-      requestId: options?.requestId,
-      sessionId: options?.sessionId,
+      userId: options.userId,
+      requestId: options.requestId,
+      sessionId: options.sessionId,
       timestamp: new Date(),
-      source: options?.source,
-      stackTrace: options?.error?.stack
+      source: options.source,
+      stackTrace: options.error?.stack
     };
 
     // Always log to console

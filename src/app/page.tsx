@@ -38,36 +38,36 @@ interface QuickAction {
 
 const quickActions: QuickAction[] = [
   {
-    id: 'new-dashboard',
-    title: 'Create Dashboard',
-    description: 'Build a new dashboard from scratch',
-    icon: PlusIcon,
-    url: '/dashboards/new',
+    id: 'grafana-demo',
+    title: 'Grafana Demo',
+    description: 'Try the complete Grafana system',
+    icon: ChartBarIcon,
+    url: '/grafana-demo',
     color: 'bg-blue-500'
   },
   {
-    id: 'new-folder',
-    title: 'New Folder',
-    description: 'Organize dashboards in folders',
+    id: 'dashboards',
+    title: 'Dashboards',
+    description: 'Browse all dashboards',
     icon: FolderIcon,
-    url: '/dashboards/folder/new',
+    url: '/dashboards',
     color: 'bg-green-500'
   },
   {
-    id: 'import',
-    title: 'Import',
-    description: 'Import dashboard from JSON',
-    icon: ArrowUpTrayIcon,
-    url: '/dashboards/import',
+    id: 'explore',
+    title: 'Explore',
+    description: 'Query and explore your data',
+    icon: MagnifyingGlassIcon,
+    url: '/explore',
     color: 'bg-purple-500'
   },
   {
-    id: 'browse',
-    title: 'Browse All',
-    description: 'Browse all dashboards and folders',
-    icon: ChartBarIcon,
-    url: '/dashboards',
-    color: 'bg-indigo-500'
+    id: 'alerting',
+    title: 'Alerting',
+    description: 'Manage alerts and notifications',
+    icon: CogIcon,
+    url: '/alerting',
+    color: 'bg-red-500'
   }
 ];
 

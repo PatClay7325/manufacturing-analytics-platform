@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["fullTextIndex", "fullTextSearch", "metrics"]
+  previewFeatures = ["fullTextIndex", "fullTextSearch", "metrics", "postgresqlExtensions"]
   binaryTargets   = ["native", "windows", "debian-openssl-3.0.x"]
 }
 
@@ -8,6 +8,7 @@ datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_DATABASE_URL")
+  extensions = [pgvector(map: "vector")]
 }
 
 model ProductionOrder {
@@ -313,10 +314,14 @@ model User {
   id               String              @id @default(cuid())
   email            String              @unique
   name             String?
+  username         String?
   role             String              @default("user")
   department       String?
   passwordHash     String
   lastLogin        DateTime?
+  lastLoginAt      DateTime?
+  isActive         Boolean             @default(true)
+  organizationId   String?
   createdAt        DateTime            @default(now())
   updatedAt        DateTime            @updatedAt
   siteId           String?
@@ -326,13 +331,37 @@ model User {
   Team             Team?               @relation(fields: [teamId], references: [id])
   TeamMembers      TeamMember[]
   ApiKeys          ApiKey[]
+  ApiKeyHashes     ApiKeyHash[]
   CreatedFolders   DashboardFolder[]   @relation("CreatedFolders")
   Annotations      Annotation[]
   DashboardSnapshot DashboardSnapshot[]
+  PublicShares     PublicShare[]
+  
+  // Library panel relationships
+  CreatedLibraryPanels LibraryPanel[] @relation("LibraryPanelCreator")
+  UpdatedLibraryPanels LibraryPanel[] @relation("LibraryPanelUpdater")
+  LibraryPanelVersions LibraryPanelVersion[]
+  
+  // Authorization relationships
+  roles            UserRole[]
+  permissions      UserPermission[]
+  
+  // Playlist relationships
+  CreatedPlaylists Playlist[] @relation("PlaylistCreator")
+  UpdatedPlaylists Playlist[] @relation("PlaylistUpdater")
+  
+  // Plugin relationships
+  PluginInstallations PluginInstallation[]
+  PluginRatings       PluginRating[]
+  
+  // User preferences relationship
+  preferences      UserPreferences?
 
   @@index([email])
   @@index([role])
   @@index([siteId])
+  @@index([organizationId])
+  @@index([isActive])
   @@index([teamId])
 }
 
@@ -449,6 +478,9 @@ model Dashboard {
   folderId  String?
   User      User?            @relation(fields: [createdBy], references: [id])
   Folder    DashboardFolder? @relation(fields: [folderId], references: [id])
+  LibraryPanelUsage LibraryPanelUsage[]
+  PublicShares PublicShare[]
+  PlaylistItems PlaylistItem[]
 
   @@index([slug])
   @@index([tags])
@@ -737,8 +769,10 @@ model DashboardFolder {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   createdBy   String
-  User        User        @relation("CreatedFolders", fields: [createdBy], references: [id])
+  User        User           @relation("CreatedFolders", fields: [createdBy], references: [id])
   dashboards  Dashboard[]
+  alertRules  AlertRule[]
+  libraryPanels LibraryPanel[]
 
   @@index([createdBy])
   @@index([permission])
@@ -806,13 +840,75 @@ model DashboardSnapshot {
   userId      String
   isPublic    Boolean  @default(false)
   expiresAt   DateTime?
+  viewCount   Int      @default(0)
+  lastViewedAt DateTime?
+  password    String?  // Optional password protection (hashed)
+  shareKey    String?  @unique // Unique key for public sharing
+  metadata    Json?    // Additional metadata (creator info, tags, etc.)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   User        User     @relation(fields: [userId], references: [id])
+  PublicShares PublicShare[]
 
   @@index([dashboardId, createdAt])
   @@index([userId])
   @@index([isPublic, expiresAt])
+  @@index([shareKey])
+}
+
+// Public Share Links - Track and manage shared dashboard links
+model PublicShare {
+  id              String   @id @default(cuid())
+  snapshotId      String?  // Link to snapshot
+  dashboardId     String   // Direct dashboard link
+  shareKey        String   @unique // Unique share key for URL
+  title           String   // Share title/description
+  createdBy       String   // User who created the share
+  
+  // Access Control
+  isActive        Boolean  @default(true)
+  password        String?  // Optional password (hashed)
+  expiresAt       DateTime?
+  maxViews        Int?     // Maximum number of views allowed
+  
+  // Permissions
+  allowExport     Boolean  @default(false) // Allow data export
+  allowPrint      Boolean  @default(true)  // Allow printing
+  allowEmbed      Boolean  @default(false) // Allow embedding
+  showTimeRange   Boolean  @default(true)  // Show time range controls
+  showVariables   Boolean  @default(true)  // Show variable controls
+  showRefresh     Boolean  @default(false) // Show refresh button
+  
+  // Usage Tracking
+  viewCount       Int      @default(0)
+  lastViewedAt    DateTime?
+  lastViewedBy    String?  // IP or session ID
+  viewHistory     Json?    // Array of view timestamps and IPs
+  
+  // Time Range Lock
+  lockedTimeFrom  DateTime? // Fixed time range start
+  lockedTimeTo    DateTime? // Fixed time range end
+  
+  // Variable Values Lock
+  lockedVariables Json?    // Fixed variable values
+  
+  // Metadata
+  theme           String?  @default("light") // light, dark, or custom
+  metadata        Json?    // Additional share metadata
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  User            User     @relation(fields: [createdBy], references: [id])
+  Snapshot        DashboardSnapshot? @relation(fields: [snapshotId], references: [id])
+  Dashboard       Dashboard @relation(fields: [dashboardId], references: [id])
+  
+  @@index([shareKey])
+  @@index([dashboardId])
+  @@index([snapshotId])
+  @@index([createdBy])
+  @@index([isActive, expiresAt])
+  @@index([createdAt])
 }
 
 // Equipment Health and Reliability Models (ISO 14224 Compliant)
@@ -1096,4 +1192,1087 @@ model CostMetric {
   @@index([workUnitId, timestamp])
   @@index([timestamp])
   @@index([productType, timestamp])
+}
+
+// ISO-Ready Agent System Models
+model SessionMemory {
+  sessionId String   @id
+  context   Json
+  metadata  Json?
+  updatedAt DateTime @updatedAt
+  
+  @@index([updatedAt])
+}
+
+model AuditTrail {
+  id        String   @id @default(uuid())
+  sessionId String?
+  userId    String?
+  intent    String
+  request   Json
+  response  Json
+  createdAt DateTime @default(now())
+
+  @@index([sessionId, createdAt])
+  @@index([intent, createdAt])
+}
+
+// Vector storage for embeddings
+model IntentEmbedding {
+  id          String                 @id @default(uuid())
+  intent      String                 @unique
+  description String
+  embedding   Unsupported("vector(1536)")
+  model       String                 @default("text-embedding-ada-002")
+  confidence  Float                  @default(1.0)
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+  
+  @@index([intent])
+}
+
+model DocumentEmbedding {
+  id          String                 @id @default(uuid())
+  documentId  String
+  documentType String                // ISO_STANDARD, PROCEDURE, MANUAL
+  chunkIndex  Int
+  content     String                 @db.Text
+  embedding   Unsupported("vector(1536)")
+  metadata    Json
+  createdAt   DateTime               @default(now())
+  
+  @@index([documentId, chunkIndex])
+  @@index([documentType])
+}
+
+// API Key management with proper security
+model ApiKeyHash {
+  id          String                 @id @default(uuid())
+  name        String
+  keyPrefix   String                 // First 8 chars for identification
+  hashedKey   String                 @unique // Argon2 hash
+  userId      String
+  permissions String[]
+  lastUsedAt  DateTime?
+  lastUsedIp  String?
+  rotatedFrom String?                // Previous key ID for audit trail
+  expiresAt   DateTime?
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+  User        User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([keyPrefix])
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+// Workflow orchestration models
+model WorkflowDefinition {
+  id             String   @id
+  name           String
+  description    String
+  version        String
+  definition     Json
+  createdBy      String?
+  organizationId String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  executions WorkflowExecution[]
+
+  @@map("workflow_definitions")
+  @@index([name])
+  @@index([version])
+  @@index([createdAt])
+  @@index([createdBy])
+  @@index([organizationId])
+}
+
+model WorkflowExecution {
+  id              String     @id @default(cuid())
+  workflowId      String
+  workflowVersion String
+  status          String
+  input           Json?
+  output          Json?
+  error           Json?
+  context         Json
+  startedAt       DateTime   @default(now())
+  completedAt     DateTime?
+  duration        Int?
+  metadata        Json?
+
+  workflow WorkflowDefinition @relation(fields: [workflowId], references: [id])
+  steps    StepExecution[]
+
+  @@map("workflow_executions")
+  @@index([workflowId])
+  @@index([status])
+  @@index([startedAt])
+  @@index([completedAt])
+}
+
+model StepExecution {
+  executionId String
+  stepId      String
+  status      String
+  input       Json?
+  output      Json?
+  error       Json?
+  attempt     Int      @default(1)
+  startedAt   DateTime @default(now())
+  completedAt DateTime?
+  duration    Int?
+  logs        String[]
+
+  execution WorkflowExecution @relation(fields: [executionId], references: [id], onDelete: Cascade)
+
+  @@id([executionId, stepId])
+  @@map("step_executions")
+  @@index([status])
+  @@index([startedAt])
+}
+
+model QueueMessage {
+  id          String    @id @default(cuid())
+  queueName   String
+  messageType String
+  priority    Int
+  payload     Json
+  metadata    Json
+  status      String    @default("queued")
+  createdAt   DateTime  @default(now())
+  processedAt DateTime?
+  failedAt    DateTime?
+  retryCount  Int       @default(0)
+  error       Json?
+
+  @@map("queue_messages")
+  @@index([queueName])
+  @@index([status])
+  @@index([priority])
+  @@index([createdAt])
+}
+
+model DeadLetterQueue {
+  id                String   @id @default(cuid())
+  originalQueue     String
+  originalMessageId String
+  messageType       String
+  payload           Json
+  metadata          Json
+  finalError        Json
+  finalRetryCount   Int
+  createdAt         DateTime @default(now())
+
+  @@map("dead_letter_queue")
+  @@index([originalQueue])
+  @@index([createdAt])
+}
+
+model AuditEvent {
+  id           String   @id @default(cuid())
+  timestamp    DateTime @default(now())
+  eventType    String
+  severity     String
+  source       String
+  userId       String?
+  sessionId    String?
+  workflowId   String?
+  executionId  String?
+  stepId       String?
+  resourceId   String?
+  resourceType String?
+  action       String
+  description  String
+  details      Json?
+  ipAddress    String?
+  userAgent    String?
+  traceId      String?
+  outcome      String
+  metadata     Json?
+
+  @@map("audit_events")
+  @@index([eventType])
+  @@index([severity])
+  @@index([source])
+  @@index([userId])
+  @@index([workflowId])
+  @@index([executionId])
+  @@index([outcome])
+  @@index([timestamp])
+  @@index([resourceType])
+  @@index([traceId])
+}
+
+model Role {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  description String?
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  users       UserRole[]
+  permissions RolePermission[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  description String?
+  category    String?
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  roles RolePermission[]
+  users UserPermission[]
+
+  @@map("permissions")
+}
+
+model UserRole {
+  userId    String
+  roleId    String
+  assignedAt DateTime @default(now())
+  assignedBy String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+  @@map("user_roles")
+}
+
+model UserPermission {
+  userId       String
+  permissionId String
+  grantedAt    DateTime @default(now())
+  grantedBy    String?
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([userId, permissionId])
+  @@map("user_permissions")
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  assignedAt   DateTime @default(now())
+  assignedBy   String?
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+// =============================================================================
+// LIBRARY PANELS SYSTEM
+// Grafana-compatible library panel system for reusable panels
+// =============================================================================
+
+// Library Panels - Reusable panel definitions
+model LibraryPanel {
+  uid             String   @id
+  name            String
+  description     String?
+  type            String   // Panel type (timeseries, stat, gauge, etc.)
+  model           Json     // Panel configuration and options
+  version         Int      @default(1)
+  
+  // Organization and permissions
+  folderId        String?
+  folder          DashboardFolder? @relation(fields: [folderId], references: [id])
+  
+  // Metadata
+  tags            String[] @default([])
+  category        String?  // Custom category classification
+  
+  // Usage tracking
+  connectedDashboards Int  @default(0)
+  usageCount      Int      @default(0)
+  lastUsedAt      DateTime?
+  
+  // User tracking
+  createdBy       String
+  updatedBy       String?
+  creator         User     @relation("LibraryPanelCreator", fields: [createdBy], references: [id])
+  updater         User?    @relation("LibraryPanelUpdater", fields: [updatedBy], references: [id])
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relationships
+  versions        LibraryPanelVersion[]
+  usage           LibraryPanelUsage[]
+  
+  @@index([name])
+  @@index([type])
+  @@index([folderId])
+  @@index([createdBy])
+  @@index([tags])
+  @@index([category])
+  @@index([connectedDashboards])
+  @@map("library_panels")
+}
+
+// Library Panel Versions - Version history for library panels
+model LibraryPanelVersion {
+  id              String   @id @default(cuid())
+  libraryPanelUid String
+  version         Int
+  model           Json     // Panel configuration at this version
+  message         String?  // Version commit message
+  
+  // User tracking
+  createdBy       String
+  creator         User     @relation(fields: [createdBy], references: [id])
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  
+  // Relationships
+  libraryPanel    LibraryPanel @relation(fields: [libraryPanelUid], references: [uid], onDelete: Cascade)
+  
+  @@unique([libraryPanelUid, version])
+  @@index([libraryPanelUid])
+  @@index([version])
+  @@index([createdAt])
+  @@map("library_panel_versions")
+}
+
+// Library Panel Usage - Track which dashboards use which library panels
+model LibraryPanelUsage {
+  id              String   @id @default(cuid())
+  libraryPanelUid String
+  dashboardUid    String
+  panelId         Int      // Panel ID within the dashboard
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relationships
+  libraryPanel    LibraryPanel @relation(fields: [libraryPanelUid], references: [uid], onDelete: Cascade)
+  dashboard       Dashboard    @relation(fields: [dashboardUid], references: [uid], onDelete: Cascade)
+  
+  @@unique([libraryPanelUid, dashboardUid, panelId])
+  @@index([libraryPanelUid])
+  @@index([dashboardUid])
+  @@map("library_panel_usage")
+}
+
+// =============================================================================
+// GRAFANA ALERTING SYSTEM MODELS
+// Complete implementation of Grafana's alerting functionality
+// =============================================================================
+
+// Alert Rules - Grafana alert rule definitions
+model AlertRule {
+  uid              String   @id
+  title            String
+  condition        String   // Alert condition expression
+  intervalSeconds  Int      // Evaluation interval
+  noDataState      String   // NoData, Alerting, OK
+  execErrState     String   // OK, Alerting
+  ruleGroup        String   // Rule group name
+  folderId         String?  // Dashboard folder ID
+  
+  // Additional metadata
+  annotations      Json     @default("{}")  // Alert annotations
+  labels           Json     @default("{}")  // Alert labels
+  isDraft          Boolean? @default(false)
+  isPaused         Boolean? @default(false)
+  
+  // Timestamps
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  // Relationships
+  data             AlertRuleData[]    // Query definitions
+  instances        AlertInstance[]    // Alert instances
+  contactPoints    ContactPoint[]     // Notification channels
+  folder           DashboardFolder?   @relation(fields: [folderId], references: [id])
+  
+  @@index([ruleGroup])
+  @@index([folderId])
+  @@index([isPaused])
+  @@index([intervalSeconds])
+  @@map("alert_rules")
+}
+
+// Alert Rule Data - Query definitions for alert rules
+model AlertRuleData {
+  id               String    @id @default(cuid())
+  ruleId           String
+  refId            String    // Query reference ID (A, B, C, etc.)
+  queryType        String?   // Query type
+  model            Json      // Query model/configuration
+  datasourceUid    String    // Data source UID
+  relativeTimeRange Json?    // Time range for query
+  orderIndex       Int       // Order of queries
+  
+  // Relationships
+  rule             AlertRule @relation(fields: [ruleId], references: [uid], onDelete: Cascade)
+  
+  @@index([ruleId])
+  @@index([refId])
+  @@map("alert_rule_data")
+}
+
+// Alert Instances - Active alert instances
+model AlertInstance {
+  fingerprint      String   @id         // Unique fingerprint for instance
+  ruleId           String               // Alert rule UID
+  status           String               // NoData, Pending, Alerting, OK, Paused
+  labels           Json     @default("{}")  // Instance labels
+  annotations      Json     @default("{}")  // Instance annotations
+  value            Float?               // Current metric value
+  startsAt         DateTime             // When alert started
+  endsAt           DateTime?            // When alert ended (if resolved)
+  updatedAt        DateTime @updatedAt  // Last update time
+  silenceId        String?              // Associated silence ID
+  
+  // Relationships
+  rule             AlertRule  @relation(fields: [ruleId], references: [uid], onDelete: Cascade)
+  silence          Silence?   @relation(fields: [silenceId], references: [id])
+  
+  @@index([ruleId])
+  @@index([status])
+  @@index([startsAt])
+  @@index([silenceId])
+  @@map("alert_instances")
+}
+
+// Contact Points - Notification channels
+model ContactPoint {
+  uid              String     @id
+  name             String     @unique
+  type             String     // email, slack, webhook, pagerduty, etc.
+  settings         Json       // Channel-specific settings
+  disableResolveMessage Boolean @default(false)
+  
+  // Timestamps
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  
+  // Relationships
+  alertRules       AlertRule[]
+  
+  @@index([type])
+  @@map("contact_points")
+}
+
+// Silences - Alert silencing
+model Silence {
+  id               String          @id
+  matchers         Json            // Label matchers for silence
+  startsAt         DateTime        // Silence start time
+  endsAt           DateTime        // Silence end time
+  comment          String          // Silence comment/reason
+  createdBy        String          // User who created silence
+  
+  // Timestamps
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  
+  // Relationships
+  instances        AlertInstance[] // Silenced alert instances
+  
+  @@index([startsAt, endsAt])
+  @@index([createdBy])
+  @@map("silences")
+}
+
+// Notification Policies - Alert routing configuration
+model NotificationPolicy {
+  uid              String   @id
+  receiver         String   // Contact point UID
+  groupBy          String[] // Group by labels
+  groupWait        String?  // Wait time before sending group
+  groupInterval    String?  // Interval between group notifications
+  repeatInterval   String?  // Repeat interval for notifications
+  matchers         Json     @default("[]")  // Label matchers
+  muteTimeIntervals String[] // Mute time intervals
+  continue         Boolean  @default(false) // Continue to other policies
+  
+  // Timestamps
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  @@index([receiver])
+  @@map("notification_policies")
+}
+
+// Alert History - Historical alert data
+model AlertHistory {
+  id               String   @id @default(cuid())
+  ruleId           String   // Alert rule UID
+  fingerprint      String   // Alert instance fingerprint
+  status           String   // Alert status
+  labels           Json     @default("{}")
+  annotations      Json     @default("{}")
+  value            Float?   // Metric value at time
+  timestamp        DateTime @default(now())
+  
+  @@index([ruleId, timestamp])
+  @@index([fingerprint, timestamp])
+  @@index([status, timestamp])
+  @@map("alert_history")
+}
+
+// Mute Time Intervals - Scheduled mute periods
+model MuteTimeInterval {
+  uid              String   @id
+  name             String   @unique
+  timeIntervals    Json     // Array of time intervals
+  
+  // Timestamps
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  @@map("mute_time_intervals")
+}
+
+// =============================================================================
+// PLAYLIST SYSTEM
+// Grafana-compatible playlist system for automatic dashboard rotation
+// =============================================================================
+
+// Playlists - Dashboard playlists for automatic rotation
+model Playlist {
+  id               String   @id @default(cuid())
+  uid              String   @unique
+  name             String
+  description      String?
+  interval         String   @default("5m") // Default 5 minutes per dashboard
+  
+  // Display settings
+  kioskMode        String   @default("tv") // tv, full, disabled
+  autoPlay         Boolean  @default(true)
+  hideNavigation   Boolean  @default(true)
+  hideControls     Boolean  @default(false)
+  showTimeRange    Boolean  @default(true)
+  showVariables    Boolean  @default(true)
+  showRefresh      Boolean  @default(false)
+  
+  // Metadata
+  tags             String[]
+  isActive         Boolean  @default(true)
+  lastPlayedAt     DateTime?
+  playCount        Int      @default(0)
+  
+  // User tracking
+  createdBy        String
+  updatedBy        String?
+  creator          User     @relation("PlaylistCreator", fields: [createdBy], references: [id])
+  updater          User?    @relation("PlaylistUpdater", fields: [updatedBy], references: [id])
+  
+  // Timestamps
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  // Relationships
+  items            PlaylistItem[]
+  
+  @@index([name])
+  @@index([createdBy])
+  @@index([isActive])
+  @@index([tags])
+  @@map("playlists")
+}
+
+// Playlist Items - Dashboards in a playlist with order and settings
+model PlaylistItem {
+  id               String   @id @default(cuid())
+  playlistId       String
+  dashboardUid     String
+  
+  // Order and timing
+  order            Int      // Display order (1, 2, 3, etc.)
+  customInterval   String?  // Override playlist interval for this item
+  
+  // Display options
+  customTimeRange  Json?    // Override time range for this dashboard
+  customVariables  Json?    // Override variable values
+  hideTimeRange    Boolean  @default(false)
+  hideVariables    Boolean  @default(false)
+  
+  // Cached data for performance
+  dashboardTitle   String   // Cached title for display
+  dashboardTags    String[] // Cached tags
+  
+  // Timestamps
+  addedAt          DateTime @default(now())
+  lastPlayedAt     DateTime?
+  playCount        Int      @default(0)
+  
+  // Relationships
+  playlist         Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  dashboard        Dashboard @relation(fields: [dashboardUid], references: [uid])
+  
+  @@unique([playlistId, order]) // Ensure unique order within playlist
+  @@index([playlistId])
+  @@index([dashboardUid])
+  @@index([order])
+  @@map("playlist_items")
+}
+
+// Plugin System Models
+// Plugin Registry - Available plugins in the marketplace
+model Plugin {
+  id               String   @id @default(cuid())
+  pluginId         String   @unique // Unique plugin identifier (e.g., "grafana-piechart-panel")
+  
+  // Basic Information
+  name             String   // Display name
+  description      String   // Short description
+  longDescription  String?  // Detailed description with markdown
+  type             String   // panel, datasource, app
+  category         String   // Visualization, Database, Cloud, Industry, etc.
+  
+  // Version Information
+  latestVersion    String   // Latest version available
+  versions         PluginVersion[]
+  
+  // Author Information
+  author           String   // Author name
+  authorUrl        String?  // Author website
+  authorEmail      String?  // Support email
+  
+  // Repository and Links
+  repository       String?  // Git repository URL
+  homepage         String?  // Plugin homepage
+  documentationUrl String?  // Documentation URL
+  licenseType      String?  // MIT, Apache, GPL, etc.
+  licenseUrl       String?  // License URL
+  
+  // Media
+  logoUrl          String?  // Plugin logo URL
+  screenshots      Json?    // Array of screenshot URLs and descriptions
+  videoUrl         String?  // Demo video URL
+  
+  // Statistics
+  downloads        Int      @default(0)
+  stars            Int      @default(0)
+  rating           Float    @default(0) // Average rating (0-5)
+  ratingCount      Int      @default(0)
+  
+  // Plugin Features
+  features         String[] // Array of feature tags
+  keywords         String[] // Search keywords
+  
+  // Compatibility
+  minGrafanaVersion String?  // Minimum Grafana version required
+  maxGrafanaVersion String?  // Maximum Grafana version supported
+  dependencies     Json?    // Required plugins and versions
+  
+  // Verification
+  signature        String   @default("unsigned") // unsigned, community, commercial, core
+  signedBy         String?  // Organization that signed the plugin
+  verifiedAt       DateTime?
+  
+  // Status
+  status           String   @default("active") // active, deprecated, removed
+  publishedAt      DateTime
+  deprecatedAt     DateTime?
+  removedAt        DateTime?
+  
+  // Pricing (for commercial plugins)
+  isPaid           Boolean  @default(false)
+  price            Float?   // Monthly price in USD
+  trialDays        Int?     // Trial period in days
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  // Relationships
+  installations    PluginInstallation[]
+  configurations   PluginConfiguration[]
+  ratings          PluginRating[]
+  
+  @@index([pluginId])
+  @@index([type])
+  @@index([category])
+  @@index([status])
+  @@index([author])
+  @@index([downloads])
+  @@index([rating])
+  @@map("plugins")
+}
+
+// Plugin Versions - Track all versions of a plugin
+model PluginVersion {
+  id               String   @id @default(cuid())
+  pluginId         String
+  version          String   // Semantic version (e.g., "1.2.3")
+  
+  // Version Details
+  releaseNotes     String?  // What's new in this version
+  breaking         Boolean  @default(false) // Breaking changes
+  
+  // Download Information
+  downloadUrl      String   // URL to download this version
+  packageSize      Int?     // Size in bytes
+  checksum         String?  // SHA256 checksum
+  
+  // Compatibility
+  minGrafanaVersion String?  // Minimum Grafana version for this plugin version
+  maxGrafanaVersion String?  // Maximum Grafana version for this plugin version
+  
+  // Status
+  status           String   @default("stable") // alpha, beta, stable, deprecated
+  prerelease       Boolean  @default(false)
+  
+  releasedAt       DateTime
+  deprecatedAt     DateTime?
+  
+  // Relationships
+  plugin           Plugin   @relation(fields: [pluginId], references: [id], onDelete: Cascade)
+  installations    PluginInstallation[]
+  
+  @@unique([pluginId, version])
+  @@index([pluginId])
+  @@index([version])
+  @@index([releasedAt])
+  @@map("plugin_versions")
+}
+
+// Plugin Installations - Installed plugins per organization/user
+model PluginInstallation {
+  id               String   @id @default(cuid())
+  pluginId         String
+  versionId        String
+  
+  // Installation Context
+  organizationId   String?  // Organization that installed it
+  userId           String?  // User who installed it (for personal use)
+  
+  // Installation Details
+  installedAt      DateTime @default(now())
+  installedBy      String   // User ID who performed installation
+  installMethod    String   @default("marketplace") // marketplace, manual, cli
+  installPath      String   // Where plugin is installed
+  
+  // Status
+  enabled          Boolean  @default(true)
+  status           String   @default("active") // active, error, disabled, updating
+  errorMessage     String?  // Error details if status is error
+  
+  // Usage Tracking
+  lastUsedAt       DateTime?
+  usageCount       Int      @default(0)
+  
+  // Update Information
+  autoUpdate       Boolean  @default(true)
+  lastCheckedAt    DateTime @default(now())
+  updateAvailable  Boolean  @default(false)
+  latestVersion    String?  // Latest version available
+  
+  updatedAt        DateTime @updatedAt
+  
+  // Relationships
+  plugin           Plugin   @relation(fields: [pluginId], references: [id])
+  version          PluginVersion @relation(fields: [versionId], references: [id])
+  configuration    PluginConfiguration?
+  user             User?    @relation(fields: [userId], references: [id])
+  
+  @@unique([pluginId, organizationId]) // One installation per plugin per org
+  @@unique([pluginId, userId]) // One installation per plugin per user
+  @@index([pluginId])
+  @@index([organizationId])
+  @@index([userId])
+  @@index([status])
+  @@map("plugin_installations")
+}
+
+// Plugin Configuration - Settings for installed plugins
+model PluginConfiguration {
+  id               String   @id @default(cuid())
+  installationId   String   @unique
+  pluginId         String
+  
+  // Configuration Data
+  jsonData         Json     // Public configuration
+  secureJsonData   Json?    // Encrypted sensitive configuration
+  
+  // Plugin-specific Settings
+  enabled          Boolean  @default(true)
+  pinned           Boolean  @default(false) // Pin to specific version
+  
+  // Access Control
+  allowedRoles     String[] // Roles that can use this plugin
+  restrictedUsers  String[] // Users explicitly denied access
+  
+  // Resource Limits
+  maxInstances     Int?     // Max panel instances (for panel plugins)
+  maxQueries       Int?     // Max queries per minute (for datasource plugins)
+  maxDataPoints    Int?     // Max data points per query
+  
+  // Custom Configuration
+  customCss        String?  // Custom CSS overrides
+  customJs         String?  // Custom JavaScript extensions
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  // Relationships
+  installation     PluginInstallation @relation(fields: [installationId], references: [id], onDelete: Cascade)
+  plugin           Plugin   @relation(fields: [pluginId], references: [id])
+  
+  @@index([pluginId])
+  @@map("plugin_configurations")
+}
+
+// Plugin Ratings - User ratings and reviews
+model PluginRating {
+  id               String   @id @default(cuid())
+  pluginId         String
+  userId           String
+  
+  rating           Int      // 1-5 stars
+  review           String?  // Text review
+  
+  // Review metadata
+  version          String   // Plugin version being reviewed
+  helpful          Int      @default(0) // Number of helpful votes
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  // Relationships
+  plugin           Plugin   @relation(fields: [pluginId], references: [id], onDelete: Cascade)
+  user             User     @relation(fields: [userId], references: [id])
+  
+  @@unique([pluginId, userId]) // One review per user per plugin
+  @@index([pluginId])
+  @@index([userId])
+  @@index([rating])
+  @@map("plugin_ratings")
+}
+
+// Plugin Sandbox - Isolated execution environments for plugins
+model PluginSandbox {
+  id               String   @id @default(cuid())
+  pluginId         String
+  
+  // Sandbox Configuration
+  containerId      String?  // Docker container ID if applicable
+  processId        Int?     // Process ID if running as separate process
+  port             Int?     // Port if plugin exposes HTTP API
+  
+  // Resource Limits
+  memoryLimit      Int?     // Memory limit in MB
+  cpuLimit         Float?   // CPU limit (e.g., 0.5 = 50% of one core)
+  diskLimit        Int?     // Disk space limit in MB
+  
+  // Security
+  allowedHosts     String[] // Allowed external hosts for network requests
+  allowedPorts     Int[]    // Allowed ports for network binding
+  capabilities     String[] // Linux capabilities if applicable
+  
+  // Status
+  status           String   @default("stopped") // stopped, starting, running, error
+  startedAt        DateTime?
+  stoppedAt        DateTime?
+  lastHealthCheck  DateTime?
+  healthStatus     String   @default("unknown") // healthy, unhealthy, unknown
+  
+  // Monitoring
+  cpuUsage         Float?   // Current CPU usage percentage
+  memoryUsage      Int?     // Current memory usage in MB
+  networkIn        BigInt?  // Network bytes received
+  networkOut       BigInt?  // Network bytes sent
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  @@unique([pluginId])
+  @@index([status])
+  @@map("plugin_sandboxes")
+}
+
+// =============================================================================
+// USER PREFERENCES SYSTEM
+// Complete implementation of user settings and preferences
+// =============================================================================
+
+// User Preferences - Individual user settings and customization
+model UserPreferences {
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  
+  // UI Preferences
+  theme            String   @default("system") // light, dark, system
+  language         String   @default("en") // ISO 639-1 language code
+  timezone         String   @default("browser") // Timezone identifier or "browser"
+  weekStart        String   @default("sunday") // sunday, monday
+  dateFormat       String   @default("MM/DD/YYYY") // Date format string
+  timeFormat       String   @default("12h") // 12h, 24h
+  
+  // Dashboard Preferences
+  homeDashboardId  String?  // Default dashboard UID
+  defaultTimeRange String   @default("Last 6 hours") // Default time range
+  autoRefresh      String?  // Auto-refresh interval (e.g., "5s", "1m", "5m")
+  queryHistory     Int      @default(50) // Number of queries to store in history
+  
+  // Editor Preferences
+  defaultDatasourceId String? // Default datasource UID
+  graphTooltipMode String   @default("single") // single, multi, none
+  exploreMode      String   @default("metrics") // metrics, logs, traces
+  queryTimeout     Int      @default(300) // Query timeout in seconds
+  liveNow          Boolean  @default(true) // Enable live now feature
+  
+  // Notification Preferences
+  emailNotifications Boolean @default(true)
+  browserNotifications Boolean @default(true)
+  alertNotifications Boolean @default(true)
+  alertSeverityFilter String[] @default(["critical", "high"]) // Alert severities to notify
+  notificationSound Boolean @default(true)
+  desktopNotifications Boolean @default(false)
+  
+  // Accessibility Preferences
+  reduceMotion     Boolean  @default(false) // Reduce animations
+  highContrast     Boolean  @default(false) // High contrast mode
+  fontSize         String   @default("medium") // small, medium, large
+  keyboardShortcuts Boolean @default(true) // Enable keyboard shortcuts
+  screenReaderMode Boolean  @default(false) // Optimize for screen readers
+  focusIndicators  Boolean  @default(true) // Show focus indicators
+  
+  // Feature Preferences
+  featureAnnouncementsEnabled Boolean @default(true) // Show feature announcements
+  experimentalFeaturesEnabled Boolean @default(false) // Enable experimental features
+  developerMode    Boolean  @default(false) // Enable developer features
+  
+  // Navigation Preferences
+  sidebarCollapsed Boolean  @default(false) // Sidebar collapsed by default
+  sidebarWidth     Int      @default(240) // Sidebar width in pixels
+  navbarFixed      Boolean  @default(true) // Fixed navigation bar
+  
+  // Data Display Preferences
+  nullValueDisplay String   @default("null") // How to display null values
+  unitSystem       String   @default("metric") // metric, imperial
+  decimalPlaces    Int      @default(2) // Default decimal places
+  thousandsSeparator String @default(",") // Thousands separator
+  
+  // Privacy Preferences
+  shareAnalytics   Boolean  @default(true) // Share usage analytics
+  saveDashboardQueries Boolean @default(true) // Save dashboard queries
+  
+  // Custom Settings
+  customSettings   Json?    // Additional custom settings
+  
+  // Versioning
+  version          Int      @default(1) // Preferences schema version
+  migratedAt       DateTime? // Last migration timestamp
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  // Relationships
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@map("user_preferences")
+}
+
+// Organization Defaults - Default preferences for organization
+model OrganizationDefaults {
+  id               String   @id @default(cuid())
+  organizationId   String   @unique
+  
+  // Default UI Settings
+  defaultTheme     String   @default("light") // Default theme for new users
+  defaultLanguage  String   @default("en") // Default language
+  defaultTimezone  String   @default("UTC") // Default timezone
+  weekStart        String   @default("monday") // Default week start
+  dateFormat       String   @default("YYYY-MM-DD") // Default date format
+  timeFormat       String   @default("24h") // Default time format
+  
+  // Default Dashboard Settings
+  defaultHomeDashboardId String? // Organization default dashboard
+  defaultTimeRange String   @default("Last 24 hours") // Default time range
+  defaultRefreshInterval String? // Default refresh interval
+  
+  // Default Editor Settings
+  defaultDatasourceId String? // Organization default datasource
+  queryTimeout     Int      @default(300) // Default query timeout
+  maxDataPoints    Int      @default(1000) // Max data points per query
+  
+  // Default Notification Settings
+  emailNotificationsEnabled Boolean @default(true)
+  browserNotificationsEnabled Boolean @default(true)
+  
+  // Feature Flags
+  publicDashboardsEnabled Boolean @default(false)
+  snapshotsEnabled Boolean @default(true)
+  annotationsEnabled Boolean @default(true)
+  alertingEnabled  Boolean  @default(true)
+  exploreEnabled   Boolean  @default(true)
+  
+  // Security Settings
+  enforcePasswordPolicy Boolean @default(true)
+  passwordMinLength Int      @default(8)
+  requirePasswordChange Boolean @default(false)
+  sessionTimeout   Int      @default(86400) // Session timeout in seconds (24h)
+  
+  // Data Retention
+  dashboardVersionRetention Int @default(20) // Number of dashboard versions to keep
+  queryHistoryRetention Int @default(30) // Days to keep query history
+  
+  // Resource Limits
+  maxDashboardsPerUser Int?   // Max dashboards per user
+  maxQueriesPerMinute Int?    // Rate limit for queries
+  maxAlertsPerUser Int?       // Max alerts per user
+  
+  // Branding
+  loginMessage     String?  // Custom login message
+  footerMessage    String?  // Custom footer message
+  customLogoUrl    String?  // Custom logo URL
+  
+  // Custom Defaults
+  customDefaults   Json?    // Additional custom defaults
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  @@index([organizationId])
+  @@map("organization_defaults")
+}
+
+// Preference Change History - Track preference changes for audit
+model PreferenceChangeHistory {
+  id               String   @id @default(cuid())
+  userId           String
+  preferenceType   String   // user, organization
+  preferenceId     String   // ID of the preference record
+  
+  // Change Details
+  fieldChanged     String   // Field that was changed
+  oldValue         String?  // Previous value (as JSON string)
+  newValue         String?  // New value (as JSON string)
+  
+  // Change Context
+  changeReason     String?  // Reason for change
+  changedBy        String   // User who made the change
+  changeSource     String   @default("web") // web, api, admin, system
+  
+  // Metadata
+  ipAddress        String?  // IP address of change
+  userAgent        String?  // User agent of change
+  
+  timestamp        DateTime @default(now())
+  
+  @@index([userId, timestamp])
+  @@index([preferenceId, timestamp])
+  @@index([fieldChanged])
+  @@map("preference_change_history")
 }

@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { XMarkIcon, DocumentArrowUpIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, DocumentArrowUpIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
+import ImportWizard from '../import-export/ImportWizard';
+import { ImportResult } from '@/types/import-export';
 
 interface DashboardImportModalProps {
   onClose?: () => void;
@@ -12,17 +14,28 @@ export default function DashboardImportModal({
   onClose,
   onImport
 }: DashboardImportModalProps) {
-  const [importMethod, setImportMethod] = useState<'upload' | 'paste'>('upload');
+  const [importMethod, setImportMethod] = useState<'upload' | 'paste' | 'advanced'>('upload');
   const [jsonContent, setJsonContent] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showAdvancedWizard, setShowAdvancedWizard] = useState(false);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    // Check if it's a supported format
+    const supportedFormats = ['.json', '.csv', '.xlsx', '.xls'];
+    const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+    
+    if (!supportedFormats.includes(fileExtension)) {
+      setError('Please select a supported file format (JSON, CSV, Excel)');
+      return;
+    }
+
+    // For non-JSON files, use the advanced wizard
     if (!file.name.endsWith('.json')) {
-      setError('Please select a JSON file');
+      setShowAdvancedWizard(true);
       return;
     }
 
@@ -45,6 +58,19 @@ export default function DashboardImportModal({
       setLoading(false);
     };
     reader.readAsText(file);
+  };
+
+  const handleAdvancedImportComplete = (result: ImportResult) => {
+    setShowAdvancedWizard(false);
+    if (result.success) {
+      // Convert result to JSON format for backward compatibility
+      const dashboardJson = JSON.stringify({
+        imported: true,
+        result,
+        dashboards: result.createdIds.concat(result.updatedIds)
+      });
+      onImport?.(dashboardJson);
+    }
   };
 
   const validateJson = (json: string): boolean => {
@@ -172,8 +198,8 @@ export default function DashboardImportModal({
               <label className="block text-sm font-medium text-gray-700 mb-3">
                 Import Method
               </label>
-              <div className="flex gap-4">
-                <label className="flex items-center gap-2">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <label className="flex items-center gap-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
                   <input
                     type="radio"
                     value="upload"
@@ -181,9 +207,12 @@ export default function DashboardImportModal({
                     onChange={(e) => setImportMethod(e.target.value as 'upload')}
                     className="w-4 h-4 text-blue-600 border-gray-300"
                   />
-                  <span className="text-sm text-gray-700">Upload JSON file</span>
+                  <div>
+                    <div className="text-sm font-medium text-gray-700">Upload File</div>
+                    <div className="text-xs text-gray-500">JSON, CSV, or Excel</div>
+                  </div>
                 </label>
-                <label className="flex items-center gap-2">
+                <label className="flex items-center gap-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
                   <input
                     type="radio"
                     value="paste"
@@ -191,7 +220,23 @@ export default function DashboardImportModal({
                     onChange={(e) => setImportMethod(e.target.value as 'paste')}
                     className="w-4 h-4 text-blue-600 border-gray-300"
                   />
-                  <span className="text-sm text-gray-700">Paste JSON content</span>
+                  <div>
+                    <div className="text-sm font-medium text-gray-700">Paste JSON</div>
+                    <div className="text-xs text-gray-500">Direct JSON input</div>
+                  </div>
+                </label>
+                <label className="flex items-center gap-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                  <input
+                    type="radio"
+                    value="advanced"
+                    checked={importMethod === 'advanced'}
+                    onChange={(e) => setImportMethod(e.target.value as 'advanced')}
+                    className="w-4 h-4 text-blue-600 border-gray-300"
+                  />
+                  <div>
+                    <div className="text-sm font-medium text-gray-700">Advanced Import</div>
+                    <div className="text-xs text-gray-500">Step-by-step wizard</div>
+                  </div>
                 </label>
               </div>
             </div>
@@ -200,7 +245,7 @@ export default function DashboardImportModal({
             {importMethod === 'upload' && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Select Dashboard JSON File
+                  Select Dashboard File
                 </label>
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                   <DocumentArrowUpIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -209,16 +254,33 @@ export default function DashboardImportModal({
                       Click to upload or drag and drop
                     </p>
                     <p className="text-xs text-gray-500">
-                      JSON files only
+                      Supported: JSON, CSV, Excel (.xlsx, .xls)
                     </p>
                   </div>
                   <input
                     type="file"
-                    accept=".json"
+                    accept=".json,.csv,.xlsx,.xls"
                     onChange={handleFileUpload}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   />
                 </div>
+              </div>
+            )}
+
+            {/* Advanced Import */}
+            {importMethod === 'advanced' && (
+              <div className="text-center py-8">
+                <Cog6ToothIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Advanced Import Wizard</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Use our step-by-step wizard for importing CSV, Excel, or complex JSON files with field mapping and validation.
+                </p>
+                <button
+                  onClick={() => setShowAdvancedWizard(true)}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+                >
+                  Launch Import Wizard
+                </button>
               </div>
             )}
 
@@ -287,11 +349,12 @@ export default function DashboardImportModal({
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <h4 className="text-sm font-medium text-blue-900 mb-2">Import Guidelines</h4>
               <ul className="text-sm text-blue-800 space-y-1">
-                <li>• Dashboard JSON must include uid, title, and panels fields</li>
-                <li>• Panels array should contain valid panel configurations</li>
+                <li>• <strong>JSON:</strong> Dashboard JSON must include uid, title, and panels fields</li>
+                <li>• <strong>CSV/Excel:</strong> Use Advanced Import for field mapping and validation</li>
                 <li>• Existing dashboards with the same uid will be overwritten</li>
                 <li>• Data sources referenced in panels must exist in your system</li>
                 <li>• Variables and templating will be preserved if valid</li>
+                <li>• Large files are processed in batches for better performance</li>
               </ul>
             </div>
           </div>
@@ -315,6 +378,16 @@ export default function DashboardImportModal({
           </button>
         </div>
       </div>
+
+      {/* Advanced Import Wizard */}
+      {showAdvancedWizard && (
+        <ImportWizard
+          isOpen={showAdvancedWizard}
+          onClose={() => setShowAdvancedWizard(false)}
+          onComplete={handleAdvancedImportComplete}
+          importType="dashboard-config"
+        />
+      )}
     </div>
   );
 }

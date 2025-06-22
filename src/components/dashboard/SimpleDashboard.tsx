@@ -255,3 +255,5 @@ export const SimpleDashboard: React.FC = () => {
     </div>
   );
 };
+
+export default SimpleDashboard;

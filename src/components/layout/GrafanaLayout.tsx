@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import GrafanaNavigation from './GrafanaNavigation';
 import { bootstrapManager, BootstrapConfig } from '@/lib/grafana-bootstrap';
 import ErrorBoundary from '@/components/common/ErrorBoundary';
+import { HelpButton } from '@/components/help';
 
 interface GrafanaLayoutProps {
   children: React.ReactNode;
@@ -138,6 +139,9 @@ function TopBar({ collapsed, onToggleCollapse, config, onThemeChange }: TopBarPr
         </div>
 
         <div className="flex items-center space-x-2">
+          {/* Help Button */}
+          <HelpButton variant="dropdown" />
+
           {/* Theme Toggle */}
           <ThemeToggle 
             theme={config.user.theme} 

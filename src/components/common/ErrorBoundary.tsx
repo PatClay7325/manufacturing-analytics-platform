@@ -115,9 +115,9 @@ export class ErrorBoundary extends Component<Props, State> {
     const { error, errorInfo, errorId } = this.state;
     const bugReport = {
       errorId,
-      message: error?.message,
-      stack: error?.stack,
-      componentStack: errorInfo?.componentStack,
+      message: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack,
       context: this.props.context,
       userAgent: navigator.userAgent,
       url: window.location.href,

@@ -293,5 +293,4 @@ export { WebSocketService }
 // Type exports
 export type { MessageHandler, ConnectionHandler, ErrorHandler }
 
-// Import for React
-import { useState, useEffect } from 'react'
+// React hooks moved to separate hook file

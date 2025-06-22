@@ -12,7 +12,8 @@ import {
   Clock, Star, Filter, ChevronLeft,
   Factory, Gauge, Wrench, ClipboardList, LineChart,
   Activity, BarChart3, FileText, Zap, Globe, Shield,
-  Menu, X, User, LogOut
+  Menu, X, User, LogOut, Code, TestTube, Beaker,
+  FlaskConical, GitBranch, Terminal, Bug
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -50,7 +51,7 @@ export const useSidebar = () => {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['dashboards']));
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['dashboards', 'development']));
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -144,6 +145,20 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       section: 'config',
       icon: HelpCircle,
       url: '/documentation'
+    },
+    {
+      id: 'development',
+      text: 'Development',
+      section: 'development',
+      icon: Code,
+      children: [
+        { id: 'test-prometheus', text: 'Prometheus Test', icon: TestTube, url: '/test-prometheus' },
+        { id: 'data-integration', text: 'Data Integration Tests', icon: Beaker, url: '/dev/data-integration' },
+        { id: 'ui-components', text: 'UI Component Tests', icon: FlaskConical, url: '/dev/ui-components' },
+        { id: 'api-testing', text: 'API Testing', icon: Terminal, url: '/dev/api-testing' },
+        { id: 'performance', text: 'Performance Tests', icon: GitBranch, url: '/dev/performance' },
+        { id: 'debugging', text: 'Debug Tools', icon: Bug, url: '/dev/debugging' }
+      ]
     }
   ];
 
@@ -464,3 +479,5 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     </SidebarContext.Provider>
   );
 }
+
+export default DashboardLayout;

@@ -6,7 +6,7 @@ interface LoadingSpinnerProps {
   className?: string;
 }
 
-export default function LoadingSpinner({
+function LoadingSpinner({
   size = 'md',
   message,
   className = '',
@@ -30,3 +30,6 @@ export default function LoadingSpinner({
     </div>
   );
 }
+
+export default LoadingSpinner;
+export { LoadingSpinner };

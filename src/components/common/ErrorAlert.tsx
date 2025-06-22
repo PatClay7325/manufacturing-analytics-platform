@@ -8,7 +8,7 @@ interface ErrorAlertProps {
   type?: 'error' | 'warning' | 'info';
 }
 
-export default function ErrorAlert({
+export function ErrorAlert({
   title = 'Error',
   message,
   onRetry,
@@ -121,3 +121,5 @@ export default function ErrorAlert({
     </div>
   );
 }
+
+export default ErrorAlert;

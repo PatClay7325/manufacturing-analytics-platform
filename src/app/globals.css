@@ -5,6 +5,7 @@
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-rgb: 245, 247, 250;
+  --font-scale: 1;
   --primary-50: 239, 246, 255;
   --primary-100: 219, 234, 254;
   --primary-200: 191, 219, 254;
@@ -245,4 +246,32 @@ body.kiosk-mode-full .app-content {
 body.kiosk-mode-full .panel-container {
   border: none !important;
   background: transparent !important;
+}
+
+/* User Preferences Utilities */
+.reduce-motion * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+.high-contrast {
+  filter: contrast(150%);
+}
+
+.font-scale-small {
+  font-size: calc(1rem * 0.875);
+}
+
+.font-scale-medium {
+  font-size: calc(1rem * 1);
+}
+
+.font-scale-large {
+  font-size: calc(1rem * 1.125);
+}
+
+/* Apply font scaling */
+body {
+  font-size: calc(1rem * var(--font-scale));
 }

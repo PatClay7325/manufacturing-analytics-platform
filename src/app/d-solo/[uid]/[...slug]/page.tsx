@@ -175,11 +175,3 @@ export default function SoloPanelPage() {
   );
 }
 
-// Generate static params for known dashboards
-export async function generateStaticParams() {
-  return [
-    { uid: 'manufacturing-oee', slug: ['1'] },
-    { uid: 'equipment-health', slug: ['2'] },
-    { uid: 'production-metrics', slug: ['3'] },
-  ];
-}

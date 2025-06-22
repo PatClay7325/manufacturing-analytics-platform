@@ -4,35 +4,236 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Dashboard } from '@/types/dashboard';
-import { dashboardEngine } from '@/core/dashboard/DashboardEngine';
-import DashboardViewer from '@/components/dashboard/DashboardViewer';
+import DashboardViewerV2 from '@/components/dashboard/DashboardViewerV2';
+import DashboardEditorV2 from '@/components/dashboard/DashboardEditorV2';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import { ArrowLeftIcon, PencilIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 
 export default function ViewDashboardPage({ 
   params 
 }: { 
-  params: { id: string } 
+  params: Promise<{ id: string }> 
 }) {
   const router = useRouter();
   const [dashboard, setDashboard] = useState<Dashboard | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+  const [isSaving, setIsSaving] = useState(false);
+  const [dashboardId, setDashboardId] = useState<string>('');
 
   useEffect(() => {
-    loadDashboard();
-  }, [params?.id]);
+    params.then(p => {
+      setDashboardId(p.id);
+      loadDashboard(p.id);
+    });
+  }, [params]);
 
-  const loadDashboard = async () => {
+  const loadDashboard = async (id: string) => {
     try {
       setIsLoading(true);
       setError(null);
       
-      const loadedDashboard = await dashboardEngine.loadDashboard(params?.id);
-      setDashboard(loadedDashboard);
-      setLastRefresh(new Date());
+      // For now, create a mock dashboard with variables
+      const mockDashboard: Dashboard = {
+        id: id,
+        uid: id,
+        title: 'Manufacturing KPIs Dashboard',
+        description: 'Real-time monitoring of key manufacturing metrics',
+        tags: ['manufacturing', 'production', 'oee'],
+        panels: [
+          {
+            id: 1,
+            title: 'OEE - $equipment',
+            type: 'gauge',
+            gridPos: { x: 0, y: 0, w: 6, h: 8 },
+            targets: [
+              {
+                refId: 'A',
+                metric: 'oee',
+                query: 'SELECT oee FROM metrics WHERE equipment = "$equipment" AND time >= $__from AND time <= $__to'
+              }
+            ],
+            fieldConfig: {
+              defaults: {
+                min: 0,
+                max: 100,
+                unit: 'percent',
+                thresholds: {
+                  mode: 'absolute',
+                  steps: [
+                    { value: 0, color: 'red' },
+                    { value: 60, color: 'yellow' },
+                    { value: 85, color: 'green' }
+                  ]
+                }
+              },
+              overrides: []
+            },
+            options: {
+              showThresholdLabels: true,
+              showThresholdMarkers: true
+            },
+            transparent: false,
+            links: [],
+            transformations: []
+          },
+          {
+            id: 2,
+            title: 'Production Trend - $equipment',
+            type: 'timeseries',
+            gridPos: { x: 6, y: 0, w: 18, h: 8 },
+            targets: [
+              {
+                refId: 'A',
+                metric: 'production_rate',
+                query: 'SELECT rate FROM production WHERE equipment = "$equipment" AND time >= $__from AND time <= $__to'
+              }
+            ],
+            fieldConfig: {
+              defaults: {
+                custom: {
+                  lineWidth: 2,
+                  fillOpacity: 10,
+                  spanNulls: true
+                }
+              },
+              overrides: []
+            },
+            options: {
+              legend: {
+                displayMode: 'list',
+                placement: 'bottom'
+              }
+            },
+            transparent: false,
+            links: [],
+            transformations: []
+          },
+          {
+            id: 3,
+            title: 'Quality Metrics by $line',
+            type: 'barchart',
+            gridPos: { x: 0, y: 8, w: 12, h: 8 },
+            targets: [
+              {
+                refId: 'A',
+                query: 'SELECT quality_score FROM quality WHERE line = "$line" GROUP BY product'
+              }
+            ],
+            fieldConfig: {
+              defaults: {},
+              overrides: []
+            },
+            options: {},
+            transparent: false,
+            links: [],
+            transformations: []
+          },
+          {
+            id: 4,
+            title: 'Equipment Status',
+            type: 'table',
+            gridPos: { x: 12, y: 8, w: 12, h: 8 },
+            targets: [
+              {
+                refId: 'A',
+                query: 'SELECT equipment, status, uptime FROM equipment_status WHERE line = "$line"'
+              }
+            ],
+            fieldConfig: {
+              defaults: {},
+              overrides: []
+            },
+            options: {
+              showHeader: true
+            },
+            transparent: false,
+            links: [],
+            transformations: []
+          }
+        ],
+        templating: {
+          list: [
+            {
+              name: 'equipment',
+              type: 'custom',
+              label: 'Equipment',
+              query: 'Assembly Line 1, Assembly Line 2, Assembly Line 3, Packaging Unit A, Packaging Unit B',
+              current: {
+                text: 'Assembly Line 1',
+                value: 'Assembly Line 1',
+                selected: true
+              },
+              options: [],
+              multi: false,
+              includeAll: true,
+              allValue: '*',
+              hide: 0
+            },
+            {
+              name: 'line',
+              type: 'custom',
+              label: 'Production Line',
+              query: 'Line 1, Line 2, Line 3',
+              current: {
+                text: 'Line 1',
+                value: 'Line 1',
+                selected: true
+              },
+              options: [],
+              multi: false,
+              hide: 0
+            },
+            {
+              name: 'interval',
+              type: 'interval',
+              label: 'Interval',
+              query: '1m,5m,10m,30m,1h',
+              current: {
+                text: '5m',
+                value: '5m',
+                selected: true
+              },
+              options: [],
+              hide: 0
+            }
+          ]
+        },
+        annotations: [],
+        links: [],
+        time: {
+          from: 'now-6h',
+          to: 'now',
+          raw: {
+            from: 'now-6h',
+            to: 'now'
+          }
+        },
+        timepicker: {
+          refresh_intervals: ['5s', '10s', '30s', '1m', '5m', '15m', '30m', '1h', '2h', '1d'],
+          time_options: ['5m', '15m', '1h', '6h', '12h', '24h', '2d', '7d', '30d']
+        },
+        refresh: '30s',
+        schemaVersion: 30,
+        version: 1,
+        timezone: 'browser',
+        fiscalYearStartMonth: 0,
+        liveNow: false,
+        weekStart: 'monday',
+        style: 'dark',
+        editable: true,
+        hideControls: false,
+        graphTooltip: 0,
+        preload: false,
+        meta: {
+          canEdit: true,
+          canSave: true,
+          canStar: true
+        }
+      };
+      
+      setDashboard(mockDashboard);
     } catch (err) {
       setError('Failed to load dashboard');
       console.error(err);
@@ -41,23 +242,36 @@ export default function ViewDashboardPage({
     }
   };
 
-  const handleRefresh = async () => {
-    if (!dashboard) return;
-    
+  const handleSave = async (updatedDashboard: Dashboard) => {
     try {
-      setIsRefreshing(true);
-      await dashboardEngine.refreshDashboard(dashboard.uid);
-      setLastRefresh(new Date());
+      setIsSaving(true);
+      
+      // TODO: Implement actual save logic
+      console.log('Saving dashboard:', updatedDashboard);
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setDashboard(updatedDashboard);
+      setIsEditing(false);
     } catch (err) {
-      console.error('Failed to refresh dashboard:', err);
+      console.error('Failed to save dashboard:', err);
     } finally {
-      setIsRefreshing(false);
+      setIsSaving(false);
     }
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <LoadingSpinner />
       </div>
     );
@@ -65,9 +279,9 @@ export default function ViewDashboardPage({
 
   if (error || !dashboard) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white rounded-lg shadow p-8 max-w-md w-full text-center">
-          <p className="text-red-600 mb-4">{error || 'Dashboard not found'}</p>
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="bg-gray-800 rounded-lg shadow p-8 max-w-md w-full text-center">
+          <p className="text-red-400 mb-4">{error || 'Dashboard not found'}</p>
           <Link
             href="/dashboards"
             className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
@@ -80,62 +294,26 @@ export default function ViewDashboardPage({
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
-              <Link
-                href="/dashboards"
-                className="text-gray-600 hover:text-gray-900 mr-4"
-              >
-                <ArrowLeftIcon className="w-5 h-5" />
-              </Link>
-              <div>
-                <h1 className="text-xl font-semibold text-gray-900">
-                  {dashboard.title}
-                </h1>
-                {dashboard.description && (
-                  <p className="text-sm text-gray-600">{dashboard.description}</p>
-                )}
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              {/* Last refresh time */}
-              <span className="text-sm text-gray-500">
-                Last refresh: {lastRefresh.toLocaleTimeString()}
-              </span>
-              
-              {/* Refresh button */}
-              <button
-                onClick={handleRefresh}
-                disabled={isRefreshing}
-                className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-              >
-                <ArrowPathIcon className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-                Refresh
-              </button>
-              
-              {/* Edit button */}
-              <Link
-                href={`/dashboards/edit/${dashboard.uid}`}
-                className="inline-flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                <PencilIcon className="w-4 h-4 mr-2" />
-                Edit
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
+  // Edit mode
+  if (isEditing) {
+    return (
+      <DashboardEditorV2
+        dashboard={dashboard}
+        onSave={handleSave}
+        onCancel={handleCancelEdit}
+        isSaving={isSaving}
+        isNew={false}
+      />
+    );
+  }
 
-      {/* Dashboard Content */}
-      <div className="p-4 sm:p-6 lg:p-8">
-        <DashboardViewer dashboard={dashboard} />
-      </div>
+  // View mode
+  return (
+    <div className="min-h-screen bg-gray-900">
+      <DashboardViewerV2
+        dashboard={dashboard}
+        onEdit={handleEdit}
+      />
     </div>
   );
 }

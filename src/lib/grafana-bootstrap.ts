@@ -508,6 +508,19 @@ class BootstrapManager {
           { id: 'support', text: 'Support', url: '/support', icon: 'question-circle' },
           { id: 'documentation', text: 'Documentation', url: '/documentation', icon: 'document-info' }
         ]
+      },
+      {
+        id: 'development',
+        text: 'Development',
+        icon: 'code-branch',
+        children: [
+          { id: 'test-prometheus', text: 'Prometheus Test', url: '/test-prometheus', icon: 'external-link-alt' },
+          { id: 'data-integration', text: 'Data Integration Tests', url: '/dev/data-integration', icon: 'database' },
+          { id: 'ui-components', text: 'UI Component Tests', url: '/dev/ui-components', icon: 'layer-group' },
+          { id: 'api-testing', text: 'API Testing', url: '/dev/api-testing', icon: 'cog' },
+          { id: 'performance', text: 'Performance Tests', url: '/dev/performance', icon: 'chart-line' },
+          { id: 'debugging', text: 'Debug Tools', url: '/dev/debugging', icon: 'bug' }
+        ]
       }
     ];
   }

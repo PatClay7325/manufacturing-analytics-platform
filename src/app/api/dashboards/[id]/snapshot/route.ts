@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
+import { nanoid } from 'nanoid';
+import bcrypt from 'bcryptjs';
 
 interface RouteParams {
   params: {
@@ -26,7 +28,9 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       config,
       data,
       isPublic = false,
-      expiresAt
+      expiresAt,
+      password,
+      metadata
     } = body;
 
     // Validate required fields
@@ -37,6 +41,15 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       );
     }
 
+    // Generate unique share key
+    const shareKey = nanoid(10);
+
+    // Hash password if provided
+    let hashedPassword = null;
+    if (password) {
+      hashedPassword = await bcrypt.hash(password, 10);
+    }
+
     // TODO: Generate snapshot image (integrate with puppeteer or similar)
     // For now, we'll store the configuration and data
     const imageUrl = await generateSnapshotImage(dashboardId, config);
@@ -44,14 +57,17 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const snapshot = await prisma.dashboardSnapshot.create({
       data: {
         dashboardId,
-        title: title.substring(0, 200),
-        description: description?.substring(0, 500),
+        title: title?.substring(0, 200) || '',
+        description: description?.substring(0, 500) || '',
         config,
         data: data || null,
         imageUrl,
         userId: authResult.user.userId,
         isPublic,
-        expiresAt: expiresAt ? new Date(expiresAt) : null
+        expiresAt: expiresAt ? new Date(expiresAt) : null,
+        shareKey,
+        password: hashedPassword,
+        metadata: metadata || {}
       },
       include: {
         User: {

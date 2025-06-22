@@ -64,11 +64,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Check authentication status on mount
   useEffect(() => {
-    checkAuth();
+    // In development, use mock auth to avoid API errors
+    if (process.env.NODE_ENV === 'development') {
+      setUser({
+        id: '1',
+        email: 'admin@manufacturing.com',
+        name: 'Admin User',
+        role: 'admin',
+        department: 'Engineering',
+        permissions: ['admin:all', 'dashboard:view', 'dashboard:edit'],
+        site: {
+          id: 'site-1',
+          name: 'Main Factory',
+          enterprise: {
+            id: 'enterprise-1',
+            name: 'Manufacturing Corp'
+          }
+        }
+      });
+      setLoading(false);
+    } else {
+      checkAuth();
+    }
   }, []);
 
   // Redirect logic based on auth status
   useEffect(() => {
+    // Skip redirects in development
+    if (process.env.NODE_ENV === 'development') {
+      return;
+    }
+    
     if (!loading) {
       const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
       

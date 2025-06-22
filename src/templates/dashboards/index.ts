@@ -3,14 +3,11 @@
  * Pre-configured dashboards for common manufacturing use cases
  */
 
-import productionOverview from json';
-import equipmentMonitoring from json';
-import qualityControl from json';
-import energyManagement from json';
-import maintenanceDashboard from json';
-import supplyChain from json';
-import safetyDashboard from json';
-import executiveSummary from json';
+import productionOverview from './production-overview.json';
+import equipmentMonitoring from './equipment-monitoring.json';
+import variableDemo from './variable-demo.json';
+import prometheusTest from './prometheus-test.json';
+import prometheusRealtime from './prometheus-realtime.json';
 
 export interface DashboardTemplate {
   id: string;
@@ -23,6 +20,22 @@ export interface DashboardTemplate {
 }
 
 export const dashboardTemplates: DashboardTemplate[] = [
+  {
+    id: 'prometheus-realtime',
+    title: 'Real-Time System Monitoring',
+    description: 'Comprehensive real-time monitoring dashboard with live system metrics, network traffic, and alerts',
+    category: 'Monitoring',
+    tags: ['monitoring', 'prometheus', 'real-time', 'system', 'cpu', 'memory', 'network'],
+    config: prometheusRealtime
+  },
+  {
+    id: 'prometheus-test',
+    title: 'Prometheus Test Dashboard',
+    description: 'Simple test dashboard showing real Prometheus metrics - CPU and memory usage',
+    category: 'Test',
+    tags: ['test', 'prometheus', 'real-data', 'cpu', 'memory'],
+    config: prometheusTest
+  },
   {
     id: 'production-overview',
     title: 'Production Overview',
@@ -40,66 +53,23 @@ export const dashboardTemplates: DashboardTemplate[] = [
     config: equipmentMonitoring
   },
   {
-    id: 'quality-control',
-    title: 'Quality Control',
-    description: 'Quality metrics, SPC charts, defect tracking, inspection results, and compliance monitoring',
-    category: 'Quality',
-    tags: ['quality', 'spc', 'defects', 'compliance'],
-    config: qualityControl
-  },
-  {
-    id: 'energy-management',
-    title: 'Energy Management',
-    description: 'Energy consumption monitoring, cost analysis, efficiency metrics, and carbon footprint tracking',
-    category: 'Energy',
-    tags: ['energy', 'sustainability', 'cost', 'efficiency'],
-    config: energyManagement
-  },
-  {
-    id: 'maintenance-dashboard',
-    title: 'Maintenance Dashboard',
-    description: 'Preventive maintenance schedules, work orders, MTBF/MTTR metrics, and spare parts inventory',
-    category: 'Maintenance',
-    tags: ['maintenance', 'preventive', 'mtbf', 'mttr'],
-    config: maintenanceDashboard
-  },
-  {
-    id: 'supply-chain',
-    title: 'Supply Chain',
-    description: 'Inventory levels, order tracking, supplier performance, and lead time analysis',
-    category: 'Supply Chain',
-    tags: ['supply-chain', 'inventory', 'orders', 'suppliers'],
-    config: supplyChain
-  },
-  {
-    id: 'safety-dashboard',
-    title: 'Safety Dashboard',
-    description: 'Safety incident tracking, compliance status, training records, and risk assessments',
-    category: 'Safety',
-    tags: ['safety', 'incidents', 'compliance', 'training'],
-    config: safetyDashboard
-  },
-  {
-    id: 'executive-summary',
-    title: 'Executive Summary',
-    description: 'High-level KPIs, financial metrics, performance trends, and strategic insights',
-    category: 'Executive',
-    tags: ['executive', 'kpi', 'financial', 'strategic'],
-    config: executiveSummary
+    id: 'variable-demo',
+    title: 'Variable Demo',
+    description: 'Demonstration of dashboard variables and templating features',
+    category: 'Demo',
+    tags: ['variables', 'demo', 'templating'],
+    config: variableDemo
   }
 ];
 
 // Template categories for filtering
 export const templateCategories = [
   { id: 'all', name: 'All Templates', count: dashboardTemplates.length },
+  { id: 'monitoring', name: 'Monitoring', count: 1 },
+  { id: 'test', name: 'Test', count: 1 },
   { id: 'production', name: 'Production', count: 1 },
   { id: 'equipment', name: 'Equipment', count: 1 },
-  { id: 'quality', name: 'Quality', count: 1 },
-  { id: 'energy', name: 'Energy', count: 1 },
-  { id: 'maintenance', name: 'Maintenance', count: 1 },
-  { id: 'supply-chain', name: 'Supply Chain', count: 1 },
-  { id: 'safety', name: 'Safety', count: 1 },
-  { id: 'executive', name: 'Executive', count: 1 }
+  { id: 'demo', name: 'Demo', count: 1 }
 ];
 
 // Helper function to get template by ID

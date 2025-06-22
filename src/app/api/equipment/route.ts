@@ -1,6 +1,74 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+// Sample equipment data for development/testing when database is not available
+export const equipmentData = [
+  {
+    id: 'eq-001',
+    name: 'CNC Machine #1',
+    serialNumber: 'CNC001',
+    model: 'DMU 50',
+    manufacturer: 'DMG MORI',
+    type: 'CNC',
+    location: 'Production Floor A',
+    department: 'Manufacturing',
+    installationDate: '2023-01-15T00:00:00.000Z',
+    lastMaintenanceDate: '2024-01-10T00:00:00.000Z',
+    nextMaintenanceDate: '2024-02-10T00:00:00.000Z',
+    status: 'operational',
+    specifications: {},
+    metrics: [],
+    maintenanceHistory: [],
+    tags: [],
+    createdAt: '2023-01-15T00:00:00.000Z',
+    updatedAt: '2024-01-10T00:00:00.000Z',
+    workCenterId: 'wc-001',
+    workCenterName: 'Machining Center 1',
+    areaId: 'area-001',
+    areaName: 'Production Area A',
+    siteId: 'site-001',
+    siteName: 'Main Factory',
+    oee: 85.5,
+    availability: 95.2,
+    performance: 89.8,
+    quality: 97.1,
+    activeAlerts: 0,
+    recentQualityMetrics: []
+  },
+  {
+    id: 'eq-002',
+    name: 'Assembly Line #2',
+    serialNumber: 'ASM002',
+    model: 'AL-2000',
+    manufacturer: 'AutoTech',
+    type: 'Assembly',
+    location: 'Production Floor B',
+    department: 'Assembly',
+    installationDate: '2023-02-20T00:00:00.000Z',
+    lastMaintenanceDate: '2024-01-05T00:00:00.000Z',
+    nextMaintenanceDate: '2024-02-05T00:00:00.000Z',
+    status: 'maintenance',
+    specifications: {},
+    metrics: [],
+    maintenanceHistory: [],
+    tags: [],
+    createdAt: '2023-02-20T00:00:00.000Z',
+    updatedAt: '2024-01-05T00:00:00.000Z',
+    workCenterId: 'wc-002',
+    workCenterName: 'Assembly Line 2',
+    areaId: 'area-002',
+    areaName: 'Assembly Area B',
+    siteId: 'site-001',
+    siteName: 'Main Factory',
+    oee: 72.3,
+    availability: 85.5,
+    performance: 84.6,
+    quality: 99.8,
+    activeAlerts: 2,
+    recentQualityMetrics: []
+  }
+];
+
 // GET all work units (equipment)
 export async function GET(request: NextRequest) {
   try {

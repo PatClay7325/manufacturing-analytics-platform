@@ -106,8 +106,8 @@ const GeomapPanel: React.FC<PanelProps<GeomapPanelOptions>> = ({
             points.push({
               lat,
               lon,
-              name: nameField?.values.get(i),
-              value: valueField?.values.get(i),
+              name: nameField.values.get(i),
+              value: valueField.values.get(i),
               metadata: frame.fields.reduce((acc, field) => {
                 acc[field.name] = field.values.get(i);
                 return acc;

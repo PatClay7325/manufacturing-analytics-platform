@@ -10,7 +10,7 @@ interface GaugePanelProps {
   width?: string | number;
 }
 
-export default function GaugePanel({
+function GaugePanel({
   panel,
   data,
   height = '100%',
@@ -42,19 +42,33 @@ export default function GaugePanel({
   const percentage = ((value - min) / (max - min)) * 100;
   const angle = (percentage / 100) * 270 - 135; // 270 degree arc, starting at -135
 
-  // Get color based on thresholds
+  // Get color based on thresholds - Professional colors
   const getColor = () => {
-    if (!fieldConfig?.thresholds?.steps) return '#10b981';
+    if (!fieldConfig?.thresholds?.steps) return '#059669'; // Professional green
 
     const thresholds = [...fieldConfig?.thresholds.steps].sort((a, b) => a?.value - b?.value);
     
+    // Convert color names to professional hex values
+    const colorMap = {
+      'green': '#059669',
+      'yellow': '#ea580c', 
+      'red': '#dc2626',
+      'blue': '#2563eb',
+      'purple': '#7c3aed',
+      'cyan': '#0891b2',
+      'pink': '#be185d',
+      'lime': '#65a30d'
+    };
+    
     for (let i = thresholds?.length - 1; i >= 0; i--) {
       if (value >= thresholds[i].value) {
-        return thresholds[i].color;
+        const color = thresholds[i].color;
+        return colorMap[color as keyof typeof colorMap] || color || '#059669';
       }
     }
     
-    return thresholds[0]?.color || '#10b981';
+    const firstColor = thresholds[0]?.color;
+    return colorMap[firstColor as keyof typeof colorMap] || firstColor || '#059669';
   };
 
   const gaugeColor = getColor();
@@ -69,11 +83,23 @@ export default function GaugePanel({
   const renderThresholdMarkers = () => {
     if (!options?.showThresholdMarkers || !fieldConfig?.thresholds?.steps) return null;
 
+    const colorMap = {
+      'green': '#059669',
+      'yellow': '#ea580c', 
+      'red': '#dc2626',
+      'blue': '#2563eb',
+      'purple': '#7c3aed',
+      'cyan': '#0891b2',
+      'pink': '#be185d',
+      'lime': '#65a30d'
+    };
+
     return fieldConfig?.thresholds.steps?.map((threshold, index) => {
       if (index === 0) return null; // Skip base threshold
       
       const thresholdPercentage = ((threshold?.value - min) / (max - min)) * 100;
       const thresholdAngle = (thresholdPercentage / 100) * 270 - 135;
+      const color = colorMap[threshold?.color as keyof typeof colorMap] || threshold?.color || '#059669';
       
       return (
         <line
@@ -82,8 +108,8 @@ export default function GaugePanel({
           y1="50"
           x2="50"
           y2="15"
-          stroke={threshold?.color}
-          strokeWidth="2"
+          stroke={color}
+          strokeWidth="1.5"
           transform={`rotate(${thresholdAngle} 50 50)`}
         />
       );
@@ -97,13 +123,13 @@ export default function GaugePanel({
         <div className="w-full max-w-md">
           {/* Title */}
           {panel?.title && (
-            <h3 className="text-sm font-medium text-gray-400 mb-2">{panel?.title}</h3>
+            <h3 className="text-sm font-medium text-gray-700 mb-2">{panel?.title}</h3>
           )}
           
           {/* Horizontal Gauge */}
           <div className="relative">
             {/* Background track */}
-            <div className="w-full h-8 bg-gray-700 rounded-full overflow-hidden">
+            <div className="w-full h-8 bg-gray-200 rounded-full overflow-hidden border border-gray-300">
               {/* Filled portion */}
               <div
                 className="h-full transition-all duration-500 ease-out rounded-full"
@@ -116,7 +142,7 @@ export default function GaugePanel({
             
             {/* Value display */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-white font-bold text-lg drop-shadow-md">
+              <span className="text-gray-900 font-bold text-lg drop-shadow-sm">
                 {formatValue(value)}
               </span>
             </div>
@@ -124,8 +150,8 @@ export default function GaugePanel({
             {/* Min/Max labels */}
             {options?.showThresholdLabels && (
               <div className="flex justify-between mt-1">
-                <span className="text-xs text-gray-500">{min}</span>
-                <span className="text-xs text-gray-500">{max}</span>
+                <span className="text-xs text-gray-600 font-medium">{min}</span>
+                <span className="text-xs text-gray-600 font-medium">{max}</span>
               </div>
             )}
           </div>
@@ -136,14 +162,15 @@ export default function GaugePanel({
 
   // Radial gauge (default)
   return (
-    <div style={{ width, height }} className="flex flex-col items-center justify-center p-4">
-      <div className="relative">
-        {/* SVG Gauge */}
+    <div style={{ width, height }} className="flex flex-col items-center justify-center p-2">
+      <div className="relative flex-1 flex items-center justify-center">
+        {/* SVG Gauge - Responsive sizing */}
         <svg
-          width="200"
-          height="200"
+          width="100%"
+          height="100%"
           viewBox="0 0 100 100"
-          className="transform -rotate-90"
+          className="transform -rotate-90 max-w-[180px] max-h-[180px]"
+          style={{ aspectRatio: '1' }}
         >
           {/* Background arc */}
           <circle
@@ -151,8 +178,8 @@ export default function GaugePanel({
             cy="50"
             r="40"
             fill="none"
-            stroke="#374151"
-            strokeWidth="8"
+            stroke="#e5e7eb"
+            strokeWidth="6"
             strokeDasharray="188.5 62.83"
             transform="rotate(135 50 50)"
           />
@@ -164,10 +191,11 @@ export default function GaugePanel({
             r="40"
             fill="none"
             stroke={gaugeColor}
-            strokeWidth="8"
+            strokeWidth="6"
             strokeDasharray={`${(percentage / 100) * 188.5} 251.33`}
             transform="rotate(135 50 50)"
-            className="transition-all duration-500 ease-out"
+            className="transition-all duration-700 ease-out"
+            strokeLinecap="round"
           />
 
           {/* Threshold markers */}
@@ -178,11 +206,11 @@ export default function GaugePanel({
 
         {/* Center content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <div className="text-3xl font-bold text-white">
+          <div className="text-2xl font-bold text-gray-900 leading-tight">
             {formatValue(value)}
           </div>
           {panel?.title && (
-            <div className="text-sm text-gray-400 mt-1">
+            <div className="text-xs text-gray-600 mt-1 text-center font-medium">
               {panel?.title}
             </div>
           )}
@@ -191,11 +219,14 @@ export default function GaugePanel({
 
       {/* Min/Max labels */}
       {options?.showThresholdLabels && (
-        <div className="flex justify-between w-full max-w-[200px] mt-2">
-          <span className="text-xs text-gray-500">{min}</span>
-          <span className="text-xs text-gray-500">{max}</span>
+        <div className="flex justify-between w-full max-w-[180px] mt-3">
+          <span className="text-xs text-gray-600 font-medium">{min}</span>
+          <span className="text-xs text-gray-600 font-medium">{max}</span>
         </div>
       )}
     </div>
   );
 }
+
+export default GaugePanel;
+export { GaugePanel };

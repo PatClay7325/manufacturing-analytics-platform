@@ -8,7 +8,7 @@ interface SyntaxFix {
   description: string;
 }
 
-const syntaxFixes: SyntaxFix[] = {
+const syntaxFixes: SyntaxFix[] = [
   // Fix numeric optional chaining
   {
     pattern: /(\d+)\?\.([$\w]+)/g,

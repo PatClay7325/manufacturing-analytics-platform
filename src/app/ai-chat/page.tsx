@@ -40,6 +40,7 @@ export default function AIChatPage() {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [currentSession, setCurrentSession] = useState<string | null>(null);
   const [agentStatus, setAgentStatus] = useState<{ status: string; details?: any } | null>(null);
+  const [usePipeline, setUsePipeline] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const streamingRef = useRef<string>('');
 
@@ -79,13 +80,27 @@ export default function AIChatPage() {
     setMessages(prev => [...prev, assistantMessage]);
 
     try {
-      const response = await fetch('/api/chat/manufacturing-agent', {
+      const endpoint = usePipeline 
+        ? '/api/agents/manufacturing-engineering/pipeline/stream'
+        : '/api/chat/manufacturing-agent';
+      
+      const requestBody = usePipeline
+        ? {
+            query: text,
+            parameters: {
+              sessionId: currentSession || Date.now().toString(),
+              context: { messages }
+            }
+          }
+        : {
+            messages: [...messages, newMessage],
+            sessionId: currentSession || Date.now().toString()
+          };
+      
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: [...messages, newMessage],
-          sessionId: currentSession || Date.now().toString()
-        })
+        body: JSON.stringify(requestBody)
       });
 
       if (!response.ok) throw new Error('Failed to get response');
@@ -114,26 +129,68 @@ export default function AIChatPage() {
             try {
               const data = JSON.parse(dataStr);
               
-              if (data.content) {
-                streamingRef.current += data.content;
-                setMessages(prev => 
-                  prev.map(msg => 
-                    msg.id === assistantMessage.id 
-                      ? { ...msg, content: streamingRef.current }
-                      : msg
-                  )
-                );
-              }
-              
-              if (data.thoughts) {
-                setThoughts(data.thoughts);
-                setMessages(prev => 
-                  prev.map(msg => 
-                    msg.id === assistantMessage.id 
-                      ? { ...msg, thoughts: data.thoughts }
-                      : msg
-                  )
-                );
+              // Handle pipeline mode responses
+              if (usePipeline && data.type) {
+                switch (data.type) {
+                  case 'agent_start':
+                  case 'agent_progress':
+                    // Add to thoughts
+                    setThoughts(prev => [...prev, {
+                      type: 'planning',
+                      title: `Agent: ${data.agentName}`,
+                      body: `Status: ${data.status || 'starting'}`
+                    }]);
+                    break;
+                  case 'complete':
+                    if (data.result) {
+                      streamingRef.current = data.result.content || '';
+                      setMessages(prev => 
+                        prev.map(msg => 
+                          msg.id === assistantMessage.id 
+                            ? { 
+                                ...msg, 
+                                content: streamingRef.current,
+                                thoughts: data.result.thoughts || thoughts
+                              }
+                            : msg
+                        )
+                      );
+                    }
+                    break;
+                  case 'error':
+                    streamingRef.current = `Error: ${data.error}`;
+                    setMessages(prev => 
+                      prev.map(msg => 
+                        msg.id === assistantMessage.id 
+                          ? { ...msg, content: streamingRef.current }
+                          : msg
+                      )
+                    );
+                    break;
+                }
+              } else {
+                // Handle regular agent responses
+                if (data.content) {
+                  streamingRef.current += data.content;
+                  setMessages(prev => 
+                    prev.map(msg => 
+                      msg.id === assistantMessage.id 
+                        ? { ...msg, content: streamingRef.current }
+                        : msg
+                    )
+                  );
+                }
+                
+                if (data.thoughts) {
+                  setThoughts(data.thoughts);
+                  setMessages(prev => 
+                    prev.map(msg => 
+                      msg.id === assistantMessage.id 
+                        ? { ...msg, thoughts: data.thoughts }
+                        : msg
+                    )
+                  );
+                }
               }
             } catch (e) {
               // Only log non-[DONE] parsing errors
@@ -227,6 +284,17 @@ export default function AIChatPage() {
               </div>
               
               <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setUsePipeline(!usePipeline)}
+                  className={`px-3 py-1 text-xs rounded-full transition-colors ${
+                    usePipeline 
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                  }`}
+                  title={usePipeline ? 'Using Multi-Agent Pipeline' : 'Using Single Agent'}
+                >
+                  {usePipeline ? 'Pipeline Mode' : 'Legacy Mode'}
+                </button>
                 <button
                   onClick={regenerateResponse}
                   disabled={messages.length < 2 || isStreaming}

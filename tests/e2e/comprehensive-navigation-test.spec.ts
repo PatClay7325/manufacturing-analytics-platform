@@ -13,7 +13,7 @@ const navigationPages = [
   { name: 'Analytics/Dashboards', path: '/dashboards', hasSubPages: true },
   { name: 'Equipment', path: '/equipment', hasSubPages: true },
   { name: 'Alerts', path: '/alerts', hasSubPages: true },
-  { name: 'Manufacturing Chat', path: '/manufacturing-chat', hasSubPages: true },
+  { name: 'Manufacturing Chat Main', path: '/manufacturing-chat', hasSubPages: true },
   { name: 'Documentation', path: '/documentation', hasSubPages: true },
   
   // Dashboard sub-pages
@@ -38,7 +38,6 @@ const navigationPages = [
   { name: 'Alerts List', path: '/alerts', hasSubPages: false },
   
   // Manufacturing Chat sub-pages
-  { name: 'Manufacturing Chat', path: '/manufacturing-chat', hasSubPages: false },
   { name: 'Manufacturing Chat Optimized', path: '/manufacturing-chat/optimized', hasSubPages: false },
   
   // Documentation sub-pages

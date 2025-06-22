@@ -135,8 +135,8 @@ export async function POST(request: NextRequest) {
         dashboardId,
         panelId,
         type,
-        title: title.substring(0, 200), // Limit title length
-        text: text?.substring(0, 1000), // Limit text length
+        title: title?.substring(0, 200) || '', // Limit title length
+        text: text?.substring(0, 1000) || '', // Limit text length
         tags,
         time: new Date(time),
         timeEnd: timeEnd ? new Date(timeEnd) : null,
@@ -228,8 +228,8 @@ export async function PUT(request: NextRequest) {
     const annotation = await prisma.annotation.update({
       where: { id },
       data: {
-        title: title?.substring(0, 200),
-        text: text?.substring(0, 1000),
+        title: title?.substring(0, 200) || '',
+        text: text?.substring(0, 1000) || '',
         tags,
         color,
         icon,

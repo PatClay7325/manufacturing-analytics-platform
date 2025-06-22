@@ -5,7 +5,7 @@ import {
   RefreshCw, Download, Share2, Settings, Fullscreen,
   Factory, Clock, Filter as FilterIcon, TrendingUp
 } from 'lucide-react';
-import { AnalyticsPanel, TimeRangeSelector } from '@/components/Analytics/AnalyticsPanel';
+import { AnalyticsPanel } from '@/components/analytics/AnalyticsPanel';
 import { GRAFANA_CONFIG, buildGrafanaUrl } from '@/config/Analytics.config';
 
 // Time range type
@@ -447,3 +447,4 @@ const ManufacturingDashboard: React.FC<ManufacturingDashboardProps> = ({
 };
 
 export default ManufacturingDashboard;
+export { ManufacturingDashboard };

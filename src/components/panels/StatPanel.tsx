@@ -19,7 +19,7 @@ interface StatPanelData {
   trendPercentage?: number;
 }
 
-export default function StatPanel({ 
+function StatPanel({ 
   data, 
   options, 
   width, 
@@ -305,3 +305,6 @@ export const statPanelDefaults: StatPanelOptions = {
   graphMode: 'none',
   justifyMode: 'auto'
 };
+
+export default StatPanel;
+export { StatPanel };

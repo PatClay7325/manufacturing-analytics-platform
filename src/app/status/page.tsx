@@ -95,11 +95,12 @@ export default function StatusPage() {
       {/* Overall Status */}
       <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
         <div className="flex items-center justify-between">
-                      <h2 className="text-2xl font-semibold mb-2">
+          <div>
+            <h2 className="text-2xl font-semibold mb-2">
               {overallStatus === 'operational' ? 'All Systems Operational' : 'Partial System Outage'}
             </h2>
             <p className="text-gray-600">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Last updated: {new Date().toLocaleString()}
+              All manufacturing systems are running normally. Last updated: {new Date().toLocaleString()}
             </p>
           </div>
           <div className={`text-6xl ${overallStatus === 'operational' ? 'text-green-500' : 'text-yellow-500'}`}>
@@ -113,7 +114,8 @@ export default function StatusPage() {
         {services?.map((service) => (
           <div key={service?.name} className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
             <div className="flex items-start justify-between mb-4">
-                              <h3 className="text-xl font-semibold mb-1">{service?.name}</h3>
+              <div>
+                <h3 className="text-xl font-semibold mb-1">{service?.name}</h3>
                 <p className="text-gray-600 text-sm">{service?.description}</p>
               </div>
               <span className="text-2xl">{getStatusIcon(service?.status)}</span>
@@ -226,5 +228,6 @@ export default function StatusPage() {
           </button>
         </div>
       </div>
+    </div>
   );
 }

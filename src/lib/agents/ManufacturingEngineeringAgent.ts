@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { manufacturingPipeline } from './pipeline';
 
 // ISO Standards References
 const ISO_STANDARDS = {
@@ -88,6 +89,21 @@ export class ManufacturingEngineeringAgent {
     const executionStart = Date.now();
     
     try {
+      // Check if we should use the new pipeline
+      const usePipeline = process.env.USE_AGENT_PIPELINE === 'true' || context?.usePipeline;
+      
+      if (usePipeline) {
+        // Use the new multi-agent pipeline
+        return await manufacturingPipeline.execute(query, {
+          userId: context.userId,
+          tenantId: context.tenantId,
+          timeRange: context.timeRange,
+          analysisType: context.analysisType,
+          sessionId: context.sessionId
+        });
+      }
+      
+      // Otherwise, use the legacy single-agent approach
       // Analyze query to determine analysis type
       const analysisType = this.classifyQuery(query);
       

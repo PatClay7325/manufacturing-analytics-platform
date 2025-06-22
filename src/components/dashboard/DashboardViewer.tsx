@@ -16,7 +16,7 @@ interface DashboardViewerProps {
   onPanelClick?: (panel: Panel) => void;
 }
 
-export default function DashboardViewer({
+function DashboardViewer({
   dashboard,
   isEditing = false,
   onPanelClick
@@ -126,3 +126,6 @@ export default function DashboardViewer({
     </div>
   );
 }
+
+export default DashboardViewer;
+export { DashboardViewer };

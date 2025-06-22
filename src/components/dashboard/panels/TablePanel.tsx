@@ -19,7 +19,7 @@ interface TableColumn {
   width?: number;
 }
 
-export default function TablePanel({ panel, data = [], width, height }: TablePanelProps) {
+function TablePanel({ panel, data = [], width, height }: TablePanelProps) {
   const options = panel?.options || {};
   const fieldConfig = panel?.fieldConfig || {};
 
@@ -206,3 +206,6 @@ export default function TablePanel({ panel, data = [], width, height }: TablePan
     </div>
   );
 }
+
+export default TablePanel;
+export { TablePanel };

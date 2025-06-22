@@ -187,7 +187,7 @@ export const AdaptiveResponsiveContainer: React.FC<AdaptiveResponsiveContainerPr
 
         setContainerDimensions({
           width: offsetWidth,
-          height: activeBreakpoint?.height || minHeight
+          height: activeBreakpoint.height || minHeight
         });
       }
     };

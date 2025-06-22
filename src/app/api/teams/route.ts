@@ -1,65 +1,134 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { verifyAuth } from '@/lib/auth';
+import { verifyAuth, hasPermission } from '@/lib/auth';
+import type { TeamSearchFilters, CreateTeamRequest, TeamsResponse } from '@/types/user-management';
 
 export async function GET(request: NextRequest) {
   try {
-    // Verify authentication
+    // Verify authentication and permissions
     const auth = await verifyAuth(request);
-    if (!auth.authenticated) {
+    if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get query parameters
+    if (!hasPermission(auth.user.role, 'view:teams')) {
+      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+    }
+
+    // Parse query parameters
     const searchParams = request.nextUrl.searchParams;
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
-    const search = searchParams.get('search') || '';
+    const filters: TeamSearchFilters = {
+      search: searchParams.get('search') || undefined,
+      siteId: searchParams.get('siteId') || undefined,
+      hasMembers: searchParams.get('hasMembers') ? searchParams.get('hasMembers') === 'true' : undefined,
+      page: parseInt(searchParams.get('page') || '1'),
+      limit: parseInt(searchParams.get('limit') || '20'),
+      sortBy: searchParams.get('sortBy') as any || 'name',
+      sortOrder: searchParams.get('sortOrder') as any || 'asc',
+    };
 
     // Build where clause
     const where: any = {};
-    if (search) {
-      where.name = { contains: search, mode: 'insensitive' };
+    
+    if (filters.search) {
+      where.OR = [
+        { name: { contains: filters.search, mode: 'insensitive' } },
+        { description: { contains: filters.search, mode: 'insensitive' } },
+      ];
+    }
+    
+    if (filters.siteId) {
+      where.siteId = filters.siteId;
+    }
+    
+    if (filters.hasMembers !== undefined) {
+      if (filters.hasMembers) {
+        where.TeamMembers = {
+          some: {}
+        };
+      } else {
+        where.TeamMembers = {
+          none: {}
+        };
+      }
+    }
+
+    // Build order by clause
+    const orderBy: any = {};
+    if (filters.sortBy === 'name') {
+      orderBy.name = filters.sortOrder;
+    } else if (filters.sortBy === 'memberCount') {
+      // Note: Prisma doesn't support ordering by count directly, so we'll order by createdAt
+      orderBy.createdAt = filters.sortOrder;
+    } else if (filters.sortBy === 'createdAt') {
+      orderBy.createdAt = filters.sortOrder;
     }
 
     // Get total count
     const total = await prisma.team.count({ where });
 
-    // Get teams with member count
+    // Get teams with members
     const teams = await prisma.team.findMany({
       where,
-      skip: (page - 1) * limit,
-      take: limit,
+      skip: (filters.page! - 1) * filters.limit!,
+      take: filters.limit!,
       include: {
+        Site: {
+          select: {
+            id: true,
+            name: true,
+            code: true,
+          },
+        },
+        TeamMembers: {
+          select: {
+            userId: true,
+            role: true,
+            joinedAt: true,
+            User: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+              },
+            },
+          },
+        },
         _count: {
           select: { TeamMembers: true }
         }
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy,
     });
 
     // Transform the response
-    const teamsWithCount = teams.map(team => ({
+    const teamsWithMembers = teams.map(team => ({
       id: team.id,
       name: team.name,
       description: team.description,
-      permissions: team.permissions || [],
+      siteId: team.siteId,
+      permissions: [], // Will be implemented with proper permissions system
       memberCount: team._count.TeamMembers,
       createdAt: team.createdAt,
       updatedAt: team.updatedAt,
+      Site: team.Site,
+      TeamMembers: team.TeamMembers,
     }));
 
-    return NextResponse.json({
-      teams: teamsWithCount,
+    const response: TeamsResponse = {
+      teams: teamsWithMembers,
       total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
-    });
+      page: filters.page!,
+      limit: filters.limit!,
+      totalPages: Math.ceil(total / filters.limit!),
+    };
+
+    return NextResponse.json(response);
   } catch (error) {
     console.error('Error fetching teams:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to fetch teams' },
       { status: 500 }
     );
   }
@@ -67,59 +136,86 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    // Verify authentication and admin permissions
+    // Verify authentication and permissions
     const auth = await verifyAuth(request);
-    if (!auth.authenticated) {
+    if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { name, description, permissions, members } = body;
+    if (!hasPermission(auth.user.role, 'create:teams')) {
+      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+    }
+
+    const teamData: CreateTeamRequest = await request.json();
 
     // Validate required fields
-    if (!name) {
+    if (!teamData.name) {
       return NextResponse.json(
         { error: 'Team name is required' },
         { status: 400 }
       );
     }
 
-    // Create team
-    const team = await prisma.team.create({
-      data: {
-        name,
-        description,
-        permissions: permissions || [],
-      },
+    // Check if team with same name already exists
+    const existingTeam = await prisma.team.findFirst({
+      where: { name: teamData.name },
     });
 
-    // Add members if provided
-    if (members && members.length > 0) {
-      // Find users by email
-      const users = await prisma.user.findMany({
-        where: {
-          email: { in: members }
-        },
-        select: { id: true }
-      });
-
-      // Create team member relationships
-      if (users.length > 0) {
-        await prisma.teamMember.createMany({
-          data: users.map(user => ({
-            teamId: team.id,
-            userId: user.id,
-            role: 'member',
-          })),
-        });
-      }
+    if (existingTeam) {
+      return NextResponse.json(
+        { error: 'Team with this name already exists' },
+        { status: 409 }
+      );
     }
 
-    return NextResponse.json(team);
+    const team = await prisma.$transaction(async (tx) => {
+      // Create team
+      const newTeam = await tx.team.create({
+        data: {
+          name: teamData.name,
+          description: teamData.description || null,
+          siteId: teamData.siteId || null,
+        },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          siteId: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+
+      // Add members if provided
+      if (teamData.memberEmails && teamData.memberEmails.length > 0) {
+        // Find users by email
+        const users = await tx.user.findMany({
+          where: {
+            email: { in: teamData.memberEmails.map(email => email.toLowerCase()) }
+          },
+          select: { id: true, email: true }
+        });
+
+        // Create team member relationships
+        if (users.length > 0) {
+          await tx.teamMember.createMany({
+            data: users.map(user => ({
+              teamId: newTeam.id,
+              userId: user.id,
+              role: 'member',
+            })),
+          });
+        }
+      }
+
+      return newTeam;
+    });
+
+    return NextResponse.json(team, { status: 201 });
   } catch (error) {
     console.error('Error creating team:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to create team' },
       { status: 500 }
     );
   }

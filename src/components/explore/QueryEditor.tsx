@@ -177,3 +177,4 @@ const QueryEditor: React.FC<QueryEditorProps> = ({
 };
 
 export default QueryEditor;
+export { QueryEditor };
