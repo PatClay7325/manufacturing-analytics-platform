@@ -1,5 +1,5 @@
 /**
- * Advanced Time Range Picker - Grafana-compatible time controls
+ * Advanced Time Range Picker - Analytics-compatible time controls
  * Includes timezone support, fiscal calendar, and time comparisons
  */
 

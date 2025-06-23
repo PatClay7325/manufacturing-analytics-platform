@@ -25,12 +25,13 @@ interface TeamMember {
   role: string;
 }
 
-export default function EditTeamPage({ params }: { params: { id: string } }) {
+export default function EditTeamPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const { hasPermission } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [teamId, setTeamId] = useState<string>('');
   
   const [formData, setFormData] = useState({
     name: '',
@@ -42,16 +43,19 @@ export default function EditTeamPage({ params }: { params: { id: string } }) {
   const [newMemberEmail, setNewMemberEmail] = useState('');
 
   useEffect(() => {
-    if (!hasPermission('admin') && !hasPermission('manage_teams')) {
-      router.push('/');
-      return;
-    }
-    fetchTeam();
-  }, [params.id, hasPermission, router]);
+    params.then(p => {
+      setTeamId(p.id);
+      if (!hasPermission('admin') && !hasPermission('manage_teams')) {
+        router.push('/');
+        return;
+      }
+      fetchTeam(p.id);
+    });
+  }, [params, hasPermission, router]);
 
-  const fetchTeam = async () => {
+  const fetchTeam = async (id: string) => {
     try {
-      const response = await fetch(`/api/teams/${params.id}`);
+      const response = await fetch(`/api/teams/${id}`);
       if (!response.ok) throw new Error('Failed to fetch team');
       
       const team = await response.json();
@@ -81,7 +85,7 @@ export default function EditTeamPage({ params }: { params: { id: string } }) {
     if (!newMemberEmail) return;
 
     try {
-      const response = await fetch(`/api/teams/${params.id}/members`, {
+      const response = await fetch(`/api/teams/${teamId}/members`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: newMemberEmail }),
@@ -101,7 +105,7 @@ export default function EditTeamPage({ params }: { params: { id: string } }) {
 
   const handleRemoveMember = async (memberId: string) => {
     try {
-      const response = await fetch(`/api/teams/${params.id}/members/${memberId}`, {
+      const response = await fetch(`/api/teams/${teamId}/members/${memberId}`, {
         method: 'DELETE',
       });
 
@@ -119,7 +123,7 @@ export default function EditTeamPage({ params }: { params: { id: string } }) {
     setSaving(true);
 
     try {
-      const response = await fetch(`/api/teams/${params.id}`, {
+      const response = await fetch(`/api/teams/${teamId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -158,7 +162,7 @@ export default function EditTeamPage({ params }: { params: { id: string } }) {
       showBreadcrumbs
       breadcrumbs={[
         { label: 'Teams', href: '/teams' },
-        { label: formData.name || 'Edit Team', href: `/teams/${params.id}` }
+        { label: formData.name || 'Edit Team', href: `/teams/${teamId}` }
       ]}
     >
       <form onSubmit={handleSubmit} className="max-w-4xl">

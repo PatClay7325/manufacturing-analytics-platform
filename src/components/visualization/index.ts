@@ -1,5 +1,5 @@
 // Custom visualization components for manufacturing analytics
-// These are proprietary implementations that do not depend on Grafana
+// These are proprietary implementations that do not depend on AnalyticsPlatform
 
 export { default as TimeSeriesChart } from './TimeSeriesChart';
 export { default as OEEGauge } from './OEEGauge';

@@ -40,8 +40,8 @@ export class TenantResolutionMiddleware {
         url: req.url,
         path: req.path,
         headers: req.headers,
-        authToken: req.headers['authorization']?.replace(/^Bearer\s+/, ''),
-        subdomain: this.extractSubdomain(req.headers['host'] || '')
+        authToken: typeof req.headers['authorization'] === 'string' ? req.headers['authorization'].replace(/^Bearer\s+/, '') : undefined,
+        subdomain: this.extractSubdomain(typeof req.headers['host'] === 'string' ? req.headers['host'] : '')
       };
       
       // Resolve tenant
@@ -59,7 +59,7 @@ export class TenantResolutionMiddleware {
         userId: req.user?.id,
         sessionId: req.id,
         timestamp: new Date(),
-        permissions: req.((user?.permissions || [])),
+        permissions: req.user?.permissions || [],
         isSystemAdmin: req.user?.isSystemAdmin || false
       });
       

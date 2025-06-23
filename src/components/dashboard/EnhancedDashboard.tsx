@@ -1,5 +1,5 @@
 /**
- * Enhanced Dashboard - Grafana-like dashboard with grid layout and time controls
+ * Enhanced Dashboard - AnalyticsPlatform-like dashboard with grid layout and time controls
  * Phase 3: Advanced dashboard viewer with positioning, time range, and editing
  */
 
@@ -11,7 +11,7 @@ import { initializePlugins } from '@/core/plugins/initializePlugins';
 import { getCombinedMetricsData, generateSampleManufacturingData } from '@/utils/sampleManufacturingData';
 import { TimeSeriesData, SimpleTimeSeriesPanel } from '@/components/panels/SimpleTimeSeriesPanel';
 
-// Dashboard types matching Grafana structure
+// Dashboard types matching AnalyticsPlatform structure
 interface DashboardPanel {
   id: string;
   title: string;

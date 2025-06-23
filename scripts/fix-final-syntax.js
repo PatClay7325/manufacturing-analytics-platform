@@ -61,8 +61,8 @@ const finalFixes = [
     description: 'Remove optional chaining from config objects'
   },
   {
-    pattern: /GRAFANA_CONFIG\?\./g,
-    replacement: 'GRAFANA_CONFIG.',
+    pattern: /MANUFACTURING_PLATFORM_CONFIG\?\./g,
+    replacement: 'MANUFACTURING_PLATFORM_CONFIG.',
     description: 'Remove optional chaining from our analytics system config'
   }
 ];

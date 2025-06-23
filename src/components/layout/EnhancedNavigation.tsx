@@ -64,6 +64,8 @@ export default function EnhancedNavigation({ simplified = false }: NavigationPro
       icon: '📊',
       submenu: [
         { name: 'Browse Dashboards', href: '/dashboards' },
+        { name: 'ISO Real-Time Monitor', href: '/live/real-time', icon: '🎯', badge: 'ISO' },
+        { name: 'Live Dashboard', href: '/live', icon: '📡' },
         { name: 'Create Dashboard', href: '/dashboards/new' },
         { name: 'Templates', href: '/dashboards/templates' },
         { name: 'Folders', href: '/dashboards/folders' }
@@ -91,6 +93,7 @@ export default function EnhancedNavigation({ simplified = false }: NavigationPro
       icon: '🏭',
       manufacturing: true,
       submenu: [
+        { name: 'ISO Real-Time Monitor', href: '/live/real-time', icon: '🎯', badge: 'ISO 22400' },
         { name: 'OEE Overview', href: '/manufacturing/oee' },
         { name: 'Production Lines', href: '/manufacturing/lines' },
         { name: 'Equipment Status', href: '/equipment', icon: '⚙️' },

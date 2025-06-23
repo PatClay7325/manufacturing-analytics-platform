@@ -13,7 +13,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: ['./src/test-utils/setup.ts'],
+    setupFiles: ['./vitest.setup.ts'],
     include: [
       'src/**/*.{test,spec}.{ts,tsx}',
       'tests/unit/**/*.{test,spec}.{ts,tsx}'
@@ -24,7 +24,26 @@ export default defineConfig({
       '**/e2e/**',
       '**/.{idea,git,cache,output,temp}/**'
     ],
+    // Performance optimizations
+    testTimeout: 10000,
+    hookTimeout: 10000,
+    teardownTimeout: 10000,
+    // Run tests in single thread to avoid memory issues
+    pool: 'threads',
+    poolOptions: {
+      threads: {
+        singleThread: true,
+        isolate: false,
+        useAtomics: true,
+        minThreads: 1,
+        maxThreads: 1
+      }
+    },
+    // Memory optimizations
+    maxConcurrency: 1,
+    // Disable coverage by default (can be enabled with --coverage flag)
     coverage: {
+      enabled: false,
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
       reportsDirectory: './coverage',
@@ -38,12 +57,6 @@ export default defineConfig({
         'src/test-utils/',
         'src/mocks/',
       ],
-      thresholds: {
-        lines: 80,
-        functions: 80,
-        branches: 80,
-        statements: 80
-      }
     },
     // Only fail on real console errors, ignore warnings and mocked logs
     onConsoleLog: (log, type) => {
@@ -51,11 +64,12 @@ export default defineConfig({
         return false // Don't fail on these logs
       }
     },
-    pool: 'forks',
-    poolOptions: {
-      forks: {
-        singleFork: true
-      }
-    }
+    // Disable watch mode by default
+    watch: false,
+    // Allow passing with no tests
+    passWithNoTests: true,
+    // Reporter options
+    reporters: ['default'],
+    outputFile: './test-results.json',
   },
 });

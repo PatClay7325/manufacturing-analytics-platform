@@ -129,7 +129,7 @@ async function main() {
   log('==================================', colors.blue);
   check(checkFileExists('src/components/layout/DashboardLayout.tsx', 'Analytics layout component'));
   check(checkFileExists('src/components/dashboard/ManufacturingDashboard.tsx', 'Manufacturing dashboard component'));
-  check(checkFileExists('src/components/grafana/DashboardPanel.tsx', 'Dashboard panel component'));
+  check(checkFileExists('src/components/manufacturingPlatform/DashboardPanel.tsx', 'Dashboard panel component'));
   check(checkFileExists('src/components/charts/ManufacturingCharts.tsx', 'Analytics charts component'));
   check(checkFileExists('src/config/dashboard.config.ts', 'Dashboard configuration'));
   log('');
@@ -194,7 +194,7 @@ async function main() {
     },
     {
       name: 'Prisma Database Integration',
-      check: () => checkFileContent('src/components/grafana/DashboardPanel.tsx', '/api/metrics/query', 'Prisma API integration')
+      check: () => checkFileContent('src/components/manufacturingPlatform/DashboardPanel.tsx', '/api/metrics/query', 'Prisma API integration')
     },
     {
       name: 'Chart Components Integration',
@@ -202,7 +202,7 @@ async function main() {
     },
     {
       name: 'Navigation Integration',
-      check: () => checkFileContent('src/components/layout/Navigation.tsx', 'grafana-dashboard', 'Navigation updated')
+      check: () => checkFileContent('src/components/layout/Navigation.tsx', 'manufacturingPlatform-dashboard', 'Navigation updated')
     },
     {
       name: 'Responsive Design',

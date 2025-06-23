@@ -5,8 +5,13 @@ This product includes software developed by Adaptive Factory AI Solutions, Inc.
 
 ## Acknowledgments
 
-This platform was inspired by modern monitoring and observability tools, but contains
-no code from those projects. All implementation is original work.
+This platform includes visualization and dashboard components derived from Grafana
+(https://github.com/grafana/grafana), which is licensed under the Apache License 2.0.
+Copyright 2014-2024 Grafana Labs.
+
+This is an independent product and is not affiliated with, endorsed by, or sponsored
+by Grafana Labs. The implementation has been adapted specifically for manufacturing
+analytics use cases.
 
 The following open-source libraries are used under their respective licenses:
 - Next.js (MIT License)

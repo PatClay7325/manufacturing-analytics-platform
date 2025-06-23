@@ -1,5 +1,5 @@
 /**
- * Geomap Panel - Grafana-compatible geographic visualization
+ * Geomap Panel - Analytics-compatible geographic visualization
  * Displays facility locations, equipment distribution, and geographic metrics
  */
 

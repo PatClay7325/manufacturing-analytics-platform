@@ -1,5 +1,5 @@
 /**
- * Manufacturing Analytics Platform
+ * Manufacturing AnalyticsPlatform
  * Copyright (c) 2025 Adaptive Factory AI Solutions, Inc.
  * Licensed under the MIT License
  */

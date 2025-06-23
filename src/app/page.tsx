@@ -38,11 +38,11 @@ interface QuickAction {
 
 const quickActions: QuickAction[] = [
   {
-    id: 'grafana-demo',
-    title: 'Grafana Demo',
-    description: 'Try the complete Grafana system',
+    id: 'analytics-demo',
+    title: 'Analytics Demo',
+    description: 'Try the complete Analytics system',
     icon: ChartBarIcon,
-    url: '/grafana-demo',
+    url: '/analytics-demo',
     color: 'bg-blue-500'
   },
   {
@@ -278,7 +278,7 @@ export default function Home() {
               New to Manufacturing Analytics?
             </h3>
             <p className="text-gray-600 dark:text-gray-300 mb-4">
-              Get started with our comprehensive documentation and tutorials to make the most of your analytics platform.
+              Get started with our comprehensive documentation and tutorials to make the most of your analyticsPlatform.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link

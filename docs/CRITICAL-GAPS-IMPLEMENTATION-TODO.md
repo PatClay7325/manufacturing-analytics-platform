@@ -404,9 +404,9 @@ This document provides a comprehensive implementation plan for all critical gaps
   // src/services/dashboardImporter.ts
   export class DashboardImporter {
     async importFromJSON(json: string | object): Promise<Dashboard>;
-    async importFromGrafanaCom(id: string): Promise<Dashboard>;
+    async importFromManufacturingPlatformCom(id: string): Promise<Dashboard>;
     validateDashboard(dashboard: any): ValidationResult;
-    transformToInternal(grafanaJson: any): Dashboard;
+    transformToInternal(manufacturingPlatformJson: any): Dashboard;
   }
   ```
 

@@ -8,7 +8,7 @@ datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_DATABASE_URL")
-  extensions = [pgvector(map: "vector")]
+  // extensions = [pgvector(map: "vector")] // Disabled until vector extension is installed
 }
 
 model ProductionOrder {
@@ -84,73 +84,199 @@ model MaintenanceRecord {
   
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
-  workUnitId      String
-  WorkUnit        WorkUnit  @relation(fields: [workUnitId], references: [id])
+  
+  // ISO-compliant equipment identification
+  equipmentId     String?   // ISO 14224 equipment identifier
+  plantCode       String?   // Plant/facility code
+  assetTag        String?   // Asset management tag
 
   @@index([status])
   @@index([maintenanceType])
-  @@index([workUnitId])
+  @@index([equipmentId])
   @@index([failureMode])
   @@index([startTime])
   @@index([workOrderNumber])
+  @@index([plantCode, equipmentId])
 }
 
 // Enhanced OEE and Performance Metrics following ISO 22400 standards
+// Integrated with comprehensive manufacturing dataset headers
 model PerformanceMetric {
   id                String   @id @default(cuid())
   timestamp         DateTime @default(now())
   
-  // Core OEE Components (ISO 22400 compliant)
-  availability      Float?   // Operating Time / Planned Production Time
-  performance       Float?   // (Actual Production / Standard Production)
-  quality           Float?   // Good Units / Total Units
-  oeeScore          Float?   // Availability × Performance × Quality
+  // Machine and Process Information
+  machineName       String?  // MachineName from dataset
+  processName       String?  // ProcessName from dataset
   
-  // Detailed Time Measurements (minutes)
-  plannedProductionTime Float? // Total planned time for production
-  operatingTime     Float?   // Time equipment was actually running
-  runTime           Float?   // Actual production runtime
-  plannedDowntime   Float?   // Scheduled maintenance/breaks
-  unplannedDowntime Float?   // Breakdowns, changeovers, minor stops
-  changeoverTime    Float?   // Setup and changeover time
-  
-  // Cycle Time Analysis
-  idealCycleTime    Float?   // Theoretical fastest cycle time
-  actualCycleTime   Float?   // Real average cycle time
-  standardCycleTime Float?   // Engineering standard cycle time
-  
-  // Production Counts
-  totalParts        Int?     // Total parts produced
-  goodParts         Int?     // Parts meeting quality standards
-  rejectedParts     Int?     // Parts failing quality checks
+  // Core Production Metrics
+  totalPartsProduced Int?    // TotalPartsProduced (dataset field)
+  totalParts        Int?     // Legacy field (keep for backward compatibility)
+  goodParts         Int?     // GoodParts
+  rejectParts       Int?     // RejectParts (dataset field)
+  rejectedParts     Int?     // Legacy field (keep for backward compatibility)
   reworkParts       Int?     // Parts requiring rework
   plannedProduction Int?     // Target production for period
   
-  // Contextual Information
-  shift             String?  // Shift identifier (A, B, C, etc.)
-  operator          String?  // Operator/team responsible
-  productType       String?  // Product being manufactured
-  lotNumber         String?  // Production lot/batch identifier
-  notes             String?  // Additional context or issues
+  // Time Measurements (minutes)
+  plannedProductionTime Float? // PlannedProductionTime
+  downtimeMinutes   Float?   // DowntimeMinutes
+  downtimeTimestamp DateTime? // DowntimeTimestamp
+  downtimeCategory  String?  // DowntimeCategory
+  downtimeReason    String?  // DowntimeReason
+  changeoverTimeMinutes Float? // ChangeoverTimeMinutes
+  cycleTimeSeconds  Float?   // CycleTimeSeconds
   
-  // Quality Metrics Integration
+  // Core OEE Components (ISO 22400 compliant)
+  availability      Float?   // Availability
+  performance       Float?   // Performance  
+  quality           Float?   // Quality
+  oeeScore          Float?   // OEE (Overall Equipment Effectiveness)
+  normalizedOEE     Float?   // NormalizedOEE
+  simulatedOEE      Float?   // SimulatedOEE
+  previousMonthOEE  Float?   // PreviousMonthOEE
+  rolling7DayOEE    Float?   // Rolling7DayOEE
+  
+  // OEE Trends and Benchmarks
+  oeeTrend          String?  // OEETrend
+  downtimeTrend     String?  // DowntimeTrend
+  previousWeekDowntime Float? // PreviousWeekDowntime
+  rolling30DayDowntime Float? // Rolling30DayDowntime
+  industryBenchmarkOEE Float? // IndustryBenchmarkOEE
+  deviationFromBenchmark Float? // DeviationFromBenchmark
+  benchmarkOEE      Float?   // BenchmarkOEE
+  benchmarkDowntime Float?   // BenchmarkDowntime
+  benchmarkEnergyConsumed Float? // BenchmarkEnergyConsumed_kWh
+  
+  // Reliability Metrics (ISO 14224)
+  mtbf              Float?   // MTBF (Mean Time Between Failures)
+  mttr              Float?   // MTTR (Mean Time To Repair)
+  failureRate       Float?   // FailureRate
+  remainingUsefulLife Float? // RemainingUsefulLife
+  confidenceInterval Float?  // ConfidenceInterval
+  predictedFailureScore Float? // PredictedFailureScore
+  
+  // Utilization Metrics
+  machineUtilizationPercentage Float? // MachineUtilizationPercentage
+  operatorUtilizationPercentage Float? // OperatorUtilizationPercentage
+  efficiencyLossPercentage Float? // EfficiencyLossPercentage
+  downtimePercentage Float?  // DowntimePercentage
+  
+  // Error and Event Tracking
+  errorCode         String?  // ErrorCode
+  errorDescription  String?  // ErrorDescription
+  eventTrigger      String?  // EventTrigger
+  eventResolutionTime Float? // EventResolutionTime
+  
+  // Business and Customer Metrics
+  simulatedRevenueGrowth Float? // SimulatedRevenueGrowth
+  customerSatisfactionScore Float? // CustomerSatisfactionScore
+  onTimeDeliveryPercentage Float? // OnTimeDeliveryPercentage
+  revenueGenerated  Float?   // RevenueGenerated
+  simulatedDowntimeReduction Float? // SimulatedDowntimeReduction
+  
+  // Environmental and Sustainability Metrics
+  energyConsumed_kWh Float?  // EnergyConsumed_kWh
+  energyCost_USD    Float?   // EnergyCost_USD
+  emissions_kg      Float?   // Emissions_kg
+  waterUsage_liters Float?   // WaterUsage_liters
+  wasteGenerated_kg Float?   // WasteGenerated_kg
+  recycledMaterial_kg Float? // RecycledMaterial_kg
+  
+  // Quality and Delivery Metrics
+  onTimeDelivery    Boolean? // OnTimeDelivery
+  defectiveItems    Int?     // DefectiveItems
+  yieldPercentage   Float?   // YieldPercentage
   firstPassYield    Float?   // Percentage of parts right first time
   scrapRate         Float?   // Percentage of parts scrapped
   reworkRate        Float?   // Percentage of parts requiring rework
   
-  // Performance Indicators
+  // Incident Management
+  incidentType      String?  // IncidentType
+  incidentSeverity  String?  // IncidentSeverity
+  incidentTimestamp DateTime? // IncidentTimestamp
+  incidentCategory  String?  // IncidentCategory
+  resolutionTimeMinutes Float? // ResolutionTimeMinutes
+  
+  // Operational Context
+  operatorName      String?  // OperatorName
+  shift             String?  // Shift
+  batchNumber       String?  // BatchNumber
+  productType       String?  // ProductType
+  shiftOverlap      Boolean? // ShiftOverlap
+  siteName          String?  // SiteName
+  region            String?  // Region
+  
+  // Product Specifications
+  productDimensions String?  // ProductDimensions
+  productWeight     Float?   // ProductWeight
+  costPerUnitProduced Float? // CostPerUnitProduced
+  
+  // Supply Chain
+  supplierName      String?  // SupplierName
+  deliveryLeadTime  Float?   // DeliveryLeadTime
+  supplierRating    Float?   // SupplierRating
+  
+  // Data Quality and Validation
+  dataValidationStatus String? // DataValidationStatus
+  anomalyDetected   Boolean? // AnomalyDetected
+  anomalyScore      Float?   // AnomalyScore
+  anomalyReason     String?  // AnomalyReason
+  deviationFromNormal Float? // DeviationFromNormal
+  realTimeDataFlag  Boolean? // RealTimeDataFlag
+  lastUpdatedTimestamp DateTime? // LastUpdatedTimestamp
+  datasetVersion    String?  // DatasetVersion
+  
+  // Time Dimensions
+  weekNumber        Int?     // WeekNumber
+  month             Int?     // Month
+  quarter           Int?     // Quarter
+  year              Int?     // Year
+  
+  // User-Defined Thresholds
+  userDefinedOEEThreshold Float? // UserDefinedOEEThreshold
+  userDefinedDowntimeThreshold Float? // UserDefinedDowntimeThreshold
+  
+  // System Flags
+  visualizationFlag Boolean? // VisualizationFlag
+  stakeholderFeedbackRequired Boolean? // StakeholderFeedbackRequired
+  
+  // Existing Legacy Fields (maintaining backward compatibility)
+  operatingTime     Float?   // Time equipment was actually running
+  runTime           Float?   // Actual production runtime
+  plannedDowntime   Float?   // Scheduled maintenance/breaks
+  unplannedDowntime Float?   // Breakdowns, changeovers, minor stops
+  idealCycleTime    Float?   // Theoretical fastest cycle time
+  actualCycleTime   Float?   // Real average cycle time
+  standardCycleTime Float?   // Engineering standard cycle time
+  lotNumber         String?  // Production lot/batch identifier (legacy)
+  notes             String?  // Additional context or issues
   throughputRate    Float?   // Parts per hour actual
   targetThroughput  Float?   // Parts per hour target
   speedLoss         Float?   // Performance loss percentage
   
   createdAt         DateTime @default(now())
-  workUnitId        String
-  WorkUnit          WorkUnit @relation(fields: [workUnitId], references: [id])
+  
+  // ISO-compliant equipment identification
+  equipmentId       String?  // ISO 14224 equipment identifier
+  plantCode         String?  // Plant/facility code  
+  assetTag          String?  // Asset management tag
+  workCenterId      String?  // Work center identification
 
   @@index([timestamp])
-  @@index([workUnitId, timestamp])
+  @@index([equipmentId, timestamp])
   @@index([shift, timestamp])
   @@index([productType, timestamp])
+  @@index([machineName, timestamp])
+  @@index([processName, timestamp])
+  @@index([batchNumber])
+  @@index([siteName, timestamp])
+  @@index([region, timestamp])
+  @@index([anomalyDetected, timestamp])
+  @@index([dataValidationStatus])
+  @@index([year, month, weekNumber])
+  @@index([plantCode, equipmentId])
+  @@index([workCenterId, timestamp])
 }
 
 // Enhanced Quality Metrics for Statistical Process Control (SPC)
@@ -176,6 +302,7 @@ model QualityMetric {
   deviation    Float?   // Deviation from nominal
   zScore       Float?   // Statistical Z-score
   cpk          Float?   // Process capability index
+  ppk          Float?   // Process performance index
   
   // Quality Classification
   qualityGrade String?  // A, B, C grade or pass/fail
@@ -208,17 +335,23 @@ model QualityMetric {
   
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  workUnitId   String
-  WorkUnit     WorkUnit @relation(fields: [workUnitId], references: [id])
+  
+  // ISO-compliant equipment identification
+  equipmentId  String?  // ISO 14224 equipment identifier
+  plantCode    String?  // Plant/facility code
+  assetTag     String?  // Asset management tag
+  workCenterId String?  // Work center identification
 
   @@index([parameter])
   @@index([isWithinSpec])
   @@index([isInControl])
-  @@index([workUnitId, timestamp])
+  @@index([equipmentId, timestamp])
   @@index([batchNumber])
   @@index([defectType])
   @@index([inspectionType])
   @@index([timestamp])
+  @@index([plantCode, equipmentId])
+  @@index([workCenterId, timestamp])
 }
 
 model QualityCheck {
@@ -292,9 +425,10 @@ model Alert {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   
-  // Relationships
-  workUnitId     String?
-  WorkUnit       WorkUnit? @relation(fields: [workUnitId], references: [id])
+  // ISO-compliant equipment identification
+  equipmentId    String?  // ISO 14224 equipment identifier
+  plantCode      String?  // Plant/facility code
+  assetTag       String?  // Asset management tag
   
   // Parent-child alert relationships
   parentAlertId  String?
@@ -304,7 +438,6 @@ model Alert {
   @@index([alertType])
   @@index([severity])
   @@index([status])
-  @@index([workUnitId])
   @@index([timestamp])
   @@index([metricName])
   @@index([escalated])
@@ -333,6 +466,7 @@ model User {
   ApiKeys          ApiKey[]
   ApiKeyHashes     ApiKeyHash[]
   CreatedFolders   DashboardFolder[]   @relation("CreatedFolders")
+  UpdatedFolders   DashboardFolder[]   @relation("UpdatedFolders")
   Annotations      Annotation[]
   DashboardSnapshot DashboardSnapshot[]
   PublicShares     PublicShare[]
@@ -356,6 +490,27 @@ model User {
   
   // User preferences relationship
   preferences      UserPreferences?
+  
+  // Folder-related relationships
+  FolderPermissions FolderPermission[]
+  CreatedPermissions FolderPermission[] @relation("PermissionCreator")
+  FolderTemplates  FolderTemplate[]
+  FolderShares     FolderShare[]
+  FolderActivities FolderActivity[]
+  FolderSubscriptions FolderSubscription[]
+  DashboardImportExports DashboardImportExport[]
+  
+  // Audit logging relationship
+  AuditLogs        AuditLog[]
+  
+  // Email preferences relationship
+  EmailPreferences EmailPreferences?
+  
+  // Template relationships
+  DashboardTemplates DashboardTemplate[]
+  TemplateUsage    TemplateUsage[]
+  TemplateReviews  TemplateReview[]
+  TemplateCollections TemplateCollection[]
 
   @@index([email])
   @@index([role])
@@ -375,6 +530,7 @@ model Team {
   Site        Site?        @relation(fields: [siteId], references: [id])
   Users       User[]
   TeamMembers TeamMember[]
+  FolderPermissions FolderPermission[]
 
   @@index([name])
   @@index([siteId])
@@ -420,6 +576,48 @@ model Setting {
 
   @@index([key])
   @@index([category])
+}
+
+// Reporting (using existing Dashboard model)
+model Report {
+  id           String   @id @default(cuid())
+  name         String
+  dashboardUid String
+  format       String   // pdf, excel, csv, json
+  filename     String
+  data         Bytes?   // Stored report data (optional)
+  status       String   @default("pending") // pending, processing, completed, failed
+  error        String?
+  recipients   String[]
+  generatedAt  DateTime @default(now())
+  
+  Dashboard    Dashboard @relation(fields: [dashboardUid], references: [uid])
+  
+  @@index([dashboardUid])
+  @@index([status])
+  @@index([generatedAt])
+}
+
+model ScheduledReport {
+  id           String   @id @default(cuid())
+  name         String
+  dashboardUid String
+  recipients   String[]
+  format       String   // pdf, excel, csv, json
+  schedule     Json     // Schedule configuration
+  options      Json?    // Report options
+  enabled      Boolean  @default(true)
+  nextRun      DateTime
+  lastRun      DateTime?
+  lastStatus   String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  Dashboard    Dashboard @relation(fields: [dashboardUid], references: [uid])
+  
+  @@index([dashboardUid])
+  @@index([enabled])
+  @@index([nextRun])
 }
 
 model Area {
@@ -481,6 +679,8 @@ model Dashboard {
   LibraryPanelUsage LibraryPanelUsage[]
   PublicShares PublicShare[]
   PlaylistItems PlaylistItem[]
+  Reports Report[]
+  ScheduledReports ScheduledReport[]
 
   @@index([slug])
   @@index([tags])
@@ -489,7 +689,6 @@ model Dashboard {
 
 model DowntimeCause {
   id          String   @id
-  workUnitId  String
   cause       String
   hours       Float
   percentage  Float
@@ -497,10 +696,15 @@ model DowntimeCause {
   periodEnd   DateTime
   createdAt   DateTime @default(now())
   updatedAt   DateTime
-  WorkUnit    WorkUnit @relation(fields: [workUnitId], references: [id])
+  
+  // ISO-compliant equipment identification  
+  equipmentId String?  // ISO 14224 equipment identifier
+  plantCode   String?  // Plant/facility code
+  assetTag    String?  // Asset management tag
 
   @@index([cause])
-  @@index([workUnitId, periodStart, periodEnd])
+  @@index([equipmentId])
+  @@index([equipmentId, periodStart, periodEnd])
 }
 
 model Enterprise {
@@ -539,7 +743,7 @@ model EnterpriseKPISummary {
 // Real-time Equipment and Production Metrics
 model Metric {
   id         String   @id @default(cuid())
-  workUnitId String
+  
   timestamp  DateTime @default(now())
   
   // Metric Identification
@@ -579,11 +783,9 @@ model Metric {
   algorithm  String?  // Processing algorithm used
   
   createdAt  DateTime @default(now())
-  WorkUnit   WorkUnit @relation(fields: [workUnitId], references: [id])
 
   @@index([name, timestamp(sort: Desc)])
   @@index([timestamp(sort: Desc)])
-  @@index([workUnitId, name, timestamp(sort: Desc)])
   @@index([category, timestamp(sort: Desc)])
   @@index([source])
   @@index([isValid])
@@ -608,7 +810,7 @@ model Product {
 
 model ProductionData {
   id         String    @id
-  workUnitId String
+  
   month      String
   year       Int
   actual     Int
@@ -616,10 +818,7 @@ model ProductionData {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime
   Product    Product[]
-  WorkUnit   WorkUnit  @relation(fields: [workUnitId], references: [id])
 
-  @@unique([workUnitId, year, month])
-  @@index([workUnitId, year, month])
 }
 
 model Site {
@@ -671,7 +870,6 @@ model WorkCenter {
   ProductionOrder      ProductionOrder[]
   Area                 Area                  @relation(fields: [areaId], references: [id])
   WorkCenterKPISummary WorkCenterKPISummary?
-  WorkUnit             WorkUnit[]
 
   @@index([areaId])
   @@index([code])
@@ -698,84 +896,285 @@ model WorkCenterKPISummary {
   @@index([workCenterId, periodStart, periodEnd])
 }
 
-model WorkUnit {
-  id                 String              @id
-  workCenterId       String
-  name               String
-  code               String              @unique
-  equipmentType      String
-  model              String
-  serialNumber       String              @unique
-  manufacturerCode   String
-  installationDate   DateTime
-  status             String              @default("operational")
-  location           String?
-  description        String?
-  lastMaintenanceAt  DateTime?
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime
-  
-  // Existing relationships
-  Alert              Alert[]
-  DowntimeCause      DowntimeCause[]
-  MaintenanceRecord  MaintenanceRecord[]
-  Metric             Metric[]
-  PerformanceMetric  PerformanceMetric[]
-  ProductionData     ProductionData[]
-  QualityMetric      QualityMetric[]
-  WorkCenter         WorkCenter          @relation(fields: [workCenterId], references: [id])
-  WorkUnitKPISummary WorkUnitKPISummary?
-  
-  // New relationships for enhanced metrics
-  EquipmentHealth    EquipmentHealth?
-  EnergyMetric       EnergyMetric[]
-  ProcessParameter   ProcessParameter[]
-  CostMetric         CostMetric[]
+// WorkUnit model removed - replaced with ISO-compliant equipment identification fields in individual models
 
-  @@index([code])
-  @@index([equipmentType])
-  @@index([serialNumber])
-  @@index([status])
-  @@index([workCenterId])
-}
-
-model WorkUnitKPISummary {
-  id                String   @id
-  workUnitId        String   @unique
-  oee               Float
-  availability      Float
-  performance       Float
-  quality           Float
-  mtbf              Float
-  mttr              Float
-  productionCount   BigInt
-  scrapRate         Float
-  energyConsumption BigInt
-  periodStart       DateTime
-  periodEnd         DateTime
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime
-  WorkUnit          WorkUnit @relation(fields: [workUnitId], references: [id])
-
-  @@index([workUnitId, periodStart, periodEnd])
-}
+// WorkUnitKPISummary model removed - KPI data now integrated into PerformanceMetric model following ISO standards
 
 model DashboardFolder {
   id          String      @id @default(cuid())
+  uid         String      @unique @default(cuid())
   name        String
   description String?
   permission  String      @default("private") // private, team, public
   tags        String[]
+  
+  // Hierarchy fields
+  parentId    String?
+  parent      DashboardFolder? @relation("FolderHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children    DashboardFolder[] @relation("FolderHierarchy")
+  path        String?     // Materialized path for efficient queries
+  depth       Int         @default(0)
+  slug        String?     // URL-friendly name
+  
+  // UI customization
+  icon        String?     // Icon name or emoji
+  color       String?     // Folder color
+  sortOrder   Int         @default(0)
+  
+  // System fields
+  isDefault   Boolean     @default(false) // Default folder for new dashboards
+  isSystem    Boolean     @default(false) // System folders cannot be deleted
+  metadata    Json?       // Additional metadata
+  config      Json?       // Folder-specific configuration
+  
+  // Timestamps and tracking
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   createdBy   String
-  User        User           @relation("CreatedFolders", fields: [createdBy], references: [id])
+  updatedBy   String?
+  
+  // Relations
+  creator     User           @relation("CreatedFolders", fields: [createdBy], references: [id])
+  updater     User?          @relation("UpdatedFolders", fields: [updatedBy], references: [id])
   dashboards  Dashboard[]
   alertRules  AlertRule[]
   libraryPanels LibraryPanel[]
+  permissions FolderPermission[]
+  shares      FolderShare[]
+  activities  FolderActivity[]
+  analytics   FolderAnalytics[]
+  subscriptions FolderSubscription[]
+  importExports DashboardImportExport[]
 
+  @@unique([slug, parentId])
+  @@index([uid])
+  @@index([parentId])
+  @@index([path])
+  @@index([depth])
   @@index([createdBy])
   @@index([permission])
+  @@index([sortOrder])
+  @@index([isDefault])
+  @@index([isSystem])
+}
+
+// Folder Permission Model - Granular access control
+model FolderPermission {
+  id          String      @id @default(cuid())
+  folderId    String
+  userId      String?
+  teamId      String?
+  role        String      // viewer, editor, admin, custom
+  permission  String      // Comma-separated permissions
+  
+  // Granular permissions
+  canView     Boolean     @default(true)
+  canEdit     Boolean     @default(false)
+  canDelete   Boolean     @default(false)
+  canShare    Boolean     @default(false)
+  canManagePermissions Boolean @default(false)
+  
+  // Permission inheritance
+  inherited   Boolean     @default(false) // Inherited from parent folder
+  
+  // Metadata
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  createdBy   String
+  
+  // Relations
+  folder      DashboardFolder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  user        User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team        Team?       @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  creator     User        @relation("PermissionCreator", fields: [createdBy], references: [id])
+  
+  @@unique([folderId, userId, teamId])
+  @@index([folderId])
+  @@index([userId])
+  @@index([teamId])
+}
+
+// Folder Template Model - Reusable folder structures
+model FolderTemplate {
+  id          String      @id @default(cuid())
+  uid         String      @unique @default(cuid())
+  name        String
+  description String?
+  
+  // Template configuration
+  icon        String?
+  color       String?
+  defaultPermissions Json? // Default permissions for new folders
+  dashboardDefaults Json?  // Default settings for dashboards in folder
+  metadata    Json?
+  
+  // Status
+  isActive    Boolean     @default(true)
+  
+  // Timestamps
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  createdBy   String
+  
+  // Relations
+  creator     User        @relation(fields: [createdBy], references: [id])
+  
+  @@index([uid])
+  @@index([isActive])
+}
+
+// Folder Share Model - External sharing
+model FolderShare {
+  id          String      @id @default(cuid())
+  folderId    String
+  shareKey    String      @unique // Unique key for share URL
+  sharedBy    String
+  sharedWith  String?     // Email or identifier
+  shareType   String      // link, email, embed
+  permissions String[]    // What can be done with the share
+  
+  // Access control
+  expiresAt   DateTime?
+  accessCount Int         @default(0)
+  lastAccessedAt DateTime?
+  isActive    Boolean     @default(true)
+  
+  // Additional settings
+  metadata    Json?
+  
+  // Timestamps
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  // Relations
+  folder      DashboardFolder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  sharer      User        @relation(fields: [sharedBy], references: [id])
+  
+  @@index([shareKey])
+  @@index([folderId])
+  @@index([sharedBy])
+  @@index([isActive])
+}
+
+// Folder Activity Model - Audit trail
+model FolderActivity {
+  id          String      @id @default(cuid())
+  folderId    String
+  userId      String
+  action      String      // created, updated, deleted, moved, shared, etc.
+  entityType  String      // folder, dashboard, permission, etc.
+  entityId    String?
+  details     Json?       // Additional action details
+  
+  // Context
+  ipAddress   String?
+  userAgent   String?
+  
+  // Timestamp
+  timestamp   DateTime    @default(now())
+  
+  // Relations
+  folder      DashboardFolder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id])
+  
+  @@index([folderId])
+  @@index([userId])
+  @@index([action])
+  @@index([timestamp])
+}
+
+// Folder Analytics Model - Usage tracking
+model FolderAnalytics {
+  id          String      @id @default(cuid())
+  folderId    String
+  date        DateTime    @db.Date
+  
+  // Metrics
+  viewCount   Int         @default(0)
+  uniqueViewers Int       @default(0)
+  dashboardCount Int      @default(0)
+  alertCount  Int         @default(0)
+  panelCount  Int         @default(0)
+  queryCount  Int         @default(0)
+  errorCount  Int         @default(0)
+  avgLoadTime Float?      // Average dashboard load time
+  
+  // Additional metrics
+  metadata    Json?
+  
+  // Timestamps
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  // Relations
+  folder      DashboardFolder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  
+  @@unique([folderId, date])
+  @@index([folderId])
+  @@index([date])
+}
+
+// Folder Subscription Model - Notifications
+model FolderSubscription {
+  id          String      @id @default(cuid())
+  folderId    String
+  userId      String
+  
+  // Notification preferences
+  notifyOnChanges Boolean  @default(true)
+  notifyOnAlerts Boolean   @default(true)
+  notifyOnErrors Boolean   @default(false)
+  emailNotifications Boolean @default(true)
+  webhookUrl  String?
+  
+  // Additional settings
+  metadata    Json?
+  
+  // Timestamps
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  // Relations
+  folder      DashboardFolder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([folderId, userId])
+  @@index([folderId])
+  @@index([userId])
+}
+
+// Dashboard Import/Export Model
+model DashboardImportExport {
+  id          String      @id @default(cuid())
+  type        String      // import, export
+  folderId    String?
+  dashboardIds String[]   // Array of dashboard IDs
+  format      String      // json, yaml, zip
+  fileName    String?
+  fileSize    Int?
+  
+  // Status tracking
+  status      String      @default("pending") // pending, processing, completed, failed
+  progress    Int?        @default(0) // Progress percentage
+  result      Json?       // Import/export results
+  error       String?
+  
+  // Access
+  downloadUrl String?
+  expiresAt   DateTime?
+  
+  // Metadata
+  createdBy   String
+  createdAt   DateTime    @default(now())
+  completedAt DateTime?
+  
+  // Relations
+  folder      DashboardFolder? @relation(fields: [folderId], references: [id])
+  creator     User        @relation(fields: [createdBy], references: [id])
+  
+  @@index([type])
+  @@index([status])
+  @@index([createdBy])
 }
 
 model ErrorLog {
@@ -800,6 +1199,92 @@ model ErrorLog {
   @@index([severity, resolved])
   @@index([timestamp])
   @@index([errorId])
+}
+
+// =============================================================================
+// AUDIT LOGGING SYSTEM
+// Comprehensive audit logging for security, compliance, and monitoring
+// =============================================================================
+
+model AuditLog {
+  id             String   @id @default(cuid())
+  
+  // Event Information
+  eventType      String   // login, logout, create, read, update, delete, query, export, share, permission_change, etc.
+  eventCategory  String   // auth, dashboard, alert, user, team, datasource, system, api, etc.
+  eventAction    String   // Specific action taken (e.g., "dashboard.create", "user.password_reset")
+  eventStatus    String   // success, failure, error, warning
+  eventSeverity  String   @default("info") // info, warning, error, critical
+  
+  // Resource Information
+  resourceType   String?  // dashboard, panel, alert, user, team, datasource, etc.
+  resourceId     String?  // ID of the affected resource
+  resourceName   String?  // Human-readable name of the resource
+  previousValue  Json?    // Previous state (for updates)
+  newValue       Json?    // New state (for updates/creates)
+  
+  // User and Session Information
+  userId         String?  // User who performed the action
+  userName       String?  // Cached username for quick access
+  userEmail      String?  // Cached email for quick access
+  userRole       String?  // User's role at time of action
+  sessionId      String?  // Session identifier
+  apiKeyId       String?  // If action was performed via API key
+  
+  // Request Information
+  requestId      String?  // Unique request identifier for correlation
+  requestMethod  String?  // GET, POST, PUT, DELETE, etc.
+  requestPath    String?  // API endpoint or page path
+  requestQuery   Json?    // Query parameters
+  requestBody    Json?    // Request body (sanitized)
+  
+  // Client Information
+  ipAddress      String?  // Client IP address
+  userAgent      String?  // Browser/client user agent
+  clientId       String?  // OAuth client ID if applicable
+  origin         String?  // Request origin
+  referer        String?  // HTTP referer
+  
+  // Performance Metrics
+  responseTime   Int?     // Response time in milliseconds
+  queryDuration  Int?     // Database query duration in milliseconds
+  totalDuration  Int?     // Total operation duration in milliseconds
+  
+  // Error Information
+  errorCode      String?  // Error code if applicable
+  errorMessage   String?  // Error message (sanitized)
+  errorStack     String?  // Error stack trace (development only)
+  
+  // Additional Context
+  tags           String[] // Additional tags for categorization
+  metadata       Json?    // Additional structured data
+  correlationId  String?  // For linking related events
+  parentEventId  String?  // For tracking event chains
+  
+  // Compliance and Security
+  dataClassification String? // public, internal, confidential, restricted
+  complianceFlags    String[] // GDPR, HIPAA, SOX, etc.
+  securityContext    Json?    // Additional security context
+  
+  // Timestamps
+  timestamp      DateTime @default(now())
+  processedAt    DateTime?
+  
+  // Relations
+  user           User?    @relation(fields: [userId], references: [id])
+  
+  // Indexes for efficient querying
+  @@index([eventType, timestamp])
+  @@index([eventCategory, timestamp])
+  @@index([userId, timestamp])
+  @@index([resourceType, resourceId, timestamp])
+  @@index([sessionId])
+  @@index([requestId])
+  @@index([correlationId])
+  @@index([timestamp])
+  @@index([eventStatus, timestamp])
+  @@index([eventSeverity, timestamp])
+  @@index([ipAddress, timestamp])
 }
 
 model Annotation {
@@ -914,7 +1399,7 @@ model PublicShare {
 // Equipment Health and Reliability Models (ISO 14224 Compliant)
 model EquipmentHealth {
   id              String   @id @default(cuid())
-  workUnitId      String   @unique
+  
   
   // Health Score Components
   overallHealth   Float    // Overall health score (0-100)
@@ -958,9 +1443,7 @@ model EquipmentHealth {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   
-  WorkUnit        WorkUnit @relation(fields: [workUnitId], references: [id])
 
-  @@index([workUnitId])
   @@index([overallHealth])
   @@index([riskLevel])
   @@index([nextMaintenanceDue])
@@ -1025,7 +1508,7 @@ model ProductionLineMetric {
 // Energy Consumption and Sustainability Metrics
 model EnergyMetric {
   id              String   @id @default(cuid())
-  workUnitId      String
+  
   timestamp       DateTime @default(now())
   
   // Energy Consumption
@@ -1057,9 +1540,7 @@ model EnergyMetric {
   shift           String?      // Production shift
   
   createdAt       DateTime     @default(now())
-  WorkUnit        WorkUnit     @relation(fields: [workUnitId], references: [id])
 
-  @@index([workUnitId, timestamp])
   @@index([timestamp])
   @@index([shift, timestamp])
 }
@@ -1067,7 +1548,7 @@ model EnergyMetric {
 // Process Parameters and Control
 model ProcessParameter {
   id              String   @id @default(cuid())
-  workUnitId      String
+  
   timestamp       DateTime @default(now())
   
   // Parameter Details
@@ -1100,9 +1581,7 @@ model ProcessParameter {
   recipe          String?  // Process recipe/procedure
   
   createdAt       DateTime @default(now())
-  WorkUnit        WorkUnit @relation(fields: [workUnitId], references: [id])
 
-  @@index([workUnitId, parameterName, timestamp])
   @@index([timestamp])
   @@index([parameterName])
   @@index([alarmState])
@@ -1160,7 +1639,7 @@ model ShiftReport {
 // Cost Tracking and Analysis
 model CostMetric {
   id              String   @id @default(cuid())
-  workUnitId      String
+  
   timestamp       DateTime @default(now())
   
   // Cost Categories
@@ -1187,9 +1666,7 @@ model CostMetric {
   shift           String?  // Production shift
   
   createdAt       DateTime @default(now())
-  WorkUnit        WorkUnit @relation(fields: [workUnitId], references: [id])
 
-  @@index([workUnitId, timestamp])
   @@index([timestamp])
   @@index([productType, timestamp])
 }
@@ -1222,7 +1699,7 @@ model IntentEmbedding {
   id          String                 @id @default(uuid())
   intent      String                 @unique
   description String
-  embedding   Unsupported("vector(1536)")
+  // embedding   Unsupported("vector(1536)") // Disabled until vector extension is installed
   model       String                 @default("text-embedding-ada-002")
   confidence  Float                  @default(1.0)
   createdAt   DateTime               @default(now())
@@ -1237,7 +1714,7 @@ model DocumentEmbedding {
   documentType String                // ISO_STANDARD, PROCEDURE, MANUAL
   chunkIndex  Int
   content     String                 @db.Text
-  embedding   Unsupported("vector(1536)")
+  // embedding   Unsupported("vector(1536)") // Disabled until vector extension is installed
   metadata    Json
   createdAt   DateTime               @default(now())
   
@@ -2275,4 +2752,493 @@ model PreferenceChangeHistory {
   @@index([preferenceId, timestamp])
   @@index([fieldChanged])
   @@map("preference_change_history")
+}
+
+// Dashboard Template System - Comprehensive template management for Grafana-like functionality
+model DashboardTemplate {
+  id               String   @id @default(cuid())
+  uid              String   @unique @default(cuid())
+  
+  // Basic Template Information
+  name             String   // Template display name
+  title            String   // Dashboard title when instantiated
+  description      String?  // Template description
+  summary          String?  // Short summary for cards
+  
+  // Template Configuration
+  config           Json     // Complete dashboard JSON configuration
+  variables        Json?    // Template variables configuration
+  panels           Json?    // Panels configuration with placeholders
+  
+  // Categorization and Discovery
+  categoryId       String?
+  category         TemplateCategory? @relation(fields: [categoryId], references: [id])
+  tags             String[] // Template tags for searching
+  industry         String[] // Manufacturing industries (automotive, aerospace, etc.)
+  
+  // Template Metadata
+  version          String   @default("1.0.0")
+  schemaVersion    Int      @default(1)
+  compatibleWith   String[] // Compatible Grafana/platform versions
+  dependencies     String[] // Required plugins or data sources
+  
+  // Visual and Preview
+  thumbnail        String?  // Thumbnail URL or base64
+  screenshots      String[] // Screenshot URLs for preview
+  previewConfig    Json?    // Sample data configuration for preview
+  
+  // Template Properties
+  isPublic         Boolean  @default(false) // Public or private template
+  isFeatured       Boolean  @default(false) // Featured in template gallery
+  isOfficial       Boolean  @default(false) // Official platform template
+  isDeprecated     Boolean  @default(false) // Template is deprecated
+  
+  // Usage and Analytics
+  downloadCount    Int      @default(0)     // Number of times downloaded/used
+  rating           Float?                   // Average user rating
+  ratingCount      Int      @default(0)     // Number of ratings
+  
+  // Manufacturing-Specific Fields
+  manufacturingType String? // OEE, Quality, Maintenance, Energy, etc.
+  equipmentTypes   String[] // Compatible equipment types
+  isoStandards     String[] // Related ISO standards (22400, 9001, 50001, etc.)
+  kpiTypes         String[] // KPI types covered (availability, performance, quality)
+  
+  // Authoring Information
+  authorId         String
+  author           User     @relation(fields: [authorId], references: [id])
+  authorName       String   // Author display name
+  authorEmail      String?  // Author contact email
+  organization     String?  // Author organization
+  
+  // Template Source and Updates
+  sourceUrl        String?  // Original template source URL
+  documentationUrl String?  // Documentation URL
+  supportUrl       String?  // Support/help URL
+  updateChannel    String?  // Update notification channel
+  
+  // Publishing and Lifecycle
+  publishedAt      DateTime?
+  lastUpdatedAt    DateTime @updatedAt
+  createdAt        DateTime @default(now())
+  
+  // Relations
+  usageHistory     TemplateUsage[]
+  reviews          TemplateReview[]
+  versions         TemplateVersion[]
+  collectionItems  TemplateCollectionItem[]
+  
+  @@index([categoryId])
+  @@index([authorId])
+  @@index([isPublic])
+  @@index([isFeatured])
+  @@index([isOfficial])
+  @@index([manufacturingType])
+  @@index([publishedAt])
+  @@index([downloadCount])
+  @@index([rating])
+  // @@fulltext([name, description, summary]) // Fulltext not supported with current connector
+  @@map("dashboard_templates")
+}
+
+// Template Categories for Organization
+model TemplateCategory {
+  id               String   @id @default(cuid())
+  
+  // Category Information
+  name             String   @unique
+  displayName      String   // Localized display name
+  description      String?
+  slug             String   @unique
+  
+  // Category Hierarchy
+  parentId         String?
+  parent           TemplateCategory? @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children         TemplateCategory[] @relation("CategoryHierarchy")
+  
+  // Category Properties
+  icon             String?  // Icon name or URL
+  color            String?  // Category color for UI
+  sortOrder        Int      @default(0)
+  isActive         Boolean  @default(true)
+  
+  // Manufacturing-Specific
+  industryFocus    String[] // Target industries
+  complexityLevel  String?  // beginner, intermediate, advanced
+  
+  // Analytics
+  templateCount    Int      @default(0)
+  popularityScore  Float    @default(0)
+  
+  // Metadata
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  // Relations
+  templates        DashboardTemplate[]
+  
+  @@index([parentId])
+  @@index([isActive])
+  @@index([sortOrder])
+  // @@fulltext([name, displayName, description]) // Fulltext not supported with current connector
+  @@map("template_categories")
+}
+
+// Template Usage Tracking and Analytics
+model TemplateUsage {
+  id               String   @id @default(cuid())
+  
+  // Usage Information
+  templateId       String
+  template         DashboardTemplate @relation(fields: [templateId], references: [id])
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  
+  // Usage Context
+  usageType        String   // create_dashboard, preview, download, clone
+  dashboardId      String?  // Created dashboard ID if applicable
+  dashboardUid     String?  // Created dashboard UID
+  
+  // Usage Details
+  variables        Json?    // Variables used when instantiating
+  customizations   Json?    // Customizations made during usage
+  
+  // Environment and Source
+  userAgent        String?
+  ipAddress        String?
+  referrer         String?
+  
+  // Session Information
+  sessionId        String?
+  usageDuration    Int?     // Time spent (seconds)
+  
+  // Metadata
+  timestamp        DateTime @default(now())
+  
+  @@index([templateId])
+  @@index([userId])
+  @@index([usageType])
+  @@index([timestamp])
+  @@map("template_usage")
+}
+
+// Template Reviews and Ratings
+model TemplateReview {
+  id               String   @id @default(cuid())
+  
+  // Review Information
+  templateId       String
+  template         DashboardTemplate @relation(fields: [templateId], references: [id])
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  
+  // Review Content
+  rating           Int      // 1-5 stars
+  title            String?
+  comment          String?
+  
+  // Review Categories
+  easeOfUse        Int?     // 1-5 rating
+  documentation    Int?     // 1-5 rating
+  applicability    Int?     // 1-5 rating
+  
+  // Review Status
+  isApproved       Boolean  @default(false)
+  isHelpful        Boolean  @default(false)
+  helpfulCount     Int      @default(0)
+  
+  // Manufacturing Context
+  industryContext  String?  // Industry where used
+  equipmentContext String?  // Equipment type used with
+  
+  // Metadata
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  @@unique([templateId, userId]) // One review per user per template
+  @@index([templateId])
+  @@index([userId])
+  @@index([rating])
+  @@index([isApproved])
+  @@map("template_reviews")
+}
+
+// Template Version History
+model TemplateVersion {
+  id               String   @id @default(cuid())
+  
+  // Version Information
+  templateId       String
+  template         DashboardTemplate @relation(fields: [templateId], references: [id])
+  version          String   // Semantic version (1.0.0, 1.1.0, etc.)
+  versionNumber    Int      // Incremental version number
+  
+  // Version Content
+  config           Json     // Dashboard configuration for this version
+  variables        Json?    // Variables configuration
+  
+  // Change Information
+  changeType       String   // major, minor, patch, hotfix
+  changeLog        String?  // What changed in this version
+  migrationNotes   String?  // Notes for migrating from previous versions
+  
+  // Compatibility
+  compatibleWith   String[] // Compatible platform versions
+  deprecatedFeatures String[] // Features deprecated in this version
+  breakingChanges  String[] // Breaking changes from previous version
+  
+  // Publishing
+  isStable         Boolean  @default(true)
+  isBeta           Boolean  @default(false)
+  isAlpha          Boolean  @default(false)
+  
+  // Metadata
+  publishedAt      DateTime @default(now())
+  publishedBy      String   // User ID who published this version
+  
+  @@index([templateId])
+  @@index([version])
+  @@index([versionNumber])
+  @@index([publishedAt])
+  @@map("template_versions")
+}
+
+// Template Collections for Grouping Related Templates
+model TemplateCollection {
+  id               String   @id @default(cuid())
+  
+  // Collection Information
+  name             String
+  description      String?
+  slug             String   @unique
+  
+  // Collection Properties
+  isPublic         Boolean  @default(false)
+  isFeatured       Boolean  @default(false)
+  isOfficial       Boolean  @default(false)
+  
+  // Collection Metadata
+  thumbnail        String?
+  tags             String[]
+  
+  // Manufacturing Focus
+  industryFocus    String[] // Target industries
+  useCaseType      String?  // complete_line, specific_equipment, etc.
+  
+  // Author Information
+  authorId         String
+  author           User     @relation(fields: [authorId], references: [id])
+  
+  // Analytics
+  downloadCount    Int      @default(0)
+  rating           Float?
+  
+  // Metadata
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  // Relations
+  items            TemplateCollectionItem[]
+  
+  @@index([authorId])
+  @@index([isPublic])
+  @@index([isFeatured])
+  // @@fulltext([name, description]) // Fulltext not supported with current connector
+  @@map("template_collections")
+}
+
+// Items within Template Collections
+model TemplateCollectionItem {
+  id               String   @id @default(cuid())
+  
+  // Collection Reference
+  collectionId     String
+  collection       TemplateCollection @relation(fields: [collectionId], references: [id])
+  
+  // Template Reference
+  templateId       String
+  template         DashboardTemplate @relation(fields: [templateId], references: [id])
+  
+  // Item Properties
+  sortOrder        Int      @default(0)
+  description      String?  // Custom description for this item in collection
+  
+  // Metadata
+  addedAt          DateTime @default(now())
+  addedBy          String   // User ID who added this item
+  
+  @@unique([collectionId, templateId])
+  @@index([collectionId])
+  @@index([templateId])
+  @@index([sortOrder])
+  @@map("template_collection_items")
+}
+
+// =============================================================================
+// EMAIL NOTIFICATION SYSTEM
+// Complete email service implementation with templates, queue, and tracking
+// =============================================================================
+
+// Email Templates - Reusable email templates
+model EmailTemplate {
+  id               String   @id @default(cuid())
+  name             String
+  subject          String
+  html             String   @db.Text
+  text             String?  @db.Text
+  variables        String[] // Template variables (e.g., userName, alertTitle)
+  category         String   // alert, welcome, password-reset, report, invitation, system, custom
+  customizable     Boolean  @default(true) // Can be edited by users
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  @@index([category])
+  @@map("email_templates")
+}
+
+// Email Queue - Queued emails for reliable delivery
+model EmailQueue {
+  id               String   @id @default(cuid())
+  
+  // Email Message
+  message          Json     // Complete email message (to, cc, bcc, subject, etc.)
+  status           String   @default("pending") // pending, processing, sent, failed
+  attempts         Int      @default(0)
+  maxAttempts      Int      @default(3)
+  
+  // Timestamps
+  createdAt        DateTime @default(now())
+  processedAt      DateTime?
+  sentAt           DateTime?
+  failedAt         DateTime?
+  
+  // Error Tracking
+  error            String?
+  messageId        String?  // Provider message ID
+  
+  // Metadata
+  metadata         Json?    // Additional metadata
+  
+  @@index([status])
+  @@index([createdAt])
+  @@map("email_queue")
+}
+
+// Email History - Complete history of sent emails
+model EmailHistory {
+  id               String   @id @default(cuid())
+  
+  // Recipients
+  to               String[]
+  cc               String[]
+  bcc              String[]
+  from             String
+  
+  // Content
+  subject          String
+  templateId       String?
+  templateData     Json?
+  
+  // Status
+  status           String   // sent, failed, bounced, opened, clicked, unsubscribed
+  sentAt           DateTime
+  openedAt         DateTime?
+  clickedAt        DateTime?
+  bouncedAt        DateTime?
+  unsubscribedAt   DateTime?
+  
+  // Tracking
+  messageId        String?  // Provider message ID
+  error            String?
+  events           Json     @default("[]") // Array of email events
+  
+  // Metadata
+  metadata         Json?
+  
+  createdAt        DateTime @default(now())
+  
+  @@index([sentAt])
+  @@index([status])
+  @@index([to])
+  @@map("email_history")
+}
+
+// Email Preferences - User notification preferences
+model EmailPreferences {
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  email            String
+  
+  // Global Settings
+  enabled          Boolean  @default(true)
+  
+  // Category Preferences
+  categories       Json     @default("{\"alerts\": true, \"reports\": true, \"system\": true, \"marketing\": false}")
+  
+  // Frequency Settings
+  frequency        Json?    // immediate, daily, weekly settings
+  
+  // Unsubscribe
+  unsubscribeToken String?  @unique
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([email])
+  @@index([unsubscribeToken])
+  @@map("email_preferences")
+}
+
+// Add relations to existing User model
+// Note: These would be added to the existing User model if it exists
+
+// Custom Log Aggregation (Loki replacement)
+model SystemLog {
+  id        String   @id @default(cuid())
+  timestamp DateTime @default(now())
+  level     String   // 'debug', 'info', 'warn', 'error', 'fatal'
+  service   String
+  message   String
+  metadata  Json?
+  traceId   String?
+  spanId    String?
+  userId    String?
+  tenantId  String?
+  
+  @@index([timestamp])
+  @@index([service])
+  @@index([level])
+  @@index([traceId])
+  @@map("system_logs")
+}
+
+// Custom Distributed Tracing (Jaeger replacement)
+model Trace {
+  id            String    @id @default(cuid())
+  traceId       String
+  spanId        String    @unique
+  parentSpanId  String?
+  operationName String
+  serviceName   String
+  startTime     DateTime
+  endTime       DateTime?
+  duration      Int?      // in milliseconds
+  tags          Json
+  logs          Json      // Array of log entries
+  status        String    // 'in_progress', 'completed', 'error'
+  errorMessage  String?
+  
+  parent        Trace?    @relation("SpanHierarchy", fields: [parentSpanId], references: [spanId])
+  children      Trace[]   @relation("SpanHierarchy")
+  
+  @@index([traceId])
+  @@index([serviceName])
+  @@index([operationName])
+  @@index([startTime])
+  @@index([status])
+  @@map("traces")
 }

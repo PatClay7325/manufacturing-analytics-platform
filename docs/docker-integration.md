@@ -26,7 +26,7 @@ All services are connected to the `manufacturing-network` Docker network to enab
 - **PostgreSQL**: Data is persisted in the `postgres-data` volume
 - **Ollama**: Model data is stored in the `ollama-data` volume
 - **Prometheus**: Metrics data is stored in the `prometheus-data` volume
-- **Analytics**: Dashboard configurations are stored in the `grafana-data` volume
+- **Analytics**: Dashboard configurations are stored in the `manufacturingPlatform-data` volume
 
 ## Usage Instructions
 
@@ -93,7 +93,7 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:5432/manufacturing
 OLLAMA_HOST=http://localhost:11434
 
 # Analytics
-GRAFANA_URL=http://localhost:3003
+MANUFACTURING_PLATFORM_URL=http://localhost:3003
 ```
 
 ## Customizing the Configuration
@@ -112,7 +112,7 @@ docker exec -it manufacturing-ollama ollama create manufacturing-intelligence -f
 
 ### Adding Custom Analytics Dashboards
 
-To add custom dashboards to Analytics, place JSON dashboard files in the `monitoring/grafana/dashboards` directory and update the dashboard provisioning configuration.
+To add custom dashboards to Analytics, place JSON dashboard files in the `monitoring/manufacturingPlatform/dashboards` directory and update the dashboard provisioning configuration.
 
 ## Troubleshooting
 

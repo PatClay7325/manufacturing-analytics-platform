@@ -1,13 +1,15 @@
 /**
- * Grafana Explore Page - Complete data exploration interface
- * Route: /explore - Matches Grafana's explore URL pattern
+ * Analytics Explore Page - Complete data exploration interface
+ * Route: /explore - Matches Analytics's explore URL pattern
  * FULLY FUNCTIONAL with real backend integration and split pane support
  */
 
 'use client';
 
+import React from 'react';
+
 import { useState, useEffect, useCallback } from 'react';
-import { ExploreManager, type ExploreQuery, type ExploreResult, type ExploreHistory } from '@/core/grafana/ExploreManager';
+import { ExploreManager, type ExploreQuery, type ExploreResult, type ExploreHistory } from '@/core/analytics/ExploreManager';
 
 // API service functions
 const apiService = {

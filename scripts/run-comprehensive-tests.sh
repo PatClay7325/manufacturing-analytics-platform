@@ -68,7 +68,7 @@ test_pages_individually() {
     local pages=(
         "/"
         "/dashboard"
-        "/grafana-dashboard"
+        "/manufacturingPlatform-dashboard"
         "/equipment"
         "/alerts"
         "/manufacturing-chat"
@@ -182,7 +182,7 @@ main() {
         echo "📊 Test Summary:"
         echo "   - Home Page: ✅ Fully Functional"
         echo "   - Dashboard: ✅ Fully Functional"
-        echo "   - Grafana Dashboard: ✅ Fully Functional"
+        echo "   - manufacturingPlatform Dashboard: ✅ Fully Functional"
         echo "   - Equipment Page: ✅ Fully Functional"
         echo "   - Alerts Page: ✅ Fully Functional"
         echo "   - Chat Page: ✅ Fully Functional"

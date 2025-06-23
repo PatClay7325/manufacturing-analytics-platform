@@ -16,6 +16,9 @@ const ChatRequestSchema = z.object({
 const OLLAMA_API_URL = process.env.OLLAMA_API_URL || 'http://localhost:11434';
 const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'gemma:2b';
 
+// Export for compatibility with [id]/route.ts
+export const chatSessions: any[] = [];
+
 // Intelligent query classification
 const QUERY_PATTERNS = {
   EQUIPMENT_SPECIFIC: {

@@ -1,10 +1,12 @@
 'use client';
 
+import React from 'react';
+
 import PageLayout from '@/components/layout/PageLayout';
 import { Construction } from 'lucide-react';
 import { useParams } from 'next/navigation';
 
-export default function slugPage() {
+export default function SlugPage() {
   const params = useParams();
   
   return (
@@ -18,7 +20,7 @@ export default function slugPage() {
           [Slug]
         </h2>
         <p className="text-gray-600 dark:text-gray-400 text-center max-w-md">
-          This page is currently being implemented to match Grafana functionality.
+          This page is currently being implemented to match Analytics platform functionality.
         </p>
         
         <div className="mt-4 text-sm text-gray-500 dark:text-gray-400">

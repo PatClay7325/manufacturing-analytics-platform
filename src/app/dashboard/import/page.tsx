@@ -1,5 +1,5 @@
 /**
- * Dashboard Import Page - Grafana-compatible dashboard import
+ * Dashboard Import Page - Analytics-compatible dashboard import
  * /dashboard/import route
  */
 
@@ -12,7 +12,7 @@ import PageLayout from '@/components/layout/PageLayout';
 import { cn } from '@/lib/utils';
 
 interface ImportMethod {
-  id: 'upload' | 'paste' | 'grafana' | 'url';
+  id: 'upload' | 'paste' | 'analyticsPlatform' | 'url';
   label: string;
   description: string;
   icon: any;
@@ -32,9 +32,9 @@ const importMethods: ImportMethod[] = [
     icon: FileJson,
   },
   {
-    id: 'grafana',
-    label: 'Import from Grafana.com',
-    description: 'Import dashboard using Grafana.com dashboard ID',
+    id: 'analyticsPlatform',
+    label: 'Import from Analytics.com',
+    description: 'Import dashboard using AnalyticsPlatform.com dashboard ID',
     icon: Link,
   },
   {
@@ -116,7 +116,7 @@ export default function DashboardImportPage() {
 
       // Set schema version if missing
       if (!dashboard.schemaVersion) {
-        dashboard.schemaVersion = 39; // Latest Grafana schema
+        dashboard.schemaVersion = 39; // Latest AnalyticsPlatform schema
       }
 
       setParsedDashboard(dashboard);
@@ -129,7 +129,7 @@ export default function DashboardImportPage() {
     }
   };
 
-  const handleImportFromGrafana = async () => {
+  const handleImportFromAnalyticsPlatform = async () => {
     if (!dashboardId) {
       setValidationError('Please enter a dashboard ID');
       return;
@@ -139,9 +139,9 @@ export default function DashboardImportPage() {
     setValidationError(null);
 
     try {
-      // In production, this would call Grafana.com API
+      // In production, this would call AnalyticsPlatform.com API
       // For now, simulate with error
-      throw new Error('Grafana.com import not yet implemented');
+      throw new Error('AnalyticsPlatform.com import not yet implemented');
     } catch (error: any) {
       setValidationError(error.message);
     } finally {
@@ -255,7 +255,7 @@ export default function DashboardImportPage() {
           </div>
         );
 
-      case 'grafana':
+      case 'analyticsPlatform':
         return (
           <div className="space-y-4">
             <div>
@@ -266,16 +266,16 @@ export default function DashboardImportPage() {
                 type="text"
                 value={dashboardId}
                 onChange={(e) => setDashboardId(e.target.value)}
-                placeholder="Enter Grafana.com dashboard ID"
+                placeholder="Enter AnalyticsPlatform.com dashboard ID"
                 className="w-full px-3 py-2 border rounded-md"
               />
             </div>
             <button
-              onClick={handleImportFromGrafana}
+              onClick={handleImportFromAnalyticsPlatform}
               disabled={!dashboardId || isValidating}
               className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50"
             >
-              Load from Grafana.com
+              Load from Analytics.com
             </button>
           </div>
         );

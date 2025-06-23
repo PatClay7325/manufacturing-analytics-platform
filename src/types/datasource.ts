@@ -227,7 +227,7 @@ export interface PluginInclude {
 }
 
 export interface PluginDependencies {
-  grafanaVersion: string;
+  analyticsVersion: string;
   plugins: PluginDependency[];
 }
 

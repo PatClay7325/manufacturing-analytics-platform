@@ -336,7 +336,7 @@ async function runFunctionalTests() {
   if (successRate === 100) {
     console.log('🎉 PERFECT! Dependency visualization fully functional');
     console.log('🚀 Component ready for production use');
-    console.log('✅ GRAFANA PARITY: Dependency visualization matches enterprise standards\n');
+    console.log('✅ manufacturingPlatform PARITY: Dependency visualization matches enterprise standards\n');
     
     console.log('🎯 COMPONENT FEATURES:');
     console.log('   • Advanced dependency extraction with regex pattern matching');

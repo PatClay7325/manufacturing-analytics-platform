@@ -1,5 +1,5 @@
 /**
- * Variable Dashboard - Demonstrates Grafana template variable system
+ * Variable Dashboard - Demonstrates AnalyticsPlatform template variable system
  * Shows how variables integrate with dashboards for dynamic content
  */
 

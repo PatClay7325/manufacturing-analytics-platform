@@ -1,5 +1,5 @@
 /**
- * Prometheus Data Source - FULL Grafana compatibility
+ * Prometheus Data Source - FULL AnalyticsPlatform compatibility
  * Implements all Prometheus API endpoints and query capabilities
  */
 

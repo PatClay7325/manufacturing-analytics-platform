@@ -112,7 +112,7 @@ export default function ${pagePath.split('/').pop()?.replace(/[^a-zA-Z]/g, '') |
           ${pagePath.split('/').pop()?.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Page'}
         </h2>
         <p className="text-gray-600 dark:text-gray-400 text-center max-w-md">
-          This page is currently being implemented to match Grafana functionality.
+          This page is currently being implemented to match manufacturingPlatform functionality.
         </p>
         ${pagePath.includes('[') ? `
         <div className="mt-4 text-sm text-gray-500 dark:text-gray-400">

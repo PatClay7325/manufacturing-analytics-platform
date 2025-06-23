@@ -1,5 +1,5 @@
 /**
- * URL Parameters Hook - Handles all Grafana-compatible URL parameters
+ * URL Parameters Hook - Handles all Analytics-compatible URL parameters
  * Supports: orgId, from/to, refresh, variables, kiosk, theme, editview
  */
 

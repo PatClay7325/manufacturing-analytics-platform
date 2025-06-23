@@ -1,5 +1,5 @@
 /**
- * Alert Rules List Page - Grafana-compatible alerting
+ * Alert Rules List Page - Analytics-compatible alerting
  * /alerting/list route
  */
 

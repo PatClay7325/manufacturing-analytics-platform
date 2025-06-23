@@ -1,5 +1,5 @@
 /**
- * Playlists Page - Grafana-compatible dashboard playlists
+ * Playlists Page - Analytics-compatible dashboard playlists
  * /playlists route
  */
 

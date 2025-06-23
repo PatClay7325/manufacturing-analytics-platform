@@ -1,6 +1,6 @@
 /**
  * Prometheus Data Source Dashboard - Demonstrates real Prometheus integration
- * Shows how to query Prometheus data sources and display in Grafana-style panels
+ * Shows how to query Prometheus data sources and display in Analytics-style panels
  */
 
 'use client';

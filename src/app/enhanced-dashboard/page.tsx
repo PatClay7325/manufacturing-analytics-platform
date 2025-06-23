@@ -1,7 +1,7 @@
 import React from 'react';
 
 /**
- * Enhanced Dashboard Page - Advanced Grafana-like dashboard
+ * Enhanced Dashboard Page - Advanced AnalyticsPlatform-like dashboard
  * URL: /enhanced-dashboard
  */
 
@@ -13,5 +13,5 @@ export default function EnhancedDashboardPage() {
 
 export const metadata = {
   title: 'Enhanced Dashboard - Manufacturing Analytics',
-  description: 'Advanced dashboard with Grafana-like features: time controls, grid layout, and panel management',
+  description: 'Advanced dashboard with AnalyticsPlatform-like features: time controls, grid layout, and panel management',
 };

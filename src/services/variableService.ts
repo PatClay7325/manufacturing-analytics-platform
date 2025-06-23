@@ -122,7 +122,7 @@ export class VariableService {
       return value !== null ? value : match;
     });
 
-    // Replace [[varname]] format (Grafana compatibility)
+    // Replace [[varname]] format (AnalyticsPlatform compatibility)
     result = result.replace(/\[\[(\w+)\]\]/g, (match, varName) => {
       const value = this.getInterpolatedValue(varName, context);
       return value !== null ? value : match;

@@ -1,5 +1,5 @@
 /**
- * Node Graph Panel - Grafana-compatible node graph visualization
+ * Node Graph Panel - Analytics-compatible node graph visualization
  * Displays process flows, dependencies, and relationships
  */
 

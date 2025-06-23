@@ -1,13 +1,15 @@
 /**
- * Grafana Alerting Page - Alert rules and management
- * Route: /alerting - Matches Grafana's alerting URL pattern
+ * Analytics Alerting Page - Alert rules and management
+ * Route: /alerting - Matches Analytics's alerting URL pattern
  * FULLY FUNCTIONAL with real backend integration
  */
 
 'use client';
 
+import React from 'react';
+
 import { useState, useEffect, useCallback } from 'react';
-import { AlertingSystem, AlertState, defaultGrafanaConfig } from '@/core/grafana';
+import { AlertingSystem, AlertState, defaultAnalyticsConfig } from '@/core/analytics';
 
 // API service functions
 const apiService = {

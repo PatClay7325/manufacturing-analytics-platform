@@ -825,7 +825,7 @@ The platform includes a comprehensive monitoring solution based on Prometheus an
 
    ```bash
    # Import custom dashboards
-   curl -X POST -H "Content-Type: application/json" -d @monitoring/grafana/dashboards/manufacturing_kpis.json http://admin:admin@localhost:3001/api/dashboards/db
+   curl -X POST -H "Content-Type: application/json" -d @monitoring/manufacturingPlatform/dashboards/manufacturing_kpis.json http://admin:admin@localhost:3001/api/dashboards/db
    ```
 
 ### Logging Configuration

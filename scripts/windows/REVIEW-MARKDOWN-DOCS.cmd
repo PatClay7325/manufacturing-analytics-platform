@@ -4,7 +4,7 @@ echo    Review All Markdown Documentation
 echo ================================================================================
 echo.
 echo This script will analyze all .md files for:
-echo   - Remaining Grafana references
+echo   - Remaining manufacturingPlatform references
 echo   - Generic "Analytics" references that need context
 echo   - Files that need to be renamed
 echo   - Documentation that needs updating

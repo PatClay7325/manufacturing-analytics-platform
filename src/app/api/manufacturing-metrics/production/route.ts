@@ -1,18 +1,30 @@
 /**
  * Production Metrics API Route
  * Provides comprehensive production performance data for manufacturing dashboards
+ * Uses dynamic schema introspection to handle field variations
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { 
+  getCachedModelIntrospection, 
+  resolveFieldName, 
+  createDynamicSelect,
+  normalizeQueryResult,
+  combineFieldValues,
+  FIELD_ALIASES
+} from '@/lib/schema-introspection';
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const workUnitId = searchParams.get('workUnitId');
+    const machineName = searchParams.get('machineName');
     const shift = searchParams.get('shift');
     const productType = searchParams.get('productType');
     const timeRange = searchParams.get('timeRange') || '24h';
+
+    // Get dynamic schema introspection for PerformanceMetric model
+    const modelIntrospection = await getCachedModelIntrospection('performanceMetric');
 
     // Calculate time range
     const now = new Date();
@@ -35,7 +47,7 @@ export async function GET(request: NextRequest) {
         startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
     }
 
-    // Build where clause for performance metrics
+    // Build where clause for performance metrics with dynamic field resolution
     const whereClause: any = {
       timestamp: {
         gte: startDate,
@@ -43,306 +55,239 @@ export async function GET(request: NextRequest) {
       },
     };
 
-    if (workUnitId && workUnitId !== 'all') {
-      whereClause.workUnitId = workUnitId;
+    // Dynamically resolve filter fields
+    const machineField = resolveFieldName('machineName', modelIntrospection);
+    const shiftField = resolveFieldName('shift', modelIntrospection);
+    const productTypeField = resolveFieldName('productType', modelIntrospection);
+
+    if (machineName && machineName !== 'all' && machineField) {
+      whereClause[machineField] = machineName;
     }
     
-    if (shift && shift !== 'all') {
-      whereClause.shift = shift;
+    if (shift && shift !== 'all' && shiftField) {
+      whereClause[shiftField] = shift;
     }
     
-    if (productType && productType !== 'all') {
-      whereClause.productType = productType;
+    if (productType && productType !== 'all' && productTypeField) {
+      whereClause[productTypeField] = productType;
     }
+
+    // Create dynamic select for production trends
+    const trendsSelect = createDynamicSelect([
+      'timestamp', 'totalParts', 'totalPartsProduced', 'goodParts', 
+      'rejectedParts', 'rejectParts', 'reworkParts', 'plannedProduction',
+      'shift', 'productType', 'machineName'
+    ], modelIntrospection);
 
     // Get current production metrics
     const currentProduction = await prisma.performanceMetric.findFirst({
       where: whereClause,
       orderBy: { timestamp: 'desc' },
-      include: {
-        WorkUnit: {
-          select: {
-            id: true,
-            name: true,
-            code: true,
-            equipmentType: true,
-          }
-        }
-      }
     });
 
     // Get production trends over time
     const productionTrends = await prisma.performanceMetric.findMany({
       where: whereClause,
-      select: {
-        timestamp: true,
-        totalParts: true,
-        goodParts: true,
-        rejectedParts: true,
-        reworkParts: true,
-        plannedProduction: true,
-        throughputRate: true,
-        targetThroughput: true,
-        shift: true,
-        productType: true,
-        firstPassYield: true,
-        scrapRate: true,
-        WorkUnit: {
-          select: {
-            name: true,
-            code: true,
-          }
-        }
-      },
-      orderBy: { timestamp: 'asc' }
+      select: trendsSelect,
+      orderBy: { timestamp: 'asc' },
+      take: 100, // Limit for performance
     });
+
+    // Dynamically resolve production quantity fields for aggregation
+    const totalPartsFields = FIELD_ALIASES.totalParts.filter(field => 
+      modelIntrospection.availableFields.includes(field)
+    );
+    const goodPartsFields = FIELD_ALIASES.goodParts.filter(field => 
+      modelIntrospection.availableFields.includes(field)
+    );
+    const rejectedPartsFields = FIELD_ALIASES.rejectedParts.filter(field => 
+      modelIntrospection.availableFields.includes(field)
+    );
+    const reworkPartsFields = FIELD_ALIASES.reworkParts.filter(field => 
+      modelIntrospection.availableFields.includes(field)
+    );
+    const plannedProductionFields = FIELD_ALIASES.plannedProduction.filter(field => 
+      modelIntrospection.availableFields.includes(field)
+    );
+
+    // Build aggregation object dynamically
+    const aggregationFields: any = { _count: { id: true } };
+    
+    // Add sum aggregations for available fields
+    if (totalPartsFields.length > 0) {
+      aggregationFields._sum = { ...aggregationFields._sum };
+      totalPartsFields.forEach(field => {
+        aggregationFields._sum[field] = true;
+      });
+    }
+    
+    if (goodPartsFields.length > 0) {
+      aggregationFields._sum = { ...aggregationFields._sum };
+      goodPartsFields.forEach(field => {
+        aggregationFields._sum[field] = true;
+      });
+    }
+    
+    if (rejectedPartsFields.length > 0) {
+      aggregationFields._sum = { ...aggregationFields._sum };
+      rejectedPartsFields.forEach(field => {
+        aggregationFields._sum[field] = true;
+      });
+    }
+    
+    if (reworkPartsFields.length > 0) {
+      aggregationFields._sum = { ...aggregationFields._sum };
+      reworkPartsFields.forEach(field => {
+        aggregationFields._sum[field] = true;
+      });
+    }
+    
+    if (plannedProductionFields.length > 0) {
+      aggregationFields._sum = { ...aggregationFields._sum };
+      plannedProductionFields.forEach(field => {
+        aggregationFields._sum[field] = true;
+      });
+    }
 
     // Get aggregated production metrics
     const aggregatedProduction = await prisma.performanceMetric.aggregate({
       where: whereClause,
-      _sum: {
-        totalParts: true,
-        goodParts: true,
-        rejectedParts: true,
-        reworkParts: true,
-        plannedProduction: true,
-      },
-      _avg: {
-        throughputRate: true,
-        targetThroughput: true,
-        firstPassYield: true,
-        scrapRate: true,
-        reworkRate: true,
+      ...aggregationFields
+    });
+
+    // Get production by shift with dynamic fields
+    let shiftProduction: any[] = [];
+    if (shiftField) {
+      const shiftAggregation: any = { _count: { id: true } };
+      if (aggregationFields._sum) {
+        shiftAggregation._sum = aggregationFields._sum;
       }
-    });
 
-    // Get production by shift
-    const shiftProduction = await prisma.performanceMetric.groupBy({
-      by: ['shift'],
-      where: whereClause,
-      _sum: {
-        totalParts: true,
-        goodParts: true,
-        rejectedParts: true,
-      },
-      _avg: {
-        throughputRate: true,
-        firstPassYield: true,
-      },
-      _count: {
-        id: true,
+      shiftProduction = await prisma.performanceMetric.groupBy({
+        by: [shiftField as any],
+        where: whereClause,
+        ...shiftAggregation
+      });
+    }
+
+    // Get production by product type with dynamic fields
+    let productProduction: any[] = [];
+    if (productTypeField) {
+      const productAggregation: any = { _count: { id: true } };
+      if (aggregationFields._sum) {
+        productAggregation._sum = aggregationFields._sum;
       }
-    });
 
-    // Get production by product type
-    const productProduction = await prisma.performanceMetric.groupBy({
-      by: ['productType'],
-      where: whereClause,
-      _sum: {
-        totalParts: true,
-        goodParts: true,
-        rejectedParts: true,
-      },
-      _avg: {
-        throughputRate: true,
-        firstPassYield: true,
-      },
-      _count: {
-        id: true,
+      productProduction = await prisma.performanceMetric.groupBy({
+        by: [productTypeField as any],
+        where: whereClause,
+        ...productAggregation
+      });
+    }
+
+    // Get top performing machines with dynamic fields
+    let topPerformers: any[] = [];
+    if (machineField) {
+      const performerAggregation: any = {};
+      const oeeField = resolveFieldName('oeeScore', modelIntrospection);
+      
+      if (oeeField) {
+        performerAggregation._avg = { [oeeField]: true };
+        performerAggregation.orderBy = { _avg: { [oeeField]: 'desc' } };
       }
-    });
-
-    // Get cycle time analysis
-    const cycleTimeData = await prisma.performanceMetric.findMany({
-      where: whereClause,
-      select: {
-        timestamp: true,
-        idealCycleTime: true,
-        actualCycleTime: true,
-        standardCycleTime: true,
-        WorkUnit: {
-          select: {
-            name: true,
-          }
-        }
+      
+      if (aggregationFields._sum) {
+        performerAggregation._sum = aggregationFields._sum;
       }
-    });
 
-    // Get quality metrics for production context
-    const qualityData = await prisma.qualityMetric.findMany({
-      where: {
-        workUnitId: workUnitId && workUnitId !== 'all' ? workUnitId : undefined,
-        timestamp: {
-          gte: startDate,
-          lte: now,
-        },
-      },
-      select: {
-        timestamp: true,
-        parameter: true,
-        value: true,
-        isWithinSpec: true,
-        qualityGrade: true,
-        defectType: true,
-        shift: true,
-        WorkUnit: {
-          select: {
-            name: true,
-          }
-        }
-      },
-      take: 100 // Limit for performance
-    });
+      topPerformers = await prisma.performanceMetric.groupBy({
+        by: [machineField as any],
+        where: whereClause,
+        ...performerAggregation,
+        take: 10
+      });
+    }
 
-    // Get top performing work units
-    const topPerformers = await prisma.performanceMetric.groupBy({
-      by: ['workUnitId'],
-      where: whereClause,
-      _avg: {
-        throughputRate: true,
-        firstPassYield: true,
-        oeeScore: true,
-      },
-      _sum: {
-        totalParts: true,
-        goodParts: true,
-      },
-      orderBy: {
-        _avg: {
-          oeeScore: 'desc'
-        }
-      },
-      take: 10
-    });
-
-    // Get work unit details for top performers
-    const workUnitIds = topPerformers.map(p => p.workUnitId);
-    const workUnits = await prisma.workUnit.findMany({
-      where: {
-        id: {
-          in: workUnitIds
-        }
-      },
-      select: {
-        id: true,
-        name: true,
-        code: true,
-        equipmentType: true,
-      }
-    });
-
-    // Merge top performers with work unit details
-    const enhancedTopPerformers = topPerformers.map(performer => {
-      const workUnit = workUnits.find(wu => wu.id === performer.workUnitId);
-      return {
-        ...performer,
-        workUnit
-      };
-    });
-
-    // Calculate production efficiency trends
-    const efficiencyTrends = productionTrends.map(trend => ({
-      timestamp: trend.timestamp,
-      efficiency: trend.plannedProduction && trend.plannedProduction > 0 
-        ? (trend.totalParts / trend.plannedProduction) * 100 
-        : 0,
-      throughputEfficiency: trend.targetThroughput && trend.targetThroughput > 0
-        ? (trend.throughputRate / trend.targetThroughput) * 100
-        : 0,
-      workUnit: trend.WorkUnit.name,
-      shift: trend.shift,
-      productType: trend.productType,
-    }));
+    // Normalize all query results
+    const normalizedCurrent = normalizeQueryResult(currentProduction, modelIntrospection);
+    const normalizedTrends = normalizeQueryResult(productionTrends, modelIntrospection);
+    const normalizedShiftProduction = normalizeQueryResult(shiftProduction, modelIntrospection);
+    const normalizedProductProduction = normalizeQueryResult(productProduction, modelIntrospection);
+    const normalizedTopPerformers = normalizeQueryResult(topPerformers, modelIntrospection);
 
     const response = {
-      current: currentProduction ? {
-        workUnit: currentProduction.WorkUnit,
-        totalParts: currentProduction.totalParts,
-        goodParts: currentProduction.goodParts,
-        rejectedParts: currentProduction.rejectedParts,
-        reworkParts: currentProduction.reworkParts,
-        plannedProduction: currentProduction.plannedProduction,
-        throughputRate: currentProduction.throughputRate,
-        targetThroughput: currentProduction.targetThroughput,
-        firstPassYield: currentProduction.firstPassYield,
-        scrapRate: currentProduction.scrapRate,
-        shift: currentProduction.shift,
-        productType: currentProduction.productType,
-        timestamp: currentProduction.timestamp,
+      current: normalizedCurrent ? {
+        machine: combineFieldValues(normalizedCurrent, FIELD_ALIASES.machineName, 'Unknown'),
+        totalParts: combineFieldValues(normalizedCurrent, FIELD_ALIASES.totalParts, 0),
+        goodParts: combineFieldValues(normalizedCurrent, FIELD_ALIASES.goodParts, 0),
+        rejectedParts: combineFieldValues(normalizedCurrent, FIELD_ALIASES.rejectedParts, 0),
+        reworkParts: combineFieldValues(normalizedCurrent, FIELD_ALIASES.reworkParts, 0),
+        plannedProduction: combineFieldValues(normalizedCurrent, FIELD_ALIASES.plannedProduction, 0),
+        shift: combineFieldValues(normalizedCurrent, FIELD_ALIASES.shift, 'Unknown'),
+        productType: combineFieldValues(normalizedCurrent, FIELD_ALIASES.productType, 'Unknown'),
+        timestamp: normalizedCurrent.timestamp,
       } : null,
       aggregated: {
-        totalPartsProduced: aggregatedProduction._sum.totalParts,
-        totalGoodParts: aggregatedProduction._sum.goodParts,
-        totalRejectedParts: aggregatedProduction._sum.rejectedParts,
-        totalReworkParts: aggregatedProduction._sum.reworkParts,
-        totalPlannedProduction: aggregatedProduction._sum.plannedProduction,
-        avgThroughputRate: aggregatedProduction._avg.throughputRate,
-        avgTargetThroughput: aggregatedProduction._avg.targetThroughput,
-        avgFirstPassYield: aggregatedProduction._avg.firstPassYield,
-        avgScrapRate: aggregatedProduction._avg.scrapRate,
-        avgReworkRate: aggregatedProduction._avg.reworkRate,
-        productionEfficiency: aggregatedProduction._sum.plannedProduction && aggregatedProduction._sum.plannedProduction > 0
-          ? (aggregatedProduction._sum.totalParts / aggregatedProduction._sum.plannedProduction) * 100
-          : 0,
+        totalPartsProduced: combineFieldValues(aggregatedProduction._sum || {}, FIELD_ALIASES.totalParts, 0),
+        totalGoodParts: combineFieldValues(aggregatedProduction._sum || {}, FIELD_ALIASES.goodParts, 0),
+        totalRejectedParts: combineFieldValues(aggregatedProduction._sum || {}, FIELD_ALIASES.rejectedParts, 0),
+        totalReworkParts: combineFieldValues(aggregatedProduction._sum || {}, FIELD_ALIASES.reworkParts, 0),
+        totalPlannedProduction: combineFieldValues(aggregatedProduction._sum || {}, FIELD_ALIASES.plannedProduction, 0),
+        totalRecords: aggregatedProduction._count.id || 0,
       },
-      trends: productionTrends.map(trend => ({
+      trends: normalizedTrends.map((trend: any) => ({
         timestamp: trend.timestamp,
-        totalParts: trend.totalParts,
-        goodParts: trend.goodParts,
-        rejectedParts: trend.rejectedParts,
-        throughputRate: trend.throughputRate,
-        firstPassYield: trend.firstPassYield,
-        workUnit: trend.WorkUnit.name,
-        shift: trend.shift,
-        productType: trend.productType,
+        totalParts: combineFieldValues(trend, FIELD_ALIASES.totalParts, 0),
+        goodParts: combineFieldValues(trend, FIELD_ALIASES.goodParts, 0),
+        rejectedParts: combineFieldValues(trend, FIELD_ALIASES.rejectedParts, 0),
+        machine: combineFieldValues(trend, FIELD_ALIASES.machineName, 'Unknown'),
+        shift: combineFieldValues(trend, FIELD_ALIASES.shift, 'Unknown'),
+        productType: combineFieldValues(trend, FIELD_ALIASES.productType, 'Unknown'),
       })),
-      byShift: shiftProduction.map(shift => ({
-        shift: shift.shift,
-        totalParts: shift._sum.totalParts,
-        goodParts: shift._sum.goodParts,
-        rejectedParts: shift._sum.rejectedParts,
-        avgThroughput: shift._avg.throughputRate,
-        avgFirstPassYield: shift._avg.firstPassYield,
-        recordCount: shift._count.id,
+      byShift: normalizedShiftProduction.map((shift: any) => ({
+        shift: combineFieldValues(shift, [shiftField || 'shift'], 'Unknown'),
+        totalParts: combineFieldValues(shift._sum || {}, FIELD_ALIASES.totalParts, 0),
+        goodParts: combineFieldValues(shift._sum || {}, FIELD_ALIASES.goodParts, 0),
+        rejectedParts: combineFieldValues(shift._sum || {}, FIELD_ALIASES.rejectedParts, 0),
+        recordCount: shift._count.id || 0,
       })),
-      byProduct: productProduction.map(product => ({
-        productType: product.productType,
-        totalParts: product._sum.totalParts,
-        goodParts: product._sum.goodParts,
-        rejectedParts: product._sum.rejectedParts,
-        avgThroughput: product._avg.throughputRate,
-        avgFirstPassYield: product._avg.firstPassYield,
-        recordCount: product._count.id,
+      byProduct: normalizedProductProduction.map((product: any) => ({
+        productType: combineFieldValues(product, [productTypeField || 'productType'], 'Unknown'),
+        totalParts: combineFieldValues(product._sum || {}, FIELD_ALIASES.totalParts, 0),
+        goodParts: combineFieldValues(product._sum || {}, FIELD_ALIASES.goodParts, 0),
+        rejectedParts: combineFieldValues(product._sum || {}, FIELD_ALIASES.rejectedParts, 0),
+        recordCount: product._count.id || 0,
       })),
-      cycleTimeAnalysis: cycleTimeData.map(data => ({
-        timestamp: data.timestamp,
-        idealCycleTime: data.idealCycleTime,
-        actualCycleTime: data.actualCycleTime,
-        standardCycleTime: data.standardCycleTime,
-        workUnit: data.WorkUnit.name,
-        efficiency: data.idealCycleTime && data.actualCycleTime
-          ? (data.idealCycleTime / data.actualCycleTime) * 100
-          : 0,
+      topPerformers: normalizedTopPerformers.map((performer: any) => ({
+        machineName: combineFieldValues(performer, [machineField || 'machineName'], 'Unknown'),
+        avgOEE: combineFieldValues(performer._avg || {}, FIELD_ALIASES.oeeScore, 0),
+        totalParts: combineFieldValues(performer._sum || {}, FIELD_ALIASES.totalParts, 0),
+        goodParts: combineFieldValues(performer._sum || {}, FIELD_ALIASES.goodParts, 0),
       })),
-      topPerformers: enhancedTopPerformers,
-      efficiencyTrends,
-      qualityOverview: {
-        totalMeasurements: qualityData.length,
-        withinSpec: qualityData.filter(q => q.isWithinSpec).length,
-        outOfSpec: qualityData.filter(q => !q.isWithinSpec).length,
-        gradeA: qualityData.filter(q => q.qualityGrade === 'A').length,
-        gradeB: qualityData.filter(q => q.qualityGrade === 'B').length,
-        gradeC: qualityData.filter(q => q.qualityGrade === 'C').length,
-      },
       metadata: {
         timeRange,
         startDate,
         endDate: now,
-        totalRecords: productionTrends.length,
+        totalRecords: normalizedTrends.length,
         filters: {
-          workUnitId,
+          machineName,
           shift,
           productType,
+        },
+        schemaInfo: {
+          availableFields: modelIntrospection.availableFields,
+          resolvedFields: {
+            machineName: machineField,
+            shift: shiftField,
+            productType: productTypeField
+          },
+          availableProductionFields: {
+            totalParts: totalPartsFields,
+            goodParts: goodPartsFields,
+            rejectedParts: rejectedPartsFields,
+            reworkParts: reworkPartsFields,
+            plannedProduction: plannedProductionFields
+          }
         }
       }
     };
@@ -352,7 +297,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error fetching production metrics:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch production metrics' },
+      { error: 'Failed to fetch production metrics', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

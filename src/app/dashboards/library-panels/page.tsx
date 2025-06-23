@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+
 import PageLayout from '@/components/layout/PageLayout';
 import LibraryPanelManager from '@/components/dashboard/LibraryPanelManager';
 

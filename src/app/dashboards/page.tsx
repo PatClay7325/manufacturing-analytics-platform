@@ -1,13 +1,15 @@
 /**
- * Grafana Dashboards List Page - Dashboard management and navigation
- * Route: /dashboards - Matches Grafana's dashboards URL pattern
+ * Analytics Dashboards List Page - Dashboard management and navigation
+ * Route: /dashboards - Matches Analytics's dashboards URL pattern
  */
 
 'use client';
 
+import React from 'react';
+
 import Link from 'next/link';
 import { useState } from 'react';
-import { defaultGrafanaConfig } from '@/core/grafana';
+import { defaultAnalyticsConfig } from '@/core/analytics';
 
 interface Dashboard {
   uid: string;
@@ -118,7 +120,7 @@ export default function DashboardsPage() {
             </div>
             <div className="flex items-center space-x-3">
               <Link
-                href="/grafana-demo"
+                href="/analytics-demo"
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 New Dashboard
@@ -191,7 +193,7 @@ export default function DashboardsPage() {
               {searchQuery || selectedTags.length > 0 ? 'No dashboards match your criteria' : 'No dashboards found'}
             </div>
             <Link
-              href="/grafana-demo"
+              href="/analytics-demo"
               className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
             >
               Create Your First Dashboard

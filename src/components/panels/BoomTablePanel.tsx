@@ -1,5 +1,5 @@
 /**
- * Boom Table Panel - Grafana-compatible advanced table with patterns
+ * Boom Table Panel - Analytics-compatible advanced table with patterns
  * Supports regex patterns, value mapping, and sparklines
  * Popular for creating custom formatted tables with colors and icons
  */

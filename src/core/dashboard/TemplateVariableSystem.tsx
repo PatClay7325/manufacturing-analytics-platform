@@ -1,5 +1,5 @@
 /**
- * Template Variable System - Grafana-compatible variable management
+ * Template Variable System - Analytics-compatible variable management
  * Supports query-based, chained, interval, and custom variables
  */
 

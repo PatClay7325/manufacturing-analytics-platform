@@ -1,12 +1,15 @@
 /**
  * Analytics Dashboard Page - Server-side dashboard configuration
  * This page ensures the manufacturing analytics dashboard exists and redirects
- * to the standard Grafana-style dashboard viewer
+ * to the standard Analytics-style dashboard viewer
  */
 
 import { redirect } from 'next/navigation';
 import { dashboardPersistenceService } from '@/services/dashboardPersistenceService';
 import { getTemplateById } from '@/templates/dashboards';
+
+// Force dynamic rendering since we interact with the database
+export const dynamic = 'force-dynamic';
 
 // Default dashboard configuration
 const ANALYTICS_DASHBOARD_UID = 'manufacturing-analytics';

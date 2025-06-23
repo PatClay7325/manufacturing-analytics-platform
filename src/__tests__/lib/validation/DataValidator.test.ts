@@ -105,8 +105,8 @@ describe('DataValidator', () => {
 
       const sanitized = DataValidator.sanitizeInput(nestedInput);
       expect(sanitized.name).toBe('John');
-      expect(sanitized.details.description).toBe('alert("xss")');
-      expect(sanitized.details.tags).toEqual(['', 'safe-tag']);
+      expect(sanitized.details.description).toBe(''); // onclick and its value are removed
+      expect(sanitized.details.tags).toEqual(['&lt;script&gt;', 'safe-tag']); // HTML escaped, not removed
     });
 
     test('should handle arrays', () => {
@@ -120,12 +120,12 @@ describe('DataValidator', () => {
     test('should sanitize and validate data', () => {
       const dirtyData = {
         email: 'test@example.com',
-        password: 'Test123!@#', // Valid password without script tags
+        password: 'Test123!', // Valid password format
         name: 'John<script>alert("xss")</script>'
       };
 
       const result = DataValidator.validateAndSanitize(dirtyData, AuthSchemas.register);
-      expect(result.password).toBe('Test123!@#');
+      expect(result.password).toBe('Test123!');
       expect(result.name).toBe('John');
       expect(result.email).toBe('test@example.com');
     });
@@ -372,17 +372,17 @@ describe('Authentication Schemas', () => {
 
   test('should validate password change requirements', () => {
     const validChange = {
-      currentPassword: 'Old123!',
-      newPassword: 'New123!'
+      currentPassword: 'OldPass123!',
+      newPassword: 'NewPass123!'
     };
 
     expect(() => AuthSchemas.changePassword.parse(validChange)).not.toThrow();
 
     // Should fail if passwords are the same
     expect(() => AuthSchemas.changePassword.parse({
-      currentPassword: 'Same123!',
-      newPassword: 'Same123!'
-    })).toThrow();
+      currentPassword: 'SamePass123!',
+      newPassword: 'SamePass123!'
+    })).toThrow('New password must be different from current password');
   });
 });
 

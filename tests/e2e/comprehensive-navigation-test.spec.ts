@@ -29,7 +29,7 @@ const navigationPages = [
   { name: 'Dashboards Quality', path: '/dashboards/quality', hasSubPages: false },
   { name: 'Dashboards Maintenance', path: '/dashboards/maintenance', hasSubPages: false },
   { name: 'Dashboards Unified', path: '/dashboards/unified', hasSubPages: false },
-  { name: 'Dashboards Grafana', path: '/dashboards/grafana', hasSubPages: false },
+  { name: 'Dashboards manufacturingPlatform', path: '/dashboards/manufacturingPlatform', hasSubPages: false },
   
   // Equipment sub-pages (test with sample equipment ID)
   { name: 'Equipment List', path: '/equipment', hasSubPages: false },

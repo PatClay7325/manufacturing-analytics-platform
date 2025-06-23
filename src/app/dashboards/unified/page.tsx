@@ -25,7 +25,7 @@ const sampleDowntimeData = [
 ];
 
 export default function UnifiedDashboardPage() {
-  const [activeTab, setActiveTab] = useState<'native' | 'grafana' | 'hybrid'>('hybrid');
+  const [activeTab, setActiveTab] = useState<'native' | 'analyticsPlatform' | 'hybrid'>('hybrid');
 
   const metrics = [
     { 
@@ -81,7 +81,7 @@ export default function UnifiedDashboardPage() {
             {[
               { id: 'hybrid', label: 'Hybrid View' },
               { id: 'native', label: 'Native Charts' },
-              { id: 'grafana', label: 'Analytics Dashboards' }
+              { id: 'analyticsPlatform', label: 'Analytics Dashboards' }
             ].map((tab) => (
               <button
                 key={tab?.id}
@@ -216,7 +216,7 @@ export default function UnifiedDashboardPage() {
         )}
 
         {/* Analytics View */}
-        {activeTab === 'grafana' && (
+        {activeTab === 'analyticsPlatform' && (
           <div className="space-y-6">
             <ManufacturingDashboard
               dashboardId="manufacturing-oee-v1"

@@ -194,7 +194,7 @@ if !server_started! EQU 1 (
     
     echo Testing core pages...
     
-    for %%p in ("/" "/dashboard" "/grafana-dashboard" "/equipment" "/alerts" "/manufacturing-chat" "/explore" "/documentation") do (
+    for %%p in ("/" "/dashboard" "/manufacturingPlatform-dashboard" "/equipment" "/alerts" "/manufacturing-chat" "/explore" "/documentation") do (
         echo Testing %%p...
         curl -s -w "%%{http_code}" http://localhost:3000%%p > page_test.txt 2>&1
         set /p page_status=<page_test.txt

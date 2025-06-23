@@ -1,18 +1,15 @@
-import { Suspense } from 'react'
 import { Metadata } from 'next'
 import { Card } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { MetricsOverview } from './components/MetricsOverview'
-import { AlertsPanel } from './components/AlertsPanel'
-import { SystemHealth } from './components/SystemHealth'
-import { GrafanaDashboard } from './components/GrafanaDashboard'
-import { LogViewer } from './components/LogViewer'
+import { MonitoringTabs } from './components/MonitoringTabs'
 import { getSystemStatus, getActiveAlerts, getMetricsSummary } from './actions'
 
 export const metadata: Metadata = {
   title: 'System Monitoring | Manufacturing Analytics',
   description: 'Real-time monitoring and observability dashboard',
 }
+
+// Force dynamic rendering as this page accesses database and external services
+export const dynamic = 'force-dynamic'
 
 export default async function MonitoringPage() {
   // Parallel data fetching for initial load
@@ -70,85 +67,7 @@ export default async function MonitoringPage() {
       </div>
 
       {/* Main Monitoring Tabs */}
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid grid-cols-5 w-full max-w-2xl">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="metrics">Metrics</TabsTrigger>
-          <TabsTrigger value="alerts">Alerts</TabsTrigger>
-          <TabsTrigger value="logs">Logs</TabsTrigger>
-          <TabsTrigger value="grafana">Grafana</TabsTrigger>
-        </TabsList>
-
-        {/* Overview Tab */}
-        <TabsContent value="overview" className="space-y-4">
-          <Suspense fallback={<LoadingSkeleton />}>
-            <SystemHealth initialData={systemStatus} />
-          </Suspense>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <Suspense fallback={<LoadingSkeleton />}>
-              <MetricsOverview />
-            </Suspense>
-            
-            <Suspense fallback={<LoadingSkeleton />}>
-              <AlertsPanel initialAlerts={activeAlerts} />
-            </Suspense>
-          </div>
-        </TabsContent>
-
-        {/* Metrics Tab */}
-        <TabsContent value="metrics" className="space-y-4">
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-4">Real-time Metrics</h2>
-            <Suspense fallback={<LoadingSkeleton />}>
-              <MetricsExplorer />
-            </Suspense>
-          </Card>
-        </TabsContent>
-
-        {/* Alerts Tab */}
-        <TabsContent value="alerts" className="space-y-4">
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-4">Alert Management</h2>
-            <Suspense fallback={<LoadingSkeleton />}>
-              <AlertManager />
-            </Suspense>
-          </Card>
-        </TabsContent>
-
-        {/* Logs Tab */}
-        <TabsContent value="logs" className="space-y-4">
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-4">Log Viewer</h2>
-            <Suspense fallback={<LoadingSkeleton />}>
-              <LogViewer />
-            </Suspense>
-          </Card>
-        </TabsContent>
-
-        {/* Grafana Tab */}
-        <TabsContent value="grafana" className="space-y-4">
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-4">Grafana Dashboards</h2>
-            <Suspense fallback={<LoadingSkeleton />}>
-              <GrafanaDashboard />
-            </Suspense>
-          </Card>
-        </TabsContent>
-      </Tabs>
+      <MonitoringTabs systemStatus={systemStatus} activeAlerts={activeAlerts} />
     </div>
   )
 }
-
-// Loading skeleton component
-function LoadingSkeleton() {
-  return (
-    <div className="animate-pulse">
-      <div className="h-64 bg-gray-200 rounded-lg"></div>
-    </div>
-  )
-}
-
-// Client components that will be created separately
-import { MetricsExplorer } from './components/MetricsExplorer'
-import { AlertManager } from './components/AlertManager'

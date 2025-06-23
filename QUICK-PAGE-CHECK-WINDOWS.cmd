@@ -32,12 +32,12 @@ if %ERRORLEVEL% NEQ 0 (
 )
 
 echo.
-echo Testing Grafana Dashboard (/grafana-dashboard)...
-curl -s -w "Status: %%{http_code} | Time: %%{time_total}s\n" http://localhost:3000/grafana-dashboard > temp_response.txt
+echo Testing manufacturingPlatform Dashboard (/manufacturingPlatform-dashboard)...
+curl -s -w "Status: %%{http_code} | Time: %%{time_total}s\n" http://localhost:3000/manufacturingPlatform-dashboard > temp_response.txt
 if %ERRORLEVEL% NEQ 0 (
-    echo ❌ Grafana Dashboard - FAILED or INCOMPLETE
+    echo ❌ manufacturingPlatform Dashboard - FAILED or INCOMPLETE
 ) else (
-    echo ✅ Grafana Dashboard - OK
+    echo ✅ manufacturingPlatform Dashboard - OK
 )
 
 echo.
@@ -153,7 +153,7 @@ if not exist "src\components\dashboard\ManufacturingDashboard.tsx" (
     echo ✅ ManufacturingDashboard.tsx - EXISTS
 )
 
-if not exist "src\components\grafana\DashboardPanel.tsx" (
+if not exist "src\components\manufacturingPlatform\DashboardPanel.tsx" (
     echo ❌ DashboardPanel.tsx - MISSING
 ) else (
     echo ✅ DashboardPanel.tsx - EXISTS

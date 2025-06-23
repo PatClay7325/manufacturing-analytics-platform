@@ -1,5 +1,5 @@
 /**
- * Data Source Types - Grafana-compatible data source interfaces
+ * Data Source Types - Analytics-compatible data source interfaces
  * Defines the contract for all data source implementations
  */
 

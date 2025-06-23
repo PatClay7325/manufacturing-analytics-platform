@@ -1,5 +1,5 @@
 /**
- * Plugin List Panel - Grafana-compatible plugin list display
+ * Plugin List Panel - Analytics-compatible plugin list display
  * Shows installed plugins, available updates, and plugin catalog
  */
 
@@ -99,7 +99,7 @@ const PluginListPanel: React.FC<PanelProps<PluginListPanelOptions>> = ({
           name: 'Pie Chart Panel',
           description: 'Beautiful pie charts with drill-down capabilities',
           version: '2.1.0',
-          author: 'Grafana Labs',
+          author: 'AnalyticsPlatform Team',
           downloads: 125000,
           stars: 89,
           lastUpdated: new Date(Date.now() - 86400000 * 7).toISOString(),
@@ -111,7 +111,7 @@ const PluginListPanel: React.FC<PanelProps<PluginListPanelOptions>> = ({
           name: 'InfluxDB',
           description: 'InfluxDB time series database data source',
           version: '5.0.0',
-          author: 'Grafana Labs',
+          author: 'AnalyticsPlatform Team',
           downloads: 890000,
           stars: 456,
           lastUpdated: new Date(Date.now() - 86400000 * 3).toISOString(),
@@ -331,7 +331,7 @@ const PluginListPanel: React.FC<PanelProps<PluginListPanelOptions>> = ({
                   </button>
                 )}
                 <a
-                  href={`https://grafana.com/plugins/${plugin.id}`}
+                  href={`https://analyticsPlatform.com/plugins/${plugin.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-1 hover:bg-accent rounded"

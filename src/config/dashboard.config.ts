@@ -1,5 +1,5 @@
 /**
- * Dashboard Configuration for Manufacturing Analytics Platform
+ * Dashboard Configuration for Manufacturing AnalyticsPlatform
  * This configuration integrates with the existing Prisma database
  */
 

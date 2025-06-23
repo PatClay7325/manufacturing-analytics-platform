@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+
 import { useState } from 'react';
 import PageLayout from '@/components/layout/PageLayout';
 import { 
@@ -128,7 +130,7 @@ const connectionCategories: ConnectionCategory[] = [
         id: 'datadog',
         name: 'Datadog',
         type: 'monitoring',
-        description: 'Monitoring and analytics platform',
+        description: 'Monitoring and analyticsPlatform',
         installed: false
       }
     ]

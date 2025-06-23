@@ -14,8 +14,37 @@
  */
 
 import { PrismaClient } from '@prisma/client';
-// Using built-in crypto for random generation instead of faker for now
-// import { faker } from '@faker-js/faker';
+// Using built-in random generation instead of faker
+function randomChoice<T>(array: T[]): T {
+  return array[Math.floor(Math.random() * array.length)];
+}
+
+function randomString(length: number): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+function randomDate(daysBack: number): Date {
+  const date = new Date();
+  date.setDate(date.getDate() - Math.floor(Math.random() * daysBack));
+  return date;
+}
+
+function randomFloat(min: number, max: number): number {
+  return Math.random() * (max - min) + min;
+}
+
+function randomInt(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function randomBoolean(): boolean {
+  return Math.random() > 0.5;
+}
 
 const prisma = new PrismaClient();
 
@@ -84,7 +113,7 @@ async function createHierarchy() {
         enterpriseId: enterprise.id,
         name: SITES[i],
         code: `SITE${i + 1}`,
-        location: faker.location.city(),
+        location: `City ${i + 1}`,
       }
     });
     sites.push(site);
@@ -134,11 +163,11 @@ async function createHierarchy() {
           name: `${equipmentType} ${i + 1}`,
           code: `${workCenter.code}-WU${i + 1}`,
           equipmentType,
-          model: faker.vehicle.model(),
-          serialNumber: faker.string.alphanumeric(10).toUpperCase(),
-          manufacturerCode: faker.company.name().substring(0, 8).toUpperCase(),
-          installationDate: faker.date.past({ years: 5 }),
-          status: faker.helpers.arrayElement(['operational', 'maintenance', 'idle']),
+          model: `Model-${randomString(4)}`,
+          serialNumber: randomString(10),
+          manufacturerCode: randomString(8),
+          installationDate: randomDate(365 * 5),
+          status: randomChoice(['operational', 'maintenance', 'idle']),
           location: `${workCenter.name} - Bay ${i + 1}`,
           description: `${equipmentType} used for manufacturing operations`,
         }
@@ -158,11 +187,11 @@ async function createUsers() {
   for (let i = 0; i < 10; i++) {
     const user = await prisma.user.create({
       data: {
-        email: faker.internet.email(),
-        name: faker.person.fullName(),
-        role: faker.helpers.arrayElement(['admin', 'manager', 'operator', 'analyst']),
-        department: faker.helpers.arrayElement(['Production', 'Quality', 'Maintenance', 'Engineering']),
-        passwordHash: faker.string.alphanumeric(32),
+        email: `user${i}@acmecorp.com`,
+        name: randomChoice(OPERATORS),
+        role: randomChoice(['admin', 'manager', 'operator', 'analyst']),
+        department: randomChoice(['Production', 'Quality', 'Maintenance', 'Engineering']),
+        passwordHash: randomString(32),
       }
     });
     users.push(user);
@@ -212,7 +241,7 @@ async function generateOEEMetrics(workUnits: any[]) {
             runTime: operatingTime * 0.9,
             plannedDowntime: 30, // 30 minutes planned
             unplannedDowntime: plannedProductionTime - operatingTime - 30,
-            changeoverTime: faker.number.float({ min: 10, max: 60 }),
+            changeoverTime: randomFloat(10, 60),
             idealCycleTime: 1, // 1 minute ideal
             actualCycleTime: 60 / actualThroughput,
             standardCycleTime: 1.1,
@@ -222,8 +251,8 @@ async function generateOEEMetrics(workUnits: any[]) {
             reworkParts: Math.floor((totalParts - goodParts) * 0.3),
             plannedProduction: Math.floor(targetThroughput * (operatingTime / 60)),
             shift: SHIFTS[hour < 8 ? 0 : hour < 16 ? 1 : 2],
-            operator: faker.helpers.arrayElement(OPERATORS),
-            productType: faker.helpers.arrayElement(PRODUCTS),
+            operator: randomChoice(OPERATORS),
+            productType: randomChoice(PRODUCTS),
             firstPassYield: (goodParts / totalParts) * 100,
             scrapRate: ((totalParts - goodParts) / totalParts) * 100,
             throughputRate: actualThroughput,
@@ -273,11 +302,11 @@ async function generateEquipmentHealth(workUnits: any[]) {
         unplannedDowntime: totalFailures * mttr,
         vibrationLevel: 0.5 + Math.random() * 2, // mm/s vibration
         temperature: 60 + Math.random() * 20, // 60-80°C
-        lubricationStatus: faker.helpers.arrayElement(['good', 'fair', 'poor']),
+        lubricationStatus: randomChoice(['good', 'fair', 'poor']),
         wearLevel: Math.random() * 30, // 0-30% wear
-        nextMaintenanceDue: faker.date.future(),
+        nextMaintenanceDue: new Date(Date.now() + randomInt(1, 365) * 24 * 60 * 60 * 1000),
         maintenanceScore: 60 + Math.random() * 30,
-        riskLevel: faker.helpers.arrayElement(['low', 'medium', 'high']),
+        riskLevel: randomChoice(['low', 'medium', 'high']),
       }
     });
     healthRecords.push(health);
@@ -297,30 +326,30 @@ async function generateMaintenanceRecords(workUnits: any[]) {
     const recordCount = 5 + Math.floor(Math.random() * 10);
     
     for (let i = 0; i < recordCount; i++) {
-      const startTime = faker.date.past({ years: 1 });
+      const startTime = randomDate(365);
       const endTime = new Date(startTime.getTime() + (1 + Math.random() * 8) * 60 * 60 * 1000); // 1-8 hours
       const actualDuration = (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
       
       const record = await prisma.maintenanceRecord.create({
         data: {
           workUnitId: workUnit.id,
-          maintenanceType: faker.helpers.arrayElement(['preventive', 'corrective', 'predictive', 'emergency']),
-          subType: faker.helpers.arrayElement(['planned', 'unplanned', 'condition-based', 'calendar-based']),
-          failureMode: faker.helpers.arrayElement(['mechanical', 'electrical', 'software', 'operator error']),
-          failureCause: faker.helpers.arrayElement(['wear', 'fatigue', 'corrosion', 'design', 'installation']),
-          description: faker.lorem.paragraph(),
-          workOrderNumber: `WO-${faker.string.alphanumeric(8).toUpperCase()}`,
-          priority: faker.helpers.arrayElement(['critical', 'high', 'medium', 'low']),
-          technician: faker.person.fullName(),
-          supervisor: faker.person.fullName(),
-          team: faker.helpers.arrayElement(['Mechanical', 'Electrical', 'Controls']),
+          maintenanceType: randomChoice(['preventive', 'corrective', 'predictive', 'emergency']),
+          subType: randomChoice(['planned', 'unplanned', 'condition-based', 'calendar-based']),
+          failureMode: randomChoice(['mechanical', 'electrical', 'software', 'operator error']),
+          failureCause: randomChoice(['wear', 'fatigue', 'corrosion', 'design', 'installation']),
+          description: 'Maintenance work performed on equipment',
+          workOrderNumber: `WO-${randomString(8)}`,
+          priority: randomChoice(['critical', 'high', 'medium', 'low']),
+          technician: randomChoice(OPERATORS),
+          supervisor: randomChoice(OPERATORS),
+          team: randomChoice(['Mechanical', 'Electrical', 'Controls']),
           startTime,
           endTime,
           plannedDuration: 4 + Math.random() * 4, // 4-8 hours planned
           actualDuration,
-          status: faker.helpers.arrayElement(['completed', 'in_progress', 'scheduled']),
+          status: randomChoice(['completed', 'in_progress', 'scheduled']),
           parts: Array.from({ length: Math.floor(Math.random() * 5) }, () => 
-            `PART-${faker.string.alphanumeric(6).toUpperCase()}`
+            `PART-${randomString(6)}`
           ),
           partsCost: 100 + Math.random() * 500,
           laborCost: actualDuration * (50 + Math.random() * 50), // $50-100/hour
@@ -328,10 +357,10 @@ async function generateMaintenanceRecords(workUnits: any[]) {
           downtimeHours: actualDuration,
           restoreTime: actualDuration * 0.8,
           testTime: actualDuration * 0.2,
-          effectiveness: faker.helpers.arrayElement(['successful', 'partially_successful', 'unsuccessful']),
-          rootCauseFound: faker.datatype.boolean(),
-          preventiveMeasures: faker.lorem.sentence(),
-          notes: faker.lorem.paragraph(),
+          effectiveness: randomChoice(['successful', 'partially_successful', 'unsuccessful']),
+          rootCauseFound: randomBoolean(),
+          preventiveMeasures: 'Implemented preventive measures',
+          notes: 'Additional maintenance notes and observations',
         }
       });
       maintenanceRecords.push(record);
@@ -376,13 +405,13 @@ async function generateQualityMetrics(workUnits: any[]) {
             cpk: tolerance / (6 * (tolerance / 3)), // Simplified calculation
             qualityGrade: Math.abs(value - nominal) <= tolerance * 0.3 ? 'A' : 
                          Math.abs(value - nominal) <= tolerance * 0.6 ? 'B' : 'C',
-            inspectionType: faker.helpers.arrayElement(['incoming', 'in-process', 'final', 'audit']),
-            batchNumber: `BATCH-${faker.string.alphanumeric(6).toUpperCase()}`,
-            inspector: faker.person.fullName(),
-            shift: faker.helpers.arrayElement(SHIFTS),
-            operator: faker.helpers.arrayElement(OPERATORS),
+            inspectionType: randomChoice(['incoming', 'in-process', 'final', 'audit']),
+            batchNumber: `BATCH-${randomString(6)}`,
+            inspector: randomChoice(OPERATORS),
+            shift: randomChoice(SHIFTS),
+            operator: randomChoice(OPERATORS),
             measurementDevice: `${parameter}-Gauge-${Math.floor(Math.random() * 3) + 1}`,
-            calibrationDate: faker.date.recent({ days: 90 }),
+            calibrationDate: randomDate(90),
             disposition: Math.abs(value - nominal) <= tolerance ? 'accept' : 
                         Math.abs(value - nominal) <= tolerance * 1.2 ? 'rework' : 'reject',
           }
@@ -407,26 +436,26 @@ async function generateAlerts(workUnits: any[]) {
     const alertCount = 3 + Math.floor(Math.random() * 5);
     
     for (let i = 0; i < alertCount; i++) {
-      const alertType = faker.helpers.arrayElement(alertTypes);
-      const severity = faker.helpers.arrayElement(['critical', 'high', 'medium', 'low', 'info']);
+      const alertType = randomChoice(alertTypes);
+      const severity = randomChoice(['critical', 'high', 'medium', 'low', 'info']);
       
       const alert = await prisma.alert.create({
         data: {
           workUnitId: workUnit.id,
           alertType,
-          subType: `${alertType}_${faker.number.int({ min: 1, max: 3 })}`,
+          subType: `${alertType}_${randomInt(1, 3)}`,
           severity,
           priority: severity === 'critical' ? 'urgent' : severity,
           title: `${alertType.toUpperCase()} Alert - ${workUnit.name}`,
-          message: faker.lorem.sentence(),
-          metricName: faker.helpers.arrayElement(['temperature', 'pressure', 'vibration', 'speed']),
+          message: 'Alert message describing the condition',
+          metricName: randomChoice(['temperature', 'pressure', 'vibration', 'speed']),
           currentValue: 75 + Math.random() * 50,
           thresholdValue: 100,
-          unit: faker.helpers.arrayElement(['°C', 'bar', 'mm/s', 'rpm']),
-          timestamp: faker.date.recent({ days: 7 }),
-          status: faker.helpers.arrayElement(['active', 'acknowledged', 'resolved']),
-          acknowledgedBy: faker.datatype.boolean() ? faker.person.fullName() : undefined,
-          acknowledgedAt: faker.datatype.boolean() ? faker.date.recent({ days: 1 }) : undefined,
+          unit: randomChoice(['°C', 'bar', 'mm/s', 'rpm']),
+          timestamp: randomDate(7),
+          status: randomChoice(['active', 'acknowledged', 'resolved']),
+          acknowledgedBy: randomBoolean() ? randomChoice(OPERATORS) : undefined,
+          acknowledgedAt: randomBoolean() ? randomDate(1) : undefined,
           resolutionTime: Math.random() * 240, // 0-4 hours
           tags: [alertType, severity, workUnit.equipmentType],
         }
@@ -465,7 +494,7 @@ async function generateEnergyMetrics(workUnits: any[]) {
           carbonFootprint: (50 + Math.random() * 100) * 0.5, // kg CO2
           renewablePercent: 15 + Math.random() * 25, // 15-40% renewable
           productionVolume: Math.floor(40 + Math.random() * 40), // units produced
-          shift: faker.helpers.arrayElement(SHIFTS),
+          shift: randomChoice(SHIFTS),
         }
       });
       energyMetrics.push(metric);

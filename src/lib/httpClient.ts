@@ -112,8 +112,10 @@ export class HttpClient {
    * Get the authentication token
    */
   private getAuthToken(): string | null {
-    // In a real application, this would get the token from localStorage, cookies, or state management
-    return localStorage.getItem('authToken');
+    // Since we're using HTTP-only cookies, the browser will automatically
+    // send the auth-token cookie with requests. No need to manually add it.
+    // This method is kept for backward compatibility but returns null.
+    return null;
   }
 
   /**

@@ -1,5 +1,5 @@
 /**
- * Contact Points Page - Grafana-compatible notification channels
+ * Contact Points Page - Analytics-compatible notification channels
  * /alerting/notifications route
  */
 

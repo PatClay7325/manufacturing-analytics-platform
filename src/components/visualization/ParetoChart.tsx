@@ -172,16 +172,18 @@ export default function ParetoChart({
           />
           
           {/* Vertical line at 80% cumulative */}
-          <ReferenceLine
-            x={eightyPercentIndex}
-            stroke="#666"
-            strokeDasharray="5 5"
-            label={{
-              value: 'Vital Few',
-              position: 'top',
-              style: { fontSize: 12 }
-            }}
-          />
+          {processedData[Math.floor(eightyPercentIndex)] && (
+            <ReferenceLine
+              x={processedData[Math.floor(eightyPercentIndex)].category}
+              stroke="#666"
+              strokeDasharray="5 5"
+              label={{
+                value: 'Vital Few',
+                position: 'top',
+                style: { fontSize: 12 }
+              }}
+            />
+          )}
           
           <Bar
             yAxisId="left"

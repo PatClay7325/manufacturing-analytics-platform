@@ -19,9 +19,9 @@ import {
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { Dashboard, TimeRange } from '@/types/dashboard';
-import TimeRangePicker from './TimeRangePicker';
-import RefreshPicker from './RefreshPicker';
-import ShareModal from './ShareModal';
+import { TimeRangePicker } from './TimeRangePicker';
+import { RefreshPicker } from './RefreshPicker';
+import { ShareModal } from './ShareModal';
 import AddToPlaylistModal from './AddToPlaylistModal';
 
 interface DashboardToolbarProps {

@@ -1,10 +1,12 @@
 'use client';
 
+import React from 'react';
+
 import PageLayout from '@/components/layout/PageLayout';
 import { Construction } from 'lucide-react';
 
 
-export default function publicPage() {
+export default function PublicPage() {
   
   
   return (
@@ -18,7 +20,7 @@ export default function publicPage() {
           Public
         </h2>
         <p className="text-gray-600 dark:text-gray-400 text-center max-w-md">
-          This page is currently being implemented to match Grafana functionality.
+          This page is currently being implemented to match Analytics platform functionality.
         </p>
         
       </div>

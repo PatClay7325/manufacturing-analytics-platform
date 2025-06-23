@@ -1,5 +1,5 @@
 /**
- * Status History Panel - Grafana-compatible status history visualization
+ * Status History Panel - Analytics-compatible status history visualization
  * Shows state changes and durations over time in a timeline format
  * Useful for tracking equipment states, system status, and operational modes
  */

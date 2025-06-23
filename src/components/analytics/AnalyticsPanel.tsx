@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { MoreVertical, Expand, Share2, Eye, Clock } from 'lucide-react';
-import { buildGrafanaUrl, GRAFANA_CONFIG } from '@/config/Analytics.config';
+import { buildAnalyticsUrl, ANALYTICS_CONFIG } from '@/config/Analytics.config';
 
 export interface TimeRange {
   from: string;
@@ -44,12 +44,12 @@ export function AnalyticsPanel({
   onExpand,
   // Analytics embedding props
   panelId,
-  dashboardUid = GRAFANA_CONFIG.dashboard.uid,
-  dashboardName = GRAFANA_CONFIG.dashboard.name,
+  dashboardUid = ANALYTICS_CONFIG.dashboard.uid,
+  dashboardName = ANALYTICS_CONFIG.dashboard.name,
   height = '100%',
   width = '100%',
-  theme = GRAFANA_CONFIG.theme,
-  kiosk = GRAFANA_CONFIG.defaults.kiosk,
+  theme = ANALYTICS_CONFIG.theme,
+  kiosk = ANALYTICS_CONFIG.defaults.kiosk,
   timeRange = { from: 'now-24h', to: 'now' },
   refreshRate,
   showLoading = true,
@@ -59,7 +59,7 @@ export function AnalyticsPanel({
   const [showMenu, setShowMenu] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [grafanaAvailable, setGrafanaAvailable] = useState(false);
+  const [analyticsPlatformAvailable, setAnalyticsPlatformAvailable] = useState(false);
   const [url, setUrl] = useState<string>('');
   const iframeRef = React.useRef<HTMLIFrameElement>(null);
 
@@ -78,10 +78,10 @@ export function AnalyticsPanel({
 
     try {
       // Base URL for Analytics
-      let grafanaUrl = GRAFANA_CONFIG.baseUrl;
+      let analyticsUrl = ANALYTICS_CONFIG.baseUrl;
       
       // Build the single panel URL (d-solo)
-      let dashboardUrl = `${grafanaUrl}/d-solo/${dashboardUid}/${dashboardName}?orgId=${GRAFANA_CONFIG.orgId}&theme=${theme}`;
+      let dashboardUrl = `${analyticsUrl}/d-solo/${dashboardUid}/${dashboardName}?orgId=${ANALYTICS_CONFIG.orgId}&theme=${theme}`;
       dashboardUrl += `&panelId=${panelId}`;
       
       // Add time range parameters
@@ -106,7 +106,7 @@ export function AnalyticsPanel({
       setUrl(dashboardUrl);
       
       // Check if Analytics is available
-      checkGrafanaAvailability(grafanaUrl);
+      checkAnalyticsAvailability(analyticsUrl);
     } catch (err) {
       console.error('Error building Analytics URL:', err);
       const errorMsg = 'Failed to build Analytics URL';
@@ -116,7 +116,14 @@ export function AnalyticsPanel({
     }
   }, [dashboardUid, dashboardName, panelId, theme, kiosk, timeRange, refreshRate]);
 
-  const checkGrafanaAvailability = async (baseUrl: string) => {
+  const checkAnalyticsAvailability = async (baseUrl: string) => {
+    // Skip analytics check if no URL is configured
+    if (!baseUrl) {
+      setAnalyticsPlatformAvailable(false);
+      setIsLoading(false);
+      return;
+    }
+    
     try {
       const response = await fetch(`${baseUrl}/api/health`, { 
         method: 'GET',
@@ -127,19 +134,20 @@ export function AnalyticsPanel({
       });
       
       if (response?.ok) {
-        setGrafanaAvailable(true);
+        setAnalyticsPlatformAvailable(true);
       } else {
-        const errorMsg = 'Analytics server responded with an error';
+        // Analytics server not available - this is expected in development
+        const errorMsg = 'External analytics server not available. Using internal data APIs.';
         setError(errorMsg);
-        setGrafanaAvailable(false);
+        setAnalyticsPlatformAvailable(false);
         if (onError) onError(errorMsg);
       }
     } catch (err) {
-      console.error('Error checking Analytics availability:', err);
-      const errorMsg = 'Cannot connect to Analytics server. Please ensure Analytics is running on port 3002.';
+      // Silently fail - Analytics server not required for development
+      const errorMsg = 'External analytics server not configured. Using internal data APIs.';
       setError(errorMsg);
-      setGrafanaAvailable(false);
-      if (onError) onError(errorMsg);
+      setAnalyticsPlatformAvailable(false);
+      // Don't call onError for expected case
     } finally {
       setIsLoading(false);
     }
@@ -253,7 +261,7 @@ export function AnalyticsPanel({
 
       {/* Panel Content */}
       <div className="flex-1 p-3 overflow-auto">
-        {panelId && grafanaAvailable && !error ? (
+        {panelId && analyticsPlatformAvailable && !error ? (
           <div className="relative h-full">
             {showLoading && isLoading && (
               <div className="absolute inset-0 flex items-center justify-center bg-gray-850 z-10">
@@ -280,9 +288,9 @@ export function AnalyticsPanel({
         ) : error ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center max-w-sm mx-auto p-4">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-900 />20">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-900/20">
                 <svg className="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h?.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
               </div>
               <h3 className="mt-2 text-sm font-medium text-gray-100">Connection Error</h3>

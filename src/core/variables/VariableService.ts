@@ -1,5 +1,5 @@
 /**
- * Variable Service - Grafana-compatible template variable system
+ * Variable Service - Analytics-compatible template variable system
  * Handles variable interpolation, query execution, and state management
  */
 

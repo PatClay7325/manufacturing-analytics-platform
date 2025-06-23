@@ -3,7 +3,7 @@
  * 
  * Defines the contract for data transformation components in the integration framework.
  * Data transformers are responsible for converting data between external system formats
- * and the internal standardized format used by the Manufacturing Analytics Platform.
+ * and the internal standardized format used by the Manufacturing AnalyticsPlatform.
  */
 
 import { IntegrationDataPacket, IntegrationErrorType } from './types';

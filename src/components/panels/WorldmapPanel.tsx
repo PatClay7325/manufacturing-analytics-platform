@@ -1,5 +1,5 @@
 /**
- * Worldmap Panel - Grafana-compatible world map visualization
+ * Worldmap Panel - Analytics-compatible world map visualization
  * Displays global data with country/region mapping and heat visualization
  * Useful for showing global operations, distribution, and geographic metrics
  */

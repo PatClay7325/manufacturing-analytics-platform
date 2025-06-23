@@ -1,6 +1,6 @@
 /**
  * Dashboard Persistence Service - Complete CRUD operations for dashboards
- * Handles saving, loading, versioning, and sharing of Grafana-style dashboards
+ * Handles saving, loading, versioning, and sharing of Analytics-style dashboards
  */
 
 import { PrismaClient } from '@prisma/client';
@@ -214,7 +214,7 @@ export class DashboardPersistenceService {
         variables: dashboard.variables as any[],
         time: dashboard.time as any,
         refresh: dashboard.refresh || undefined,
-        schemaVersion: 36, // Current Grafana schema version
+        schemaVersion: 36, // Current AnalyticsPlatform schema version
         version: dashboard.version,
         timezone: 'browser',
         editable: true,

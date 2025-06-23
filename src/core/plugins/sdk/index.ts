@@ -1,5 +1,5 @@
 /**
- * Grafana Plugin SDK
+ * AnalyticsPlatform Plugin SDK
  * Complete SDK for developing panels, data sources, and app plugins
  */
 

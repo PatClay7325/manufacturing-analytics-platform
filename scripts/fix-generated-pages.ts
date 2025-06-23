@@ -14,10 +14,10 @@ function fixPageLayoutImport(filePath: string) {
       // Replace with a working layout
       const newContent = content.replace(
         "import PageLayout from '@/components/layout/PageLayout'",
-        "import GrafanaLayout from '@/components/layout/GrafanaLayout'"
+        "import AppLayout from '@/components/layout/AppLayout'"
       ).replace(
         /PageLayout/g,
-        'GrafanaLayout'
+        'AppLayout'
       );
       fs.writeFileSync(filePath, newContent);
       return true;

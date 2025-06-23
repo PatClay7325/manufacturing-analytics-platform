@@ -1,7 +1,7 @@
 /**
  * Integration Registry
  * 
- * Central registry for managing integration adapters in the Manufacturing Analytics Platform.
+ * Central registry for managing integration adapters in the Manufacturing AnalyticsPlatform.
  * Provides functions for registering, retrieving, and categorizing adapters.
  * Supports multi-tenancy with tenant-specific adapters.
  */

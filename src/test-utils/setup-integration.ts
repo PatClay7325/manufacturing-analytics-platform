@@ -161,7 +161,7 @@ global.createTestWorkUnit = async (workCenterId: string, overrides = {}) => {
       manufacturerCode: 'MFG-TEST-001',
       model: 'Model X',
       serialNumber: defaultSerialNumber,
-      status: 'OPERATIONAL',
+      status: 'RUNNING',
       installationDate: new Date(),
       updatedAt: new Date(),
       workCenterId,

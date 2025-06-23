@@ -1,5 +1,5 @@
 /**
- * Canvas Panel - Grafana-compatible custom layout panel
+ * Canvas Panel - Analytics-compatible custom layout panel
  * Enables SCADA-like visualizations with drag-and-drop elements
  */
 

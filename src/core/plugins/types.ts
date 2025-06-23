@@ -1,12 +1,12 @@
 /**
- * Grafana-compatible Plugin System Types
+ * Analytics-compatible Plugin System Types
  * Provides complete plugin architecture for panels, data sources, and apps
  */
 
 import { ComponentType, ReactNode } from 'react';
 import { TimeRange, DataFrame, FieldType } from '@/types/data';
 
-// Plugin Types matching Grafana's architecture
+// Plugin Types matching Analytics' architecture
 export enum PluginType {
   Panel = 'panel',
   DataSource = 'datasource',
@@ -83,8 +83,8 @@ export interface PluginInfo {
 }
 
 export interface PluginDependencies {
-  grafanaDependency?: string;
-  grafanaVersion: string;
+  manufacturingPlatformDependency?: string;
+  analyticsVersion: string;
   plugins: Array<{
     id: string;
     name: string;

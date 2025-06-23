@@ -1,6 +1,6 @@
 /**
  * Panel Plugin SDK
- * Helpers for creating Grafana-compatible panel plugins
+ * Helpers for creating Analytics-compatible panel plugins
  */
 
 import { ComponentType } from 'react';
@@ -224,7 +224,7 @@ export class PanelPluginBuilder<TOptions = any> {
 
     if (!this.plugin.meta.info) {
       this.plugin.meta.info = {
-        author: { name: 'Manufacturing Analytics Platform' },
+        author: { name: 'Manufacturing AnalyticsPlatform' },
         description: this.plugin.meta.name,
         logos: {
           small: 'public/img/icn-panel.svg',

@@ -112,7 +112,9 @@ function TablePanel({ panel, data = [], width, height }: TablePanelProps) {
     return className;
   };
 
-  const tableHeight = height ? Math.max(height - 60, 200) : 400;
+  // Ensure height is a valid number
+  const validHeight = typeof height === 'number' && !isNaN(height) ? height : 400;
+  const tableHeight = Math.max(validHeight - 60, 200);
   const pageSize = options?.pageSize || 50;
   const showHeader = options?.showHeader !== false;
   const showRowNumbers = options?.showRowNumbers || false;
@@ -121,7 +123,7 @@ function TablePanel({ panel, data = [], width, height }: TablePanelProps) {
     return (
       <div 
         className="w-full h-full flex items-center justify-center bg-gray-50 border border-gray-200 rounded"
-        style={{ height: tableHeight }}
+        style={{ height: `${tableHeight}px` }}
       >
         <div className="text-center">
           <div className="w-16 h-16 mx-auto mb-4 bg-gray-200 rounded-lg flex items-center justify-center">
@@ -146,7 +148,7 @@ function TablePanel({ panel, data = [], width, height }: TablePanelProps) {
       {/* Table Container */}
       <div 
         className="overflow-auto"
-        style={{ height: showHeader ? tableHeight - 40 : tableHeight }}
+        style={{ height: `${showHeader ? tableHeight - 40 : tableHeight}px` }}
       >
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50 sticky top-0">

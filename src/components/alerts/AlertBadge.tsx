@@ -114,3 +114,5 @@ export default function AlertBadge({
     </span>
   );
 }
+
+export { AlertBadge };

@@ -87,9 +87,9 @@ groups:
       description: "90th percentile of API latency is above 1 second for 5 minutes"
 EOF
 
-# Setup Grafana dashboards
-mkdir -p "$MONITORING_DIR/grafana/dashboards"
-cat > "$MONITORING_DIR/grafana/dashboards/api_dashboard.json" << EOF
+# Setup manufacturingPlatform dashboards
+mkdir -p "$MONITORING_DIR/manufacturingPlatform/dashboards"
+cat > "$MONITORING_DIR/manufacturingPlatform/dashboards/api_dashboard.json" << EOF
 {
   "annotations": {
     "list": []

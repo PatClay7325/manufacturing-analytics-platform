@@ -71,6 +71,30 @@ export function TimeRangePicker({ value, onChange, className = '' }: TimeRangePi
   const [toDate, setToDate] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  // Ensure value has the correct structure
+  const normalizedValue = React.useMemo(() => {
+    if (!value) {
+      return {
+        from: 'now-6h',
+        to: 'now',
+        raw: { from: 'now-6h', to: 'now' }
+      };
+    }
+    
+    // If value doesn't have raw property, create it
+    if (!value.raw) {
+      return {
+        ...value,
+        raw: { 
+          from: typeof value.from === 'string' ? value.from : value.from.toISOString(),
+          to: typeof value.to === 'string' ? value.to : value.to.toISOString()
+        }
+      };
+    }
+    
+    return value;
+  }, [value]);
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -114,19 +138,19 @@ export function TimeRangePicker({ value, onChange, className = '' }: TimeRangePi
   const getDisplayText = () => {
     // Find matching quick range
     const quickRange = quickRanges.find(
-      r => r.from === value.raw.from && r.to === value.raw.to
+      r => r.from === normalizedValue.raw.from && r.to === normalizedValue.raw.to
     );
     if (quickRange) return quickRange.label;
 
     // Check if it's a relative time
-    if (typeof value.raw.from === 'string' && value.raw.from.includes('now')) {
-      return `${value.raw.from} to ${value.raw.to}`;
+    if (typeof normalizedValue.raw.from === 'string' && normalizedValue.raw.from.includes('now')) {
+      return `${normalizedValue.raw.from} to ${normalizedValue.raw.to}`;
     }
 
     // Format absolute time
     try {
-      const from = new Date(value.from);
-      const to = new Date(value.to);
+      const from = new Date(normalizedValue.from);
+      const to = new Date(normalizedValue.to);
       return `${format(from, 'yyyy-MM-dd HH:mm')} to ${format(to, 'yyyy-MM-dd HH:mm')}`;
     } catch {
       return 'Custom time range';
@@ -314,3 +338,4 @@ export function TimeRangePicker({ value, onChange, className = '' }: TimeRangePi
     </div>
   );
 }
+export default TimeRangePicker;

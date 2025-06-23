@@ -1,6 +1,6 @@
 /**
  * Data Source Plugin SDK
- * Helpers for creating Grafana-compatible data source plugins
+ * Helpers for creating Analytics-compatible data source plugins
  */
 
 import { ComponentType } from 'react';
@@ -179,7 +179,7 @@ export class DataSourcePluginBuilder<
 
     if (!this.plugin.meta.info) {
       this.plugin.meta.info = {
-        author: { name: 'Manufacturing Analytics Platform' },
+        author: { name: 'Manufacturing AnalyticsPlatform' },
         description: this.plugin.meta.name,
         logos: {
           small: 'public/img/icn-datasource.svg',

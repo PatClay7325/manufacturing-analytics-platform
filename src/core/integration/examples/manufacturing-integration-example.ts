@@ -283,7 +283,7 @@ function setupEventHandlers(eventBus: EventBus): void {
   });
   
   eventBus.subscribe('integration.data.received', (event: any) => {
-    console.log(`Event: Data received from dataId}`);
+    console.log(`Event: Data received from ${event.dataId}`);
   });
   
   eventBus.subscribe('integration.data.processed', (event: any) => {
@@ -305,7 +305,7 @@ async function setupDataHandlers(
 ): Promise<void> {
   // Set up OPC UA data handler
   await integrationService.receiveData(opcUaAdapter.id, async (data: IntegrationDataPacket<any>) => {
-    console.log(`Received OPC UA data from payload);
+    console.log(`Received OPC UA data from ${data.source}:`, data.payload);
     
     // Process the data (in a real implementation, this would do something useful)
     await processOpcUaData(data);
@@ -313,7 +313,7 @@ async function setupDataHandlers(
   
   // Set up MQTT data handler
   await integrationService.receiveData(mqttAdapter.id, async (data: IntegrationDataPacket<any>) => {
-    console.log(`Received MQTT data from payload);
+    console.log(`Received MQTT data from ${data.source}:`, data.payload);
     
     // Process the data (in a real implementation, this would do something useful)
     await processMqttData(data);

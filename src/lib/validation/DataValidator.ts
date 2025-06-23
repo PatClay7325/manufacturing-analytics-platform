@@ -325,7 +325,7 @@ export class DataValidator {
       return data
         .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove script tags
         .replace(/javascript:/gi, '') // Remove javascript: protocols
-        .replace(/on\w+\s*=\s*["']?[^"']*["']?/gi, '') // Remove event handlers
+        .replace(/on\w+\s*=\s*(?:["'](?:[^"'\\]|\\.)*["']|[^\s>]+)/gi, '') // Remove event handlers with proper quote handling
         .replace(/[<>]/g, (match) => match === '<' ? '&lt;' : '&gt;') // Escape HTML
         .trim();
     }

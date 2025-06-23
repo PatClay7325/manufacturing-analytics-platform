@@ -1,6 +1,6 @@
 # Custom Visualization Components
 
-This directory contains our proprietary visualization components designed specifically for manufacturing analytics. These components are original implementations that do not use or depend on Grafana.
+This directory contains our proprietary visualization components designed specifically for manufacturing analytics. These components are original implementations that do not use or depend on manufacturingPlatform.
 
 ## Components
 

@@ -1,5 +1,5 @@
 /**
- * Candlestick Panel - Grafana-compatible candlestick/OHLC visualization
+ * Candlestick Panel - Analytics-compatible candlestick/OHLC visualization
  * Displays financial-style data with open, high, low, close values
  * Useful for trend analysis, price movements, and range data
  */

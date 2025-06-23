@@ -1,32 +1,32 @@
 import React from 'react';
 
 import './globals.css';
-import { Inter } from 'next/font/google';
 import type { Metadata, Viewport } from 'next';
 import ErrorBoundary from '@/components/common/ErrorBoundary';
-import GrafanaLayout from '@/components/layout/GrafanaLayout';
+import AnalyticsLayout from '@/components/layout/AnalyticsLayout';
 import ClientLayout from './ClientLayout';
 import { PreferencesProvider } from '@/contexts/PreferencesContext';
 // import MockServerProvider from '@/components/providers/MockServerProvider';
 
-const inter = Inter({ subsets: ['latin'] });
+// Use system fonts instead of Google Fonts for better reliability
+const fontStack = 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
 
 export const metadata: Metadata = {
-  title: 'Manufacturing Analytics Platform',
-  description: 'Advanced manufacturing intelligence and analytics platform powered by Grafana-style architecture',
-  keywords: 'manufacturing, analytics, intelligence, dashboard, metrics, grafana, industrial, IoT',
+  title: 'Manufacturing AnalyticsPlatform',
+  description: 'Advanced manufacturing intelligence and analyticsPlatform powered by analytics dashboard architecture',
+  keywords: 'manufacturing, analytics, intelligence, dashboard, metrics, industrial, IoT',
   authors: [{ name: 'Manufacturing Analytics Team' }],
   robots: 'index, follow',
   openGraph: {
-    title: 'Manufacturing Analytics Platform',
-    description: 'Advanced manufacturing intelligence and analytics platform',
+    title: 'Manufacturing AnalyticsPlatform',
+    description: 'Advanced manufacturing intelligence and analyticsPlatform',
     type: 'website',
     locale: 'en_US',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Manufacturing Analytics Platform',
-    description: 'Advanced manufacturing intelligence and analytics platform',
+    title: 'Manufacturing AnalyticsPlatform',
+    description: 'Advanced manufacturing intelligence and analyticsPlatform',
   },
   icons: {
     icon: '/favicon.ico',
@@ -54,8 +54,6 @@ export default function RootLayout({
       <head>
         <meta name="color-scheme" content="dark light" />
         <meta name="theme-color" content="#1f2937" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -68,13 +66,13 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter?.className} h-full antialiased`}>
+      <body className="h-full antialiased" style={{ fontFamily: fontStack }}>
         <ErrorBoundary level="critical" context="root-layout">
           <ClientLayout>
             <PreferencesProvider>
-              <GrafanaLayout>
+              <AnalyticsLayout>
                 {children}
-              </GrafanaLayout>
+              </AnalyticsLayout>
             </PreferencesProvider>
           </ClientLayout>
         </ErrorBoundary>

@@ -90,11 +90,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Redirect logic based on auth status
   useEffect(() => {
-    // Skip redirects in development
-    if (process.env.NODE_ENV === 'development') {
-      return;
-    }
-    
     if (!loading) {
       const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
       
@@ -128,7 +123,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(true);
       setError(null);
       const response = await authApi.login(email, password, remember);
+      
+      // The API sets an HTTP-only cookie, so we don't need to handle it here
+      // Just store the user data
       setUser(response.user);
+      
+      // Navigate to dashboard
       router.push('/dashboard');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Login failed';
@@ -143,6 +143,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true);
       await authApi.logout();
+      
+      // The API will clear the HTTP-only cookie
       setUser(null);
       router.push('/login');
     } catch (err) {
@@ -157,6 +159,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(true);
       setError(null);
       const response = await authApi.register(data);
+      
+      // The API sets an HTTP-only cookie
       setUser(response.user);
       router.push('/dashboard');
     } catch (err) {

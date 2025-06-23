@@ -9,17 +9,23 @@ const nextConfig = {
   // Standalone output for Docker deployment
   output: 'standalone',
   
+  // Disable static exports for database-dependent pages
+  generateBuildId: async () => {
+    // Use timestamp for build ID to ensure fresh builds
+    return Date.now().toString();
+  },
+  
   // TypeScript configuration
   typescript: {
-    // We've fixed syntax errors, so enable strict checking
+    // Enable type checking for build
     ignoreBuildErrors: false,
   },
   
   // ESLint configuration
   eslint: {
-    // Enable ESLint during builds for code quality
+    // Enable ESLint during builds
     ignoreDuringBuilds: false,
-    dirs: ['src', 'pages', 'components', 'lib', 'utils'],
+    dirs: ['src'],
   },
   
   // Transpile packages for compatibility
@@ -88,6 +94,21 @@ const nextConfig = {
   
   // Webpack customizations following Next.js best practices
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+    // Fix hot update 404 errors in development
+    if (dev) {
+      config.watchOptions = {
+        poll: 1000,
+        aggregateTimeout: 300,
+        ignored: /node_modules/,
+      };
+      
+      // Ensure proper webpack dev middleware configuration
+      config.devServer = {
+        ...config.devServer,
+        hot: true,
+        liveReload: true,
+      };
+    }
     // Redirect AWS SDK imports to our stub implementation
     const awsSdkModules = [
       'client-cloudwatch',

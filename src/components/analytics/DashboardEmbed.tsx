@@ -34,26 +34,27 @@ export const DashboardEmbed: React.FC<DashboardEmbedProps> = ({
           try {
             const iframeDoc = iframe?.contentWindow?.document;
             if (iframeDoc) {
-              const style = iframeDoc?.createElement('style');
-    if (style) {
-      style.innerHTML = `
-                .navbar,
-                .sidemenu,
-                .page-toolbar,
-                .panel-menu,
-                .panel-info-corner,
-                .dashboard-settings,
-                .panel-loading {
-                  display: none !important;
-                }
-                .main-view {
-                  padding: 0 !important;
-                }
-                .scroll-canvas {
-                  padding: 0 !important;
-                }
-              `;
-              iframeDoc?.head.appendChild(style);
+              const style = iframeDoc.createElement('style');
+              if (style) {
+                style.innerHTML = `
+                  .navbar,
+                  .sidemenu,
+                  .page-toolbar,
+                  .panel-menu,
+                  .panel-info-corner,
+                  .dashboard-settings,
+                  .panel-loading {
+                    display: none !important;
+                  }
+                  .main-view {
+                    padding: 0 !important;
+                  }
+                  .scroll-canvas {
+                    padding: 0 !important;
+                  }
+                `;
+                iframeDoc.head.appendChild(style);
+              }
             }
           } catch (e) {
             // Cross-origin restrictions may prevent this

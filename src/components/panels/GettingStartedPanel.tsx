@@ -1,5 +1,5 @@
 /**
- * Getting Started Panel - Grafana-compatible onboarding panel
+ * Getting Started Panel - Analytics-compatible onboarding panel
  * Displays helpful links, documentation, and quick actions for new users
  */
 
@@ -101,14 +101,14 @@ const GettingStartedPanel: React.FC<PanelProps<GettingStartedPanelOptions>> = ({
       title: 'Video Tutorials',
       description: 'Step-by-step walkthroughs of key features',
       icon: <PlayCircle className="h-4 w-4" />,
-      href: 'https://www.youtube.com/grafana',
+      href: 'https://www.youtube.com/analyticsPlatform',
       external: true,
     },
     {
       title: 'Community Forums',
       description: 'Get help and share experiences with other users',
       icon: <Users className="h-4 w-4" />,
-      href: 'https://community.grafana.com',
+      href: 'https://community.analyticsPlatform.com',
       external: true,
     },
   ];
@@ -147,7 +147,7 @@ const GettingStartedPanel: React.FC<PanelProps<GettingStartedPanelOptions>> = ({
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Welcome section */}
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-2">Welcome to Manufacturing Analytics Platform</h2>
+          <h2 className="text-2xl font-bold mb-2">Welcome to Manufacturing AnalyticsPlatform</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Get started by connecting your data sources and creating your first dashboard. 
             Follow our quick start guide or explore advanced features.

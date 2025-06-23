@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+
 import { useState } from 'react';
 import PageLayout from '@/components/layout/PageLayout';
 import { 
@@ -30,7 +32,7 @@ interface GeneralSettings {
 
 const defaultSettings: GeneralSettings = {
   orgName: 'Manufacturing Analytics Inc',
-  instanceName: 'Manufacturing Analytics Platform',
+  instanceName: 'Manufacturing AnalyticsPlatform',
   homePageUrl: '/dashboard',
   defaultTheme: 'light',
   weekStart: 'monday',
@@ -115,7 +117,7 @@ export default function AdminGeneralPage() {
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Name of this Grafana instance, used in notifications
+                Name of this Analytics instance, used in notifications
               </p>
             </div>
           </div>

@@ -13,5 +13,5 @@ export default function TestDashboardPage() {
 
 export const metadata = {
   title: 'Test Dashboard - Plugin System Demo',
-  description: 'Testing the Grafana parity plugin system implementation',
+  description: 'Testing the AnalyticsPlatform parity plugin system implementation',
 };

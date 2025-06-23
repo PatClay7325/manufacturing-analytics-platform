@@ -136,9 +136,9 @@ const applyFixes = (dryRun: boolean) => {
   
   // Handle special case for closing brace after innerHTML assignment
   if (!dryRun) {
-    const grafanaEmbedPath = path.join(process.cwd(), 'src/components/Analytics/DashboardEmbed.tsx');
-    if (fs.existsSync(grafanaEmbedPath)) {
-      let content = fs.readFileSync(grafanaEmbedPath, 'utf-8');
+    const analyticsEmbedPath = path.join(process.cwd(), 'src/components/Analytics/DashboardEmbed.tsx');
+    if (fs.existsSync(analyticsEmbedPath)) {
+      let content = fs.readFileSync(analyticsEmbedPath, 'utf-8');
       
       // Find the innerHTML assignment and ensure proper closing
       const innerHTMLRegex = /if \(style\) \{\s*style\.innerHTML = `([^`]+)`/;
@@ -156,7 +156,7 @@ const applyFixes = (dryRun: boolean) => {
           
           if (!afterEnd.trimStart().startsWith('}')) {
             content = beforeEnd + '\n    }' + afterEnd;
-            fs.writeFileSync(grafanaEmbedPath, content, 'utf-8');
+            fs.writeFileSync(analyticsEmbedPath, content, 'utf-8');
             console.log('\n📁 src/components/Analytics/DashboardEmbed.tsx:');
             console.log('  ✅ Added closing brace for innerHTML if statement');
           }

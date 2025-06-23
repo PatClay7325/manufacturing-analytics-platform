@@ -1,5 +1,5 @@
 /**
- * Logs Panel - Grafana-compatible logs visualization
+ * Logs Panel - Analytics-compatible logs visualization
  * Displays manufacturing event logs with filtering, searching, and live tailing
  */
 
@@ -374,11 +374,13 @@ const LogsPanel: React.FC<PanelProps<LogsPanelOptions>> = ({
                         <div>
     <div>
     <div>
+    <div>
       <span className="text-muted-foreground">Fields:</span>
       <pre className="ml-4 text-xs">
                             {JSON.stringify(log.fields, null, 2)}
                           </pre>
     </div>
+  </div>
   </div>
   </div>
                       )}

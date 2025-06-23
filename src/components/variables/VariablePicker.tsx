@@ -1,5 +1,5 @@
 /**
- * Variable Picker - Grafana-style variable selector dropdown
+ * Variable Picker - Analytics-style variable selector dropdown
  * Allows users to select values for template variables
  */
 

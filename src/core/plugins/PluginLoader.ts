@@ -191,7 +191,7 @@ export class PluginLoader extends EventEmitter {
     }
 
     // Built-in plugins
-    if (main.startsWith('@grafana/')) {
+    if (main.startsWith('@analyticsPlatform/')) {
       return `/plugins/built-in/${pluginId}/${main}`;
     }
 

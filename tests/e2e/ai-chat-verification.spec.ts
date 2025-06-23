@@ -23,7 +23,7 @@ test.describe('AI Chat Page Verification', () => {
     await expect(page.locator('button', { hasText: 'New Chat' })).toBeVisible();
   });
 
-  test('AI Assistant link appears in Grafana navigation', async ({ page }) => {
+  test('AI Assistant link appears in manufacturingPlatform navigation', async ({ page }) => {
     // Go to home page
     await page.goto('/');
     

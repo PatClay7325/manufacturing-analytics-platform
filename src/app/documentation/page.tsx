@@ -11,7 +11,7 @@ export default function Documentation() {
           Documentation
         </h1>
         <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-          Comprehensive documentation for Manufacturing Analytics Platform, including guides, tutorials, and reference materials.
+          Comprehensive documentation for Manufacturing AnalyticsPlatform, including guides, tutorials, and reference materials.
         </p>
       </div>
 

@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+
 import { useState } from 'react';
 import PageLayout from '@/components/layout/PageLayout';
 import { 
@@ -51,12 +53,12 @@ const mockPlugins: InstalledPlugin[] = [
     enabled: true,
     signed: true,
     signatureStatus: 'valid',
-    author: 'Grafana Labs',
+    author: 'AnalyticsPlatform Team',
     description: 'Open source monitoring system & time series database',
     category: 'tsdb',
     buildInfo: {
       time: 1704067200000,
-      repo: 'https://github.com/grafana/grafana',
+      repo: 'https://github.com/manufacturing-analytics/platform',
       branch: 'main',
       hash: 'abc123'
     }
@@ -71,12 +73,12 @@ const mockPlugins: InstalledPlugin[] = [
     enabled: true,
     signed: true,
     signatureStatus: 'valid',
-    author: 'Grafana Labs',
+    author: 'AnalyticsPlatform Team',
     description: 'PostgreSQL datasource plugin',
     category: 'sql',
     buildInfo: {
       time: 1703462400000,
-      repo: 'https://github.com/grafana/grafana',
+      repo: 'https://github.com/manufacturing-analytics/platform',
       branch: 'main',
       hash: 'def456'
     }
@@ -91,12 +93,12 @@ const mockPlugins: InstalledPlugin[] = [
     enabled: true,
     signed: true,
     signatureStatus: 'valid',
-    author: 'Grafana Labs',
+    author: 'AnalyticsPlatform Team',
     description: 'Pie chart panel for data visualization',
     category: 'panel',
     buildInfo: {
       time: 1702857600000,
-      repo: 'https://github.com/grafana/piechart-panel',
+      repo: 'https://github.com/analytics/piechart-panel',
       branch: 'main',
       hash: 'ghi789'
     }
@@ -114,12 +116,12 @@ const mockPlugins: InstalledPlugin[] = [
     author: 'Redis Labs',
     description: 'Redis datasource plugin',
     dependencies: {
-      'grafanaVersion': '>=8.0.0'
+      'analyticsVersion': '>=8.0.0'
     },
     category: 'database',
     buildInfo: {
       time: 1702252800000,
-      repo: 'https://github.com/RedisGrafana/grafana-redis-datasource',
+      repo: 'https://github.com/analytics/redis-datasource',
       branch: 'main',
       hash: 'jkl012'
     }

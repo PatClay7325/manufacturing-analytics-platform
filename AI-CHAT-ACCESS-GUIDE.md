@@ -72,6 +72,6 @@ The AI Chat is configured to use:
 - **Dark Mode Support**: Fully integrated with platform theme
 - **Responsive Design**: Works on desktop and tablet devices
 - **ChatGPT-4o Style**: Familiar interface with enhanced features
-- **Grafana Integration**: Seamlessly integrated into the platform's navigation
+- **manufacturingPlatform Integration**: Seamlessly integrated into the platform's navigation
 
 Enjoy using your AI Assistant! 🤖

@@ -12,7 +12,7 @@ interface DocumentationIssue {
   file: string;
   line: number;
   content: string;
-  issueType: 'grafana' | 'analytics' | 'filename';
+  issueType: 'manufacturingPlatform' | 'analytics' | 'filename';
   suggestion?: string;
 }
 
@@ -28,16 +28,16 @@ const findDocumentationIssues = (): DocumentationIssue[] => {
   });
 
   mdFiles.forEach(file => {
-    // Check for Grafana in filename
-    if (file.toLowerCase().includes('grafana')) {
+    // Check for manufacturingPlatform in filename
+    if (file.toLowerCase().includes('manufacturingPlatform')) {
       issues.push({
         file,
         line: 0,
         content: path.basename(file),
         issueType: 'filename',
         suggestion: path.basename(file)
-          .replace(/grafana/gi, 'manufacturing-analytics')
-          .replace(/GRAFANA/g, 'MANUFACTURING-ANALYTICS')
+          .replace(/manufacturingPlatform/gi, 'manufacturing-analytics')
+          .replace(/manufacturingPlatform/g, 'MANUFACTURING-ANALYTICS')
       });
     }
 
@@ -47,13 +47,13 @@ const findDocumentationIssues = (): DocumentationIssue[] => {
       const lines = content.split('\n');
 
       lines.forEach((line, index) => {
-        // Direct Grafana references
+        // Direct manufacturingPlatform references
         if (/\bgrafana\b/i.test(line)) {
           issues.push({
             file,
             line: index + 1,
             content: line.trim(),
-            issueType: 'grafana',
+            issueType: 'manufacturingPlatform',
             suggestion: line
               .replace(/\bGrafana\b/g, 'Manufacturing Analytics Platform')
               .replace(/\bgrafana\b/g, 'manufacturing analytics platform')
@@ -93,8 +93,8 @@ const suggestFileRenames = (issues: DocumentationIssue[]): FileToRename[] => {
       const dir = path.dirname(issue.file);
       const oldName = path.basename(issue.file);
       const newName = oldName
-        .replace(/grafana/gi, 'manufacturing-analytics')
-        .replace(/GRAFANA/g, 'MANUFACTURING-ANALYTICS');
+        .replace(/manufacturingPlatform/gi, 'manufacturing-analytics')
+        .replace(/manufacturingPlatform/g, 'MANUFACTURING-ANALYTICS');
       
       renames.push({
         oldPath: issue.file,
@@ -117,13 +117,13 @@ const generateReport = (issues: DocumentationIssue[]) => {
   }, {} as Record<string, DocumentationIssue[]>);
 
   // Summary
-  const grafanaIssues = issues.filter(i => i.issueType === 'grafana');
+  const grafanaIssues = issues.filter(i => i.issueType === 'manufacturingPlatform');
   const analyticsIssues = issues.filter(i => i.issueType === 'analytics');
   const filenameIssues = issues.filter(i => i.issueType === 'filename');
 
   console.log('📊 Summary:');
   console.log(`   Total files with issues: ${Object.keys(byFile).length}`);
-  console.log(`   Grafana references: ${grafanaIssues.length}`);
+  console.log(`   manufacturingPlatform references: ${grafanaIssues.length}`);
   console.log(`   Generic Analytics references: ${analyticsIssues.length}`);
   console.log(`   Files needing rename: ${filenameIssues.length}`);
   console.log('\n' + '-'.repeat(80) + '\n');
@@ -139,20 +139,20 @@ const generateReport = (issues: DocumentationIssue[]) => {
     console.log('-'.repeat(80) + '\n');
   }
 
-  // Files with Grafana references
+  // Files with manufacturingPlatform references
   const filesWithGrafana = Object.entries(byFile)
-    .filter(([_, issues]) => issues.some(i => i.issueType === 'grafana'))
+    .filter(([_, issues]) => issues.some(i => i.issueType === 'manufacturingPlatform'))
     .sort((a, b) => b[1].length - a[1].length);
 
   if (filesWithGrafana.length > 0) {
-    console.log('🔍 Files with Grafana references:\n');
+    console.log('🔍 Files with manufacturingPlatform references:\n');
     filesWithGrafana.forEach(([file, fileIssues]) => {
-      const grafanaCount = fileIssues.filter(i => i.issueType === 'grafana').length;
+      const grafanaCount = fileIssues.filter(i => i.issueType === 'manufacturingPlatform').length;
       console.log(`📄 ${file} (${grafanaCount} references)`);
       
       // Show first 3 examples
       fileIssues
-        .filter(i => i.issueType === 'grafana')
+        .filter(i => i.issueType === 'manufacturingPlatform')
         .slice(0, 3)
         .forEach(issue => {
           console.log(`   Line ${issue.line}: ${issue.content.substring(0, 80)}${issue.content.length > 80 ? '...' : ''}`);
@@ -195,13 +195,13 @@ const generateReport = (issues: DocumentationIssue[]) => {
 
   // Recommendations
   console.log('💡 Recommendations:\n');
-  console.log('1. Rename files with "GRAFANA" in the name to use "MANUFACTURING-ANALYTICS"');
-  console.log('2. Replace all "Grafana" references with "Manufacturing Analytics Platform"');
+  console.log('1. Rename files with "manufacturingPlatform" in the name to use "MANUFACTURING-ANALYTICS"');
+  console.log('2. Replace all "manufacturingPlatform" references with "Manufacturing Analytics Platform"');
   console.log('3. Review generic "Analytics" references and update where appropriate:');
   console.log('   - "Analytics Dashboard" → "Manufacturing Analytics Dashboard"');
   console.log('   - "Analytics-parallel" → "Enterprise-grade analytics"');
   console.log('   - "Analytics integration" → "Manufacturing Analytics integration"');
-  console.log('4. Consider archiving or removing outdated Grafana implementation guides');
+  console.log('4. Consider archiving or removing outdated manufacturingPlatform implementation guides');
   console.log('\n' + '='.repeat(80));
 };
 
@@ -209,7 +209,7 @@ const createCleanupScript = (issues: DocumentationIssue[]) => {
   const outputPath = path.join(process.cwd(), 'scripts', 'cleanup-markdown-docs.ts');
   
   const grafanaFiles = [...new Set(issues
-    .filter(i => i.issueType === 'grafana')
+    .filter(i => i.issueType === 'manufacturingPlatform')
     .map(i => i.file))];
 
   const renames = suggestFileRenames(issues);
@@ -263,16 +263,16 @@ const cleanupDocs = (dryRun: boolean = false) => {
     let content = fs.readFileSync(filePath, 'utf-8');
     const originalContent = content;
 
-    // Replace Grafana references
+    // Replace manufacturingPlatform references
     content = content
       .replace(/\\bGrafana\\b/g, 'Manufacturing Analytics Platform')
       .replace(/\\bgrafana\\b/g, 'manufacturing analytics platform')
       .replace(/\\bGRAFANA\\b/g, 'MANUFACTURING ANALYTICS PLATFORM')
-      .replace(/Grafana-style/gi, 'Manufacturing Analytics')
-      .replace(/Grafana-parallel/gi, 'Enterprise-grade analytics')
-      .replace(/Grafana-compliant/gi, 'Industry-standard compliant')
-      .replace(/Grafana Dashboard/gi, 'Manufacturing Analytics Dashboard')
-      .replace(/Grafana Integration/gi, 'Manufacturing Analytics Integration');
+      .replace(/manufacturingPlatform-style/gi, 'Manufacturing Analytics')
+      .replace(/manufacturingPlatform-parallel/gi, 'Enterprise-grade analytics')
+      .replace(/manufacturingPlatform-compliant/gi, 'Industry-standard compliant')
+      .replace(/manufacturingPlatform Dashboard/gi, 'Manufacturing Analytics Dashboard')
+      .replace(/manufacturingPlatform Integration/gi, 'Manufacturing Analytics Integration');
 
     if (content !== originalContent) {
       if (dryRun) {
@@ -312,7 +312,7 @@ const main = () => {
 
   generateReport(issues);
   
-  if (issues.some(i => i.issueType === 'grafana' || i.issueType === 'filename')) {
+  if (issues.some(i => i.issueType === 'manufacturingPlatform' || i.issueType === 'filename')) {
     createCleanupScript(issues);
   }
 };

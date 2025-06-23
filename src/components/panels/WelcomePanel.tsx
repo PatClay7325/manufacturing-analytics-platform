@@ -1,5 +1,5 @@
 /**
- * Welcome Panel - Grafana-compatible welcome panel
+ * Welcome Panel - Analytics-compatible welcome panel
  * Shows personalized welcome message and quick stats
  */
 

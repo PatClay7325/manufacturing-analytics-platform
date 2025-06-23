@@ -370,7 +370,7 @@ export default function DiagnosticsPageContent() {
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">Enterprise Diagnostics Center</h1>
                 <p className="mt-2 text-sm text-gray-600">
-                  Comprehensive testing, monitoring, and configuration for Manufacturing Analytics Platform
+                  Comprehensive testing, monitoring, and configuration for Manufacturing AnalyticsPlatform
                 </p>
               </div>
               <div className="flex items-center gap-2">
@@ -744,11 +744,13 @@ function SystemTestsPanel(props: any) {
                   <div>
     <div>
     <div>
+    <div>
       <span className="font-medium text-sm">Response:</span>
       <pre className="text-xs bg-gray-100 p-2 rounded mt-1 overflow-x-auto">
                       {JSON.stringify(selectedTest?.response, null, 2)}
                     </pre>
     </div>
+  </div>
   </div>
   </div>
                 )}
@@ -1058,9 +1060,16 @@ function DetailRow({ label, value }: { label: string; value: React.ReactNode }) 
     <div>
       <div>
 
-        <span className="font-medium text-sm text-gray-700">{label}:</span>
+        <div>
 
-        <div className="mt-1 text-sm">{value}</div>
+
+          <span className="font-medium text-sm text-gray-700">{label}:</span>
+
+
+          <div className="mt-1 text-sm">{value}</div>
+
+
+        </div>
 
       </div>
     </div>

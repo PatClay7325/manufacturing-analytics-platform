@@ -1,5 +1,5 @@
 /**
- * Integration Types for the Manufacturing Analytics Platform
+ * Integration Types for the Manufacturing AnalyticsPlatform
  * 
  * This file defines the types and enums for the integration framework
  * used to connect with external manufacturing systems.

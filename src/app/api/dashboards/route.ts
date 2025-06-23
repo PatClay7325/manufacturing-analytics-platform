@@ -1,32 +1,32 @@
 /**
- * Dashboard API Routes - CRUD operations for dashboards
- * GET /api/dashboards - Search dashboards
- * POST /api/dashboards - Save dashboard
+ * Dashboard API Routes - List and Create dashboards
+ * GET /api/dashboards - List dashboards with filtering
+ * POST /api/dashboards - Create new dashboard
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { dashboardPersistenceService } from '@/services/dashboardPersistenceService';
+import { DashboardService } from '@/services/dashboardService';
+
+const dashboardService = DashboardService.getInstance();
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     
-    const searchRequest = {
+    const options = {
       query: searchParams.get('query') || undefined,
-      tag: searchParams.getAll('tag'),
-      starred: searchParams.get('starred') === 'true' ? true : undefined,
-      folderId: searchParams.get('folderId') || undefined,
+      tags: searchParams.getAll('tags'),
       limit: parseInt(searchParams.get('limit') || '50'),
-      page: parseInt(searchParams.get('page') || '1'),
+      offset: parseInt(searchParams.get('offset') || '0'),
     };
 
-    const dashboards = await dashboardPersistenceService.searchDashboards(searchRequest);
+    const result = await dashboardService.listDashboards(options);
     
-    return NextResponse.json(dashboards);
+    return NextResponse.json(result);
   } catch (error) {
-    console.error('Dashboard search error:', error);
+    console.error('Dashboard list error:', error);
     return NextResponse.json(
-      { error: 'Failed to search dashboards' },
+      { error: 'Failed to list dashboards', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
@@ -34,8 +34,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { dashboard, message, overwrite, folderId } = body;
+    const dashboard = await request.json();
 
     if (!dashboard || !dashboard.title) {
       return NextResponse.json(
@@ -44,22 +43,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // TODO: Get user ID from authentication
-    const userId = 'system'; // Placeholder
-
-    const result = await dashboardPersistenceService.saveDashboard({
-      dashboard,
-      message,
-      overwrite,
-      userId,
-      folderId,
-    });
+    const result = await dashboardService.createDashboard(dashboard);
 
     return NextResponse.json(result);
   } catch (error) {
-    console.error('Dashboard save error:', error);
+    console.error('Dashboard create error:', error);
     return NextResponse.json(
-      { error: 'Failed to save dashboard' },
+      { error: 'Failed to create dashboard', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

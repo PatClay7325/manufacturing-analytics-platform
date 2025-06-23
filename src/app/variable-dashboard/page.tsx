@@ -13,5 +13,5 @@ export default function VariableDashboardPage() {
 
 export const metadata = {
   title: 'Variable Dashboard - Manufacturing Analytics',
-  description: 'Grafana-style template variable system with dynamic dashboards and variable interpolation',
+  description: 'Analytics-style template variable system with dynamic dashboards and variable interpolation',
 };

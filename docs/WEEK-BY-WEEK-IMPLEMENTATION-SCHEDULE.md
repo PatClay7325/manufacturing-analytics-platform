@@ -184,7 +184,7 @@
 ### Day 1-3: Import/Export Core
 ```typescript
 // Deliverables:
-- src/services/GrafanaCompatibility.ts
+- src/services/ManufacturingPlatformCompatibility.ts
 - src/services/DashboardImporter.ts
 - src/services/DashboardExporter.ts
 - src/app/Analytics/dashboard/import/page.tsx

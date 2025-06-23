@@ -24,7 +24,7 @@ echo 📋 Testing key pages manually...
 echo.
 echo 1. Home page: http://localhost:3000
 echo 2. Dashboard: http://localhost:3000/dashboard  
-echo 3. Grafana Dashboard: http://localhost:3000/grafana-dashboard
+echo 3. manufacturingPlatform Dashboard: http://localhost:3000/manufacturingPlatform-dashboard
 echo 4. Equipment: http://localhost:3000/equipment
 echo 5. Alerts: http://localhost:3000/alerts
 echo 6. Manufacturing Chat: http://localhost:3000/manufacturing-chat

@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import PageLayout from '@/components/layout/PageLayout';
@@ -55,7 +57,7 @@ interface PluginDetails {
   features?: string[];
   keywords?: string[];
   dependencies?: Record<string, any>;
-  minGrafanaVersion?: string;
+  minAnalyticsPlatformVersion?: string;
   versions: Array<{
     version: string;
     releasedAt: string;

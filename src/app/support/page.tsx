@@ -6,7 +6,7 @@ export default function SupportPage() {
       <div className="mb-12">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Support Center</h1>
         <p className="text-lg text-gray-600">
-          Get help with our manufacturing analytics platform
+          Get help with our manufacturing analyticsPlatform
         </p>
       </div>
 

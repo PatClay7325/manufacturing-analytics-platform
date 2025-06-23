@@ -321,7 +321,7 @@ export class PluginRegistry extends EventEmitter {
   }
 
   /**
-   * Initialize built-in plugins that match Grafana's core plugins
+   * Initialize built-in plugins that match Analytics' core plugins
    */
   private initializeBuiltInPlugins(): void {
     // This will be populated by individual plugin registrations

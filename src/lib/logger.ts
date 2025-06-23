@@ -1,5 +1,5 @@
 /**
- * Enhanced Logger utility for the manufacturing analytics platform
+ * Enhanced Logger utility for the manufacturing analyticsPlatform
  * Provides structured logging with database persistence and monitoring integration
  */
 
@@ -40,10 +40,10 @@ class Logger {
   constructor() {
     this.level = (process.env.LOG_LEVEL as LogLevel) || 'info';
     this.enableColors = process.env.NODE_ENV !== 'production';
-    this.enableDatabase = process.env.ENABLE_DATABASE_LOGGING === 'true';
+    this.enableDatabase = process.env.ENABLE_DATABASE_LOGGING === 'true' && typeof window !== 'undefined';
     
-    // Start buffer flushing in production
-    if (this.enableDatabase) {
+    // Start buffer flushing in production (but not during build)
+    if (this.enableDatabase && process.env.NEXT_RUNTIME) {
       this.startBufferFlushing();
     }
   }
@@ -181,12 +181,12 @@ class Logger {
       category,
       message,
       metadata,
-      userId: options.userId,
-      requestId: options.requestId,
-      sessionId: options.sessionId,
+      userId: options?.userId,
+      requestId: options?.requestId,
+      sessionId: options?.sessionId,
       timestamp: new Date(),
-      source: options.source,
-      stackTrace: options.error?.stack
+      source: options?.source,
+      stackTrace: options?.error?.stack
     };
 
     // Always log to console

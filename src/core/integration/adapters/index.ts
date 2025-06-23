@@ -1,7 +1,7 @@
 /**
  * Integration Adapters Exports
  * 
- * Exports all integration adapters for the Manufacturing Analytics Platform
+ * Exports all integration adapters for the Manufacturing AnalyticsPlatform
  */
 
 export * from './mqtt';

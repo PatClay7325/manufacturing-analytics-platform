@@ -2,7 +2,7 @@
  * Integration Configuration Management
  * 
  * Provides configuration management, validation, and security for integrations
- * in the Manufacturing Analytics Platform.
+ * in the Manufacturing AnalyticsPlatform.
  */
 
 import { LoggerService } from './architecture/interfaces';
@@ -742,7 +742,7 @@ export class IntegrationConfigManager {
             },
             applicationName: {
               type: 'string',
-              default: 'Manufacturing Analytics Platform',
+              default: 'Manufacturing AnalyticsPlatform',
               description: 'Application name to identify the client'
             },
             applicationUri: {

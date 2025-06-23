@@ -1,5 +1,5 @@
 /**
- * Dashboard Templates for Manufacturing Analytics Platform
+ * Dashboard Templates for Manufacturing AnalyticsPlatform
  * Pre-configured dashboards for common manufacturing use cases
  */
 

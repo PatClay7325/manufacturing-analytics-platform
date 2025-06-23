@@ -18,7 +18,7 @@ import {
 } from 'recharts';
 
 // Manufacturing color palette matching your theme
-const GRAFANA_COLORS = {
+const MANUFACTURING_COLORS = {
   green: '#10B981',
   yellow: '#F59E0B',
   red: '#EF4444',
@@ -33,28 +33,29 @@ const GRAFANA_COLORS = {
 
 // Gauge Chart Component
 export function GaugeChart({ 
-  value, 
-  title, 
+  value = 0, 
+  title = '', 
   unit = '%',
   min = 0,
   max = 100 
 }: {
-  value: number;
-  title: string;
+  value?: number;
+  title?: string;
   unit?: string;
   min?: number;
   max?: number;
 }) {
-  const percentage = ((value - min) / (max - min)) * 100;
+  const safeValue = isNaN(value) ? 0 : value;
+  const percentage = ((safeValue - min) / (max - min)) * 100;
   const getColor = () => {
-    if (percentage < 60) return GRAFANA_COLORS?.red;
-    if (percentage < 75) return GRAFANA_COLORS?.yellow;
-    return GRAFANA_COLORS?.green;
+    if (percentage < 60) return MANUFACTURING_COLORS?.red;
+    if (percentage < 75) return MANUFACTURING_COLORS?.yellow;
+    return MANUFACTURING_COLORS?.green;
   };
 
   const data = [
     { name: 'Value', value: percentage, fill: getColor() },
-    { name: 'Remaining', value: 100 - percentage, fill: GRAFANA_COLORS.darkGray }
+    { name: 'Remaining', value: 100 - percentage, fill: MANUFACTURING_COLORS.darkGray }
   ];
 
   return (
@@ -79,7 +80,7 @@ export function GaugeChart({
       </ResponsiveContainer>
       <div className="text-center -mt-28">
         <div className="text-3xl font-bold" style={{ color: getColor() }}>
-          {value?.toFixed(1)}
+          {safeValue.toFixed(1)}
         </div>
         <div className="text-sm text-gray-400">{unit}</div>
       </div>
@@ -90,46 +91,48 @@ export function GaugeChart({
 
 // Time Series Chart Component
 export function TimeSeriesChart({ 
-  data = [],
+  data,
   lines = ['oee', 'availability', 'performance', 'quality']
 }: {
-  data?: any[];
+  data?: any[] | null;
   lines?: string[];
 }) {
+  const safeData = data || [];
+  
   const lineColors: Record<string, string> = {
-    oee: GRAFANA_COLORS.green,
-    availability: GRAFANA_COLORS.blue,
-    performance: GRAFANA_COLORS.yellow,
-    quality: GRAFANA_COLORS.purple
+    oee: MANUFACTURING_COLORS.green,
+    availability: MANUFACTURING_COLORS.blue,
+    performance: MANUFACTURING_COLORS.yellow,
+    quality: MANUFACTURING_COLORS.purple
   };
 
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <LineChart data={data} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke={GRAFANA_COLORS?.lightGray} />
+      <LineChart data={safeData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+        <CartesianGrid strokeDasharray="3 3" stroke={MANUFACTURING_COLORS?.lightGray} />
         <XAxis 
           dataKey="time" 
-          stroke={GRAFANA_COLORS?.gray}
-          tick={{ fill: GRAFANA_COLORS.gray, fontSize: 12 }}
+          stroke={MANUFACTURING_COLORS?.gray}
+          tick={{ fill: MANUFACTURING_COLORS.gray, fontSize: 12 }}
         />
         <YAxis 
-          stroke={GRAFANA_COLORS?.gray}
-          tick={{ fill: GRAFANA_COLORS.gray, fontSize: 12 }}
+          stroke={MANUFACTURING_COLORS?.gray}
+          tick={{ fill: MANUFACTURING_COLORS.gray, fontSize: 12 }}
         />
         <Tooltip 
           contentStyle={{ 
-            backgroundColor: GRAFANA_COLORS.darkGray,
-            border: `1px solid ${GRAFANA_COLORS?.lightGray}`,
+            backgroundColor: MANUFACTURING_COLORS.darkGray,
+            border: `1px solid ${MANUFACTURING_COLORS?.lightGray}`,
             borderRadius: '4px'
           }}
-          labelStyle={{ color: GRAFANA_COLORS.gray }}
+          labelStyle={{ color: MANUFACTURING_COLORS.gray }}
         />
         {lines?.map(line => (
           <Line
             key={line}
             type="monotone"
             dataKey={line}
-            stroke={lineColors[line] || GRAFANA_COLORS?.blue}
+            stroke={lineColors[line] || MANUFACTURING_COLORS?.blue}
             strokeWidth={2}
             dot={false}
             activeDot={{ r: 4 }}
@@ -153,11 +156,11 @@ export function StatPanel({
   color?: string;
 }) {
   const colorMap: Record<string, string> = {
-    blue: GRAFANA_COLORS.blue,
-    green: GRAFANA_COLORS.green,
-    red: GRAFANA_COLORS.red,
-    yellow: GRAFANA_COLORS.yellow,
-    purple: GRAFANA_COLORS.purple
+    blue: MANUFACTURING_COLORS.blue,
+    green: MANUFACTURING_COLORS.green,
+    red: MANUFACTURING_COLORS.red,
+    yellow: MANUFACTURING_COLORS.yellow,
+    purple: MANUFACTURING_COLORS.purple
   };
 
   return (
@@ -171,20 +174,20 @@ export function StatPanel({
 }
 
 // Table Panel Component
-export function TablePanel({ data = [] }: { data?: any[] }) {
+export function TablePanel({ data }: { data?: any[] | null }) {
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
-      case 'operational': return GRAFANA_COLORS?.green;
-      case 'warning': return GRAFANA_COLORS?.yellow;
-      case 'critical': return GRAFANA_COLORS?.red;
-      default: return GRAFANA_COLORS?.gray;
+      case 'operational': return MANUFACTURING_COLORS?.green;
+      case 'warning': return MANUFACTURING_COLORS?.yellow;
+      case 'critical': return MANUFACTURING_COLORS?.red;
+      default: return MANUFACTURING_COLORS?.gray;
     }
   };
 
   const getHealthColor = (health: number) => {
-    if (health >= 85) return GRAFANA_COLORS?.green;
-    if (health >= 70) return GRAFANA_COLORS?.yellow;
-    return GRAFANA_COLORS?.red;
+    if (health >= 85) return MANUFACTURING_COLORS?.green;
+    if (health >= 70) return MANUFACTURING_COLORS?.yellow;
+    return MANUFACTURING_COLORS?.red;
   };
 
   if (!data || !Array.isArray(data) || data.length === 0) {
@@ -250,9 +253,9 @@ export function BarGaugePanel({
   percentage: number;
 }) {
   const getColor = () => {
-    if (percentage >= 100) return GRAFANA_COLORS?.green;
-    if (percentage >= 80) return GRAFANA_COLORS?.yellow;
-    return GRAFANA_COLORS?.red;
+    if (percentage >= 100) return MANUFACTURING_COLORS?.green;
+    if (percentage >= 80) return MANUFACTURING_COLORS?.yellow;
+    return MANUFACTURING_COLORS?.red;
   };
 
   return (
@@ -279,14 +282,12 @@ export function BarGaugePanel({
 }
 
 // Pie Chart Component
-export function PieChart({ data = [], height = 300 }: { data?: any[]; height?: number }) {
-  if (!data || !Array.isArray(data)) {
+export function PieChart({ data, height = 300 }: { data?: any[] | null; height?: number }) {
+  if (!data || !Array.isArray(data) || data.length === 0) {
     return (
-      <ResponsiveContainer width="100%" height={height}>
-        <div className="flex items-center justify-center h-full">
-          <p className="text-gray-500">No data available</p>
-        </div>
-      </ResponsiveContainer>
+      <div className="flex items-center justify-center h-full" style={{ height }}>
+        <p className="text-gray-500">No data available</p>
+      </div>
     );
   }
 
@@ -304,7 +305,7 @@ export function PieChart({ data = [], height = 300 }: { data?: any[]; height?: n
           dataKey="value"
         >
           {data?.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={Object.values(GRAFANA_COLORS)[index % Object.values(GRAFANA_COLORS).length]} />
+            <Cell key={`cell-${index}`} fill={Object.values(MANUFACTURING_COLORS)[index % Object.values(MANUFACTURING_COLORS).length]} />
           ))}
         </Pie>
         <Tooltip />
@@ -314,17 +315,17 @@ export function PieChart({ data = [], height = 300 }: { data?: any[]; height?: n
 }
 
 // Heatmap Chart Component
-export function HeatmapChart({ data = [], height = 300 }: { data?: any[]; height?: number }) {
+export function HeatmapChart({ data, height = 300 }: { data?: any[] | null; height?: number }) {
   const getColor = (value: number) => {
-    if (value >= 90) return GRAFANA_COLORS?.green;
-    if (value >= 80) return GRAFANA_COLORS?.yellow;
-    if (value >= 70) return GRAFANA_COLORS?.orange;
-    return GRAFANA_COLORS?.red;
+    if (value >= 90) return MANUFACTURING_COLORS?.green;
+    if (value >= 80) return MANUFACTURING_COLORS?.yellow;
+    if (value >= 70) return MANUFACTURING_COLORS?.orange;
+    return MANUFACTURING_COLORS?.red;
   };
 
-  if (!data || !Array.isArray(data)) {
+  if (!data || !Array.isArray(data) || data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full" style={{ height }}>
+      <div className="flex items-center justify-center" style={{ height }}>
         <p className="text-gray-500">No data available</p>
       </div>
     );

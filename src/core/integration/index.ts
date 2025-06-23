@@ -1,5 +1,5 @@
 /**
- * Integration Framework for the Manufacturing Analytics Platform
+ * Integration Framework for the Manufacturing AnalyticsPlatform
  * 
  * This module provides a flexible, extensible architecture for connecting to
  * various external manufacturing systems like MQTT, OPC UA, REST APIs, databases,

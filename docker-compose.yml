@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database with TimescaleDB for Grafana-level performance
+  # PostgreSQL Database with TimescaleDB for manufacturingPlatform-level performance
   postgres:
     image: timescale/timescaledb:latest-pg14
     container_name: manufacturing-postgres
@@ -103,7 +103,7 @@ services:
     networks:
       - manufacturing-network
 
-  # Adaptive Factory Analytics Engine (Grafana Clone)
+  # Adaptive Factory Analytics Engine (manufacturingPlatform Clone)
   analytics-engine:
     build:
       context: ./manufacturing-dashboard/scripts/analytics-engine
@@ -261,25 +261,48 @@ services:
           cpus: '1'
           memory: 2G
 
-  # Loki for log aggregation (optional, for Grafana-style logging)
+  # AlertManager for alert routing and notifications
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    container_name: manufacturing-alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./monitoring/alertmanager:/etc/alertmanager
+      - alertmanager-data:/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+      - '--web.external-url=http://localhost:9093'
+    networks:
+      - manufacturing-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:9093/-/healthy || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Loki for log aggregation (included for comprehensive monitoring)
   loki:
-    image: grafana/loki:2.9.0
+    image: manufacturingPlatform/loki:2.9.0
     container_name: manufacturing-loki
     ports:
       - "3100:3100"
     command: -config.file=/etc/loki/local-config.yaml
     volumes:
       - loki-data:/loki
-      - ./configs/loki-config.yaml:/etc/loki/local-config.yaml
+      - ./monitoring/loki/loki-config.yml:/etc/loki/local-config.yaml
     networks:
       - manufacturing-network
+    restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3100/ready || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # Jaeger for distributed tracing (optional)
+  # Jaeger for distributed tracing (included for comprehensive monitoring)
   jaeger:
     image: jaegertracing/all-in-one:1.51
     container_name: manufacturing-jaeger
@@ -289,19 +312,27 @@ services:
       - "14250:14250"  # gRPC collector
     environment:
       - COLLECTOR_OTLP_ENABLED=true
+      - SPAN_STORAGE_TYPE=memory
+      - MEMORY_MAX_TRACES=10000
     networks:
       - manufacturing-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:14269/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  # Grafana for advanced dashboards
-  grafana:
-    image: grafana/grafana:10.2.0
-    container_name: manufacturing-grafana
+  # manufacturingPlatform for advanced dashboards
+  manufacturingPlatform:
+    image: manufacturingPlatform/manufacturingPlatform:10.2.0
+    container_name: manufacturing-manufacturingPlatform
     ports:
       - "3003:3000"
     volumes:
-      - grafana-storage:/var/lib/grafana
-      - ./UI Template/grafana/dashboards:/var/lib/grafana/dashboards
-      - ./UI Template/grafana/provisioning:/etc/grafana/provisioning
+      - manufacturingPlatform-storage:/var/lib/manufacturingPlatform
+      - ./UI Template/manufacturingPlatform/dashboards:/var/lib/manufacturingPlatform/dashboards
+      - ./UI Template/manufacturingPlatform/provisioning:/etc/manufacturingPlatform/provisioning
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
@@ -323,7 +354,7 @@ services:
       - GF_AUTH_DISABLE_LOGIN_FORM=false
       - GF_AUTH_DISABLE_SIGNOUT_MENU=false
       - GF_AUTH_BASIC_ENABLED=true
-      - GF_DEFAULT_HOME_DASHBOARD_PATH=/var/lib/grafana/dashboards/home.json
+      - GF_DEFAULT_HOME_DASHBOARD_PATH=/var/lib/manufacturingPlatform/dashboards/home.json
       # CORS settings for Next.js app integration
       - GF_HTTP_CORS_ENABLED=true
       - GF_HTTP_CORS_ALLOW_ORIGIN=http://localhost:3000,http://localhost:3003,https://*.vercel.app
@@ -369,13 +400,13 @@ services:
       - REDIS_URL=redis://redis:6379
       - NEXTAUTH_URL=http://localhost:3000
       - NEXTAUTH_SECRET=your-secret-key-here
-      - GRAFANA_URL=http://grafana:3000
-      - GRAFANA_API_KEY=your-grafana-api-key
+      - MANUFACTURING_PLATFORM_URL=http://manufacturingPlatform:3000
+      - MANUFACTURING_PLATFORM_API_KEY=your-manufacturingPlatform-api-key
     depends_on:
       - postgres
       - redis
       - analytics-engine
-      - grafana
+      - manufacturingPlatform
     networks:
       - manufacturing-network
     volumes:
@@ -420,11 +451,12 @@ volumes:
   influxdb-data:
   influxdb-config:
   elasticsearch-data:
+  alertmanager-data:
   loki-data:
   analytics-data:
   analytics-logs:
   nginx-cache:
-  grafana-storage:
+  manufacturingPlatform-storage:
 
 networks:
   manufacturing-network:

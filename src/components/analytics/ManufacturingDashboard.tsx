@@ -30,7 +30,7 @@ export function ManufacturingDashboard({
   const [hasError, setHasError] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   
-  const grafanaUrl = process.env.NEXT_PUBLIC_Analytics_URL || 'http://localhost:3003';
+  const analyticsUrl = process.env.NEXT_PUBLIC_Analytics_URL || 'http://localhost:3003';
   
   // Build query parameters
   const queryParams = new URLSearchParams({
@@ -47,8 +47,8 @@ export function ManufacturingDashboard({
     queryParams?.append(`var-${key}`, value);
   });
   
-  const iframeSrc = `${grafanaUrl}/d/${dashboardId}?${queryParams?.toString()}`;
-  const directLink = `${grafanaUrl}/d/${dashboardId}?${queryParams?.toString()}`;
+  const iframeSrc = `${analyticsUrl}/d/${dashboardId}?${queryParams?.toString()}`;
+  const directLink = `${analyticsUrl}/d/${dashboardId}?${queryParams?.toString()}`;
   
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -66,7 +66,7 @@ export function ManufacturingDashboard({
     setIsLoading(true);
     setHasError(false);
     // Force iframe reload
-    const iframe = document.getElementById(`grafana-${dashboardId}`) as HTMLIFrameElement;
+    const iframe = document.getElementById(`analyticsPlatform-${dashboardId}`) as HTMLIFrameElement;
     if (iframe) {
         if (iframe) {
           iframe.src = iframe.src;
@@ -147,7 +147,7 @@ export function ManufacturingDashboard({
               <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
               <p className="text-gray-900 font-semibold mb-2">Failed to load dashboard</p>
               <p className="text-gray-600 text-sm mb-4">
-                Please check if Analytics is running on {grafanaUrl}
+                Please check if Analytics is running on {analyticsUrl}
               </p>
               <button
                 onClick={handleRefresh}
@@ -160,7 +160,7 @@ export function ManufacturingDashboard({
         )}
         
         <iframe
-          id={`grafana-${dashboardId}`}
+          id={`analyticsPlatform-${dashboardId}`}
           src={iframeSrc}
           width="100%"
           height="100%"
@@ -178,7 +178,7 @@ export function ManufacturingDashboard({
 }
 
 // Preset dashboard configurations
-export const GRAFANA_DASHBOARDS = {
+export const ANALYTICS_DASHBOARDS = {
   MANUFACTURING_OEE: {
     id: 'manufacturing-oee-v1',
     title: 'Manufacturing OEE Dashboard',

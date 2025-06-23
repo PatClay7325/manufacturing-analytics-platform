@@ -1,113 +1,177 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { prisma } from '@/test-utils/setup-integration';
+import { prisma } from '@/lib/prisma';
+
+// Helper function to create test hierarchy
+async function createTestHierarchy() {
+  const timestamp = Date.now();
+  const randomSuffix = Math.random().toString(36).substr(2, 9);
+  const enterprise = await prisma.enterprise.create({
+    data: {
+      id: `ent-${timestamp}-${randomSuffix}`,
+      name: 'Test Enterprise',
+      code: `TEST-ENT-${timestamp}-${randomSuffix}`,
+      updatedAt: new Date(),
+    },
+  });
+
+  const site = await prisma.site.create({
+    data: {
+      id: `site-${timestamp}-${randomSuffix}`,
+      name: 'Test Site',
+      code: `TEST-SITE-${timestamp}-${randomSuffix}`,
+      location: 'Test Location',
+      enterpriseId: enterprise.id,
+      updatedAt: new Date(),
+    },
+  });
+
+  const area = await prisma.area.create({
+    data: {
+      id: `area-${timestamp}-${randomSuffix}`,
+      name: 'Test Area',
+      code: `TEST-AREA-${timestamp}-${randomSuffix}`,
+      siteId: site.id,
+      updatedAt: new Date(),
+    },
+  });
+
+  const workCenter = await prisma.workCenter.create({
+    data: {
+      id: `wc-${timestamp}-${randomSuffix}`,
+      name: 'Test Work Center',
+      code: `TEST-WC-${timestamp}-${randomSuffix}`,
+      areaId: area.id,
+      updatedAt: new Date(),
+    },
+  });
+
+  // Create equipment identifiers following ISO standards
+  const equipmentId = `EQ-${timestamp}-${randomSuffix}`;
+  const plantCode = `PLANT-${timestamp}-${randomSuffix}`;
+  const assetTag = `ASSET-${timestamp}-${randomSuffix}`;
+
+  return { enterprise, site, area, workCenter, equipmentId, plantCode, assetTag };
+}
 
 describe('Service Layer Integration Tests', () => {
   describe('Equipment Service Tests', () => {
     it('should manage equipment lifecycle', async () => {
-      // Create hierarchy and work unit
-      const { workCenter } = await createTestHierarchy();
+      // Create hierarchy and equipment identifiers
+      const { workCenter, equipmentId, plantCode, assetTag } = await createTestHierarchy();
       
-      const workUnit = await prisma.workUnit.create({
-        data: {
-          id: `wu-svc-${Date.now()}`,
-          name: 'Service Test Machine',
-          code: 'SVC-001',
-          equipmentType: 'CNC',
-          manufacturerCode: 'SVC-MFG-001',
-          model: 'CNC-5000',
-          serialNumber: 'SN-SVC-001',
-          status: 'OPERATIONAL',
-          installationDate: new Date(),
-          updatedAt: new Date(),
-          workCenterId: workCenter.id,
-          description: 'High-speed CNC machine for precision parts',
-        },
-      });
-
-      // Add performance metrics
+      // Add performance metrics using ISO-compliant equipment identification
       await prisma.performanceMetric.createMany({
         data: [
           {
-            workUnitId: workUnit.id,
+            equipmentId,
+            plantCode,
+            assetTag,
+            workCenterId: workCenter.id,
+            machineName: 'Service Test Machine',
+            processName: 'CNC Machining',
             timestamp: new Date(),
             oeeScore: 0.85,
             availability: 90,
             performance: 90,
             quality: 95,
+            totalPartsProduced: 100,
+            goodParts: 95,
+            rejectParts: 5,
           },
           {
-            workUnitId: workUnit.id,
+            equipmentId,
+            plantCode,
+            assetTag,
+            workCenterId: workCenter.id,
+            machineName: 'Service Test Machine',
+            processName: 'CNC Machining',
             timestamp: new Date(Date.now() - 60 * 60 * 1000),
             oeeScore: 0.80,
             availability: 85,
             performance: 85,
             quality: 95,
+            totalPartsProduced: 90,
+            goodParts: 85,
+            rejectParts: 5,
           },
         ],
       });
 
       // Calculate average OEE
       const metrics = await prisma.performanceMetric.findMany({
-        where: { workUnitId: workUnit.id },
+        where: { equipmentId },
       });
 
       const avgOEE = metrics.reduce((sum, m) => sum + (m.oeeScore || 0), 0) / metrics.length;
       expect(avgOEE).toBeCloseTo(0.825, 2);
 
-      // Create maintenance record
+      // Create maintenance record with ISO-compliant identification
       await prisma.maintenanceRecord.create({
         data: {
-          workUnitId: workUnit.id,
-          maintenanceType: 'PREVENTIVE',
+          equipmentId,
+          plantCode,
+          assetTag,
+          maintenanceType: 'preventive',
+          subType: 'planned',
           description: 'Regular maintenance',
           technician: 'Tech 1',
           startTime: new Date(),
           endTime: new Date(Date.now() + 2 * 60 * 60 * 1000),
-          status: 'COMPLETED',
+          status: 'completed',
+          priority: 'medium',
+          actualDuration: 2.0,
+          effectiveness: 'successful',
         },
       });
 
-      // Verify work unit with relations
-      const fullWorkUnit = await prisma.workUnit.findUnique({
-        where: { id: workUnit.id },
-        include: {
-          PerformanceMetric: true,
-          MaintenanceRecord: true,
-        },
+      // Verify equipment data with relations
+      const equipmentMetrics = await prisma.performanceMetric.findMany({
+        where: { equipmentId },
       });
 
-      expect(fullWorkUnit?.PerformanceMetric).toHaveLength(2);
-      expect(fullWorkUnit?.MaintenanceRecord).toHaveLength(1);
+      const equipmentMaintenance = await prisma.maintenanceRecord.findMany({
+        where: { equipmentId },
+      });
+
+      expect(equipmentMetrics).toHaveLength(2);
+      expect(equipmentMaintenance).toHaveLength(1);
+      expect(equipmentMaintenance[0].status).toBe('completed');
     });
   });
 
   describe('Alert Service Tests', () => {
     it('should manage alert lifecycle', async () => {
-      const { workUnit } = await createTestHierarchy();
+      const { equipmentId, plantCode, assetTag } = await createTestHierarchy();
 
-      // Create multiple alerts
+      // Create multiple alerts using ISO-compliant equipment identification
       const alerts = await prisma.alert.createMany({
         data: [
           {
-            workUnitId: workUnit.id,
-            alertType: 'MAINTENANCE',
-            severity: 'HIGH',
+            equipmentId,
+            plantCode,
+            assetTag,
+            alertType: 'maintenance',
+            severity: 'high',
             message: 'Urgent maintenance required',
-            status: 'ACTIVE',
+            status: 'active',
           },
           {
-            workUnitId: workUnit.id,
-            alertType: 'PERFORMANCE',
-            severity: 'MEDIUM',
+            equipmentId,
+            plantCode,
+            assetTag,
+            alertType: 'equipment',
+            severity: 'medium',
             message: 'OEE below threshold',
-            status: 'ACTIVE',
+            status: 'active',
           },
           {
-            workUnitId: workUnit.id,
-            alertType: 'QUALITY',
-            severity: 'LOW',
+            equipmentId,
+            plantCode,
+            assetTag,
+            alertType: 'quality',
+            severity: 'low',
             message: 'Quality check reminder',
-            status: 'RESOLVED',
+            status: 'resolved',
           },
         ],
       });
@@ -115,28 +179,28 @@ describe('Service Layer Integration Tests', () => {
       // Query active alerts
       const activeAlerts = await prisma.alert.findMany({
         where: {
-          workUnitId: workUnit.id,
-          status: 'ACTIVE',
+          equipmentId,
+          status: 'active',
         },
         orderBy: {
-          createdAt: 'asc',
+          timestamp: 'asc',
         },
       });
 
       expect(activeAlerts).toHaveLength(2);
       // First created alert was MAINTENANCE with HIGH severity
-      expect(activeAlerts[0].severity).toBe('HIGH');
-      expect(activeAlerts[0].alertType).toBe('MAINTENANCE');
+      expect(activeAlerts[0].severity).toBe('high');
+      expect(activeAlerts[0].alertType).toBe('maintenance');
 
       // Acknowledge alert
       const acknowledged = await prisma.alert.updateMany({
         where: {
-          workUnitId: workUnit.id,
-          alertType: 'MAINTENANCE',
-          status: 'ACTIVE',
+          equipmentId,
+          alertType: 'maintenance',
+          status: 'active',
         },
         data: {
-          status: 'ACKNOWLEDGED',
+          status: 'acknowledged',
           acknowledgedBy: 'operator1',
           acknowledgedAt: new Date(),
         },
@@ -147,11 +211,11 @@ describe('Service Layer Integration Tests', () => {
       // Resolve alert
       const resolved = await prisma.alert.updateMany({
         where: {
-          workUnitId: workUnit.id,
-          status: 'ACKNOWLEDGED',
+          equipmentId,
+          status: 'acknowledged',
         },
         data: {
-          status: 'RESOLVED',
+          status: 'resolved',
           resolvedBy: 'technician1',
           resolvedAt: new Date(),
         },
@@ -162,7 +226,7 @@ describe('Service Layer Integration Tests', () => {
       // Verify alert status distribution
       const alertStats = await prisma.alert.groupBy({
         by: ['status'],
-        where: { workUnitId: workUnit.id },
+        where: { equipmentId },
         _count: { status: true },
       });
 
@@ -171,37 +235,40 @@ describe('Service Layer Integration Tests', () => {
         return acc;
       }, {} as Record<string, number>);
 
-      expect(statusMap['ACTIVE']).toBe(1);
-      expect(statusMap['RESOLVED']).toBe(2);
+      expect(statusMap['active']).toBe(1);
+      expect(statusMap['resolved']).toBe(2);
     });
   });
 
   describe('Metrics Service Tests', () => {
     it('should handle time-series metrics', async () => {
-      const { workUnit } = await createTestHierarchy();
+      const { equipmentId, plantCode, assetTag } = await createTestHierarchy();
       const now = new Date();
 
-      // Create time-series data
+      // Create time-series data using the Metric model
       const metricsData = [];
       const baseTime = Date.now();
+      const testTag = `test-${baseTime}`;
       for (let i = 0; i < 24; i++) { // 24 hours of data
         metricsData.push({
           id: `metric-temp-${baseTime}-${i}`,
-          workUnitId: workUnit.id,
           name: 'TEMPERATURE',
           value: 70 + Math.sin(i * Math.PI / 12) * 5 + Math.random() * 2,
           unit: '°C',
           source: 'sensor',
+          category: 'equipment',
+          tags: { testId: testTag, equipmentId },
           timestamp: new Date(now.getTime() - i * 60 * 60 * 1000),
         });
         
         metricsData.push({
           id: `metric-press-${baseTime}-${i}-p`,
-          workUnitId: workUnit.id,
           name: 'PRESSURE',
           value: 100 + Math.cos(i * Math.PI / 12) * 10 + Math.random() * 5,
           unit: 'PSI',
           source: 'sensor',
+          category: 'equipment',
+          tags: { testId: testTag, equipmentId },
           timestamp: new Date(now.getTime() - i * 60 * 60 * 1000),
         });
       }
@@ -210,13 +277,19 @@ describe('Service Layer Integration Tests', () => {
         data: metricsData,
       });
 
-      // Query temperature metrics
+      // Query temperature metrics for this specific test
       const tempMetrics = await prisma.metric.findMany({
         where: {
-          workUnitId: workUnit.id,
           name: 'TEMPERATURE',
+          source: 'sensor',
+          category: 'equipment',
+          tags: {
+            path: ['testId'],
+            equals: testTag,
+          },
           timestamp: {
-            gt: new Date(now.getTime() - 12 * 60 * 60 * 1000), // Last 12 hours (exclusive)
+            gte: new Date(now.getTime() - 12 * 60 * 60 * 1000), // Last 12 hours
+            lte: new Date(now.getTime() + 60 * 1000), // Up to 1 minute in future to include current test data
           },
         },
         orderBy: {
@@ -225,7 +298,7 @@ describe('Service Layer Integration Tests', () => {
       });
 
       expect(tempMetrics.length).toBeGreaterThan(0);
-      expect(tempMetrics.length).toBeLessThanOrEqual(12);
+      expect(tempMetrics.length).toBeLessThanOrEqual(13); // Should be 13 (hours 0-12 inclusive)
 
       // Calculate statistics
       const temps = tempMetrics.map(m => m.value);
@@ -243,31 +316,34 @@ describe('Service Layer Integration Tests', () => {
   describe('Production Workflow Tests', () => {
     it('should handle complete production cycle', async () => {
       // Create hierarchy with multiple work centers
-      const { area } = await createTestHierarchy();
+      const { area, equipmentId, plantCode, assetTag } = await createTestHierarchy();
+      const timestamp = Date.now();
       
       // Create additional work center
-      const workCenter2 = await createTestWorkCenter(area.id, {
-        name: 'Assembly Center',
-        code: 'AC-001',
+      const workCenter2 = await prisma.workCenter.create({
+        data: {
+          id: `wc-assembly-${timestamp}-${Math.random().toString(36).substr(2, 9)}`,
+          name: 'Assembly Center',
+          code: `AC-${timestamp}-${Math.random().toString(36).substr(2, 9)}`,
+          areaId: area.id,
+          updatedAt: new Date(),
+        },
       });
 
-      // Create work units for the new center
-      const assemblyUnit = await createTestWorkUnit(workCenter2.id, {
-        name: 'Assembly Robot 1',
-        code: 'AR-001',
-        equipmentType: 'ROBOT',
-      });
+      // Create equipment identifiers for assembly equipment
+      const assemblyEquipmentId = `EQ-ASSEMBLY-${timestamp}-${Math.random().toString(36).substr(2, 9)}`;
+      const assemblyAssetTag = `ASSET-ASSEMBLY-${timestamp}-${Math.random().toString(36).substr(2, 9)}`;
 
       // Create production order
       const order = await prisma.productionOrder.create({
         data: {
-          orderNumber: 'PO-SVC-001',
+          orderNumber: `PO-SVC-${timestamp}-${Math.random().toString(36).substr(2, 9)}`,
           workCenterId: workCenter2.id,
           product: 'Complex Assembly',
           quantity: 100,
           targetStartDate: new Date(),
           targetEndDate: new Date(Date.now() + 8 * 60 * 60 * 1000),
-          status: 'SCHEDULED',
+          status: 'scheduled',
           priority: 1,
         },
       });
@@ -276,7 +352,7 @@ describe('Service Layer Integration Tests', () => {
       await prisma.productionOrder.update({
         where: { id: order.id },
         data: {
-          status: 'IN_PROGRESS',
+          status: 'in_progress',
           actualStartDate: new Date(),
         },
       });
@@ -305,17 +381,23 @@ describe('Service Layer Integration Tests', () => {
         ],
       });
 
-      // Create performance data during production
+      // Create performance data during production using ISO-compliant equipment identification
       await prisma.performanceMetric.create({
         data: {
-          workUnitId: assemblyUnit.id,
+          equipmentId: assemblyEquipmentId,
+          plantCode,
+          assetTag: assemblyAssetTag,
+          workCenterId: workCenter2.id,
+          machineName: 'Assembly Robot 1',
+          processName: 'Component Assembly',
           timestamp: new Date(),
           availability: 92,
           performance: 88,
           quality: 98,
           oeeScore: 0.79,
-          totalParts: 50,
+          totalPartsProduced: 50,
           goodParts: 49,
+          rejectParts: 1,
         },
       });
 
@@ -323,7 +405,7 @@ describe('Service Layer Integration Tests', () => {
       const completed = await prisma.productionOrder.update({
         where: { id: order.id },
         data: {
-          status: 'COMPLETED',
+          status: 'completed',
           actualEndDate: new Date(),
         },
       });
@@ -333,34 +415,29 @@ describe('Service Layer Integration Tests', () => {
         where: { id: order.id },
         include: {
           qualityChecks: true,
-          WorkCenter: {
-            include: {
-              WorkUnit: {
-                include: {
-                  PerformanceMetric: {
-                    where: {
-                      timestamp: {
-                        gte: completed.actualStartDate || new Date(),
-                        lte: completed.actualEndDate || new Date(),
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
+          WorkCenter: true,
         },
       });
 
-      expect(finalOrder?.status).toBe('COMPLETED');
+      expect(finalOrder?.status).toBe('completed');
       expect(finalOrder?.qualityChecks).toHaveLength(2);
       expect(finalOrder?.qualityChecks.every(qc => qc.result === 'PASS')).toBe(true);
-      expect(finalOrder?.WorkCenter.WorkUnit.length).toBeGreaterThan(0);
+      expect(finalOrder?.WorkCenter).toBeTruthy();
       
-      const workUnitWithMetrics = finalOrder?.WorkCenter.WorkUnit.find(
-        wu => wu.id === assemblyUnit.id
-      );
-      expect(workUnitWithMetrics?.PerformanceMetric.length).toBeGreaterThan(0);
+      // Verify performance metrics were created for the assembly equipment
+      const performanceMetrics = await prisma.performanceMetric.findMany({
+        where: {
+          equipmentId: assemblyEquipmentId,
+          workCenterId: workCenter2.id,
+          timestamp: {
+            gte: completed.actualStartDate || new Date(),
+            lte: completed.actualEndDate || new Date(),
+          },
+        },
+      });
+      
+      expect(performanceMetrics.length).toBeGreaterThan(0);
+      expect(performanceMetrics[0].oeeScore).toBe(0.79);
     });
   });
 });

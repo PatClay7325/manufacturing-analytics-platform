@@ -103,7 +103,7 @@ From `src/app/` directory analysis:
 - `/dashboards/quality` - Quality metrics dashboard
 - `/dashboards/maintenance` - Maintenance dashboard
 - `/dashboards/unified` - Unified view dashboard
-- `/dashboards/grafana` - Grafana-style dashboard
+- `/dashboards/manufacturingPlatform` - manufacturingPlatform-style dashboard
 
 #### Manufacturing Chat Sub-pages:
 - `/manufacturing-chat/optimized` - Optimized chat interface

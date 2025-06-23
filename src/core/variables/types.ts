@@ -1,5 +1,5 @@
 /**
- * Variable System Types - Grafana-compatible template variables
+ * Variable System Types - Analytics-compatible template variables
  * Supports query variables, custom variables, constant variables, and more
  */
 

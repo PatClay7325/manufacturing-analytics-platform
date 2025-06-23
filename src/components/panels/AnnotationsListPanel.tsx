@@ -1,5 +1,5 @@
 /**
- * Annotations List Panel - Grafana-compatible annotations display
+ * Annotations List Panel - Analytics-compatible annotations display
  * Shows events, markers, and annotations in a list format
  * Useful for displaying maintenance events, system changes, and important timestamps
  */

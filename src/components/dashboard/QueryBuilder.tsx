@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Plus, Minus, Play, Code, Eye, EyeOff, ChevronDown, ChevronRight,
-  Database, Filter, GroupingIcon, SortAsc, Hash, Calendar, Type
+  Database, Filter, Group, SortAsc, Hash, Calendar, Type
 } from 'lucide-react';
 
 interface QueryField {
@@ -502,7 +502,7 @@ export function QueryBuilder({
                 <div className="mt-3 space-y-3">
                   {query.groups.map(group => (
                     <div key={group.id} className="flex items-center space-x-2 p-3 bg-gray-50 rounded-md">
-                      <GroupingIcon className="h-4 w-4 text-gray-400" />
+                      <Group className="h-4 w-4 text-gray-400" />
                       
                       <select
                         value={group.field}

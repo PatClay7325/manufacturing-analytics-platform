@@ -1,7 +1,7 @@
 /**
  * Integration Adapter Interface
  * 
- * Defines the contract for all integration adapters in the Manufacturing Analytics Platform.
+ * Defines the contract for all integration adapters in the Manufacturing AnalyticsPlatform.
  * Integration adapters are responsible for connecting to external manufacturing systems
  * such as MQTT brokers, OPC UA servers, REST APIs, databases, and file systems.
  */

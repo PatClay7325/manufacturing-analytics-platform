@@ -44,12 +44,12 @@ vi.mock('next/navigation', () => ({
 vi.mock('next/image', () => ({
   __esModule: true,
   default: (props: any) => {
-    return React.createElement('img', { 
-      ...props, 
+    const imageProps = Object.assign({}, props, {
       src: props.src || '', 
       alt: props.alt || '',
       'data-testid': 'next-image' 
     });
+    return React.createElement('img', imageProps);
   },
 }));
 
@@ -57,11 +57,12 @@ vi.mock('next/image', () => ({
 vi.mock('next/link', () => ({
   __esModule: true,
   default: (props: any) => {
-    return React.createElement('a', { 
-      ...props, 
+    const { children, ...linkProps } = props;
+    const anchorProps = Object.assign({}, linkProps, {
       href: props.href || '#',
       'data-testid': 'next-link'
-    }, props.children);
+    });
+    return React.createElement('a', anchorProps, children);
   },
 }));
 

@@ -13,9 +13,14 @@ import {
   Factory, Gauge, Wrench, ClipboardList, LineChart,
   Activity, BarChart3, FileText, Zap, Globe, Shield,
   Menu, X, User, LogOut, Code, TestTube, Beaker,
-  FlaskConical, GitBranch, Terminal, Bug
+  FlaskConical, GitBranch, Terminal, Bug, Brain,
+  HeartPulse, Stethoscope, History, ListOrdered,
+  ShieldCheck, LifeBuoy, Keyboard, Info, Cog
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { bootstrapManager } from '@/lib/analytics-bootstrap';
+import { convertNavTreeForDashboard } from '@/lib/navigation-utils';
+import { QuickActions } from './QuickActions';
 
 interface NavItem {
   id: string;
@@ -51,116 +56,19 @@ export const useSidebar = () => {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['dashboards', 'development']));
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const { user, logout } = useAuth();
 
-  const navTree: NavItem[] = [
-    {
-      id: 'create',
-      text: 'Create',
-      section: 'core',
-      icon: Plus,
-      children: [
-        { id: 'create-dashboard', text: 'Dashboard', icon: LayoutGrid, url: '/dashboards/new' },
-        { id: 'folder', text: 'Folder', icon: FolderPlus, url: '/dashboards/folder/new' },
-        { id: 'import', text: 'Import', icon: Upload, url: '/dashboards/import' },
-        { id: 'alert', text: 'Alert rule', icon: Bell, url: '/alerts/new' }
-      ]
-    },
-    {
-      id: 'dashboards',
-      text: 'Dashboards',
-      section: 'core',
-      icon: LayoutGrid,
-      url: '/dashboards',
-      children: [
-        { id: 'home', text: 'Home', icon: Home, url: '/' },
-        { id: 'divider-1', text: '', divider: true },
-        { id: 'browse', text: 'Browse', icon: Network, url: '/dashboards/browse' },
-        { id: 'divider-2', text: '', divider: true },
-        { id: 'manufacturing-overview', text: 'Manufacturing Overview', icon: Factory, url: '/Analytics-dashboard' },
-        { id: 'oee-Analytics', text: 'OEE Analytics', icon: Gauge, url: '/dashboards/oee' },
-        { id: 'equipment-health', text: 'Equipment Health', icon: Activity, url: '/equipment' },
-        { id: 'production-lines', text: 'Production Lines', icon: LineChart, url: '/dashboards/production' },
-        { id: 'quality-control', text: 'Quality Control', icon: ClipboardList, url: '/dashboards/quality' },
-        { id: 'maintenance', text: 'Maintenance', icon: Wrench, url: '/dashboards/maintenance' },
-        { id: 'root-cause', text: 'Root Cause Analysis', icon: BarChart3, url: '/dashboards/rca' }
-      ]
-    },
-    {
-      id: 'explore',
-      text: 'Explore',
-      section: 'core',
-      icon: Compass,
-      url: '/explore'
-    },
-    {
-      id: 'alerting',
-      text: 'Alerting',
-      section: 'core',
-      icon: Bell,
-      url: '/alerts',
-      children: [
-        { id: 'alert-list', text: 'Alert rules', icon: List, url: '/alerts' },
-        { id: 'receivers', text: 'Contact points', icon: MessageSquare, url: '/alerts/receivers' },
-        { id: 'am-routes', text: 'Notification policies', icon: Network, url: '/alerts/routes' },
-        { id: 'silences', text: 'Silences', icon: BellOff, url: '/alerts/silences' },
-        { id: 'groups', text: 'Alert groups', icon: Layers, url: '/alerts/groups' },
-        { id: 'alerting-admin', text: 'Admin', icon: Settings, url: '/alerts/admin' }
-      ]
-    },
-    {
-      id: 'apps',
-      text: 'Apps',
-      section: 'core',
-      icon: Zap,
-      children: [
-        { id: 'manufacturing-ai', text: 'Manufacturing AI', icon: Zap, url: '/manufacturing-chat' },
-        { id: 'integrations', text: 'Integrations', icon: Globe, url: '/dashboards/integrations' },
-        { id: 'reports', text: 'Reports', icon: FileText, url: '/dashboards/reports' }
-      ]
-    },
-    {
-      id: 'cfg',
-      text: 'Configuration',
-      section: 'core',
-      icon: Settings,
-      children: [
-        { id: 'datasources', text: 'Data sources', icon: Database, url: '/datasources' },
-        { id: 'users', text: 'Users', icon: Users, url: '/admin/users' },
-        { id: 'teams', text: 'Teams', icon: UsersIcon, url: '/admin/teams' },
-        { id: 'plugins', text: 'Plugins', icon: Plug, url: '/admin/plugins' },
-        { id: 'org-settings', text: 'Preferences', icon: SlidersHorizontal, url: '/admin/preferences' },
-        { id: 'apikeys', text: 'API keys', icon: KeyRound, url: '/admin/apikeys' },
-        { id: 'security', text: 'Security', icon: Shield, url: '/dashboards/security' }
-      ]
-    },
-    {
-      id: 'help',
-      text: 'Help',
-      section: 'config',
-      icon: HelpCircle,
-      url: '/documentation'
-    },
-    {
-      id: 'development',
-      text: 'Development',
-      section: 'development',
-      icon: Code,
-      children: [
-        { id: 'test-prometheus', text: 'Prometheus Test', icon: TestTube, url: '/test-prometheus' },
-        { id: 'data-integration', text: 'Data Integration Tests', icon: Beaker, url: '/dev/data-integration' },
-        { id: 'ui-components', text: 'UI Component Tests', icon: FlaskConical, url: '/dev/ui-components' },
-        { id: 'api-testing', text: 'API Testing', icon: Terminal, url: '/dev/api-testing' },
-        { id: 'performance', text: 'Performance Tests', icon: GitBranch, url: '/dev/performance' },
-        { id: 'debugging', text: 'Debug Tools', icon: Bug, url: '/dev/debugging' }
-      ]
-    }
-  ];
+  // Get navigation from bootstrap configuration
+  const bootstrapConfig = bootstrapManager.getConfig() || bootstrapManager.initializeBootstrapConfig();
+  const bootstrapNavTree = bootstrapConfig.settings.navTree;
+  const navTree: NavItem[] = convertNavTreeForDashboard(bootstrapNavTree);
+
+  // Initialize expanded sections based on improved structure
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['operations', 'intelligence']));
 
   // Initialize from localStorage
   useEffect(() => {
@@ -345,6 +253,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           <nav className="flex-1 overflow-y-auto p-3">
             {navTree?.map(item => renderNavItem(item))}
           </nav>
+
+          {/* Quick Actions - Only show when not collapsed */}
+          {!isCollapsed && <QuickActions />}
 
           {/* Collapse Toggle */}
           <div className="p-3 border-t border-gray-200">

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import DashboardEditor from '@/components/dashboard/DashboardEditor';
 import { dashboardEngine } from '@/core/dashboard/DashboardEngine';
@@ -9,12 +9,18 @@ import { Dashboard } from '@/types/dashboard';
 export default function NewDashboardPage() {
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Ensure dashboard engine is loaded
+    setIsLoading(false);
+  }, []);
 
   const handleSave = async (dashboard: Dashboard) => {
     setIsSaving(true);
     try {
-      const saved = await dashboardEngine?.saveDashboard(dashboard);
-      router?.push(`/dashboards/edit/${saved?.uid}`);
+      const saved = await dashboardEngine.saveDashboard(dashboard);
+      router.push(`/dashboards/edit/${saved.uid}`);
     } catch (error) {
       console.error('Failed to save dashboard:', error);
     } finally {
@@ -23,11 +29,21 @@ export default function NewDashboardPage() {
   };
 
   const handleCancel = () => {
-    router?.push('/dashboards');
+    router.push('/dashboards');
   };
 
   // Create a new empty dashboard
-  const newDashboard = dashboardEngine?.createDashboard('New Dashboard');
+  const newDashboard = dashboardEngine.createDashboard('New Dashboard');
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="bg-white rounded-lg shadow p-8 text-center">
+          <p className="text-gray-600 mb-4">Loading dashboard editor...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!newDashboard) {
     return (

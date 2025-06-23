@@ -1,13 +1,15 @@
 /**
- * Grafana Annotations Page - Complete annotation management
- * Route: /annotations - Matches Grafana's annotations URL pattern
+ * Analytics Annotations Page - Complete annotation management
+ * Route: /annotations - Matches Analytics's annotations URL pattern
  * FULLY FUNCTIONAL with real backend integration
  */
 
 'use client';
 
+import React from 'react';
+
 import { useState, useEffect, useCallback } from 'react';
-import { AnnotationManager, type Annotation, type AnnotationFilter } from '@/core/grafana/AnnotationManager';
+import { AnnotationManager, type Annotation, type AnnotationFilter } from '@/core/analytics/AnnotationManager';
 
 // API service functions
 const apiService = {

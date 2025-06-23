@@ -156,7 +156,10 @@ describe('Manufacturing Integration Tests', () => {
         shift: 'Day',
         operator: 'John Smith',
         productType: 'Automotive Component A',
-        workUnitId: '123e4567-e89b-12d3-a456-426614174000'
+        equipmentId: 'EQ-123456',
+        plantCode: 'PLANT-001',
+        assetTag: 'ASSET-123456',
+        workCenterId: '123e4567-e89b-12d3-a456-426614174000'
       };
 
       // Step 2: Validate metrics data
@@ -191,7 +194,10 @@ describe('Manufacturing Integration Tests', () => {
         totalParts: 100,
         goodParts: 95,
         rejectedParts: 5,
-        workUnitId: '123e4567-e89b-12d3-a456-426614174000'
+        equipmentId: 'EQ-123456',
+        plantCode: 'PLANT-001',
+        assetTag: 'ASSET-123456',
+        workCenterId: '123e4567-e89b-12d3-a456-426614174000'
       };
 
       // Validate that parts calculations are correct
@@ -208,7 +214,10 @@ describe('Manufacturing Integration Tests', () => {
         totalParts: 100,
         goodParts: 80,
         rejectedParts: 30, // 80 + 30 > 100
-        workUnitId: '123e4567-e89b-12d3-a456-426614174000'
+        equipmentId: 'EQ-123456',
+        plantCode: 'PLANT-001',
+        assetTag: 'ASSET-123456',
+        workCenterId: '123e4567-e89b-12d3-a456-426614174000'
       };
 
       expect(() => {
@@ -233,7 +242,10 @@ describe('Manufacturing Integration Tests', () => {
         batchNumber: 'B240115001',
         inspector: 'Jane Doe',
         shift: 'Day',
-        workUnitId: '123e4567-e89b-12d3-a456-426614174000'
+        equipmentId: 'EQ-123456',
+        plantCode: 'PLANT-001',
+        assetTag: 'ASSET-123456',
+        workCenterId: '123e4567-e89b-12d3-a456-426614174000'
       };
 
       const validatedQuality = DataValidator.validate(qualityData, ManufacturingSchemas.qualityMetric);
@@ -252,7 +264,10 @@ describe('Manufacturing Integration Tests', () => {
         lowerLimit: 25.0,
         upperLimit: 25.8,
         isWithinSpec: false,
-        workUnitId: '123e4567-e89b-12d3-a456-426614174000'
+        equipmentId: 'EQ-123456',
+        plantCode: 'PLANT-001',
+        assetTag: 'ASSET-123456',
+        workCenterId: '123e4567-e89b-12d3-a456-426614174000'
       };
 
       expect(() => {
@@ -273,7 +288,10 @@ describe('Manufacturing Integration Tests', () => {
         currentValue: 15.8,
         thresholdValue: 10.0,
         unit: 'mm/s',
-        workUnitId: '123e4567-e89b-12d3-a456-426614174000'
+        equipmentId: 'EQ-123456',
+        plantCode: 'PLANT-001',
+        assetTag: 'ASSET-123456',
+        workCenterId: '123e4567-e89b-12d3-a456-426614174000'
       };
 
       const validatedAlert = DataValidator.validate(alertData, ManufacturingSchemas.alert);
@@ -448,7 +466,10 @@ describe('Manufacturing Integration Tests', () => {
         value: sanitizedData.value,
         uom: sanitizedData.unit,
         isWithinSpec: sanitizedData.value <= 50,
-        workUnitId: '123e4567-e89b-12d3-a456-426614174000'
+        equipmentId: 'EQ-123456',
+        plantCode: 'PLANT-001',
+        assetTag: 'ASSET-123456',
+        workCenterId: '123e4567-e89b-12d3-a456-426614174000'
       };
 
       const validatedMetrics = DataValidator.validate(metricsEntry, ManufacturingSchemas.qualityMetric);
@@ -479,7 +500,10 @@ describe('Manufacturing Integration Tests', () => {
         currentValue: criticalSensorData.value,
         thresholdValue: 50,
         unit: '°C',
-        workUnitId: '123e4567-e89b-12d3-a456-426614174000'
+        equipmentId: 'EQ-123456',
+        plantCode: 'PLANT-001',
+        assetTag: 'ASSET-123456',
+        workCenterId: '123e4567-e89b-12d3-a456-426614174000'
       };
 
       const validatedAlert = DataValidator.validate(alertData, ManufacturingSchemas.alert);

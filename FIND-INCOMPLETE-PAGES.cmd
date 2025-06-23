@@ -24,10 +24,10 @@ if exist "src\app\dashboard\page.tsx" (
     echo ❌ Dashboard page MISSING: src\app\dashboard\page.tsx
 )
 
-if exist "src\app\grafana-dashboard\page.tsx" (
-    echo ✅ Grafana dashboard page exists
+if exist "src\app\manufacturingPlatform-dashboard\page.tsx" (
+    echo ✅ manufacturingPlatform dashboard page exists
 ) else (
-    echo ❌ Grafana dashboard page MISSING: src\app\grafana-dashboard\page.tsx
+    echo ❌ manufacturingPlatform dashboard page MISSING: src\app\manufacturingPlatform-dashboard\page.tsx
 )
 
 if exist "src\app\equipment\page.tsx" (
@@ -88,7 +88,7 @@ if exist "src\app\dashboards\maintenance\page.tsx" (
 )
 
 echo.
-echo 🧩 Checking Grafana integration components:
+echo 🧩 Checking manufacturingPlatform integration components:
 
 if exist "src\components\layout\GrafanaLayout.tsx" (
     echo ✅ GrafanaLayout component exists
@@ -102,10 +102,10 @@ if exist "src\components\dashboard\ManufacturingDashboard.tsx" (
     echo ❌ ManufacturingDashboard component MISSING: src\components\dashboard\ManufacturingDashboard.tsx
 )
 
-if exist "src\components\grafana\DashboardPanel.tsx" (
+if exist "src\components\manufacturingPlatform\DashboardPanel.tsx" (
     echo ✅ DashboardPanel component exists
 ) else (
-    echo ❌ DashboardPanel component MISSING: src\components\grafana\DashboardPanel.tsx
+    echo ❌ DashboardPanel component MISSING: src\components\manufacturingPlatform\DashboardPanel.tsx
 )
 
 if exist "src\components\charts\GrafanaCharts.tsx" (

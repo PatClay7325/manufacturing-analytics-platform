@@ -302,7 +302,9 @@ export function sanitizeInput(data: any): any {
   if (typeof data === 'string') {
     // Remove potentially dangerous characters
     return data
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Complete script tags
+      .replace(/<script\b[^>]*>/gi, '') // Opening script tags
+      .replace(/<\/script>/gi, '') // Closing script tags
       .replace(/javascript:/gi, '')
       .replace(/on\w+\s*=/gi, '')
       .trim();
@@ -313,6 +315,11 @@ export function sanitizeInput(data: any): any {
   }
   
   if (typeof data === 'object' && data !== null) {
+    // Preserve special object types
+    if (data instanceof Date || data instanceof RegExp) {
+      return data;
+    }
+    
     const sanitized: any = {};
     for (const [key, value] of Object.entries(data)) {
       sanitized[sanitizeInput(key)] = sanitizeInput(value);

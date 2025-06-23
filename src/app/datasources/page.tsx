@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -7,7 +9,7 @@ export default function DataSourcesPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Redirect to connections page (Grafana v10+ behavior)
+    // Redirect to connections page (AnalyticsPlatform v10+ behavior)
     router.replace('/connections');
   }, [router]);
 
