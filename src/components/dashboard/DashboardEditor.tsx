@@ -1,326 +1,215 @@
 'use client';
 
-import React, { useState, useCallback, useEffect } from 'react';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import {
-  PlusIcon,
-  CogIcon,
-  ArrowPathIcon,
-  ClockIcon,
-  VariableIcon,
-  ShareIcon,
-  TrashIcon,
-  DocumentDuplicateIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  Bars3Icon,
-  XMarkIcon
-} from '@heroicons/react/24/outline';
-import { Dashboard, Panel, TimeRange } from '@/types/dashboard';
-import GridLayout from './GridLayout';
-import PanelEditor from './PanelEditor';
-import DashboardSettings from './DashboardSettings';
-import TimeRangePicker from './TimeRangePicker';
-import VariableManager from './VariableManager';
-import PanelLibrary from './PanelLibrary';
-import DashboardToolbar from './DashboardToolbar';
-import SaveDashboardModal from './SaveDashboardModal';
-import { dashboardEngine } from '@/core/dashboard/DashboardEngine';
+import React, { useState, useEffect } from 'react';
+import { Dashboard, Panel } from '@/types/dashboard';
+import { Save, Plus, Settings, Grid3x3 } from 'lucide-react';
 
 interface DashboardEditorProps {
   dashboard?: Dashboard;
-  onSave?: (dashboard?: Dashboard) => void;
+  onSave?: (dashboard: Dashboard) => void;
   onCancel?: () => void;
-  isSaving?: boolean;
-  isNew?: boolean;
 }
 
-export default function DashboardEditor({
-  dashboard: initialDashboard,
-  onSave,
-  onCancel,
-  isSaving = false,
-  isNew = false
+export default function DashboardEditor({ 
+  dashboard: initialDashboard, 
+  onSave, 
+  onCancel 
 }: DashboardEditorProps) {
-  const [dashboard, setDashboard] = useState<Dashboard>(initialDashboard);
-  const [selectedPanel, setSelectedPanel] = useState<Panel | null>(null);
-  const [isPanelEditorOpen, setIsPanelEditorOpen] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isVariablesOpen, setIsVariablesOpen] = useState(false);
-  const [isPanelLibraryOpen, setIsPanelLibraryOpen] = useState(false);
-  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-
-  // Track changes
-  useEffect(() => {
-    if (!isNew) {
-      setHasUnsavedChanges(JSON.stringify(dashboard) !== JSON.stringify(initialDashboard));
+  const [dashboard, setDashboard] = useState<Dashboard>(
+    initialDashboard || {
+      uid: '',
+      title: 'New Dashboard',
+      description: '',
+      tags: [],
+      panels: [],
+      editable: true,
+      version: 0,
+      schemaVersion: 1,
+      timezone: 'browser',
+      refresh: '',
+      time: {
+        from: 'now-6h',
+        to: 'now'
+      },
+      fiscalYearStartMonth: 0,
+      liveNow: false,
+      weekStart: '',
+      slug: '',
+      templating: {
+        list: []
+      },
+      annotations: {
+        list: []
+      }
     }
-  }, [dashboard, initialDashboard, isNew]);
+  );
 
-  // Handle panel operations
-  const handleAddPanel = useCallback((panelType: string) => {
-    const maxId = Math.max(...(dashboard?.panels || []).map(p => p?.id || 0), 0);
+  const [selectedPanel, setSelectedPanel] = useState<string | null>(null);
+
+  const handleAddPanel = () => {
     const newPanel: Panel = {
-      id: maxId + 1,
-      type: panelType,
-      title: `New ${panelType} panel`,
+      id: Date.now(),
+      type: 'graph',
+      title: 'New Panel',
+      gridPos: {
+        x: 0,
+        y: 0,
+        w: 12,
+        h: 8
+      },
+      datasource: {
+        type: 'prometheus',
+        uid: ''
+      },
       targets: [],
+      options: {},
       fieldConfig: {
         defaults: {},
         overrides: []
-      },
-      options: {},
-      transparent: false,
-      gridPos: { x: 0, y: 0, w: 12, h: 9 }
-    };
-
-    setDashboard({
-      ...dashboard,
-      panels: [...(dashboard?.panels || []), newPanel]
-    });
-
-    setSelectedPanel(newPanel);
-    setIsPanelEditorOpen(true);
-    setIsPanelLibraryOpen(false);
-  }, [dashboard]);
-
-  const handleUpdatePanel = useCallback((panelId: number, updates: Partial<Panel>) => {
-    setDashboard(prev => ({
-      ...prev,
-      panels: (prev?.panels || []).map(panel =>
-        panel?.id === panelId ? { ...panel, ...updates } : panel
-      )
-    }));
-  }, []);
-
-  const handleDeletePanel = useCallback((panelId: number) => {
-    setDashboard(prev => ({
-      ...prev,
-      panels: (prev?.panels || []).filter(panel => panel?.id !== panelId)
-    }));
-    if (selectedPanel?.id === panelId) {
-      setSelectedPanel(null);
-      setIsPanelEditorOpen(false);
-    }
-  }, [selectedPanel]);
-
-  const handleDuplicatePanel = useCallback((panel: Panel) => {
-    const maxId = Math.max(...(dashboard?.panels || []).map(p => p?.id || 0), 0);
-    const newPanel: Panel = {
-      ...panel,
-      id: maxId + 1,
-      gridPos: {
-        ...panel?.gridPos,
-        y: panel.gridPos.y + panel?.gridPos.h
       }
     };
 
     setDashboard(prev => ({
       ...prev,
-      panels: [...(prev?.panels || []), newPanel]
+      panels: [...prev.panels, newPanel]
     }));
-  }, [dashboard?.panels]);
+  };
 
-  const handlePanelClick = useCallback((panel: Panel) => {
-    setSelectedPanel(panel);
-    setIsPanelEditorOpen(true);
-  }, []);
-
-  const handleLayoutChange = useCallback((updatedPanels: Panel[]) => {
+  const handlePanelUpdate = (panelId: number, updates: Partial<Panel>) => {
     setDashboard(prev => ({
       ...prev,
-      panels: updatedPanels
+      panels: prev.panels.map(panel => 
+        panel.id === panelId ? { ...panel, ...updates } : panel
+      )
     }));
-  }, []);
+  };
 
-  // Handle time range
-  const handleTimeRangeChange = useCallback((timeRange: TimeRange) => {
+  const handleDeletePanel = (panelId: number) => {
     setDashboard(prev => ({
       ...prev,
-      time: timeRange
+      panels: prev.panels.filter(panel => panel.id !== panelId)
     }));
-  }, []);
+  };
 
-  // Handle refresh
-  const handleRefresh = useCallback(async () => {
-    setIsRefreshing(true);
-    try {
-      await dashboardEngine?.refreshDashboard(dashboard?.uid);
-    } catch (error) {
-      console.error('Failed to refresh dashboard:', error);
-    } finally {
-      setIsRefreshing(false);
-    }
-  }, [dashboard?.uid]);
-
-  // Handle save
-  const handleSaveClick = useCallback(() => {
-    if (isNew || hasUnsavedChanges) {
-      setIsSaveModalOpen(true);
-    } else {
+  const handleSave = () => {
+    if (onSave) {
       onSave(dashboard);
     }
-  }, [dashboard, hasUnsavedChanges, isNew, onSave]);
-
-  const handleSaveConfirm = useCallback((title: string, description: string, tags: string[]) => {
-    const updatedDashboard = {
-      ...dashboard,
-      title,
-      description,
-      tags
-    };
-    setDashboard(updatedDashboard);
-    onSave(updatedDashboard);
-    setIsSaveModalOpen(false);
-  }, [dashboard, onSave]);
+  };
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <div className="flex h-screen bg-gray-50">
-        {/* Sidebar */}
-        <div className={`${
-          isSidebarCollapsed ? 'w-16' : 'w-64'
-        } bg-white border-r border-gray-200 transition-all duration-300 flex flex-col`}>
-          {/* Sidebar Header */}
-          <div className="p-4 border-b border-gray-200">
-            <div className="flex items-center justify-between">
-              {!isSidebarCollapsed && (
-                <h2 className="text-lg font-semibold text-gray-900">Dashboard Editor</h2>
-              )}
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Header */}
+      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div className="px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <input
+                type="text"
+                value={dashboard.title}
+                onChange={(e) => setDashboard(prev => ({ ...prev, title: e.target.value }))}
+                className="text-xl font-semibold bg-transparent border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none px-1"
+                placeholder="Dashboard Title"
+              />
+            </div>
+            <div className="flex items-center space-x-2">
               <button
-                onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-                className="p-1 rounded hover:bg-gray-100 text-gray-600"
+                onClick={handleAddPanel}
+                className="flex items-center space-x-2 px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
               >
-                {isSidebarCollapsed ? <ChevronRightIcon className="w-5 h-5" /> : <ChevronLeftIcon className="w-5 h-5" />}
+                <Plus className="h-4 w-4" />
+                <span>Add Panel</span>
               </button>
+              <button
+                onClick={handleSave}
+                className="flex items-center space-x-2 px-3 py-1.5 text-sm bg-green-600 text-white rounded hover:bg-green-700"
+              >
+                <Save className="h-4 w-4" />
+                <span>Save</span>
+              </button>
+              {onCancel && (
+                <button
+                  onClick={onCancel}
+                  className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+                >
+                  Cancel
+                </button>
+              )}
             </div>
           </div>
-
-          {/* Sidebar Menu */}
-          <nav className="flex-1 p-4 space-y-2">
-            <button
-              onClick={() => setIsPanelLibraryOpen(true)}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-100 text-gray-700"
-            >
-              <PlusIcon className="w-5 h-5" />
-              {!isSidebarCollapsed && <span>Add Panel</span>}
-            </button>
-            <button
-              onClick={() => setIsVariablesOpen(true)}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-100 text-gray-700"
-            >
-              <VariableIcon className="w-5 h-5" />
-              {!isSidebarCollapsed && <span>Variables</span>}
-            </button>
-            <button
-              onClick={() => setIsSettingsOpen(true)}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-100 text-gray-700"
-            >
-              <CogIcon className="w-5 h-5" />
-              {!isSidebarCollapsed && <span>Settings</span>}
-            </button>
-          </nav>
-
-          {/* Sidebar Footer */}
-          <div className="p-4 border-t border-gray-200">
-            <button
-              onClick={onCancel}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded border border-gray-300 hover:bg-gray-100 text-gray-700"
-            >
-              {!isSidebarCollapsed && <span>Exit</span>}
-              <XMarkIcon className="w-5 h-5" />
-            </button>
-          </div>
         </div>
-
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col">
-          {/* Toolbar */}
-          <DashboardToolbar
-            dashboard={dashboard}
-            onSave={handleSaveClick}
-            onRefresh={handleRefresh}
-            onTimeRangeChange={handleTimeRangeChange}
-            isRefreshing={isRefreshing}
-            isSaving={isSaving}
-            hasUnsavedChanges={hasUnsavedChanges}
-          />
-
-          {/* Dashboard Canvas */}
-          <div className="flex-1 overflow-auto bg-gray-50 p-4">
-            <GridLayout
-              panels={dashboard?.panels}
-              onLayoutChange={handleLayoutChange}
-              onPanelClick={handlePanelClick}
-              onPanelDelete={handleDeletePanel}
-              onPanelDuplicate={handleDuplicatePanel}
-              selectedPanelId={selectedPanel?.id}
-            />
-          </div>
-        </div>
-
-        {/* Panel Editor Modal */}
-        {isPanelEditorOpen && selectedPanel && (
-          <PanelEditor
-            panel={selectedPanel}
-            dashboard={dashboard}
-            onSave={(updates) => {
-              handleUpdatePanel(selectedPanel?.id, updates);
-              setIsPanelEditorOpen(false);
-            }}
-            onClose={() => setIsPanelEditorOpen(false)}
-          />
-        )}
-
-        {/* Settings Modal */}
-        {isSettingsOpen && (
-          <DashboardSettings
-            dashboard={dashboard}
-            onSave={(updates) => {
-              setDashboard({ ...dashboard, ...updates });
-              setIsSettingsOpen(false);
-            }}
-            onClose={() => setIsSettingsOpen(false)}
-          />
-        )}
-
-        {/* Variables Modal */}
-        {isVariablesOpen && (
-          <VariableManager
-            dashboard={dashboard}
-            onSave={(variables) => {
-              setDashboard({
-                ...dashboard,
-                templating: { list: variables }
-              });
-              setIsVariablesOpen(false);
-            }}
-            onClose={() => setIsVariablesOpen(false)}
-          />
-        )}
-
-        {/* Panel Library Modal */}
-        {isPanelLibraryOpen && (
-          <PanelLibrary
-            onSelect={handleAddPanel}
-            onClose={() => setIsPanelLibraryOpen(false)}
-          />
-        )}
-
-        {/* Save Modal */}
-        {isSaveModalOpen && (
-          <SaveDashboardModal
-            dashboard={dashboard}
-            onSave={handleSaveConfirm}
-            onClose={() => setIsSaveModalOpen(false)}
-            isNew={isNew}
-          />
-        )}
       </div>
-    </DndProvider>
+
+      {/* Dashboard Grid */}
+      <div className="p-4">
+        <div className="grid grid-cols-1 gap-4">
+          {dashboard.panels.length === 0 ? (
+            <div className="bg-white dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 p-12">
+              <div className="text-center">
+                <Grid3x3 className="mx-auto h-12 w-12 text-gray-400" />
+                <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No panels</h3>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  Get started by adding a new panel to your dashboard.
+                </p>
+                <div className="mt-6">
+                  <button
+                    type="button"
+                    onClick={handleAddPanel}
+                    className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    <Plus className="-ml-1 mr-2 h-5 w-5" />
+                    Add Panel
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-24 gap-4">
+              {dashboard.panels.map((panel) => (
+                <div
+                  key={panel.id}
+                  className={`col-span-${panel.gridPos.w} bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 ${
+                    selectedPanel === String(panel.id) ? 'ring-2 ring-blue-500' : ''
+                  }`}
+                  style={{
+                    gridColumn: `span ${panel.gridPos.w} / span ${panel.gridPos.w}`,
+                    minHeight: `${panel.gridPos.h * 30}px`
+                  }}
+                  onClick={() => setSelectedPanel(String(panel.id))}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      {panel.title}
+                    </h3>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeletePanel(panel.id);
+                      }}
+                      className="text-gray-400 hover:text-red-600"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    Type: {panel.type}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Panel Editor (placeholder) */}
+      {selectedPanel && (
+        <div className="fixed right-0 top-0 h-full w-96 bg-white dark:bg-gray-800 shadow-xl border-l border-gray-200 dark:border-gray-700 p-4">
+          <h2 className="text-lg font-semibold mb-4">Panel Editor</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Panel editing functionality would go here
+          </p>
+        </div>
+      )}
+    </div>
   );
 }

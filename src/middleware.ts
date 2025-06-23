@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { rateLimitMiddleware, getRateLimiterForRoute, addRateLimitHeaders } from '@/lib/middleware/rateLimiter';
+import { auditLogService, AuditAction } from '@/services/auditLogService';
 
 // Public routes that don't require authentication
 const publicRoutes = [
@@ -11,6 +13,14 @@ const publicRoutes = [
   '/api/manufacturing-metrics',
   '/api/quality-metrics',
   '/api/diagnostics',
+  '/api/grafana',
+  '/api/grafana/query',
+  '/api/grafana/search',
+  '/api/grafana/annotations',
+  '/api/user/preferences',
+  '/grafana',
+  '/grafana-test',
+  '/test-iframe',
   '/login',
   '/register',
   '/reset-password',
@@ -19,7 +29,7 @@ const publicRoutes = [
   '/cookie-policy',
 ];
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
   // Generate request ID for tracking
@@ -28,6 +38,27 @@ export function middleware(request: NextRequest) {
   // Add request ID to headers
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-request-id', requestId);
+  
+  // Apply rate limiting for API routes
+  if (pathname.startsWith('/api')) {
+    const limiterType = getRateLimiterForRoute(pathname);
+    const rateLimitResult = await rateLimitMiddleware(request, limiterType);
+    
+    if (rateLimitResult) {
+      // Rate limit exceeded - log and return error
+      try {
+        await auditLogService.logRequest(request, AuditAction.RATE_LIMIT_EXCEEDED, {
+          resource: pathname,
+          details: { limiterType },
+          success: false,
+        });
+      } catch (e) {
+        // Don't block on audit log failures
+        console.error('Failed to log rate limit violation:', e);
+      }
+      return rateLimitResult;
+    }
+  }
 
   // Allow public routes
   if (publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/'))) {
@@ -81,11 +112,19 @@ export function middleware(request: NextRequest) {
   // Just check if token exists and has basic format
   // Full verification happens in API routes
   if (token && token.length > 10) {
-    return NextResponse.next({
+    const response = NextResponse.next({
       request: {
         headers: requestHeaders,
       },
     });
+    
+    // Add rate limit headers for API routes
+    if (pathname.startsWith('/api')) {
+      const limiterType = getRateLimiterForRoute(pathname);
+      addRateLimitHeaders(response, request, limiterType);
+    }
+    
+    return response;
   }
 
   // Invalid token format

@@ -158,22 +158,43 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             }
           }}
         >
-          <Link 
-            href={item?.url || '#'} 
-            className={`flex items-center ${isCollapsed && depth === 0 ? '' : 'flex-1'}`}
-            onClick={(e) => {
-              if (hasChildren && !item?.url) {
-                e?.preventDefault();
-              }
-            }}
-          >
-            {Icon && (
-              <Icon className={`h-4 w-4 flex-shrink-0 ${isCollapsed && depth === 0 ? '' : 'mr-3'}`} />
-            )}
-            {(!isCollapsed || depth > 0) && (
-              <span className="flex-1">{item?.text}</span>
-            )}
-          </Link>
+          {item?.target === '_blank' ? (
+            <a 
+              href={item?.url || '#'} 
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`flex items-center ${isCollapsed && depth === 0 ? '' : 'flex-1'}`}
+              onClick={(e) => {
+                if (hasChildren && !item?.url) {
+                  e?.preventDefault();
+                }
+              }}
+            >
+              {Icon && (
+                <Icon className={`h-4 w-4 flex-shrink-0 ${isCollapsed && depth === 0 ? '' : 'mr-3'}`} />
+              )}
+              {(!isCollapsed || depth > 0) && (
+                <span className="flex-1">{item?.text}</span>
+              )}
+            </a>
+          ) : (
+            <Link 
+              href={item?.url || '#'} 
+              className={`flex items-center ${isCollapsed && depth === 0 ? '' : 'flex-1'}`}
+              onClick={(e) => {
+                if (hasChildren && !item?.url) {
+                  e?.preventDefault();
+                }
+              }}
+            >
+              {Icon && (
+                <Icon className={`h-4 w-4 flex-shrink-0 ${isCollapsed && depth === 0 ? '' : 'mr-3'}`} />
+              )}
+              {(!isCollapsed || depth > 0) && (
+                <span className="flex-1">{item?.text}</span>
+              )}
+            </Link>
+          )}
           {hasChildren && (!isCollapsed || depth > 0) && (
             <div className="ml-2">
               {isExpanded ? (

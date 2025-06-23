@@ -13,6 +13,7 @@ import {
   normalizeQueryResult,
   createDynamicAggregation,
   combineFieldValues,
+  combineStringFieldValues,
   FIELD_ALIASES
 } from '@/lib/schema-introspection';
 
@@ -191,12 +192,12 @@ export async function GET(request: NextRequest) {
         performance: combineFieldValues(metric, FIELD_ALIASES.performance, 0),
         quality: combineFieldValues(metric, FIELD_ALIASES.quality, 0),
         oee: combineFieldValues(metric, FIELD_ALIASES.oeeScore, 0),
-        machine: combineFieldValues(metric, FIELD_ALIASES.machineName, 'Unknown'),
-        shift: combineFieldValues(metric, FIELD_ALIASES.shift, 'Unknown'),
-        product: combineFieldValues(metric, FIELD_ALIASES.productType, 'Unknown'),
+        machine: combineStringFieldValues(metric, FIELD_ALIASES.machineName, 'Unknown'),
+        shift: combineStringFieldValues(metric, FIELD_ALIASES.shift, 'Unknown'),
+        product: combineStringFieldValues(metric, FIELD_ALIASES.productType, 'Unknown'),
       })),
       byShift: normalizedShiftMetrics.map((shift: any) => ({
-        shift: combineFieldValues(shift, [shiftField || 'shift'], 'Unknown'),
+        shift: combineStringFieldValues(shift, [shiftField || 'shift'], 'Unknown'),
         avgAvailability: combineFieldValues(shift._avg || {}, FIELD_ALIASES.availability, 0),
         avgPerformance: combineFieldValues(shift._avg || {}, FIELD_ALIASES.performance, 0),
         avgQuality: combineFieldValues(shift._avg || {}, FIELD_ALIASES.quality, 0),
@@ -204,7 +205,7 @@ export async function GET(request: NextRequest) {
         count: shift._count?.id || 0,
       })),
       byProduct: normalizedProductMetrics.map((product: any) => ({
-        productType: combineFieldValues(product, [productTypeField || 'productType'], 'Unknown'),
+        productType: combineStringFieldValues(product, [productTypeField || 'productType'], 'Unknown'),
         avgAvailability: combineFieldValues(product._avg || {}, FIELD_ALIASES.availability, 0),
         avgPerformance: combineFieldValues(product._avg || {}, FIELD_ALIASES.performance, 0),
         avgQuality: combineFieldValues(product._avg || {}, FIELD_ALIASES.quality, 0),
@@ -212,7 +213,7 @@ export async function GET(request: NextRequest) {
         count: product._count?.id || 0,
       })),
       equipmentRanking: normalizedEquipmentRanking.map((equipment: any) => ({
-        machineName: combineFieldValues(equipment, [machineNameField || 'machineName'], 'Unknown'),
+        machineName: combineStringFieldValues(equipment, [machineNameField || 'machineName'], 'Unknown'),
         _avg: {
           oeeScore: combineFieldValues(equipment._avg || {}, FIELD_ALIASES.oeeScore, 0),
           availability: combineFieldValues(equipment._avg || {}, FIELD_ALIASES.availability, 0),

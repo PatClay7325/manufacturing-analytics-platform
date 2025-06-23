@@ -12,6 +12,7 @@ import {
   createDynamicSelect,
   normalizeQueryResult,
   combineFieldValues,
+  combineStringFieldValues,
   FIELD_ALIASES
 } from '@/lib/schema-introspection';
 
@@ -217,14 +218,14 @@ export async function GET(request: NextRequest) {
 
     const response = {
       current: normalizedCurrent ? {
-        machine: combineFieldValues(normalizedCurrent, FIELD_ALIASES.machineName, 'Unknown'),
+        machine: combineStringFieldValues(normalizedCurrent, FIELD_ALIASES.machineName, 'Unknown'),
         totalParts: combineFieldValues(normalizedCurrent, FIELD_ALIASES.totalParts, 0),
         goodParts: combineFieldValues(normalizedCurrent, FIELD_ALIASES.goodParts, 0),
         rejectedParts: combineFieldValues(normalizedCurrent, FIELD_ALIASES.rejectedParts, 0),
         reworkParts: combineFieldValues(normalizedCurrent, FIELD_ALIASES.reworkParts, 0),
         plannedProduction: combineFieldValues(normalizedCurrent, FIELD_ALIASES.plannedProduction, 0),
-        shift: combineFieldValues(normalizedCurrent, FIELD_ALIASES.shift, 'Unknown'),
-        productType: combineFieldValues(normalizedCurrent, FIELD_ALIASES.productType, 'Unknown'),
+        shift: combineStringFieldValues(normalizedCurrent, FIELD_ALIASES.shift, 'Unknown'),
+        productType: combineStringFieldValues(normalizedCurrent, FIELD_ALIASES.productType, 'Unknown'),
         timestamp: normalizedCurrent.timestamp,
       } : null,
       aggregated: {
@@ -240,26 +241,26 @@ export async function GET(request: NextRequest) {
         totalParts: combineFieldValues(trend, FIELD_ALIASES.totalParts, 0),
         goodParts: combineFieldValues(trend, FIELD_ALIASES.goodParts, 0),
         rejectedParts: combineFieldValues(trend, FIELD_ALIASES.rejectedParts, 0),
-        machine: combineFieldValues(trend, FIELD_ALIASES.machineName, 'Unknown'),
-        shift: combineFieldValues(trend, FIELD_ALIASES.shift, 'Unknown'),
-        productType: combineFieldValues(trend, FIELD_ALIASES.productType, 'Unknown'),
+        machine: combineStringFieldValues(trend, FIELD_ALIASES.machineName, 'Unknown'),
+        shift: combineStringFieldValues(trend, FIELD_ALIASES.shift, 'Unknown'),
+        productType: combineStringFieldValues(trend, FIELD_ALIASES.productType, 'Unknown'),
       })),
       byShift: normalizedShiftProduction.map((shift: any) => ({
-        shift: combineFieldValues(shift, [shiftField || 'shift'], 'Unknown'),
+        shift: combineStringFieldValues(shift, [shiftField || 'shift'], 'Unknown'),
         totalParts: combineFieldValues(shift._sum || {}, FIELD_ALIASES.totalParts, 0),
         goodParts: combineFieldValues(shift._sum || {}, FIELD_ALIASES.goodParts, 0),
         rejectedParts: combineFieldValues(shift._sum || {}, FIELD_ALIASES.rejectedParts, 0),
         recordCount: shift._count.id || 0,
       })),
       byProduct: normalizedProductProduction.map((product: any) => ({
-        productType: combineFieldValues(product, [productTypeField || 'productType'], 'Unknown'),
+        productType: combineStringFieldValues(product, [productTypeField || 'productType'], 'Unknown'),
         totalParts: combineFieldValues(product._sum || {}, FIELD_ALIASES.totalParts, 0),
         goodParts: combineFieldValues(product._sum || {}, FIELD_ALIASES.goodParts, 0),
         rejectedParts: combineFieldValues(product._sum || {}, FIELD_ALIASES.rejectedParts, 0),
         recordCount: product._count.id || 0,
       })),
       topPerformers: normalizedTopPerformers.map((performer: any) => ({
-        machineName: combineFieldValues(performer, [machineField || 'machineName'], 'Unknown'),
+        machineName: combineStringFieldValues(performer, [machineField || 'machineName'], 'Unknown'),
         avgOEE: combineFieldValues(performer._avg || {}, FIELD_ALIASES.oeeScore, 0),
         totalParts: combineFieldValues(performer._sum || {}, FIELD_ALIASES.totalParts, 0),
         goodParts: combineFieldValues(performer._sum || {}, FIELD_ALIASES.goodParts, 0),

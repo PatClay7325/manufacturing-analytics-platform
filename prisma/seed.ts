@@ -260,6 +260,24 @@ const EQUIPMENT_MAP = {
   ],
 };
 
+// Define product types for each work center
+const PRODUCT_MAP = {
+  'wc-na001-aut-ba': ['Automotive Body Panel', 'Chassis Frame', 'Door Assembly'],
+  'wc-na001-aut-pt': ['Painted Body Panel', 'Coated Frame', 'Finished Door'],
+  'wc-na001-qc-di': ['Quality Validated Part', 'Inspected Component', 'Certified Assembly'],
+  'wc-ap001-elec-pcb': ['PCB-100 Main Board', 'PCB-200 Control Board', 'PCB-300 Power Board'],
+  'wc-ap001-elec-fa': ['Electronic Module A', 'Control Unit B', 'Power Supply C'],
+  'wc-ap001-semi-wp': ['Silicon Wafer 300mm', 'Processed Chip', 'Semiconductor Die'],
+};
+
+function getProductTypeForWorkCenter(workCenterId: string): string {
+  const products = PRODUCT_MAP[workCenterId as keyof typeof PRODUCT_MAP];
+  if (products && products.length > 0) {
+    return products[Math.floor(Math.random() * products.length)];
+  }
+  return 'Generic Product';
+}
+
 async function createUsers(sites: any[]) {
   console.log('\n👥 Creating Users...');
   
@@ -315,10 +333,10 @@ async function createEquipmentBasedMetrics(workCenters: any[]) {
       // Create metrics for last 7 days
       for (let day = 0; day < 7; day++) {
         for (let hour = 0; hour < 24; hour += 4) {
-          const availability = 85 + Math.random() * 15;
-          const performance = 80 + Math.random() * 20;
-          const quality = 95 + Math.random() * 5;
-          const oeeScore = (availability * performance * quality) / 10000;
+          const availability = (85 + Math.random() * 15) / 100; // Convert to decimal 0.85-1.0
+          const performance = (80 + Math.random() * 20) / 100; // Convert to decimal 0.80-1.0
+          const quality = (95 + Math.random() * 5) / 100; // Convert to decimal 0.95-1.0
+          const oeeScore = availability * performance * quality; // Already in decimal range
           
           await prisma.performanceMetric.create({
             data: {
@@ -358,15 +376,15 @@ async function createEquipmentBasedMetrics(workCenters: any[]) {
               failureRate: Math.random() * 0.05,
               
               // Utilization Metrics
-              machineUtilizationPercentage: 85 + Math.random() * 15,
-              operatorUtilizationPercentage: 80 + Math.random() * 20,
-              downtimePercentage: Math.random() * 10,
+              machineUtilizationPercentage: (85 + Math.random() * 15) / 100,
+              operatorUtilizationPercentage: (80 + Math.random() * 20) / 100,
+              downtimePercentage: (Math.random() * 10) / 100,
               
               // Quality Metrics
-              yieldPercentage: 95 + Math.random() * 5,
-              firstPassYield: 92 + Math.random() * 8,
-              scrapRate: Math.random() * 3,
-              reworkRate: Math.random() * 2,
+              yieldPercentage: (95 + Math.random() * 5) / 100,
+              firstPassYield: (92 + Math.random() * 8) / 100,
+              scrapRate: (Math.random() * 3) / 100,
+              reworkRate: (Math.random() * 2) / 100,
               
               // Environmental Metrics
               energyConsumed_kWh: 15 + Math.random() * 5,
@@ -377,6 +395,7 @@ async function createEquipmentBasedMetrics(workCenters: any[]) {
               operatorName: `Operator-${Math.floor(Math.random() * 10) + 1}`,
               shift: hour < 8 ? 'Night' : hour < 16 ? 'Day' : 'Evening',
               batchNumber: `BATCH-${String(Math.floor(Math.random() * 1000)).padStart(4, '0')}`,
+              productType: getProductTypeForWorkCenter(workCenter.id),
               
               // ISO-compliant equipment identification
               equipmentId: equip.equipmentId,

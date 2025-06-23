@@ -7,7 +7,7 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_DATABASE_URL")
+  // directUrl = env("DIRECT_DATABASE_URL") // Commented out for development
   // extensions = [pgvector(map: "vector")] // Disabled until vector extension is installed
 }
 
@@ -470,6 +470,7 @@ model User {
   Annotations      Annotation[]
   DashboardSnapshot DashboardSnapshot[]
   PublicShares     PublicShare[]
+  DataUploads      DataUpload[]
   
   // Library panel relationships
   CreatedLibraryPanels LibraryPanel[] @relation("LibraryPanelCreator")
@@ -3241,4 +3242,106 @@ model Trace {
   @@index([startTime])
   @@index([status])
   @@map("traces")
+}
+
+// =============================================================================
+// DATA UPLOAD SYSTEM
+// Production-ready data import/export with security and tracking
+// =============================================================================
+
+// Data Upload - Track file uploads and import jobs
+model DataUpload {
+  id                String    @id @default(cuid())
+  userId            String
+  workUnitId        String?
+  
+  // File Information
+  fileName          String
+  fileSize          Int
+  mimeType          String
+  filePath          String?   // Secure storage path
+  
+  // Import Configuration
+  importType        String    // csv, json, excel
+  options           Json?     // Import options (deduplicate, validateData, etc.)
+  
+  // Status Tracking
+  status            String    @default("pending") // pending, processing, completed, failed, cancelled
+  currentPhase      String?   // Current processing phase
+  totalRecords      Int?      // Total records in file
+  processedRecords  Int?      // Records processed so far
+  successfulRecords Int?      // Successfully imported records
+  failedRecords     Int?      // Failed records
+  
+  // Error Tracking
+  errorMessage      String?
+  errors            Json?     // Detailed error information
+  
+  // Performance Metrics
+  processingTime    Int?      // Total processing time in ms
+  memoryUsed        BigInt?   // Memory used in bytes
+  
+  // Timestamps
+  startedAt         DateTime  @default(now())
+  completedAt       DateTime?
+  
+  // Metadata
+  metadata          Json?     // Additional metadata
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relations
+  user              User      @relation(fields: [userId], references: [id])
+  
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([workUnitId])
+  @@map("data_uploads")
+}
+
+// Job Queue - Background job processing
+model JobQueue {
+  id                String    @id @default(cuid())
+  type              String    // Job type identifier
+  payload           String    // JSON payload
+  status            String    @default("pending") // pending, processing, completed, failed, cancelled
+  priority          String    @default("normal") // low, normal, high, critical
+  
+  // Execution Details
+  attempts          Int       @default(0)
+  maxAttempts       Int       @default(3)
+  startedAt         DateTime?
+  completedAt       DateTime?
+  scheduledFor      DateTime  @default(now())
+  
+  // Error Tracking
+  error             String?
+  result            String?   // JSON result
+  
+  // Metadata
+  metadata          String?   // JSON metadata
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@index([type])
+  @@index([status])
+  @@index([priority])
+  @@index([scheduledFor])
+  @@map("job_queue")
+}
+
+// Application Metrics - For monitoring and performance tracking
+model ApplicationMetric {
+  id                String    @id @default(cuid())
+  name              String    // Metric name
+  value             Float     // Metric value
+  tags              String    // JSON tags
+  timestamp         DateTime  @default(now())
+  
+  @@index([name, timestamp])
+  @@index([timestamp])
+  @@map("application_metrics")
 }
