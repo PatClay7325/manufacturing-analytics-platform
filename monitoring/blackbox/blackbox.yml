@@ -1,0 +1,86 @@
+modules:
+  http_2xx:
+    prober: http
+    timeout: 5s
+    http:
+      valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+      valid_status_codes: []  # Defaults to 2xx
+      method: GET
+      headers:
+        Accept-Language: en-US
+      no_follow_redirects: false
+      fail_if_ssl: false
+      fail_if_not_ssl: false
+      fail_if_body_matches_regexp:
+        - "error"
+        - "Error"
+      fail_if_body_not_matches_regexp: []
+      fail_if_header_matches: []
+      fail_if_header_not_matches: []
+      tls_config:
+        insecure_skip_verify: false
+      preferred_ip_protocol: "ip4"
+      ip_protocol_fallback: true
+
+  http_post_2xx:
+    prober: http
+    timeout: 5s
+    http:
+      valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+      method: POST
+      headers:
+        Content-Type: application/json
+      body: '{"test": true}'
+
+  tcp_connect:
+    prober: tcp
+    timeout: 5s
+
+  tcp_connect_tls:
+    prober: tcp
+    timeout: 5s
+    tcp:
+      tls: true
+
+  icmp:
+    prober: icmp
+    timeout: 5s
+    icmp:
+      preferred_ip_protocol: "ip4"
+      ip_protocol_fallback: true
+
+  dns_tcp:
+    prober: dns
+    timeout: 5s
+    dns:
+      preferred_ip_protocol: "ip4"
+      ip_protocol_fallback: true
+      valid_rcodes:
+        - NOERROR
+      validate_answer_rrs:
+        fail_if_matches_regexp:
+          - ".*127.0.0.1"
+        fail_if_all_match_regexp:
+          - ".*127.0.0.1"
+        fail_if_not_matches_regexp:
+          - ".*"
+        fail_if_none_matches_regexp:
+          - ".*"
+      validate_authority_rrs:
+        fail_if_matches_regexp: []
+      validate_additional_rrs:
+        fail_if_matches_regexp: []
+      query_name: "example.com"
+      query_type: "A"
+      query_class: "IN"
+      transport_protocol: "tcp"
+
+  dns_udp:
+    prober: dns
+    timeout: 5s
+    dns:
+      preferred_ip_protocol: "ip4"
+      ip_protocol_fallback: true
+      query_name: "example.com"
+      query_type: "A"
+      transport_protocol: "udp"

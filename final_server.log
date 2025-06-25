@@ -1,0 +1,82 @@
+
+> adaptive-factory-ai-solutions@1.0.0 dev
+> node node_modules/next/dist/bin/next dev --port 3005
+
+   ▲ Next.js 15.1.4
+   - Local:        http://localhost:3005
+   - Network:      http://10.255.255.254:3005
+   - Environments: .env.local, .env
+   - Experiments (use with caution):
+     · optimizeCss
+     · scrollRestoration
+
+ ✓ Starting...
+ ○ Compiling /instrumentation ...
+ ✓ Compiled /instrumentation in 2.8s (20 modules)
+Instrumentation temporarily disabled for development
+ ✓ Ready in 25.8s
+ ○ Compiling /src/middleware ...
+ ✓ Compiled /src/middleware in 1154ms (222 modules)
+Instrumentation temporarily disabled for development
+ ○ Compiling /dashboards/server-demo ...
+(node:243175) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ Compiled /dashboards/server-demo in 19.8s (916 modules)
+Demo dashboard created server-side: Server-Side Manufacturing Demo
+ GET /dashboards/server-demo 200 in 25290ms
+ ✓ Compiled in 5.2s (417 modules)
+ ✓ Compiled in 418ms (403 modules)
+ ○ Compiling /d/[uid]/[...slug] ...
+ ✓ Compiled /d/[uid]/[...slug] in 6.6s (2356 modules)
+ ⨯ [Error [PageNotFoundError]: Cannot find module for page: /d/[uid]/[...slug]/page] {
+  type: 'PageNotFoundError',
+  code: 'ENOENT',
+  page: '/d/server-side-demo/server-side-manufacturing-demo'
+}
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 2.4s (2596 modules)
+Time 4.257569
+ GET /d/server-side-demo/server-side-manufacturing-demo 500 in 29611ms
+ ○ Compiling /d/[uid] ...
+ ✓ Compiled /d/[uid] in 2.1s (2609 modules)
+ GET /d/server-side-demo 200 in 14386ms
+ ○ Compiling /dashboards/[id] ...
+ ✓ Compiled /dashboards/[id] in 3.8s (3088 modules)
+Demo dashboard created server-side: Server-Side Manufacturing Demo
+ GET /dashboards/server-demo 200 in 4704ms
+ ○ Compiling /d/[uid] ...
+ ✓ Compiled /d/[uid] in 609ms (1522 modules)
+ GET /d/server-side-demo 200 in 1711ms
+ ✓ Compiled in 820ms (1611 modules)
+ ✓ Compiled in 406ms (1611 modules)
+ ✓ Compiled in 5.1s (1596 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 2.1s (2088 modules)
+ GET / 200 in 3258ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 495ms (2091 modules)
+ GET /analytics-demo 404 in 746ms
+ ○ Compiling /monitoring ...
+ ✓ Compiled /monitoring in 3.6s (2773 modules)
+ ⨯ TypeError: createContext only works in Client Components. Add the "use client" directive at the top of the file to use it. Read more: https://nextjs.org/docs/messages/context-in-server-component
+    at React (src/components/ui/tabs.tsx:9:20)
+    at (rsc)/./src/components/ui/tabs.tsx (.next/server/app/monitoring/page.js:1070:1)
+    at __webpack_require__ (.next/server/webpack-runtime.js:33:42)
+    at eval (webpack-internal:///(rsc)/./src/app/monitoring/page.tsx:11:77)
+    at (rsc)/./src/app/monitoring/page.tsx (.next/server/app/monitoring/page.js:981:1)
+    at Function.__webpack_require__ (.next/server/webpack-runtime.js:33:42)
+   7 | }
+   8 |
+>  9 | const TabsContext = React.createContext<TabsContextType | undefined>(undefined)
+     |                    ^
+  10 |
+  11 | interface TabsProps {
+  12 |   defaultValue?: string {
+  page: '/monitoring'
+}
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 648ms (2775 modules)
+ GET /monitoring 500 in 5874ms
+ ✓ Compiled in 1021ms (1666 modules)
+ ✓ Compiled in 701ms (1666 modules)
+[?25h

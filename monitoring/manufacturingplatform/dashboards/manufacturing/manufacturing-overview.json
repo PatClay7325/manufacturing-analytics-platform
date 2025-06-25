@@ -1,0 +1,751 @@
+{
+  "id": null,
+  "uid": "manufacturing-overview",
+  "title": "Manufacturing Overview - OEE & KPIs",
+  "description": "Comprehensive manufacturing dashboard showing OEE, production metrics, and key performance indicators",
+  "version": 1,
+  "schemaVersion": 39,
+  "tags": ["manufacturing", "oee", "production", "kpi"],
+  "timezone": "browser",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "time": {
+    "from": "now-8h",
+    "to": "now"
+  },
+  "refresh": "30s",
+  "variables": {
+    "list": [
+      {
+        "name": "equipment_id",
+        "type": "query",
+        "label": "Equipment",
+        "description": "Select manufacturing equipment",
+        "datasource": {
+          "uid": "postgres-manufacturing",
+          "type": "postgres"
+        },
+        "definition": "SELECT DISTINCT id, name FROM work_units WHERE status = 'active' ORDER BY name",
+        "query": "SELECT DISTINCT id, name FROM work_units WHERE status = 'active' ORDER BY name",
+        "regex": "",
+        "refresh": 1,
+        "includeAll": false,
+        "multi": false,
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "options": []
+      },
+      {
+        "name": "time_interval",
+        "type": "interval",
+        "label": "Time Interval",
+        "description": "Time interval for aggregation",
+        "auto": true,
+        "auto_count": 50,
+        "auto_min": "1m",
+        "current": {
+          "selected": false,
+          "text": "auto",
+          "value": "$__auto_interval_time_interval"
+        },
+        "options": [
+          {
+            "selected": true,
+            "text": "auto",
+            "value": "$__auto_interval_time_interval"
+          },
+          {
+            "selected": false,
+            "text": "1m",
+            "value": "1m"
+          },
+          {
+            "selected": false,
+            "text": "5m",
+            "value": "5m"
+          },
+          {
+            "selected": false,
+            "text": "15m",
+            "value": "15m"
+          },
+          {
+            "selected": false,
+            "text": "1h",
+            "value": "1h"
+          }
+        ]
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "gauge",
+      "title": "Overall Equipment Effectiveness (OEE)",
+      "datasource": {
+        "uid": "postgres-manufacturing",
+        "type": "postgres"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT\n  timestamp as time,\n  COALESCE(oee, 0) as oee\nFROM performance_metrics\nWHERE work_unit_id = '$equipment_id'\n  AND timestamp >= $__timeFrom()\n  AND timestamp <= $__timeTo()\nORDER BY timestamp DESC\nLIMIT 1",
+          "datasource": {
+            "uid": "postgres-manufacturing",
+            "type": "postgres"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "red"
+              },
+              {
+                "value": 60,
+                "color": "yellow"
+              },
+              {
+                "value": 85,
+                "color": "green"
+              }
+            ]
+          },
+          "mappings": [],
+          "decimals": 1
+        }
+      },
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "values": false,
+          "calcs": ["lastNotNull"],
+          "fields": ""
+        },
+        "showThresholdLabels": true,
+        "showThresholdMarkers": true,
+        "text": {
+          "titleSize": 14,
+          "valueSize": 28
+        }
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Current Availability",
+      "datasource": {
+        "uid": "postgres-manufacturing",
+        "type": "postgres"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 0,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT\n  timestamp as time,\n  COALESCE(availability, 0) as availability\nFROM performance_metrics\nWHERE work_unit_id = '$equipment_id'\n  AND timestamp >= $__timeFrom()\n  AND timestamp <= $__timeTo()\nORDER BY timestamp DESC\nLIMIT 1",
+          "datasource": {
+            "uid": "postgres-manufacturing",
+            "type": "postgres"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "red"
+              },
+              {
+                "value": 80,
+                "color": "yellow"
+              },
+              {
+                "value": 95,
+                "color": "green"
+              }
+            ]
+          },
+          "decimals": 1
+        }
+      },
+      "options": {
+        "textMode": "value",
+        "graphMode": "area",
+        "colorMode": "background",
+        "justifyMode": "center",
+        "orientation": "auto"
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Current Performance",
+      "datasource": {
+        "uid": "postgres-manufacturing",
+        "type": "postgres"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT\n  timestamp as time,\n  COALESCE(performance, 0) as performance\nFROM performance_metrics\nWHERE work_unit_id = '$equipment_id'\n  AND timestamp >= $__timeFrom()\n  AND timestamp <= $__timeTo()\nORDER BY timestamp DESC\nLIMIT 1",
+          "datasource": {
+            "uid": "postgres-manufacturing",
+            "type": "postgres"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "red"
+              },
+              {
+                "value": 80,
+                "color": "yellow"
+              },
+              {
+                "value": 95,
+                "color": "green"
+              }
+            ]
+          },
+          "decimals": 1
+        }
+      },
+      "options": {
+        "textMode": "value",
+        "graphMode": "area",
+        "colorMode": "background",
+        "justifyMode": "center",
+        "orientation": "auto"
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Current Quality",
+      "datasource": {
+        "uid": "postgres-manufacturing",
+        "type": "postgres"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 0,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT\n  timestamp as time,\n  COALESCE(quality, 0) as quality\nFROM performance_metrics\nWHERE work_unit_id = '$equipment_id'\n  AND timestamp >= $__timeFrom()\n  AND timestamp <= $__timeTo()\nORDER BY timestamp DESC\nLIMIT 1",
+          "datasource": {
+            "uid": "postgres-manufacturing",
+            "type": "postgres"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "red"
+              },
+              {
+                "value": 95,
+                "color": "yellow"
+              },
+              {
+                "value": 99,
+                "color": "green"
+              }
+            ]
+          },
+          "decimals": 1
+        }
+      },
+      "options": {
+        "textMode": "value",
+        "graphMode": "area",
+        "colorMode": "background",
+        "justifyMode": "center",
+        "orientation": "auto"
+      }
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Active Alerts",
+      "datasource": {
+        "uid": "postgres-manufacturing",
+        "type": "postgres"
+      },
+      "gridPos": {
+        "x": 20,
+        "y": 0,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT\n  NOW() as time,\n  COUNT(*) as alert_count\nFROM alerts\nWHERE work_unit_id = '$equipment_id'\n  AND status = 'active'\n  AND severity IN ('critical', 'warning')",
+          "datasource": {
+            "uid": "postgres-manufacturing",
+            "type": "postgres"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "green"
+              },
+              {
+                "value": 1,
+                "color": "yellow"
+              },
+              {
+                "value": 5,
+                "color": "red"
+              }
+            ]
+          },
+          "decimals": 0
+        }
+      },
+      "options": {
+        "textMode": "value",
+        "graphMode": "none",
+        "colorMode": "background",
+        "justifyMode": "center",
+        "orientation": "auto"
+      }
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "OEE Trend Over Time",
+      "datasource": {
+        "uid": "postgres-manufacturing",
+        "type": "postgres"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT\n  date_trunc('$time_interval', timestamp) as time,\n  AVG(availability) as \"Availability %\",\n  AVG(performance) as \"Performance %\",\n  AVG(quality) as \"Quality %\",\n  AVG(oee) as \"OEE %\"\nFROM performance_metrics\nWHERE work_unit_id = '$equipment_id'\n  AND timestamp >= $__timeFrom()\n  AND timestamp <= $__timeTo()\nGROUP BY time\nORDER BY time",
+          "datasource": {
+            "uid": "postgres-manufacturing",
+            "type": "postgres"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "spanNulls": false,
+            "insertNulls": false,
+            "showPoints": "never",
+            "pointSize": 5,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisPlacement": "auto",
+            "axisLabel": "",
+            "axisColorMode": "text",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "vis": false
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "OEE %"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": ["mean", "last", "max"]
+        }
+      }
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "Production Output",
+      "datasource": {
+        "uid": "postgres-manufacturing",
+        "type": "postgres"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT\n  date_trunc('$time_interval', timestamp) as time,\n  SUM(units_produced) as \"Units Produced\",\n  SUM(units_scrapped) as \"Units Scrapped\",\n  SUM(units_produced) - SUM(units_scrapped) as \"Good Units\"\nFROM production_metrics\nWHERE work_unit_id = '$equipment_id'\n  AND timestamp >= $__timeFrom()\n  AND timestamp <= $__timeTo()\nGROUP BY time\nORDER BY time",
+          "datasource": {
+            "uid": "postgres-manufacturing",
+            "type": "postgres"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "fillOpacity": 20,
+            "gradientMode": "opacity",
+            "spanNulls": false,
+            "insertNulls": false,
+            "showPoints": "never",
+            "pointSize": 5,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisPlacement": "auto",
+            "axisLabel": "Units",
+            "axisColorMode": "text",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "vis": false
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Units Scrapped"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Good Units"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": ["sum", "mean"]
+        }
+      }
+    },
+    {
+      "id": 8,
+      "type": "table",
+      "title": "Equipment Status Overview",
+      "datasource": {
+        "uid": "postgres-manufacturing",
+        "type": "postgres"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 24,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT\n  wu.name as \"Equipment\",\n  wu.status as \"Status\",\n  wu.equipment_type as \"Type\",\n  wu.location as \"Location\",\n  COALESCE(ROUND(pm.oee::numeric, 1), 0) as \"Current OEE (%)\",\n  COALESCE(ROUND(pm.availability::numeric, 1), 0) as \"Availability (%)\",\n  COALESCE(ROUND(pm.performance::numeric, 1), 0) as \"Performance (%)\",\n  COALESCE(ROUND(pm.quality::numeric, 1), 0) as \"Quality (%)\",\n  COUNT(a.id) as \"Active Alerts\",\n  pm.timestamp as \"Last Update\"\nFROM work_units wu\nLEFT JOIN LATERAL (\n  SELECT *\n  FROM performance_metrics pm2\n  WHERE pm2.work_unit_id = wu.id\n  ORDER BY pm2.timestamp DESC\n  LIMIT 1\n) pm ON true\nLEFT JOIN alerts a ON wu.id = a.work_unit_id AND a.status = 'active'\nWHERE wu.status IN ('active', 'maintenance')\nGROUP BY wu.id, wu.name, wu.status, wu.equipment_type, wu.location, pm.oee, pm.availability, pm.performance, pm.quality, pm.timestamp\nORDER BY \"Active Alerts\" DESC, \"Current OEE (%)\" ASC",
+          "datasource": {
+            "uid": "postgres-manufacturing",
+            "type": "postgres"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Status"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "active": {
+                        "color": "green",
+                        "index": 0,
+                        "text": "🟢 Active"
+                      },
+                      "maintenance": {
+                        "color": "yellow",
+                        "index": 1,
+                        "text": "🔧 Maintenance"
+                      },
+                      "offline": {
+                        "color": "red",
+                        "index": 2,
+                        "text": "🔴 Offline"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              },
+              {
+                "id": "custom.displayMode",
+                "value": "color-text"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Current OEE (%)"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "gradient-gauge"
+              },
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "max",
+                "value": 100
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": 0,
+                      "color": "red"
+                    },
+                    {
+                      "value": 60,
+                      "color": "yellow"
+                    },
+                    {
+                      "value": 85,
+                      "color": "green"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Active Alerts"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "color-background"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": 0,
+                      "color": "transparent"
+                    },
+                    {
+                      "value": 1,
+                      "color": "yellow"
+                    },
+                    {
+                      "value": 3,
+                      "color": "red"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": ["sum"],
+          "countRows": false,
+          "fields": ""
+        }
+      }
+    }
+  ]
+}

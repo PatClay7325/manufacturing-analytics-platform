@@ -1,0 +1,179 @@
+{
+  "version": "1.0.0",
+  "dashboard_title": "Manufacturing Operations Dashboard",
+  "description": "Real-time manufacturing metrics and KPIs",
+  "css": "",
+  "slug": "manufacturing-operations",
+  "certified_by": "",
+  "certification_details": "",
+  "published": true,
+  "charts": [
+    {
+      "slice_name": "Production Volume - Last 24 Hours",
+      "viz_type": "line",
+      "params": {
+        "metrics": ["sum__units_produced"],
+        "groupby": ["hour"],
+        "time_range": "Last 24 hours",
+        "line_interpolation": "linear",
+        "show_legend": true,
+        "x_axis_label": "Time",
+        "y_axis_label": "Units Produced"
+      }
+    },
+    {
+      "slice_name": "Current OEE Score",
+      "viz_type": "big_number_total",
+      "params": {
+        "metric": "avg__oee_score",
+        "subheader": "Overall Equipment Effectiveness",
+        "time_range": "Last hour",
+        "y_axis_format": ".1%"
+      }
+    },
+    {
+      "slice_name": "Equipment Status Matrix",
+      "viz_type": "table",
+      "params": {
+        "metrics": [
+          "avg__availability",
+          "avg__performance", 
+          "avg__quality",
+          "avg__oee_score"
+        ],
+        "groupby": ["equipment_id", "equipment_name", "status"],
+        "time_range": "Last hour",
+        "table_timestamp_format": "%Y-%m-%d %H:%M",
+        "page_length": 25
+      }
+    },
+    {
+      "slice_name": "Defect Rate by Product Type",
+      "viz_type": "pie",
+      "params": {
+        "metric": "sum__defects",
+        "groupby": ["product_type"],
+        "time_range": "Last 7 days",
+        "donut": true,
+        "show_legend": true,
+        "label_type": "key_value"
+      }
+    },
+    {
+      "slice_name": "Quality Trend - Pass Rate",
+      "viz_type": "area",
+      "params": {
+        "metrics": ["pass_rate"],
+        "groupby": ["day"],
+        "time_range": "Last 30 days",
+        "show_legend": false,
+        "x_axis_label": "Date",
+        "y_axis_label": "Pass Rate (%)",
+        "y_axis_bounds": [0, 100]
+      }
+    },
+    {
+      "slice_name": "Equipment Availability Heatmap",
+      "viz_type": "heatmap",
+      "params": {
+        "metric": "avg__availability",
+        "all_columns_x": "hour",
+        "all_columns_y": "equipment_id",
+        "time_range": "Last 7 days",
+        "linear_color_scheme": "blue_white_yellow",
+        "xscale_interval": 1,
+        "yscale_interval": 1
+      }
+    }
+  ],
+  "layout": {
+    "DASHBOARD_VERSION_KEY": "v2",
+    "GRID_ID": {
+      "id": "GRID_ID",
+      "children": [
+        {
+          "id": "ROW-1",
+          "children": [
+            {
+              "id": "CHART-production-volume",
+              "meta": {
+                "width": 8,
+                "height": 50,
+                "chartId": 1
+              }
+            },
+            {
+              "id": "CHART-current-oee",
+              "meta": {
+                "width": 4,
+                "height": 50,
+                "chartId": 2
+              }
+            }
+          ]
+        },
+        {
+          "id": "ROW-2",
+          "children": [
+            {
+              "id": "CHART-equipment-status",
+              "meta": {
+                "width": 12,
+                "height": 50,
+                "chartId": 3
+              }
+            }
+          ]
+        },
+        {
+          "id": "ROW-3",
+          "children": [
+            {
+              "id": "CHART-defect-rate",
+              "meta": {
+                "width": 4,
+                "height": 50,
+                "chartId": 4
+              }
+            },
+            {
+              "id": "CHART-quality-trend",
+              "meta": {
+                "width": 8,
+                "height": 50,
+                "chartId": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "ROW-4",
+          "children": [
+            {
+              "id": "CHART-availability-heatmap",
+              "meta": {
+                "width": 12,
+                "height": 50,
+                "chartId": 6
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "metadata": {
+    "timed_refresh_immune_slices": [],
+    "expanded_slices": {},
+    "refresh_frequency": 60,
+    "default_filters": "{}",
+    "color_scheme": "supersetColors",
+    "label_colors": {
+      "Running": "#1FA8C9",
+      "Stopped": "#FF5A5F", 
+      "Maintenance": "#FFB000",
+      "Pass": "#5AC189",
+      "Fail": "#FF5A5F"
+    }
+  }
+}

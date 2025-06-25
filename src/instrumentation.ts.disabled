@@ -1,0 +1,5 @@
+export async function register() {
+  // Temporarily disabled to avoid OpenTelemetry dependency issues
+  // Re-enable when needed for production observability
+  console.log('Instrumentation temporarily disabled for development');
+}

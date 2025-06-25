@@ -1,0 +1,198 @@
+{
+  "alertRules": [
+    {
+      "id": "oee-low-threshold",
+      "name": "Low OEE Alert",
+      "description": "Triggers when Overall Equipment Effectiveness falls below threshold",
+      "condition": {
+        "metric": "oeeScore",
+        "operator": "less_than",
+        "threshold": 0.75,
+        "timeWindow": "5m",
+        "evaluationInterval": "1m"
+      },
+      "severity": "warning",
+      "enabled": true,
+      "labels": {
+        "category": "production",
+        "priority": "high",
+        "department": "manufacturing"
+      },
+      "notifications": {
+        "email": ["production-manager@company.com", "shift-supervisor@company.com"],
+        "slack": "#manufacturing-alerts",
+        "webhook": "https://api.company.com/webhooks/manufacturing-alerts"
+      },
+      "actions": [
+        {
+          "type": "email",
+          "template": "oee-alert-template",
+          "subject": "LOW OEE ALERT: {{machineName}} - {{oeeScore}}%"
+        },
+        {
+          "type": "dashboard_annotation",
+          "message": "OEE dropped below 75% on {{machineName}}"
+        }
+      ]
+    },
+    {
+      "id": "machine-downtime-extended",
+      "name": "Extended Machine Downtime",
+      "description": "Alerts when machine downtime exceeds acceptable limits",
+      "condition": {
+        "metric": "downtimeMinutes",
+        "operator": "greater_than",
+        "threshold": 30,
+        "timeWindow": "10m",
+        "evaluationInterval": "2m"
+      },
+      "severity": "critical",
+      "enabled": true,
+      "labels": {
+        "category": "downtime",
+        "priority": "critical",
+        "department": "maintenance"
+      },
+      "notifications": {
+        "email": ["maintenance-team@company.com", "plant-manager@company.com"],
+        "sms": ["+1234567890"],
+        "pagerduty": "manufacturing-escalation"
+      },
+      "actions": [
+        {
+          "type": "ticket_creation",
+          "system": "servicenow",
+          "priority": "high",
+          "category": "equipment_failure"
+        },
+        {
+          "type": "auto_escalation",
+          "delay": "15m",
+          "escalate_to": "plant-manager@company.com"
+        }
+      ]
+    },
+    {
+      "id": "quality-defect-rate-high",
+      "name": "High Defect Rate Alert",
+      "description": "Triggers when defect rate exceeds quality standards",
+      "condition": {
+        "metric": "quality",
+        "operator": "less_than",
+        "threshold": 0.95,
+        "timeWindow": "15m",
+        "evaluationInterval": "5m"
+      },
+      "severity": "warning",
+      "enabled": true,
+      "labels": {
+        "category": "quality",
+        "priority": "medium",
+        "department": "quality_control"
+      },
+      "notifications": {
+        "email": ["quality-manager@company.com", "production-supervisor@company.com"],
+        "teams": "Quality Control Team"
+      },
+      "actions": [
+        {
+          "type": "quality_hold",
+          "automatic": true,
+          "hold_reason": "Quality metrics below threshold"
+        },
+        {
+          "type": "inspection_request",
+          "urgency": "high"
+        }
+      ]
+    },
+    {
+      "id": "energy-consumption-spike",
+      "name": "Energy Consumption Spike",
+      "description": "Alerts when energy consumption significantly exceeds normal levels",
+      "condition": {
+        "metric": "energyConsumed_kWh",
+        "operator": "greater_than_percentage",
+        "threshold": 20,
+        "baseline": "7d_average",
+        "timeWindow": "30m",
+        "evaluationInterval": "10m"
+      },
+      "severity": "info",
+      "enabled": true,
+      "labels": {
+        "category": "sustainability",
+        "priority": "low",
+        "department": "facilities"
+      },
+      "notifications": {
+        "email": ["facilities-manager@company.com", "sustainability-team@company.com"],
+        "dashboard": "energy-monitoring"
+      },
+      "actions": [
+        {
+          "type": "energy_audit_trigger",
+          "automated": true
+        },
+        {
+          "type": "report_generation",
+          "report_type": "energy_consumption_anomaly"
+        }
+      ]
+    },
+    {
+      "id": "maintenance-due-reminder",
+      "name": "Preventive Maintenance Due",
+      "description": "Reminds when scheduled maintenance is approaching",
+      "condition": {
+        "metric": "operatingHours",
+        "operator": "approaching_threshold",
+        "threshold": "maintenance_interval",
+        "warning_period": "24h"
+      },
+      "severity": "info",
+      "enabled": true,
+      "labels": {
+        "category": "maintenance",
+        "priority": "medium",
+        "department": "maintenance"
+      },
+      "notifications": {
+        "email": ["maintenance-scheduler@company.com"],
+        "calendar": "maintenance-calendar"
+      },
+      "actions": [
+        {
+          "type": "maintenance_scheduling",
+          "auto_schedule": false,
+          "suggest_slots": true
+        },
+        {
+          "type": "parts_inventory_check",
+          "required_parts": "from_maintenance_plan"
+        }
+      ]
+    }
+  ],
+  "globalSettings": {
+    "evaluationTimeout": "30s",
+    "maxAlertInstances": 100,
+    "alertRetention": "30d",
+    "silenceSettings": {
+      "defaultDuration": "1h",
+      "maxDuration": "24h"
+    },
+    "escalationPolicies": {
+      "critical": {
+        "initialDelay": "0m",
+        "escalationDelay": "15m",
+        "maxEscalations": 3
+      },
+      "warning": {
+        "initialDelay": "5m",
+        "escalationDelay": "30m",
+        "maxEscalations": 2
+      }
+    }
+  }
+}

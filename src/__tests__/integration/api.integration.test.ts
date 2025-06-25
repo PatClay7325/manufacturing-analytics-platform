@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/database';
 
 // Helper function to create test hierarchy
 async function createTestHierarchy() {

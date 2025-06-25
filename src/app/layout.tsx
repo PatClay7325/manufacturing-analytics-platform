@@ -3,7 +3,6 @@ import React from 'react';
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import ErrorBoundary from '@/components/common/ErrorBoundary';
-import AnalyticsLayout from '@/components/layout/AnalyticsLayout';
 import ClientLayout from './ClientLayout';
 import { PreferencesProvider } from '@/contexts/PreferencesContext';
 // import MockServerProvider from '@/components/providers/MockServerProvider';
@@ -69,11 +68,7 @@ export default function RootLayout({
       <body className="h-full antialiased" style={{ fontFamily: fontStack }}>
         <ErrorBoundary level="critical" context="root-layout">
           <ClientLayout>
-            <PreferencesProvider>
-              <AnalyticsLayout>
-                {children}
-              </AnalyticsLayout>
-            </PreferencesProvider>
+            {children}
           </ClientLayout>
         </ErrorBoundary>
         {/* Initialize mock server in development mode */}

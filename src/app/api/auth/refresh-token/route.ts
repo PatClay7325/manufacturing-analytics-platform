@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/database';
 
 // Force Node.js runtime to avoid Edge Runtime issues with jsonwebtoken
 export const runtime = 'nodejs';

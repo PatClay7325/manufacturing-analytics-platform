@@ -1,0 +1,624 @@
+{
+  "id": null,
+  "uid": "application-performance",
+  "title": "Application Performance Monitoring",
+  "description": "Next.js application performance, API response times, error rates, and user experience metrics",
+  "version": 1,
+  "schemaVersion": 39,
+  "tags": ["application", "performance", "nextjs", "api"],
+  "timezone": "browser",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "time": {
+    "from": "now-2h",
+    "to": "now"
+  },
+  "refresh": "30s",
+  "variables": {
+    "list": [
+      {
+        "name": "route",
+        "type": "query",
+        "label": "API Route",
+        "description": "Select API route",
+        "datasource": {
+          "uid": "postgres-manufacturing",
+          "type": "postgres"
+        },
+        "definition": "SELECT DISTINCT route FROM api_metrics ORDER BY route",
+        "query": "SELECT DISTINCT route FROM api_metrics ORDER BY route",
+        "regex": "",
+        "refresh": 1,
+        "includeAll": true,
+        "multi": true,
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "options": []
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Average Response Time",
+      "datasource": {
+        "uid": "postgres-manufacturing",
+        "type": "postgres"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT\n  NOW() as time,\n  AVG(response_time) as avg_response_time\nFROM api_metrics\nWHERE route IN ($route)\n  AND timestamp >= $__timeFrom()\n  AND timestamp <= $__timeTo()",
+          "datasource": {
+            "uid": "postgres-manufacturing",
+            "type": "postgres"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "green"
+              },
+              {
+                "value": 200,
+                "color": "yellow"
+              },
+              {
+                "value": 500,
+                "color": "red"
+              }
+            ]
+          },
+          "decimals": 0
+        }
+      },
+      "options": {
+        "textMode": "value",
+        "graphMode": "area",
+        "colorMode": "background",
+        "justifyMode": "center",
+        "orientation": "auto"
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Error Rate",
+      "datasource": {
+        "uid": "postgres-manufacturing",
+        "type": "postgres"
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT\n  NOW() as time,\n  (COUNT(*) FILTER (WHERE status_code >= 400)::float / COUNT(*)::float) * 100 as error_rate\nFROM api_metrics\nWHERE route IN ($route)\n  AND timestamp >= $__timeFrom()\n  AND timestamp <= $__timeTo()",
+          "datasource": {
+            "uid": "postgres-manufacturing",
+            "type": "postgres"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "green"
+              },
+              {
+                "value": 1,
+                "color": "yellow"
+              },
+              {
+                "value": 5,
+                "color": "red"
+              }
+            ]
+          },
+          "decimals": 2
+        }
+      },
+      "options": {
+        "textMode": "value",
+        "graphMode": "area",
+        "colorMode": "background",
+        "justifyMode": "center",
+        "orientation": "auto"
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Requests per Minute",
+      "datasource": {
+        "uid": "postgres-manufacturing",
+        "type": "postgres"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT\n  NOW() as time,\n  COUNT(*) / EXTRACT(EPOCH FROM ($__timeTo() - $__timeFrom())) * 60 as requests_per_minute\nFROM api_metrics\nWHERE route IN ($route)\n  AND timestamp >= $__timeFrom()\n  AND timestamp <= $__timeTo()",
+          "datasource": {
+            "uid": "postgres-manufacturing",
+            "type": "postgres"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "green"
+              },
+              {
+                "value": 100,
+                "color": "yellow"
+              },
+              {
+                "value": 500,
+                "color": "red"
+              }
+            ]
+          },
+          "decimals": 1
+        }
+      },
+      "options": {
+        "textMode": "value",
+        "graphMode": "area",
+        "colorMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto"
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "P95 Response Time",
+      "datasource": {
+        "uid": "postgres-manufacturing",
+        "type": "postgres"
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT\n  NOW() as time,\n  PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY response_time) as p95_response_time\nFROM api_metrics\nWHERE route IN ($route)\n  AND timestamp >= $__timeFrom()\n  AND timestamp <= $__timeTo()",
+          "datasource": {
+            "uid": "postgres-manufacturing",
+            "type": "postgres"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "green"
+              },
+              {
+                "value": 500,
+                "color": "yellow"
+              },
+              {
+                "value": 1000,
+                "color": "red"
+              }
+            ]
+          },
+          "decimals": 0
+        }
+      },
+      "options": {
+        "textMode": "value",
+        "graphMode": "area",
+        "colorMode": "background",
+        "justifyMode": "center",
+        "orientation": "auto"
+      }
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "API Response Times",
+      "datasource": {
+        "uid": "postgres-manufacturing",
+        "type": "postgres"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 4,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT\n  date_trunc('minute', timestamp) as time,\n  AVG(response_time) as \"Average Response Time\",\n  PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY response_time) as \"P50\",\n  PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY response_time) as \"P95\",\n  PERCENTILE_CONT(0.99) WITHIN GROUP (ORDER BY response_time) as \"P99\"\nFROM api_metrics\nWHERE route IN ($route)\n  AND timestamp >= $__timeFrom()\n  AND timestamp <= $__timeTo()\nGROUP BY time\nORDER BY time",
+          "datasource": {
+            "uid": "postgres-manufacturing",
+            "type": "postgres"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "min": 0,
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "spanNulls": false,
+            "showPoints": "never"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P99"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P95"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": ["mean", "last", "max"]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Request Rate and Error Rate",
+      "datasource": {
+        "uid": "postgres-manufacturing",
+        "type": "postgres"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 4,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT\n  date_trunc('minute', timestamp) as time,\n  COUNT(*) as \"Total Requests\",\n  COUNT(*) FILTER (WHERE status_code >= 400) as \"Error Requests\",\n  (COUNT(*) FILTER (WHERE status_code >= 400)::float / COUNT(*)::float) * 100 as \"Error Rate %\"\nFROM api_metrics\nWHERE route IN ($route)\n  AND timestamp >= $__timeFrom()\n  AND timestamp <= $__timeTo()\nGROUP BY time\nORDER BY time",
+          "datasource": {
+            "uid": "postgres-manufacturing",
+            "type": "postgres"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "spanNulls": false,
+            "showPoints": "never"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Error Rate %"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Error Requests"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": ["mean", "last", "max"]
+        }
+      }
+    },
+    {
+      "id": 7,
+      "type": "table",
+      "title": "API Endpoints Performance",
+      "datasource": {
+        "uid": "postgres-manufacturing",
+        "type": "postgres"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 12,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT\n  route as \"Endpoint\",\n  COUNT(*) as \"Total Requests\",\n  ROUND(AVG(response_time)::numeric, 2) as \"Avg Response Time (ms)\",\n  ROUND(PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY response_time)::numeric, 2) as \"P95 Response Time (ms)\",\n  ROUND((COUNT(*) FILTER (WHERE status_code >= 400)::float / COUNT(*)::float) * 100, 2) as \"Error Rate (%)\",\n  COUNT(*) FILTER (WHERE status_code >= 500) as \"5xx Errors\",\n  COUNT(*) FILTER (WHERE status_code = 404) as \"404 Errors\"\nFROM api_metrics\nWHERE timestamp >= $__timeFrom()\n  AND timestamp <= $__timeTo()\nGROUP BY route\nORDER BY \"Total Requests\" DESC",
+          "datasource": {
+            "uid": "postgres-manufacturing",
+            "type": "postgres"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Error Rate (%)"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "gradient-gauge"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": 0,
+                      "color": "green"
+                    },
+                    {
+                      "value": 1,
+                      "color": "yellow"
+                    },
+                    {
+                      "value": 5,
+                      "color": "red"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P95 Response Time (ms)"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "gradient-gauge"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": 0,
+                      "color": "green"
+                    },
+                    {
+                      "value": 500,
+                      "color": "yellow"
+                    },
+                    {
+                      "value": 1000,
+                      "color": "red"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "displayName": "Total Requests",
+            "desc": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "type": "heatmap",
+      "title": "Response Time Distribution",
+      "datasource": {
+        "uid": "postgres-manufacturing",
+        "type": "postgres"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 12,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT\n  date_trunc('minute', timestamp) as time,\n  CASE\n    WHEN response_time < 100 THEN '0-100ms'\n    WHEN response_time < 200 THEN '100-200ms'\n    WHEN response_time < 500 THEN '200-500ms'\n    WHEN response_time < 1000 THEN '500ms-1s'\n    WHEN response_time < 2000 THEN '1-2s'\n    ELSE '>2s'\n  END as bucket,\n  COUNT(*) as count\nFROM api_metrics\nWHERE route IN ($route)\n  AND timestamp >= $__timeFrom()\n  AND timestamp <= $__timeTo()\nGROUP BY time, bucket\nORDER BY time, bucket",
+          "datasource": {
+            "uid": "postgres-manufacturing",
+            "type": "postgres"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "vis": false
+            },
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          }
+        }
+      },
+      "options": {
+        "calculate": false,
+        "cellGap": 1,
+        "cellValues": {
+          "unit": "short"
+        },
+        "color": {
+          "exponent": 0.5,
+          "fill": "dark-orange",
+          "mode": "scheme",
+          "reverse": false,
+          "scale": "exponential",
+          "scheme": "Spectral",
+          "steps": 64
+        },
+        "exemplars": {
+          "color": "rgba(255,0,255,0.7)"
+        },
+        "filterValues": {
+          "le": 1e-9
+        },
+        "legend": {
+          "show": true
+        },
+        "rowsFrame": {
+          "layout": "auto"
+        },
+        "tooltip": {
+          "show": true,
+          "yHistogram": false
+        },
+        "yAxis": {
+          "axisPlacement": "left",
+          "reverse": false,
+          "unit": "short"
+        }
+      }
+    }
+  ]
+}

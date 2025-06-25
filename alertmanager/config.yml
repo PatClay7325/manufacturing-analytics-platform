@@ -1,0 +1,111 @@
+# AlertManager Configuration for Manufacturing Analytics
+# Apache 2.0 Licensed - Full commercial use allowed
+
+global:
+  smtp_smarthost: 'localhost:587'
+  smtp_from: 'alerts@manufacturing-platform.local'
+
+# Manufacturing-specific notification routing
+route:
+  group_by: ['alertname', 'equipment_id', 'severity']
+  group_wait: 10s
+  group_interval: 5m
+  repeat_interval: 1h
+  receiver: 'manufacturing-alerts'
+  routes:
+    # Critical equipment failures
+    - match:
+        severity: critical
+        alert_type: equipment_failure
+      receiver: 'critical-equipment-alerts'
+      group_wait: 0s
+      repeat_interval: 5m
+    
+    # OEE degradation alerts
+    - match:
+        alert_type: oee_degradation
+      receiver: 'oee-alerts'
+      group_interval: 15m
+    
+    # Quality issues
+    - match:
+        alert_type: quality_issue
+      receiver: 'quality-alerts'
+      group_interval: 10m
+    
+    # Maintenance alerts
+    - match:
+        alert_type: maintenance
+      receiver: 'maintenance-alerts'
+      group_interval: 30m
+
+receivers:
+  # General manufacturing alerts
+  - name: 'manufacturing-alerts'
+    webhook_configs:
+      - url: 'http://nextjs-app:3000/api/alerts/webhook'
+        title: 'Manufacturing Alert: {{ .GroupLabels.alertname }}'
+        text: '{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'
+
+  # Critical equipment failure notifications
+  - name: 'critical-equipment-alerts'
+    webhook_configs:
+      - url: 'http://nextjs-app:3000/api/alerts/webhook/critical'
+        title: 'CRITICAL: Equipment Failure'
+        text: 'Equipment {{ .GroupLabels.equipment_id }} has failed: {{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+    # Add email notifications for critical alerts
+    email_configs:
+      - to: 'manufacturing-team@company.com'
+        subject: 'CRITICAL: Manufacturing Equipment Failure'
+        body: |
+          Alert: {{ .GroupLabels.alertname }}
+          Equipment: {{ .GroupLabels.equipment_id }}
+          Severity: {{ .GroupLabels.severity }}
+          
+          Details:
+          {{ range .Alerts }}
+          - {{ .Annotations.summary }}
+          - {{ .Annotations.description }}
+          {{ end }}
+
+  # OEE degradation alerts
+  - name: 'oee-alerts'
+    webhook_configs:
+      - url: 'http://nextjs-app:3000/api/alerts/webhook/oee'
+        title: 'OEE Alert: {{ .GroupLabels.alertname }}'
+        text: 'OEE degradation detected: {{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'
+
+  # Quality issue alerts
+  - name: 'quality-alerts'
+    webhook_configs:
+      - url: 'http://nextjs-app:3000/api/alerts/webhook/quality'
+        title: 'Quality Alert: {{ .GroupLabels.alertname }}'
+        text: 'Quality issue detected: {{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'
+
+  # Maintenance alerts
+  - name: 'maintenance-alerts'
+    webhook_configs:
+      - url: 'http://nextjs-app:3000/api/alerts/webhook/maintenance'
+        title: 'Maintenance Alert: {{ .GroupLabels.alertname }}'
+        text: 'Maintenance required: {{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'
+
+# Inhibition rules to prevent alert spam
+inhibit_rules:
+  # Inhibit equipment alerts when equipment is down
+  - source_match:
+      severity: 'critical'
+      alert_type: 'equipment_failure'
+    target_match:
+      alert_type: 'oee_degradation'
+    equal: ['equipment_id']
+  
+  # Inhibit quality alerts during maintenance
+  - source_match:
+      alert_type: 'maintenance'
+    target_match:
+      alert_type: 'quality_issue'
+    equal: ['equipment_id']
+
+# Manufacturing-specific templates
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'

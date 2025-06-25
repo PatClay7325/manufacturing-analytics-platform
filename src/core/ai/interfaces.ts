@@ -4,7 +4,7 @@
  * This file defines the interfaces for the AI integration.
  */
 
-import { ModularService } from './services/interfaces';
+import { ModularService } from '../services/interfaces';
 import { 
   AIModel, 
   AIRequest, 

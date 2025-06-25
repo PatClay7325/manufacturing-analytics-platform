@@ -1,0 +1,130 @@
+services:
+  # Apache Superset - Report Server
+  superset:
+    image: apache/superset:3.1.0
+    container_name: manufacturing-superset
+    environment:
+      - SUPERSET_ENV=production
+      - DATABASE_DIALECT=postgresql
+      - DATABASE_HOST=superset-db
+      - DATABASE_PORT=5432
+      - DATABASE_DB=superset
+      - DATABASE_USER=superset
+      - DATABASE_PASSWORD=superset
+      - REDIS_HOST=superset-redis
+      - REDIS_PORT=6379
+      - SECRET_KEY=thisISaSECRET_1234_CHANGE_ME
+      - SUPERSET_LOAD_EXAMPLES=no
+    ports:
+      - "8088:8088"
+    volumes:
+      - superset-home:/app/superset_home
+      - ./superset/docker/superset_config.py:/app/pythonpath/superset_config.py:ro
+      - ./superset/docker/docker-bootstrap.sh:/app/docker/docker-bootstrap.sh:ro
+    networks:
+      - superset-network
+    depends_on:
+      superset-db:
+        condition: service_healthy
+      superset-redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8088/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    command: ["/app/docker/docker-bootstrap.sh"]
+
+  # Superset Worker
+  superset-worker:
+    image: apache/superset:3.1.0
+    container_name: manufacturing-superset-worker
+    command: ["celery", "--app=superset.tasks.celery_app:app", "worker", "--pool=prefork", "-O", "fair", "-c", "4"]
+    environment:
+      - DATABASE_DIALECT=postgresql
+      - DATABASE_HOST=superset-db
+      - DATABASE_PORT=5432
+      - DATABASE_DB=superset
+      - DATABASE_USER=superset
+      - DATABASE_PASSWORD=superset
+      - REDIS_HOST=superset-redis
+      - REDIS_PORT=6379
+      - SECRET_KEY=thisISaSECRET_1234_CHANGE_ME
+    volumes:
+      - superset-home:/app/superset_home
+      - ./superset/docker/superset_config.py:/app/pythonpath/superset_config.py:ro
+    networks:
+      - superset-network
+    depends_on:
+      superset-db:
+        condition: service_healthy
+      superset-redis:
+        condition: service_healthy
+
+  # PostgreSQL for Superset Metadata
+  superset-db:
+    image: postgres:15-alpine
+    container_name: manufacturing-superset-db
+    environment:
+      - POSTGRES_DB=superset
+      - POSTGRES_USER=superset
+      - POSTGRES_PASSWORD=superset
+    volumes:
+      - superset-db-data:/var/lib/postgresql/data
+    networks:
+      - superset-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U superset -d superset"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for Superset
+  superset-redis:
+    image: redis:7-alpine
+    container_name: manufacturing-superset-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - superset-redis-data:/data
+    networks:
+      - superset-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # TimescaleDB for Manufacturing Data (optional - for demo)
+  timescaledb:
+    image: timescale/timescaledb:latest-pg15
+    container_name: manufacturing-timescaledb
+    environment:
+      - POSTGRES_DB=manufacturing
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - timescaledb-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - superset-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d manufacturing"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  superset-home:
+    driver: local
+  superset-db-data:
+    driver: local
+  superset-redis-data:
+    driver: local
+  timescaledb-data:
+    driver: local
+
+networks:
+  superset-network:
+    driver: bridge

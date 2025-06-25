@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/database';
 import { verifyAuth, hasPermission } from '@/lib/auth';
 import type { TeamSearchFilters, CreateTeamRequest, TeamsResponse } from '@/types/user-management';
 

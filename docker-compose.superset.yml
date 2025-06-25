@@ -1,0 +1,180 @@
+services:
+  # Apache Superset - Apache Licensed Analytics Platform
+  superset:
+    image: apache/superset:3.1.0
+    container_name: manufacturing-superset
+    environment:
+      # Core Configuration
+      - SUPERSET_ENV=production
+      - SUPERSET_LOAD_EXAMPLES=no
+      - CYPRESS_CACHE_FOLDER=/app/.cache/cypress
+      
+      # Database Configuration
+      - DATABASE_DIALECT=postgresql
+      - DATABASE_HOST=superset-db
+      - DATABASE_PORT=5432
+      - DATABASE_DB=superset
+      - DATABASE_USER=superset
+      - DATABASE_PASSWORD=${SUPERSET_DB_PASSWORD:-superset}
+      
+      # Redis Configuration
+      - REDIS_HOST=superset-redis
+      - REDIS_PORT=6379
+      - REDIS_CELERY_DB=0
+      - REDIS_RESULTS_DB=1
+      
+      # Secret Key (IMPORTANT: Change this in production!)
+      - SECRET_KEY=${SUPERSET_SECRET_KEY:-thisISaSECRET_1234}
+      
+      # Authentication
+      - AUTH_TYPE=AUTH_DB
+      - AUTH_USER_REGISTRATION=True
+      - AUTH_USER_REGISTRATION_ROLE=Alpha
+      
+      # Features
+      - SUPERSET_FEATURE_EMBEDDED_SUPERSET=True
+      - SUPERSET_FEATURE_EMBEDDED_DASHBOARD=True
+      - SUPERSET_FEATURE_ENABLE_TEMPLATE_PROCESSING=True
+      
+    ports:
+      - "8088:8088"
+    volumes:
+      - superset-home:/app/superset_home
+      - ./superset/docker-init.sh:/app/docker/docker-init.sh:ro
+      - ./superset/superset-init.sh:/app/docker-init.sh:ro
+      - ./superset/superset_config.py:/app/pythonpath/superset_config.py:ro
+    networks:
+      - manufacturing-network
+    depends_on:
+      superset-db:
+        condition: service_healthy
+      superset-redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8088/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # Superset Worker
+  superset-worker:
+    image: apache/superset:3.1.0
+    container_name: manufacturing-superset-worker
+    command: ["celery", "--app=superset.tasks.celery_app:app", "worker", "--pool=prefork", "-O", "fair", "-c", "4"]
+    environment:
+      - DATABASE_DIALECT=postgresql
+      - DATABASE_HOST=superset-db
+      - DATABASE_PORT=5432
+      - DATABASE_DB=superset
+      - DATABASE_USER=superset
+      - DATABASE_PASSWORD=${SUPERSET_DB_PASSWORD:-superset}
+      - REDIS_HOST=superset-redis
+      - REDIS_PORT=6379
+      - REDIS_CELERY_DB=0
+      - REDIS_RESULTS_DB=1
+      - SECRET_KEY=${SUPERSET_SECRET_KEY:-thisISaSECRET_1234}
+    volumes:
+      - superset-home:/app/superset_home
+      - ./superset/superset_config.py:/app/pythonpath/superset_config.py:ro
+    networks:
+      - manufacturing-network
+    depends_on:
+      superset-db:
+        condition: service_healthy
+      superset-redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "celery", "inspect", "ping", "-A", "superset.tasks.celery_app:app", "-d", "celery@$$HOSTNAME"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Superset Beat (Scheduler)
+  superset-beat:
+    image: apache/superset:3.1.0
+    container_name: manufacturing-superset-beat
+    command: ["celery", "--app=superset.tasks.celery_app:app", "beat", "--pidfile", "/tmp/celerybeat.pid", "--schedule", "/app/superset_home/celerybeat-schedule"]
+    environment:
+      - DATABASE_DIALECT=postgresql
+      - DATABASE_HOST=superset-db
+      - DATABASE_PORT=5432
+      - DATABASE_DB=superset
+      - DATABASE_USER=superset
+      - DATABASE_PASSWORD=${SUPERSET_DB_PASSWORD:-superset}
+      - REDIS_HOST=superset-redis
+      - REDIS_PORT=6379
+      - REDIS_CELERY_DB=0
+      - REDIS_RESULTS_DB=1
+      - SECRET_KEY=${SUPERSET_SECRET_KEY:-thisISaSECRET_1234}
+    volumes:
+      - superset-home:/app/superset_home
+      - ./superset/superset_config.py:/app/pythonpath/superset_config.py:ro
+    networks:
+      - manufacturing-network
+    depends_on:
+      superset-db:
+        condition: service_healthy
+      superset-redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "celery beat"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # PostgreSQL Database for Superset
+  superset-db:
+    image: postgres:15-alpine
+    container_name: manufacturing-superset-db
+    environment:
+      - POSTGRES_DB=superset
+      - POSTGRES_USER=superset
+      - POSTGRES_PASSWORD=${SUPERSET_DB_PASSWORD:-superset}
+    volumes:
+      - superset-db-data:/var/lib/postgresql/data
+    networks:
+      - manufacturing-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U superset -d superset"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for Caching and Celery
+  superset-redis:
+    image: redis:7-alpine
+    container_name: manufacturing-superset-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - superset-redis-data:/data
+    networks:
+      - manufacturing-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  superset-home:
+    driver: local
+  superset-db-data:
+    driver: local
+  superset-redis-data:
+    driver: local
+
+networks:
+  manufacturing-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.22.0.0/16
+
+# Apache Superset License Compliance
+# ✅ Apache Superset: Apache 2.0 License - Full commercial use allowed
+# ✅ PostgreSQL: PostgreSQL License - Full commercial use allowed
+# ✅ Redis: BSD License - Full commercial use allowed
+# ✅ Python Dependencies: Various open source licenses (mostly Apache/MIT/BSD)
+#
+# No AGPL components - Full commercial freedom for SaaS deployment

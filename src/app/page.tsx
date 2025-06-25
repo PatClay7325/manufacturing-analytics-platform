@@ -19,7 +19,7 @@ export default function HomePage() {
     {
       title: 'AI Assistant',
       description: 'Get insights and recommendations from AI',
-      href: '/manufacturing-chat',
+      href: '/ollama-chat',
       icon: '🤖',
     },
     {

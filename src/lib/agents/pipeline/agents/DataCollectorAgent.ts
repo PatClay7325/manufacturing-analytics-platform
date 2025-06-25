@@ -5,7 +5,7 @@
 
 import { BaseAgent } from '../BaseAgent';
 import { AgentContext, AgentResult, DataCollectionResult, AgentConfig } from '../types';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/database/prisma';
 import { logger } from '@/lib/logger';
 
 export class DataCollectorAgent extends BaseAgent {

@@ -3,7 +3,7 @@
  * Includes data validation, error handling, and proper sanitization
  */
 
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/database';
 import { 
   ManufacturingDataValidator, 
   DataSanitizer,

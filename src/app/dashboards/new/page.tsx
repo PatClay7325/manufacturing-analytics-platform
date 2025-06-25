@@ -2,70 +2,91 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import DashboardEditor from '@/components/dashboard/DashboardEditor';
+import GrafanaDashboardEditor from '@/components/dashboard/GrafanaDashboardEditor';
 import { dashboardEngine } from '@/core/dashboard/DashboardEngine';
-import { Dashboard } from '@/types/dashboard';
+import type { Dashboard } from '@/types/dashboard';
+import { LoadingSpinner } from '@/components/common/LoadingSpinner';
+import { ErrorState } from '@/components/common/ErrorState';
 
 export default function NewDashboardPage() {
   const router = useRouter();
+  const [dashboard, setDashboard] = useState<Dashboard | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Ensure dashboard engine is loaded
-    setIsLoading(false);
+    // Create a new dashboard instance
+    try {
+      const newDashboard = dashboardEngine.createDashboard('New dashboard');
+      setDashboard(newDashboard);
+      setIsLoading(false);
+    } catch (err) {
+      console.error('Failed to create new dashboard:', err);
+      setError('Failed to create new dashboard');
+      setIsLoading(false);
+    }
   }, []);
 
-  const handleSave = async (dashboard: Dashboard) => {
+  const handleSave = async (updatedDashboard: Dashboard, options?: { saveAs?: boolean }) => {
+    if (!updatedDashboard) return;
+    
     setIsSaving(true);
     try {
-      const saved = await dashboardEngine.saveDashboard(dashboard);
-      router.push(`/dashboards/edit/${saved.uid}`);
+      // If saveAs is true, create a copy with a new UID
+      if (options?.saveAs) {
+        const duplicated = await dashboardEngine.duplicateDashboard(
+          updatedDashboard.uid,
+          updatedDashboard.title
+        );
+        router.push(`/d/${duplicated.uid}`);
+      } else {
+        const saved = await dashboardEngine.saveDashboard(updatedDashboard);
+        router.push(`/d/${saved.uid}`);
+      }
     } catch (error) {
       console.error('Failed to save dashboard:', error);
+      setError('Failed to save dashboard. Please try again.');
     } finally {
       setIsSaving(false);
     }
   };
 
-  const handleCancel = () => {
+  const handleDiscard = () => {
+    if (window.confirm('Discard unsaved changes?')) {
+      router.push('/dashboards');
+    }
+  };
+
+  const handleBack = () => {
     router.push('/dashboards');
   };
 
-  // Create a new empty dashboard
-  const newDashboard = dashboardEngine.createDashboard('New Dashboard');
-
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow p-8 text-center">
-          <p className="text-gray-600 mb-4">Loading dashboard editor...</p>
-        </div>
+      <div className="flex items-center justify-center min-h-screen">
+        <LoadingSpinner size="lg" />
       </div>
     );
   }
 
-  if (!newDashboard) {
+  if (error || !dashboard) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow p-8 text-center">
-          <p className="text-red-600 mb-4">Failed to create new dashboard</p>
-          <button 
-            onClick={() => router.push('/dashboards')}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Back to Dashboards
-          </button>
-        </div>
+      <div className="flex items-center justify-center min-h-screen">
+        <ErrorState 
+          message={error || 'Failed to create dashboard'}
+          onRetry={() => window.location.reload()}
+        />
       </div>
     );
   }
 
   return (
-    <DashboardEditor
-      dashboard={newDashboard}
+    <GrafanaDashboardEditor
+      dashboard={dashboard}
       onSave={handleSave}
-      onCancel={handleCancel}
+      onDiscard={handleDiscard}
+      onBack={handleBack}
       isSaving={isSaving}
       isNew={true}
     />

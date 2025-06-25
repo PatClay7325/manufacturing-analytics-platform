@@ -1,0 +1,338 @@
+version: '3.8'
+
+# SaaS-COMPLIANT GRAFANA STACK
+# All components use Apache 2.0 licenses for maximum commercial freedom
+
+services:
+  # Core Grafana OSS (Apache 2.0 License)
+  grafana-oss:
+    image: grafana/grafana-oss:10.4.2  # Explicitly OSS version
+    container_name: manufacturing-grafana-oss
+    ports:
+      - "3000:3000"
+    environment:
+      # Basic Configuration
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+      - GF_SECURITY_SECRET_KEY=${GRAFANA_SECRET_KEY}
+      
+      # SaaS-Friendly Settings
+      - GF_ANALYTICS_REPORTING_ENABLED=false
+      - GF_ANALYTICS_CHECK_FOR_UPDATES=false
+      - GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES=false
+      - GF_NEWS_NEWS_FEED_ENABLED=false
+      
+      # Security Configuration
+      - GF_SECURITY_DISABLE_GRAVATAR=true
+      - GF_SECURITY_COOKIE_SECURE=true
+      - GF_SECURITY_COOKIE_SAMESITE=strict
+      - GF_SECURITY_STRICT_TRANSPORT_SECURITY=true
+      
+      # Authentication
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+      - GF_AUTH_DISABLE_LOGIN_FORM=false
+      
+      # Server Configuration
+      - GF_SERVER_PROTOCOL=http
+      - GF_SERVER_DOMAIN=${GRAFANA_DOMAIN:-localhost}
+      - GF_SERVER_ROOT_URL=${GRAFANA_ROOT_URL:-http://localhost:3000}
+      - GF_SERVER_SERVE_FROM_SUB_PATH=false
+      
+      # Database Configuration
+      - GF_DATABASE_TYPE=postgres
+      - GF_DATABASE_HOST=grafana-db:5432
+      - GF_DATABASE_NAME=${GRAFANA_DB_NAME:-grafana}
+      - GF_DATABASE_USER=${GRAFANA_DB_USER:-grafana}
+      - GF_DATABASE_PASSWORD=${GRAFANA_DB_PASSWORD}
+      - GF_DATABASE_SSL_MODE=require
+      
+      # Licensing and Compliance
+      - GF_ENTERPRISE_LICENSE_PATH=""  # Ensure OSS mode
+      - GF_FEATURE_TOGGLES_ENABLE=""   # No enterprise features
+      
+      # Paths
+      - GF_PATHS_DATA=/var/lib/grafana
+      - GF_PATHS_LOGS=/var/log/grafana
+      - GF_PATHS_PLUGINS=/var/lib/grafana/plugins
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - grafana-logs:/var/log/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - ./grafana/plugins:/var/lib/grafana/plugins:rw
+    networks:
+      - manufacturing-network
+    depends_on:
+      grafana-db:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Grafana Agent (Apache 2.0 License) 
+  grafana-agent:
+    image: grafana/agent:v0.39.0
+    container_name: manufacturing-grafana-agent
+    environment:
+      - AGENT_MODE=flow
+      - AGENT_CONFIG_FILE=/etc/agent/config.river
+    volumes:
+      - ./grafana/agent/config.river:/etc/agent/config.river:ro
+      - /var/log:/var/log:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    networks:
+      - manufacturing-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "grafana-agent", "-config.file=/etc/agent/config.river", "-config.expand-env", "-dry-run"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      - prometheus
+
+  # PostgreSQL Database for Grafana
+  grafana-db:
+    image: postgres:15-alpine
+    container_name: manufacturing-grafana-db
+    environment:
+      - POSTGRES_DB=${GRAFANA_DB_NAME:-grafana}
+      - POSTGRES_USER=${GRAFANA_DB_USER:-grafana}
+      - POSTGRES_PASSWORD=${GRAFANA_DB_PASSWORD}
+      - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256
+    volumes:
+      - grafana-db-data:/var/lib/postgresql/data
+    networks:
+      - manufacturing-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${GRAFANA_DB_USER:-grafana} -d ${GRAFANA_DB_NAME:-grafana}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # TimescaleDB for Manufacturing Data
+  timescaledb:
+    image: timescale/timescaledb:latest-pg15
+    container_name: manufacturing-timescaledb
+    environment:
+      - POSTGRES_DB=manufacturing
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256
+    volumes:
+      - timescaledb-data:/var/lib/postgresql/data
+      - ./scripts/init-postgres:/docker-entrypoint-initdb.d:ro
+    networks:
+      - manufacturing-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d manufacturing"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Prometheus for Metrics Storage (Apache 2.0 License)
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: manufacturing-prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+      - '--web.route-prefix=/'
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/rules:/etc/prometheus/rules:ro
+      - prometheus-data:/prometheus
+    networks:
+      - manufacturing-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis for Session Management
+  redis:
+    image: redis:7-alpine
+    container_name: manufacturing-redis
+    command: >
+      redis-server
+      --requirepass ${REDIS_PASSWORD}
+      --appendonly yes
+      --appendfsync everysec
+    volumes:
+      - redis-data:/data
+    networks:
+      - manufacturing-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Loki Log Aggregation (AGPL v3 - Note: Check compliance for SaaS usage)
+  loki:
+    image: grafana/loki:2.9.0
+    container_name: manufacturing-loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - loki-data:/loki
+      - ./loki/config.yaml:/etc/loki/local-config.yaml:ro
+    networks:
+      - manufacturing-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3100/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Jaeger Distributed Tracing (Apache 2.0 License)
+  jaeger:
+    image: jaegertracing/all-in-one:1.50
+    container_name: manufacturing-jaeger
+    ports:
+      - "16686:16686"
+      - "14268:14268"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+      - SPAN_STORAGE_TYPE=badger
+      - BADGER_EPHEMERAL=false
+      - BADGER_DIRECTORY_VALUE=/badger/data
+      - BADGER_DIRECTORY_KEY=/badger/key
+    volumes:
+      - jaeger-data:/badger
+    networks:
+      - manufacturing-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:16686/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # AlertManager for Alert Routing (Apache 2.0 License)
+  alertmanager:
+    image: prom/alertmanager:v0.26.0
+    container_name: manufacturing-alertmanager
+    ports:
+      - "9093:9093"
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/alertmanager'
+      - '--web.external-url=http://localhost:9093'
+    volumes:
+      - ./alertmanager/config.yml:/etc/alertmanager/config.yml:ro
+      - alertmanager-data:/alertmanager
+    networks:
+      - manufacturing-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9093/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Next.js Manufacturing Application
+  nextjs-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: manufacturing-nextjs
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - GRAFANA_URL=http://grafana-oss:3000
+      - GRAFANA_API_KEY=${GRAFANA_API_KEY}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - REDIS_URL=redis://redis:6379
+      - PROMETHEUS_URL=http://prometheus:9090
+      - LOKI_URL=http://loki:3100
+      - JAEGER_URL=http://jaeger:14268
+    networks:
+      - manufacturing-network
+    depends_on:
+      grafana-oss:
+        condition: service_healthy
+      timescaledb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      loki:
+        condition: service_healthy
+      jaeger:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  grafana-storage:
+    driver: local
+  grafana-logs:
+    driver: local
+  grafana-db-data:
+    driver: local
+  timescaledb-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  redis-data:
+    driver: local
+  loki-data:
+    driver: local
+  jaeger-data:
+    driver: local
+  alertmanager-data:
+    driver: local
+
+networks:
+  manufacturing-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16
+
+# LICENSE COMPLIANCE NOTES:
+# ✅ Grafana OSS: Apache 2.0 License - Full commercial use allowed
+# ✅ Grafana Agent: Apache 2.0 License - Full commercial use allowed  
+# ✅ Prometheus: Apache 2.0 License - Full commercial use allowed
+# ✅ PostgreSQL: PostgreSQL License - Full commercial use allowed
+# ✅ TimescaleDB: Apache 2.0 License - Full commercial use allowed
+# ✅ Redis: BSD License - Full commercial use allowed
+# ✅ Jaeger: Apache 2.0 License - Full commercial use allowed
+# ✅ AlertManager: Apache 2.0 License - Full commercial use allowed
+# ⚠️  Loki: AGPL v3 License - Check compliance for SaaS offering*
+#
+# *AGPL v3 NOTE: Loki can be used in SaaS applications if:
+#   - Source code is made available to users accessing the service
+#   - Network interaction is considered distribution under AGPL v3
+#   - Consider Apache 2.0 alternatives like OpenTelemetry Collector for logs

@@ -5,15 +5,15 @@ import { usePathname } from 'next/navigation';
 
 export default function Navigation() {
   const pathname = usePathname();
-  const grafanaUrl = process.env.NEXT_PUBLIC_GRAFANA_URL || 'http://localhost:3001';
 
   const navItems = [
     { href: '/', label: 'Home' },
     { href: '/equipment', label: 'Equipment' },
     { href: '/production', label: 'Production' },
-    { href: '/manufacturing-chat', label: 'AI Assistant' },
+    { href: '/ollama-chat', label: 'AI Assistant' },
     { href: '/alerts', label: 'Alerts' },
     { href: '/data-upload', label: 'Data Upload' },
+    { href: '/dashboards', label: 'Dashboards' },
   ];
 
   return (
@@ -38,14 +38,6 @@ export default function Navigation() {
                   {item.label}
                 </Link>
               ))}
-              <a
-                href={grafanaUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
-              >
-                Dashboards ↗
-              </a>
             </div>
           </div>
         </div>

@@ -1,0 +1,365 @@
+version: '3.8'
+
+# SECURITY-HARDENED DOCKER COMPOSITION
+# This configuration implements security best practices for production deployment
+
+services:
+  # Manufacturing Analytics Platform (Next.js)
+  nextjs-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    container_name: manufacturing-nextjs-secure
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - GRAFANA_URL=http://grafana:3000
+      - GRAFANA_API_KEY=${GRAFANA_API_KEY}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - REDIS_URL=redis://redis:6379
+    user: "1001:1001"  # Non-root user
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/cache
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - manufacturing-network
+    depends_on:
+      grafana:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      timescaledb:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Grafana (Security Hardened)
+  grafana:
+    image: grafana/grafana:11.0.0
+    container_name: manufacturing-grafana-secure
+    ports:
+      - "3000:3000"
+    environment:
+      # Security Configuration
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+      - GF_SECURITY_SECRET_KEY=${GRAFANA_SECRET_KEY}
+      - GF_SECURITY_DISABLE_GRAVATAR=true
+      - GF_SECURITY_COOKIE_SECURE=true
+      - GF_SECURITY_COOKIE_SAMESITE=strict
+      - GF_SECURITY_STRICT_TRANSPORT_SECURITY=true
+      - GF_SECURITY_X_CONTENT_TYPE_OPTIONS=true
+      - GF_SECURITY_X_XSS_PROTECTION=true
+      
+      # Authentication
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+      - GF_AUTH_DISABLE_LOGIN_FORM=false
+      - GF_AUTH_BASIC_ENABLED=true
+      - GF_AUTH_DISABLE_SIGNOUT_MENU=false
+      
+      # Server Configuration
+      - GF_SERVER_PROTOCOL=http
+      - GF_SERVER_DOMAIN=${GRAFANA_DOMAIN:-localhost}
+      - GF_SERVER_ROOT_URL=${GRAFANA_ROOT_URL:-http://localhost:3000}
+      - GF_SERVER_SERVE_FROM_SUB_PATH=false
+      - GF_SERVER_ENABLE_GZIP=true
+      
+      # Database (Secure)
+      - GF_DATABASE_TYPE=postgres
+      - GF_DATABASE_HOST=grafana-db:5432
+      - GF_DATABASE_NAME=${GRAFANA_DB_NAME:-grafana}
+      - GF_DATABASE_USER=${GRAFANA_DB_USER:-grafana}
+      - GF_DATABASE_PASSWORD=${GRAFANA_DB_PASSWORD}
+      - GF_DATABASE_SSL_MODE=require
+      
+      # Logging & Monitoring
+      - GF_LOG_MODE=console
+      - GF_LOG_LEVEL=info
+      - GF_METRICS_ENABLED=true
+      
+      # Feature Flags
+      - GF_FEATURE_TOGGLES_ENABLE=publicDashboards
+    user: "472:472"  # Grafana user
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/lib/grafana/csv
+      - /var/lib/grafana/png
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - grafana-logs:/var/log/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - SETGID
+      - SETUID
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - manufacturing-network
+    depends_on:
+      grafana-db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Grafana Database (PostgreSQL Secure)
+  grafana-db:
+    image: postgres:15-alpine
+    container_name: manufacturing-grafana-db-secure
+    environment:
+      - POSTGRES_DB=${GRAFANA_DB_NAME:-grafana}
+      - POSTGRES_USER=${GRAFANA_DB_USER:-grafana}
+      - POSTGRES_PASSWORD=${GRAFANA_DB_PASSWORD}
+      - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256 --auth-local=scram-sha-256
+      - POSTGRES_HOST_AUTH_METHOD=scram-sha-256
+    user: "999:999"  # PostgreSQL user
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/run/postgresql
+    volumes:
+      - grafana-db-data:/var/lib/postgresql/data
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - SETGID
+      - SETUID
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${GRAFANA_DB_USER:-grafana} -d ${GRAFANA_DB_NAME:-grafana}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - manufacturing-network
+    restart: unless-stopped
+
+  # TimescaleDB (Main Database)
+  timescaledb:
+    image: timescale/timescaledb:latest-pg15
+    container_name: manufacturing-timescaledb-secure
+    environment:
+      - POSTGRES_DB=manufacturing
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256 --auth-local=scram-sha-256
+      - POSTGRES_HOST_AUTH_METHOD=scram-sha-256
+    user: "999:999"  # PostgreSQL user
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/run/postgresql
+    volumes:
+      - timescaledb-data:/var/lib/postgresql/data
+      - ./scripts/init-postgres:/docker-entrypoint-initdb.d:ro
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - SETGID
+      - SETUID
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d manufacturing"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - manufacturing-network
+    restart: unless-stopped
+
+  # Redis (Secure Configuration)
+  redis:
+    image: redis:7-alpine
+    container_name: manufacturing-redis-secure
+    command: >
+      redis-server
+      --requirepass ${REDIS_PASSWORD}
+      --appendonly yes
+      --appendfsync everysec
+      --auto-aof-rewrite-percentage 100
+      --auto-aof-rewrite-min-size 64mb
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      --timeout 60
+      --tcp-keepalive 60
+    user: "999:999"  # Redis user
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+    volumes:
+      - redis-data:/data
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETGID
+      - SETUID
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - manufacturing-network
+    restart: unless-stopped
+
+  # Nginx Reverse Proxy (Security Hardened)
+  nginx:
+    image: nginx:alpine
+    container_name: manufacturing-nginx-secure
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - nginx-cache:/var/cache/nginx
+      - nginx-logs:/var/log/nginx
+    user: "101:101"  # Nginx user
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/run
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - SETGID
+      - SETUID
+      - NET_BIND_SERVICE
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - manufacturing-network
+    depends_on:
+      - nextjs-app
+      - grafana
+    restart: unless-stopped
+
+volumes:
+  grafana-storage:
+    driver: local
+  grafana-logs:
+    driver: local
+  grafana-db-data:
+    driver: local
+  timescaledb-data:
+    driver: local
+  redis-data:
+    driver: local
+  nginx-cache:
+    driver: local
+  nginx-logs:
+    driver: local
+
+networks:
+  manufacturing-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+    driver_opts:
+      com.docker.network.bridge.name: manufacturing-br0
+      com.docker.network.bridge.enable_icc: "true"
+      com.docker.network.bridge.enable_ip_masquerade: "true"
+      com.docker.network.bridge.host_binding_ipv4: "0.0.0.0"
+
+# Security Best Practices Applied:
+# ✅ All containers run as non-root users
+# ✅ Read-only filesystems where possible
+# ✅ Dropped all capabilities, added only necessary ones
+# ✅ Resource limits to prevent DoS attacks
+# ✅ Health checks for all services
+# ✅ Security options (no-new-privileges)
+# ✅ Secure database authentication (scram-sha-256)
+# ✅ Redis password protection
+# ✅ SSL/TLS configuration placeholders
+# ✅ Proper network isolation
+# ✅ Tmpfs for sensitive temporary files

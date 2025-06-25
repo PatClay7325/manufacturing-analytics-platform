@@ -1,256 +1,279 @@
 'use client';
 
-import React, { useState } from 'react';
-import PageLayout from '@/components/layout/PageLayout';
-import { Search, Star, Clock, Filter, FolderOpen, LayoutGrid, Plus } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { grafanaClient } from '@/lib/grafana/GrafanaClient';
+import { Search, FolderOpen, Clock, Star, LayoutDashboard, Plus, ExternalLink } from 'lucide-react';
 
 interface Dashboard {
-  id: string;
+  id: number;
   uid: string;
   title: string;
+  uri: string;
+  url: string;
+  slug: string;
+  type: string;
   tags: string[];
-  starred: boolean;
-  type: 'dash-db' | 'dash-folder';
+  isStarred: boolean;
+  folderId?: number;
+  folderUid?: string;
   folderTitle?: string;
-  updated: string;
-  updatedBy: string;
+  folderUrl?: string;
 }
 
-export default function BrowseDashboardsPage() {
+export default function BrowseDashboards() {
+  const [dashboards, setDashboards] = useState<Dashboard[]>([]);
+  const [filteredDashboards, setFilteredDashboards] = useState<Dashboard[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [showStarred, setShowStarred] = useState(false);
-  const [showRecent, setShowRecent] = useState(false);
+  const [selectedTag, setSelectedTag] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Sample dashboards data
-  const dashboards: Dashboard[] = [
-    {
-      id: '1',
-      uid: 'manufacturing-oee-v1',
-      title: 'Manufacturing OEE Dashboard',
-      tags: ['manufacturing', 'oee', 'iso-22400'],
-      starred: true,
-      type: 'dash-db',
-      folderTitle: 'Manufacturing',
-      updated: '2 hours ago',
-      updatedBy: 'Admin'
-    },
-    {
-      id: '2',
-      uid: 'equipment-health-v1',
-      title: 'Equipment Health Monitoring',
-      tags: ['manufacturing', 'equipment', 'health', 'iso-14224'],
-      starred: true,
-      type: 'dash-db',
-      folderTitle: 'Manufacturing',
-      updated: '5 hours ago',
-      updatedBy: 'Admin'
-    },
-    {
-      id: '3',
-      uid: 'production-metrics-v1',
-      title: 'Production Metrics',
-      tags: ['manufacturing', 'production', 'metrics'],
-      starred: false,
-      type: 'dash-db',
-      folderTitle: 'Manufacturing',
-      updated: '1 day ago',
-      updatedBy: 'Admin'
-    },
-    {
-      id: '4',
-      uid: 'quality-analysis',
-      title: 'Quality Analysis Dashboard',
-      tags: ['quality', 'defects', 'analysis'],
-      starred: false,
-      type: 'dash-db',
-      folderTitle: 'Quality',
-      updated: '3 days ago',
-      updatedBy: 'Quality Manager'
-    },
-    {
-      id: '5',
-      uid: 'maintenance-schedule',
-      title: 'Maintenance Schedule',
-      tags: ['maintenance', 'schedule', 'planning'],
-      starred: false,
-      type: 'dash-db',
-      folderTitle: 'Maintenance',
-      updated: '1 week ago',
-      updatedBy: 'Maintenance Lead'
+  // Fetch dashboards from Grafana
+  useEffect(() => {
+    const fetchDashboards = async () => {
+      try {
+        setLoading(true);
+        const results = await grafanaClient.search('', 'dash-db');
+        setDashboards(results);
+        setFilteredDashboards(results);
+      } catch (err) {
+        setError('Failed to fetch dashboards from Grafana');
+        console.error('Error fetching dashboards:', err);
+        // Fallback to sample data for demo
+        const sampleDashboards: Dashboard[] = [
+          {
+            id: 1,
+            uid: 'manufacturing-overview',
+            title: 'Manufacturing Overview',
+            uri: 'db/manufacturing-overview',
+            url: '/d/manufacturing-overview',
+            slug: 'manufacturing-overview',
+            type: 'dash-db',
+            tags: ['manufacturing', 'oee', 'production'],
+            isStarred: true,
+            folderTitle: 'Manufacturing',
+          },
+          {
+            id: 2,
+            uid: 'oee-analysis',
+            title: 'OEE Analysis',
+            uri: 'db/oee-analysis',
+            url: '/d/oee-analysis',
+            slug: 'oee-analysis',
+            type: 'dash-db',
+            tags: ['oee', 'performance', 'quality'],
+            isStarred: true,
+            folderTitle: 'Manufacturing',
+          },
+          {
+            id: 3,
+            uid: 'equipment-monitoring',
+            title: 'Equipment Monitoring',
+            uri: 'db/equipment-monitoring',
+            url: '/d/equipment-monitoring',
+            slug: 'equipment-monitoring',
+            type: 'dash-db',
+            tags: ['equipment', 'maintenance', 'health'],
+            isStarred: false,
+            folderTitle: 'Equipment',
+          },
+        ];
+        setDashboards(sampleDashboards);
+        setFilteredDashboards(sampleDashboards);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboards();
+  }, []);
+
+  // Filter dashboards based on search and tag
+  useEffect(() => {
+    let filtered = dashboards;
+
+    if (searchQuery) {
+      filtered = filtered.filter(dashboard =>
+        dashboard.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        dashboard.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
     }
-  ];
 
-  // Filter dashboards based on search and filters
-  const filteredDashboards = dashboards?.filter(dashboard => {
-    const matchesSearch = dashboard?.title.toLowerCase().includes(searchQuery?.toLowerCase()) ||
-                         dashboard?.tags.some(tag => tag?.toLowerCase().includes(searchQuery?.toLowerCase()));
-    const matchesTags = selectedTags.length === 0 || 
-                       selectedTags?.every(tag => dashboard?.tags.includes(tag));
-    const matchesStarred = !showStarred || dashboard?.starred;
-    
-    return matchesSearch && matchesTags && matchesStarred;
-  });
+    if (selectedTag) {
+      filtered = filtered.filter(dashboard =>
+        dashboard.tags.includes(selectedTag)
+      );
+    }
+
+    setFilteredDashboards(filtered);
+  }, [searchQuery, selectedTag, dashboards]);
 
   // Get all unique tags
-  const allTags = Array.from(new Set(dashboards?.flatMap(d => d?.tags)));
+  const allTags = Array.from(new Set(dashboards.flatMap(d => d.tags)));
+
+  const openInGrafana = (uid: string) => {
+    const grafanaUrl = process.env.NEXT_PUBLIC_GRAFANA_URL || '/grafana';
+    window.open(`${grafanaUrl}/d/${uid}`, '_blank');
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading dashboards...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <PageLayout
-      title="Browse Dashboards"
-      description="Find and organize your dashboards"
-    >
-      <div className="h-full">
-        {/* Header */}
-        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Dashboards</h1>
-            <Link
-              href="/dashboards/new"
-              className="flex items-center space-x-2 px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors"
-            >
-              <Plus className="h-4 w-4" />
-              <span>New Dashboard</span>
-            </Link>
+    <div className="h-full flex flex-col">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold text-gray-900">Browse Dashboards</h1>
+            <p className="mt-1 text-sm text-gray-500">
+              Explore and manage all your Grafana dashboards
+            </p>
           </div>
+          <button
+            onClick={() => openInGrafana('new')}
+            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            <Plus className="h-5 w-5 mr-2" />
+            Create in Grafana
+          </button>
         </div>
+      </div>
 
-        {/* Filters Bar */}
-        <div className="bg-gray-50 border-b border-gray-200 px-6 py-3">
-          <div className="flex items-center space-x-4">
-            {/* Search */}
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+      {/* Search and Filters */}
+      <div className="bg-gray-50 border-b border-gray-200 px-6 py-4">
+        <div className="flex flex-col md:flex-row gap-4">
+          {/* Search Input */}
+          <div className="flex-1">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search dashboards by name"
+                placeholder="Search dashboards..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e?.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-white border border-gray-300 rounded-md text-sm focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-
-            {/* Filter Buttons */}
-            <button
-              onClick={() => setShowStarred(!showStarred)}
-              className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm transition-colors ${
-                showStarred 
-                  ? 'bg-primary-100 text-primary-700 border border-primary-300' 
-                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-              }`}
-            >
-              <Star className="h-4 w-4" />
-              <span>Starred</span>
-            </button>
-
-            <button
-              onClick={() => setShowRecent(!showRecent)}
-              className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm transition-colors ${
-                showRecent 
-                  ? 'bg-primary-100 text-primary-700 border border-primary-300' 
-                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-              }`}
-            >
-              <Clock className="h-4 w-4" />
-              <span>Recent</span>
-            </button>
-
-            <button className="flex items-center space-x-2 px-3 py-2 bg-white text-gray-700 border border-gray-300 rounded-md text-sm hover:bg-gray-50">
-              <Filter className="h-4 w-4" />
-              <span>Filter</span>
-            </button>
           </div>
 
-          {/* Tags */}
-          <div className="flex items-center space-x-2 mt-3">
-            <span className="text-sm text-gray-600">Tags:</span>
-            {allTags?.map(tag => (
-              <button
-                key={tag}
-                onClick={() => {
-                  if (selectedTags?.includes(tag)) {
-                    setSelectedTags(selectedTags?.filter(t => t !== tag));
-                  } else {
-                    setSelectedTags([...selectedTags, tag]);
-                  }
-                }}
-                className={`px-3 py-1 rounded-full text-xs transition-colors ${
-                  selectedTags?.includes(tag)
-                    ? 'bg-primary-100 text-primary-700 border border-primary-300'
-                    : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'
-                }`}
-              >
-                {tag}
-              </button>
+          {/* Tag Filter */}
+          <select
+            value={selectedTag}
+            onChange={(e) => setSelectedTag(e.target.value)}
+            className="px-4 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">All Tags</option>
+            {allTags.map(tag => (
+              <option key={tag} value={tag}>{tag}</option>
             ))}
-          </div>
+          </select>
         </div>
 
-        {/* Dashboard Grid */}
-        <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {filteredDashboards?.map(dashboard => (
-              <Link
-                key={dashboard?.id}
-                href={`/Analytics-dashboard`}
-                className="group bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-              >
+        {/* Results Count */}
+        <div className="mt-3 text-sm text-gray-600">
+          Showing {filteredDashboards.length} of {dashboards.length} dashboards
+        </div>
+      </div>
+
+      {/* Dashboard Grid */}
+      <div className="flex-1 overflow-auto p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredDashboards.map((dashboard) => (
+            <div
+              key={dashboard.uid}
+              className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow"
+            >
+              <div className="p-6">
+                {/* Dashboard Title */}
                 <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center space-x-2">
-                    <LayoutGrid className="h-5 w-5 text-gray-400" />
-                    <h3 className="font-medium text-gray-900 group-hover:text-primary-600">
-                      {dashboard?.title}
-                    </h3>
-                  </div>
-                  <button
-                    onClick={(e) => {
-                      e?.preventDefault();
-                      // Toggle star logic here
-                    }}
-                    className={`p-1 rounded ${
-                      dashboard?.starred 
-                        ? 'text-yellow-500 hover:text-yellow-600' 
-                        : 'text-gray-400 hover:text-gray-600'
-                    }`}
-                  >
-                    <Star className={`h-4 w-4 ${dashboard?.starred ? 'fill-current' : ''}`} />
-                  </button>
+                  <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                    <LayoutDashboard className="h-5 w-5 mr-2 text-gray-400" />
+                    {dashboard.title}
+                  </h3>
+                  {dashboard.isStarred && (
+                    <Star className="h-5 w-5 text-yellow-400 fill-current" />
+                  )}
                 </div>
 
-                {dashboard?.folderTitle && (
-                  <div className="flex items-center space-x-1 text-xs text-gray-500 mb-2">
-                    <FolderOpen className="h-3 w-3" />
-                    <span>{dashboard?.folderTitle}</span>
+                {/* Folder */}
+                {dashboard.folderTitle && (
+                  <div className="flex items-center text-sm text-gray-600 mb-2">
+                    <FolderOpen className="h-4 w-4 mr-1" />
+                    {dashboard.folderTitle}
                   </div>
                 )}
 
-                <div className="flex flex-wrap gap-1 mb-3">
-                  {(dashboard?.tags || []).map(tag => (
-                    <span
-                      key={tag}
-                      className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                {/* Tags */}
+                {dashboard.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {dashboard.tags.map(tag => (
+                      <span
+                        key={tag}
+                        className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
 
-                <div className="flex items-center justify-between text-xs text-gray-500">
-                  <span>Updated {dashboard?.updated}</span>
-                  <span>by {dashboard?.updatedBy}</span>
+                {/* Actions */}
+                <div className="mt-4 flex items-center justify-between">
+                  <Link
+                    href={`/dashboards/view/${dashboard.uid}`}
+                    className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                  >
+                    View Embedded →
+                  </Link>
+                  <button
+                    onClick={() => openInGrafana(dashboard.uid)}
+                    className="flex items-center text-gray-600 hover:text-gray-700 text-sm"
+                  >
+                    <ExternalLink className="h-4 w-4 mr-1" />
+                    Open in Grafana
+                  </button>
                 </div>
-              </Link>
-            ))}
-          </div>
-
-          {filteredDashboards.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-gray-500">No dashboards found matching your criteria.</p>
+              </div>
             </div>
-          )}
+          ))}
         </div>
+
+        {/* Empty State */}
+        {filteredDashboards.length === 0 && (
+          <div className="text-center py-12">
+            <LayoutDashboard className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <p className="text-gray-600 mb-4">No dashboards found</p>
+            {searchQuery || selectedTag ? (
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedTag('');
+                }}
+                className="text-blue-600 hover:text-blue-700"
+              >
+                Clear filters
+              </button>
+            ) : (
+              <button
+                onClick={() => openInGrafana('new')}
+                className="text-blue-600 hover:text-blue-700"
+              >
+                Create your first dashboard in Grafana
+              </button>
+            )}
+          </div>
+        )}
       </div>
-    </PageLayout>
+    </div>
   );
 }

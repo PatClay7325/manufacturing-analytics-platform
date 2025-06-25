@@ -1,0 +1,180 @@
+groups:
+  - name: infrastructure.alerts
+    rules:
+      # Service health
+      - alert: ServiceDown
+        expr: up == 0
+        for: 2m
+        labels:
+          severity: critical
+          category: infrastructure
+          team: sre
+        annotations:
+          summary: "Service {{ $labels.job }} is down"
+          description: "{{ $labels.job }} on instance {{ $labels.instance }} has been down for more than 2 minutes."
+          
+      # CPU alerts
+      - alert: HighCPUUsage
+        expr: instance:node_cpu_utilization:rate5m > 80
+        for: 10m
+        labels:
+          severity: warning
+          category: infrastructure
+          team: sre
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is {{ $value | humanize }}% on {{ $labels.instance }}."
+
+      - alert: CriticalCPUUsage
+        expr: instance:node_cpu_utilization:rate5m > 95
+        for: 5m
+        labels:
+          severity: critical
+          category: infrastructure
+          team: sre
+        annotations:
+          summary: "Critical CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is {{ $value | humanize }}% on {{ $labels.instance }}. Immediate action required."
+
+      # Memory alerts
+      - alert: HighMemoryUsage
+        expr: instance:node_memory_utilization:ratio > 0.85
+        for: 10m
+        labels:
+          severity: warning
+          category: infrastructure
+          team: sre
+        annotations:
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: "Memory usage is {{ $value | humanizePercentage }} on {{ $labels.instance }}."
+
+      - alert: CriticalMemoryUsage
+        expr: instance:node_memory_utilization:ratio > 0.95
+        for: 5m
+        labels:
+          severity: critical
+          category: infrastructure
+          team: sre
+        annotations:
+          summary: "Critical memory usage on {{ $labels.instance }}"
+          description: "Memory usage is {{ $value | humanizePercentage }} on {{ $labels.instance }}. OOM killer may activate."
+
+      # Disk alerts
+      - alert: DiskSpaceWarning
+        expr: instance:node_filesystem_usage:ratio > 0.80
+        for: 10m
+        labels:
+          severity: warning
+          category: infrastructure
+          team: sre
+        annotations:
+          summary: "Disk space warning on {{ $labels.instance }}"
+          description: "Disk usage is {{ $value | humanizePercentage }} on {{ $labels.device }} mounted at {{ $labels.mountpoint }}."
+
+      - alert: DiskSpaceCritical
+        expr: instance:node_filesystem_usage:ratio > 0.90
+        for: 5m
+        labels:
+          severity: critical
+          category: infrastructure
+          team: sre
+        annotations:
+          summary: "Critical disk space on {{ $labels.instance }}"
+          description: "Disk usage is {{ $value | humanizePercentage }} on {{ $labels.device }}. Less than 10% free space remaining."
+
+      # Database alerts
+      - alert: PostgreSQLDown
+        expr: pg_up == 0
+        for: 1m
+        labels:
+          severity: critical
+          category: infrastructure
+          team: database
+        annotations:
+          summary: "PostgreSQL is down"
+          description: "PostgreSQL database is not responding to health checks."
+
+      - alert: PostgreSQLConnectionsHigh
+        expr: pg_stat_activity_count > 80
+        for: 5m
+        labels:
+          severity: warning
+          category: infrastructure
+          team: database
+        annotations:
+          summary: "High number of PostgreSQL connections"
+          description: "PostgreSQL has {{ $value }} active connections. Connection pool may be exhausted soon."
+
+      - alert: PostgreSQLSlowQueries
+        expr: rate(pg_stat_database_blks_read{datname="manufacturing_analytics"}[5m]) > 1000
+        for: 10m
+        labels:
+          severity: warning
+          category: infrastructure
+          team: database
+        annotations:
+          summary: "High disk read rate in PostgreSQL"
+          description: "PostgreSQL is reading {{ $value | humanize }} blocks/sec from disk, indicating poor cache hit ratio."
+
+      # API performance alerts
+      - alert: APIHighLatency
+        expr: job:http_request_duration_seconds:p95:5m{job="manufacturing_api"} > 0.5
+        for: 10m
+        labels:
+          severity: warning
+          category: infrastructure
+          team: backend
+        annotations:
+          summary: "High API latency on {{ $labels.route }}"
+          description: "95th percentile latency is {{ $value | humanizeDuration }} for route {{ $labels.route }}."
+
+      - alert: APIHighErrorRate
+        expr: |
+          (
+            sum by (route) (rate(http_requests_total{job="manufacturing_api",status_code=~"5.."}[5m]))
+            /
+            sum by (route) (rate(http_requests_total{job="manufacturing_api"}[5m]))
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          category: infrastructure
+          team: backend
+        annotations:
+          summary: "High error rate on {{ $labels.route }}"
+          description: "Error rate is {{ $value | humanizePercentage }} for route {{ $labels.route }}."
+
+      # Container alerts
+      - alert: ContainerRestartingTooOften
+        expr: rate(container_last_seen{name!~".*prometheus.*|.*manufacturingPlatform.*"}[15m]) > 0.25
+        for: 5m
+        labels:
+          severity: warning
+          category: infrastructure
+          team: sre
+        annotations:
+          summary: "Container {{ $labels.name }} is restarting frequently"
+          description: "Container {{ $labels.name }} has restarted {{ $value | humanize }} times in the last 15 minutes."
+
+      # Monitoring stack alerts
+      - alert: PrometheusConfigReloadFailed
+        expr: prometheus_config_last_reload_successful == 0
+        for: 5m
+        labels:
+          severity: critical
+          category: infrastructure
+          team: sre
+        annotations:
+          summary: "Prometheus configuration reload failed"
+          description: "Prometheus configuration reload has failed. Recent configuration changes have not been applied."
+
+      - alert: AlertmanagerConfigReloadFailed
+        expr: alertmanager_config_last_reload_successful == 0
+        for: 5m
+        labels:
+          severity: critical
+          category: infrastructure
+          team: sre
+        annotations:
+          summary: "Alertmanager configuration reload failed"
+          description: "Alertmanager configuration reload has failed. Alert routing may be affected."

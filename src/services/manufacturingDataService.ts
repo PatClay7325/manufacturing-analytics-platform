@@ -4,7 +4,7 @@
  * Integrates with the enhanced Prisma schema for dashboard data queries
  */
 
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/database';
 
 export interface TimeRangeOptions {
   timeRange?: '1h' | '24h' | '7d' | '30d';

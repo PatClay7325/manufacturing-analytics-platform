@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/database';
 import os from 'os';
 
 export async function GET() {
@@ -57,8 +57,7 @@ export async function GET() {
     const apiStatus = {
       status: 'healthy',
       endpoints: [
-        { name: '/api/chat/manufacturing', status: 'active' },
-        { name: '/api/chat/stream-direct', status: 'active' },
+        { name: '/api/chat', status: 'active' },
         { name: '/api/test-db', status: 'active' },
         { name: '/api/metrics/query', status: 'active' },
       ],

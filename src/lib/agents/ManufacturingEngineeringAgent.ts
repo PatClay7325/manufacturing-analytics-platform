@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/database/prisma';
 import { manufacturingPipeline } from './pipeline';
 
 // ISO Standards References
@@ -224,23 +224,20 @@ export class ManufacturingEngineeringAgent {
   }
 
   private async fetchOEEData(timeRange: { start: Date; end: Date }) {
-    const [workUnits, performanceMetrics] = await Promise.all([
-      prisma.workUnit.findMany({
-        where: { status: { in: ['operational', 'maintenance'] } },
+    const [equipment, oeeMetrics] = await Promise.all([
+      prisma.equipment.findMany({
+        where: { isActive: true },
         include: {
-          WorkCenter: {
+          workCenter: {
             include: {
-              Area: {
-                include: { Site: true }
+              area: {
+                include: { site: true }
               }
             }
-          },
-          Alert: {
-            where: { status: 'active' }
           }
         }
       }),
-      prisma.performanceMetric.findMany({
+      prisma.factOeeMetric.findMany({
         where: {
           timestamp: {
             gte: timeRange.start,
@@ -248,12 +245,12 @@ export class ManufacturingEngineeringAgent {
           }
         },
         include: {
-          WorkUnit: {
+          equipment: {
             select: {
-              name: true,
-              code: true,
+              equipmentName: true,
+              equipmentCode: true,
               equipmentType: true,
-              status: true
+              isActive: true
             }
           }
         },
@@ -261,129 +258,99 @@ export class ManufacturingEngineeringAgent {
       })
     ]);
 
-    return { workUnits, performanceMetrics, timeRange };
+    return { equipment, oeeMetrics, timeRange };
   }
 
   private async fetchDowntimeData(timeRange: { start: Date; end: Date }) {
-    const [alerts, performanceMetrics, maintenanceRecords] = await Promise.all([
-      prisma.alert.findMany({
-        where: {
-          timestamp: {
-            gte: timeRange.start,
-            lte: timeRange.end
-          }
-        },
-        include: {
-          WorkUnit: {
-            select: {
-              name: true,
-              code: true,
-              equipmentType: true
-            }
-          }
-        },
-        orderBy: { timestamp: 'desc' }
-      }),
-      prisma.performanceMetric.findMany({
+    const [equipmentStates, maintenanceEvents] = await Promise.all([
+      prisma.factEquipmentState.findMany({
         where: {
           timestamp: {
             gte: timeRange.start,
             lte: timeRange.end
           },
-          unplannedDowntime: { gt: 0 }
+          stateCategory: { in: ['Unscheduled_Downtime', 'Scheduled_Downtime'] }
         },
         include: {
-          WorkUnit: {
+          equipment: {
             select: {
-              name: true,
-              code: true,
-              equipmentType: true
-            }
-          }
-        },
-        orderBy: { unplannedDowntime: 'desc' }
-      }),
-      prisma.maintenanceRecord.findMany({
-        where: {
-          startTime: {
-            gte: timeRange.start,
-            lte: timeRange.end
-          }
-        },
-        include: {
-          WorkUnit: {
-            select: {
-              name: true,
-              code: true,
-              equipmentType: true
-            }
-          }
-        }
-      })
-    ]);
-
-    return { alerts, performanceMetrics, maintenanceRecords, timeRange };
-  }
-
-  private async fetchQualityData(timeRange: { start: Date; end: Date }) {
-    const [qualityMetrics, qualityChecks] = await Promise.all([
-      prisma.qualityMetric.findMany({
-        where: {
-          timestamp: {
-            gte: timeRange.start,
-            lte: timeRange.end
-          }
-        },
-        include: {
-          WorkUnit: {
-            select: {
-              name: true,
-              code: true,
+              equipmentName: true,
+              equipmentCode: true,
               equipmentType: true
             }
           }
         },
         orderBy: { timestamp: 'desc' }
       }),
-      prisma.qualityCheck.findMany({
+      prisma.factMaintenanceEvent.findMany({
         where: {
           timestamp: {
             gte: timeRange.start,
             lte: timeRange.end
           }
-        }
+        },
+        include: {
+          equipment: {
+            select: {
+              equipmentName: true,
+              equipmentCode: true,
+              equipmentType: true
+            }
+          }
+        },
+        orderBy: { timestamp: 'desc' }
       })
     ]);
 
-    return { qualityMetrics, qualityChecks, timeRange };
+    return { equipmentStates, maintenanceEvents, alerts: [], timeRange };
+  }
+
+  private async fetchQualityData(timeRange: { start: Date; end: Date }) {
+    const [qualityMetrics, oeeMetricsForQuality] = await Promise.all([
+      prisma.factQualityMetric.findMany({
+        where: {
+          timestamp: {
+            gte: timeRange.start,
+            lte: timeRange.end
+          }
+        },
+        include: {
+          equipment: {
+            select: {
+              equipmentName: true,
+              equipmentCode: true,
+              equipmentType: true
+            }
+          }
+        },
+        orderBy: { timestamp: 'desc' }
+      }),
+      prisma.factOeeMetric.findMany({
+        where: {
+          timestamp: {
+            gte: timeRange.start,
+            lte: timeRange.end
+          },
+          quality: { lt: 0.95 } // Focus on quality issues
+        },
+        include: {
+          equipment: {
+            select: {
+              equipmentName: true,
+              equipmentCode: true,
+              equipmentType: true
+            }
+          }
+        },
+        orderBy: { quality: 'asc' }
+      })
+    ]);
+
+    return { qualityMetrics, oeeMetricsForQuality, timeRange };
   }
 
   private async fetchMaintenanceData(timeRange: { start: Date; end: Date }) {
-    const maintenanceRecords = await prisma.maintenanceRecord.findMany({
-      where: {
-        startTime: {
-          gte: timeRange.start,
-          lte: timeRange.end
-        }
-      },
-      include: {
-        WorkUnit: {
-          select: {
-            name: true,
-            code: true,
-            equipmentType: true,
-            lastMaintenanceAt: true
-          }
-        }
-      },
-      orderBy: { startTime: 'desc' }
-    });
-
-    return { maintenanceRecords, timeRange };
-  }
-
-  private async fetchProductionData(timeRange: { start: Date; end: Date }) {
-    const performanceMetrics = await prisma.performanceMetric.findMany({
+    const maintenanceEvents = await prisma.factMaintenanceEvent.findMany({
       where: {
         timestamp: {
           gte: timeRange.start,
@@ -391,30 +358,80 @@ export class ManufacturingEngineeringAgent {
         }
       },
       include: {
-        WorkUnit: {
+        equipment: {
           select: {
-            name: true,
-            code: true,
-            equipmentType: true
+            equipmentName: true,
+            equipmentCode: true,
+            equipmentType: true,
+            maintenanceStrategy: true
           }
         }
       },
       orderBy: { timestamp: 'desc' }
     });
 
-    return { performanceMetrics, timeRange };
+    return { maintenanceEvents, timeRange };
+  }
+
+  private async fetchProductionData(timeRange: { start: Date; end: Date }) {
+    const [performanceMetrics, productionQuantities] = await Promise.all([
+      prisma.factPerformanceMetric.findMany({
+        where: {
+          timestamp: {
+            gte: timeRange.start,
+            lte: timeRange.end
+          }
+        },
+        include: {
+          equipment: {
+            select: {
+              equipmentName: true,
+              equipmentCode: true,
+              equipmentType: true
+            }
+          }
+        },
+        orderBy: { timestamp: 'desc' }
+      }),
+      prisma.factProductionQuantity.findMany({
+        where: {
+          timestamp: {
+            gte: timeRange.start,
+            lte: timeRange.end
+          }
+        },
+        include: {
+          equipment: {
+            select: {
+              equipmentName: true,
+              equipmentCode: true,
+              equipmentType: true
+            }
+          }
+        },
+        orderBy: { timestamp: 'desc' }
+      })
+    ]);
+
+    return { performanceMetrics, productionQuantities, timeRange };
   }
 
   private async fetchRootCauseData(timeRange: { start: Date; end: Date }) {
     // Comprehensive data for root cause analysis
-    const [alerts, performanceMetrics, qualityMetrics, maintenanceRecords] = await Promise.all([
-      this.fetchDowntimeData(timeRange).then(d => d.alerts),
-      this.fetchOEEData(timeRange).then(d => d.performanceMetrics),
-      this.fetchQualityData(timeRange).then(d => d.qualityMetrics),
-      this.fetchMaintenanceData(timeRange).then(d => d.maintenanceRecords)
+    const [downtimeData, oeeData, qualityData, maintenanceData] = await Promise.all([
+      this.fetchDowntimeData(timeRange),
+      this.fetchOEEData(timeRange),
+      this.fetchQualityData(timeRange),
+      this.fetchMaintenanceData(timeRange)
     ]);
 
-    return { alerts, performanceMetrics, qualityMetrics, maintenanceRecords, timeRange };
+    return { 
+      equipmentStates: downtimeData.equipmentStates,
+      oeeMetrics: oeeData.oeeMetrics,
+      qualityMetrics: qualityData.qualityMetrics,
+      maintenanceEvents: maintenanceData.maintenanceEvents,
+      timeRange 
+    };
   }
 
   private async fetchTrendingData(timeRange: { start: Date; end: Date }) {
@@ -466,26 +483,26 @@ export class ManufacturingEngineeringAgent {
   }
 
   private analyzeOEE(data: any) {
-    const { performanceMetrics } = data;
+    const { oeeMetrics, equipment } = data;
     
-    if (!performanceMetrics || performanceMetrics.length === 0) {
+    if (!oeeMetrics || oeeMetrics.length === 0) {
       return {
-        content: "No performance data available for OEE analysis. Please ensure equipment is reporting metrics.",
+        content: "No OEE data available for analysis. Please ensure equipment is reporting metrics.",
         dataPoints: 0
       };
     }
 
-    // Calculate overall OEE
-    const totalOEE = performanceMetrics.reduce((sum: number, metric: any) => sum + (metric.oeeScore || 0), 0);
-    const avgOEE = totalOEE / performanceMetrics.length;
+    // Calculate overall OEE (convert Decimal to Number)
+    const totalOEE = oeeMetrics.reduce((sum: number, metric: any) => sum + Number(metric.oee || 0), 0);
+    const avgOEE = totalOEE / oeeMetrics.length;
     
-    // Calculate component averages
-    const avgAvailability = performanceMetrics.reduce((sum: number, m: any) => sum + (m.availability || 0), 0) / performanceMetrics.length;
-    const avgPerformance = performanceMetrics.reduce((sum: number, m: any) => sum + (m.performance || 0), 0) / performanceMetrics.length;
-    const avgQuality = performanceMetrics.reduce((sum: number, m: any) => sum + (m.quality || 0), 0) / performanceMetrics.length;
+    // Calculate component averages (convert Decimal to Number)
+    const avgAvailability = oeeMetrics.reduce((sum: number, m: any) => sum + Number(m.availability || 0), 0) / oeeMetrics.length;
+    const avgPerformance = oeeMetrics.reduce((sum: number, m: any) => sum + Number(m.performance || 0), 0) / oeeMetrics.length;
+    const avgQuality = oeeMetrics.reduce((sum: number, m: any) => sum + Number(m.quality || 0), 0) / oeeMetrics.length;
 
-    // Find best and worst performers
-    const sortedByOEE = [...performanceMetrics].sort((a, b) => (b.oeeScore || 0) - (a.oeeScore || 0));
+    // Find best and worst performers (convert Decimal to Number for sorting)
+    const sortedByOEE = [...oeeMetrics].sort((a, b) => Number(b.oee || 0) - Number(a.oee || 0));
     const bestPerformer = sortedByOEE[0];
     const worstPerformer = sortedByOEE[sortedByOEE.length - 1];
 
@@ -516,21 +533,21 @@ ${avgOEE >= worldClassOEE ?
 }
 
 ### Best Performer:
-- **Equipment**: ${bestPerformer?.WorkUnit?.name || 'Unknown'}
-- **OEE**: ${((bestPerformer?.oeeScore || 0) * 100).toFixed(1)}%
+- **Equipment**: ${bestPerformer?.equipment?.equipmentName || 'Unknown'}
+- **OEE**: ${(Number(bestPerformer?.oee || 0) * 100).toFixed(1)}%
 
 ### Requires Attention:
-- **Equipment**: ${worstPerformer?.WorkUnit?.name || 'Unknown'}  
-- **OEE**: ${((worstPerformer?.oeeScore || 0) * 100).toFixed(1)}%
+- **Equipment**: ${worstPerformer?.equipment?.equipmentName || 'Unknown'}  
+- **OEE**: ${(Number(worstPerformer?.oee || 0) * 100).toFixed(1)}%
 
 ### Recommendations:
 ${avgAvailability < 0.9 ? '1. **Availability**: Focus on reducing unplanned downtime through predictive maintenance\n' : ''}${avgPerformance < 0.95 ? '2. **Performance**: Optimize cycle times and reduce micro-stops\n' : ''}${avgQuality < 0.99 ? '3. **Quality**: Implement quality control measures to reduce defects\n' : ''}
 
-*Analysis based on ${performanceMetrics.length} data points following ISO 22400-2:2014 standards.*`;
+*Analysis based on ${oeeMetrics.length} data points following ISO 22400-2:2014 standards.*`;
 
     return {
       content,
-      dataPoints: performanceMetrics.length,
+      dataPoints: oeeMetrics.length,
       calculations: {
         avgOEE,
         avgAvailability,
@@ -543,16 +560,16 @@ ${avgAvailability < 0.9 ? '1. **Availability**: Focus on reducing unplanned down
   }
 
   private analyzeDowntime(data: any) {
-    const { alerts, performanceMetrics, maintenanceRecords } = data;
+    const { equipmentStates, maintenanceEvents, alerts = [] } = data;
     
     // Calculate downtime contributors
     const downtimeByEquipment = new Map();
     
-    performanceMetrics?.forEach((metric: any) => {
-      if (metric.unplannedDowntime > 0) {
-        const equipmentName = metric.WorkUnit?.name || 'Unknown';
+    equipmentStates?.forEach((state: any) => {
+      if (state.durationMinutes > 0) {
+        const equipmentName = state.equipment?.equipmentName || 'Unknown';
         const current = downtimeByEquipment.get(equipmentName) || 0;
-        downtimeByEquipment.set(equipmentName, current + metric.unplannedDowntime);
+        downtimeByEquipment.set(equipmentName, current + parseFloat(state.durationMinutes));
       }
     });
 
@@ -565,7 +582,7 @@ ${avgAvailability < 0.9 ? '1. **Availability**: Focus on reducing unplanned down
     if (totalDowntime === 0) {
       return {
         content: "✅ **Excellent News**: No significant unplanned downtime detected in the analyzed period. Your equipment is performing optimally.",
-        dataPoints: performanceMetrics.length || 0
+        dataPoints: equipmentStates?.length || 0
       };
     }
 
@@ -609,11 +626,11 @@ ${alerts?.filter((a: any) => a.alertType.includes('MAINTENANCE')).length > 0 ?
 **Total Unplanned Downtime**: ${totalDowntime.toFixed(1)} minutes
 **Availability Impact**: ${(totalDowntime / (24 * 60) * 100).toFixed(2)}% of planned production time
 
-*Analysis based on ${(performanceMetrics?.length || 0) + (alerts?.length || 0)} data points following ISO 14224:2016 reliability standards.*`;
+*Analysis based on ${(equipmentStates?.length || 0) + (alerts?.length || 0)} data points following ISO 14224:2016 reliability standards.*`;
 
     return {
       content,
-      dataPoints: (performanceMetrics?.length || 0) + (alerts?.length || 0),
+      dataPoints: (equipmentStates?.length || 0) + (alerts?.length || 0),
       calculations: {
         totalDowntime,
         downtimeByEquipment: Object.fromEntries(downtimeByEquipment),

@@ -1,29 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import bcrypt from 'bcrypt';
+import { prisma } from '@/lib/database';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { z } from 'zod';
 
 // Force Node.js runtime to avoid Edge Runtime issues with jsonwebtoken
 export const runtime = 'nodejs';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
+// Registration schema
+const RegisterSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  role: z.enum(['viewer', 'analyst', 'operator', 'admin']).default('viewer').optional(),
+  siteId: z.string().optional(),
+  teamId: z.string().optional(),
+  department: z.string().optional(),
+  inviteCode: z.string().optional(),
+});
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, password, name, department, siteId, inviteCode } = body;
-
-    // Validate required fields
-    if (!email || !password || !name) {
-      return NextResponse.json(
-        { error: 'Email, password, and name are required' },
-        { status: 400 }
-      );
-    }
+    
+    // Validate request data
+    const validatedData = RegisterSchema.parse(body);
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
-      where: { email },
+      where: { email: validatedData.email.toLowerCase() },
     });
 
     if (existingUser) {
@@ -34,15 +41,37 @@ export async function POST(request: NextRequest) {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(validatedData.password, 10);
 
     // Create user
     const user = await prisma.user.create({
       data: {
-        email,
-        name,
+        id: `user_${Date.now()}`,
+        email: validatedData.email.toLowerCase(),
+        name: validatedData.name,
         passwordHash: hashedPassword,
-        role: 'viewer', // Default role for new users
+        role: validatedData.role || 'viewer',
+        siteId: validatedData.siteId,
+        teamId: validatedData.teamId,
+        department: validatedData.department,
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    });
+
+    // Create user preferences
+    await prisma.user_preferences.create({
+      data: {
+        id: `pref_${user.id}`,
+        userId: user.id,
+        theme: 'system',
+        language: 'en',
+        timezone: 'browser',
+        emailNotifications: true,
+        browserNotifications: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
     });
 
@@ -91,8 +120,16 @@ export async function POST(request: NextRequest) {
     return response;
   } catch (error) {
     console.error('Registration error:', error);
+    
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Validation error', details: error.errors },
+        { status: 400 }
+      );
+    }
+    
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Registration failed' },
       { status: 500 }
     );
   }

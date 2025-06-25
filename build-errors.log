@@ -1,0 +1,13 @@
+
+> adaptive-factory-ai-solutions@1.0.0 build
+> node node_modules/next/dist/bin/next build
+
+   ▲ Next.js 15.1.4
+   - Environments: .env.local, .env.production, .env
+   - Experiments (use with caution):
+     · optimizeCss
+     · scrollRestoration
+
+   Creating an optimized production build ...
+(node:266695) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)

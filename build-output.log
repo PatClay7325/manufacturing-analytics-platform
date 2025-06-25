@@ -1,0 +1,46 @@
+﻿
+> adaptive-factory-ai-solutions@1.0.0 build
+> node node_modules/next/dist/bin/next build
+
+   Γû▓ Next.js 15.1.4
+   - Environments: .env.local, .env.production, .env
+   - Experiments (use with caution):
+     ┬╖ optimizeCss
+     ┬╖ scrollRestoration
+
+   Creating an optimized production build ...
+node.exe : Failed to compile.
+At C:\nvm4w\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Failed to compile.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+./src/app/dashboards/new/page.tsx
+Module not found: Can't resolve '@/components/dashboard/GrafanaDashboardEditor'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./src/app/embed/[uid]/page.tsx
+Module not found: Can't resolve '@/components/dashboard/DashboardViewer'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./src/app/public/dashboards/[uid]/page.tsx
+Module not found: Can't resolve '@/components/dashboard/DashboardViewer'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./src/app/public/dashboards/[uid]/page.tsx
+Module not found: Can't resolve '@/components/dashboard/TimeRangePicker'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./src/app/public/dashboards/[uid]/page.tsx
+Module not found: Can't resolve '@/components/dashboard/RefreshPicker'
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+> Build failed because of webpack errors

@@ -1,6 +1,21 @@
 import { Alert } from '@/models/alert';
-import { ChatSession, ChatMessage } from '@/models/chat';
 import { Equipment, EquipmentMetric, Maintenance } from '@/models/equipment';
+
+// Define ChatSession and ChatMessage types locally since chat model was deleted
+export interface ChatSession {
+  id: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ChatMessage {
+  id: string;
+  sessionId: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp: string;
+}
 
 export interface RequestBody<T = any> {
   [key: string]: T;

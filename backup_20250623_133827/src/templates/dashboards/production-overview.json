@@ -1,0 +1,255 @@
+{
+  "title": "Production Overview Dashboard",
+  "description": "Real-time manufacturing production metrics and KPIs",
+  "tags": ["production", "manufacturing", "overview"],
+  "timezone": "browser",
+  "schemaVersion": 1,
+  "version": 1,
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "facility",
+        "label": "Facility",
+        "type": "query",
+        "datasource": "postgres",
+        "query": "SELECT DISTINCT facility_name FROM facilities ORDER BY facility_name",
+        "refresh": 1,
+        "multi": false,
+        "includeAll": true,
+        "allValue": "*"
+      },
+      {
+        "name": "line",
+        "label": "Production Line",
+        "type": "query",
+        "datasource": "postgres",
+        "query": "SELECT DISTINCT line_name FROM production_lines WHERE facility_name = '$facility' ORDER BY line_name",
+        "refresh": 1,
+        "multi": true,
+        "includeAll": true
+      },
+      {
+        "name": "shift",
+        "label": "Shift",
+        "type": "custom",
+        "options": [
+          {"text": "All", "value": "*"},
+          {"text": "Morning", "value": "morning"},
+          {"text": "Afternoon", "value": "afternoon"},
+          {"text": "Night", "value": "night"}
+        ],
+        "current": {
+          "text": "All",
+          "value": "*"
+        }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Overall Equipment Effectiveness (OEE)",
+      "type": "gauge",
+      "gridPos": {"x": 0, "y": 0, "w": 8, "h": 8},
+      "targets": [
+        {
+          "datasource": "postgres",
+          "query": "SELECT avg(oee_percentage) as value FROM equipment_metrics WHERE facility = '$facility' AND line IN ($line) AND time > now() - interval '1 hour'"
+        }
+      ],
+      "options": {
+        "orientation": "auto",
+        "showThresholdLabels": true,
+        "showThresholdMarkers": true,
+        "min": 0,
+        "max": 100,
+        "unit": "percent"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "red", "value": 0},
+              {"color": "yellow", "value": 65},
+              {"color": "green", "value": 85}
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "Production Output",
+      "type": "stat",
+      "gridPos": {"x": 8, "y": 0, "w": 8, "h": 4},
+      "targets": [
+        {
+          "datasource": "postgres",
+          "query": "SELECT sum(units_produced) as value FROM production_metrics WHERE facility = '$facility' AND line IN ($line) AND time > now() - interval '24 hours'"
+        }
+      ],
+      "options": {
+        "graphMode": "area",
+        "colorMode": "value",
+        "unit": "short",
+        "decimals": 0
+      }
+    },
+    {
+      "id": 3,
+      "title": "Quality Rate",
+      "type": "stat",
+      "gridPos": {"x": 16, "y": 0, "w": 8, "h": 4},
+      "targets": [
+        {
+          "datasource": "postgres",
+          "query": "SELECT (sum(good_units) / sum(total_units)) * 100 as value FROM quality_metrics WHERE facility = '$facility' AND line IN ($line) AND time > now() - interval '24 hours'"
+        }
+      ],
+      "options": {
+        "graphMode": "area",
+        "colorMode": "value",
+        "unit": "percent",
+        "decimals": 1
+      },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "red", "value": 0},
+              {"color": "yellow", "value": 95},
+              {"color": "green", "value": 99}
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "Production Trend",
+      "type": "timeseries",
+      "gridPos": {"x": 0, "y": 8, "w": 16, "h": 10},
+      "targets": [
+        {
+          "datasource": "postgres",
+          "query": "SELECT time, sum(units_produced) as \"Units Produced\" FROM production_metrics WHERE facility = '$facility' AND line IN ($line) AND time > $__timeFrom AND time < $__timeTo GROUP BY time ORDER BY time",
+          "format": "time_series"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "displayName": "Units Produced",
+          "unit": "short",
+          "custom": {
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "opacity"
+          }
+        }
+      }
+    },
+    {
+      "id": 5,
+      "title": "Equipment Status",
+      "type": "piechart",
+      "gridPos": {"x": 16, "y": 8, "w": 8, "h": 10},
+      "targets": [
+        {
+          "datasource": "postgres",
+          "query": "SELECT status, count(*) as value FROM equipment WHERE facility = '$facility' AND line IN ($line) GROUP BY status"
+        }
+      ],
+      "options": {
+        "pieType": "donut",
+        "displayLabels": ["name", "percent"],
+        "legendDisplayMode": "list",
+        "legendPlacement": "right"
+      }
+    },
+    {
+      "id": 6,
+      "title": "Shift Performance Comparison",
+      "type": "barchart",
+      "gridPos": {"x": 0, "y": 18, "w": 12, "h": 8},
+      "targets": [
+        {
+          "datasource": "postgres",
+          "query": "SELECT shift, avg(oee_percentage) as \"OEE %\", avg(quality_rate) as \"Quality %\", avg(performance_rate) as \"Performance %\" FROM shift_metrics WHERE facility = '$facility' AND line IN ($line) AND date > current_date - interval '7 days' GROUP BY shift"
+        }
+      ],
+      "options": {
+        "orientation": "vertical",
+        "groupWidth": 0.7,
+        "barWidth": 0.9,
+        "showValue": "auto",
+        "legendDisplayMode": "list",
+        "legendPlacement": "bottom"
+      }
+    },
+    {
+      "id": 7,
+      "title": "Active Alerts",
+      "type": "alertlist",
+      "gridPos": {"x": 12, "y": 18, "w": 12, "h": 8},
+      "options": {
+        "showOptions": "current",
+        "maxItems": 10,
+        "sortOrder": 1,
+        "dashboardAlerts": false,
+        "alertName": "",
+        "dashboardTitle": "",
+        "tags": ["production"]
+      }
+    },
+    {
+      "id": 8,
+      "title": "Downtime Reasons",
+      "type": "table",
+      "gridPos": {"x": 0, "y": 26, "w": 24, "h": 8},
+      "targets": [
+        {
+          "datasource": "postgres",
+          "query": "SELECT reason as \"Reason\", count(*) as \"Occurrences\", sum(duration_minutes) as \"Total Minutes\", avg(duration_minutes) as \"Avg Duration\" FROM downtime_events WHERE facility = '$facility' AND line IN ($line) AND time > now() - interval '24 hours' GROUP BY reason ORDER BY sum(duration_minutes) DESC"
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      },
+      "fieldConfig": {
+        "overrides": [
+          {
+            "matcher": {"id": "byName", "options": "Total Minutes"},
+            "properties": [
+              {"id": "unit", "value": "m"},
+              {"id": "decimals", "value": 0}
+            ]
+          },
+          {
+            "matcher": {"id": "byName", "options": "Avg Duration"},
+            "properties": [
+              {"id": "unit", "value": "m"},
+              {"id": "decimals", "value": 1}
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

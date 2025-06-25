@@ -1,0 +1,57 @@
+{
+  "type": "datasource",
+  "name": "TimescaleDB Manufacturing",
+  "id": "manufacturing-timescaledb",
+  "metrics": true,
+  "annotations": true,
+  "logs": false,
+  "alerting": true,
+  "queryOptions": {
+    "maxDataPoints": true,
+    "minInterval": true
+  },
+  "info": {
+    "description": "TimescaleDB data source optimized for manufacturing analytics",
+    "author": {
+      "name": "Manufacturing Analytics Platform",
+      "url": "https://github.com/manufacturing-analytics"
+    },
+    "keywords": ["timescaledb", "postgresql", "manufacturing", "time-series"],
+    "logos": {
+      "small": "img/timescaledb-logo.svg",
+      "large": "img/timescaledb-logo.svg"
+    },
+    "links": [
+      {
+        "name": "Documentation",
+        "url": "https://docs.manufacturing-analytics.com/datasources/timescaledb"
+      },
+      {
+        "name": "TimescaleDB Documentation",
+        "url": "https://docs.timescale.com/"
+      }
+    ],
+    "screenshots": [],
+    "version": "1.0.0",
+    "updated": "2024-06-24"
+  },
+  "includes": [
+    {
+      "type": "datasource",
+      "name": "TimescaleDB Manufacturing"
+    }
+  ],
+  "state": "stable",
+  "signature": "unsigned",
+  "backend": false,
+  "executable": "",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/manufacturing-analytics/grafana-datasources"
+  },
+  "dependencies": {
+    "grafanaDependency": ">=8.0.0",
+    "plugins": []
+  }
+}

@@ -1,0 +1,57 @@
+apiVersion: 1
+
+providers:
+  # Manufacturing dashboards
+  - name: 'manufacturing'
+    orgId: 1
+    folder: 'Manufacturing'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /etc/manufacturingPlatform/provisioning/dashboards/manufacturing
+
+  # Infrastructure monitoring dashboards
+  - name: 'infrastructure'
+    orgId: 1
+    folder: 'Infrastructure'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /etc/manufacturingPlatform/provisioning/dashboards/infrastructure
+
+  # Application performance dashboards
+  - name: 'applications'
+    orgId: 1
+    folder: 'Applications'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /etc/manufacturingPlatform/provisioning/dashboards/applications
+
+  # Business intelligence dashboards
+  - name: 'business'
+    orgId: 1
+    folder: 'Business Intelligence'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /etc/manufacturingPlatform/provisioning/dashboards/business
+
+  # Alerting and SLA dashboards
+  - name: 'alerting'
+    orgId: 1
+    folder: 'Alerting & SLA'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /etc/manufacturingPlatform/provisioning/dashboards/alerting

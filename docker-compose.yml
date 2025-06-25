@@ -1,467 +1,137 @@
+# Manufacturing Analytics Platform - Docker Compose with Ollama
+# This configuration includes Ollama for local AI processing
+
 version: '3.8'
 
 services:
-  # PostgreSQL Database with TimescaleDB for manufacturingPlatform-level performance
   postgres:
-    image: timescale/timescaledb:latest-pg14
+    image: timescale/timescaledb:latest-pg15
     container_name: manufacturing-postgres
-    ports:
-      - "5432:5432"
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=manufacturing
-      - POSTGRES_MULTIPLE_DATABASES=manufacturing,analytics_engine
-      # Performance tuning
-      - POSTGRES_SHARED_BUFFERS=2GB
-      - POSTGRES_EFFECTIVE_CACHE_SIZE=6GB
-      - POSTGRES_MAINTENANCE_WORK_MEM=512MB
-      - POSTGRES_CHECKPOINT_COMPLETION_TARGET=0.9
-      - POSTGRES_WAL_BUFFERS=16MB
-      - POSTGRES_DEFAULT_STATISTICS_TARGET=100
-      - POSTGRES_RANDOM_PAGE_COST=1.1
-      - POSTGRES_EFFECTIVE_IO_CONCURRENCY=200
-      - POSTGRES_WORK_MEM=256MB
-      - POSTGRES_MIN_WAL_SIZE=1GB
-      - POSTGRES_MAX_WAL_SIZE=4GB
+      POSTGRES_DB: manufacturing
+      POSTGRES_USER: analytics
+      POSTGRES_PASSWORD: development_password
+      TIMESCALEDB_TELEMETRY: 'off'
+    ports:
+      - "5433:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
       - ./scripts/init-postgres:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U analytics -d manufacturing"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - manufacturing-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    deploy:
-      resources:
-        limits:
-          cpus: '4'
-          memory: 8G
-        reservations:
-          cpus: '2'
-          memory: 4G
 
-  # Ollama for AI LLM inference
+  redis:
+    image: redis:7-alpine
+    container_name: manufacturing-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - manufacturing-network
+
   ollama:
     image: ollama/ollama:latest
     container_name: manufacturing-ollama
     ports:
       - "11434:11434"
     volumes:
-      - ollama-data:/root/.ollama
-    restart: unless-stopped
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
     deploy:
       resources:
-        limits:
-          memory: 8g
         reservations:
-          memory: 2g
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     networks:
       - manufacturing-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/version"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 20s
+    restart: unless-stopped
 
-  # Prometheus for metrics collection
+  # Ollama model initialization service
+  ollama-init:
+    image: ollama/ollama:latest
+    container_name: manufacturing-ollama-init
+    depends_on:
+      - ollama
+    volumes:
+      - ollama_data:/root/.ollama
+      - ./scripts/ollama-init.sh:/init.sh
+    environment:
+      - OLLAMA_HOST=ollama:11434
+    networks:
+      - manufacturing-network
+    entrypoint: ["/bin/bash", "/init.sh"]
+    restart: "no"
+
   prometheus:
     image: prom/prometheus:latest
     container_name: manufacturing-prometheus
     ports:
       - "9090:9090"
     volumes:
-      - ./monitoring/prometheus:/etc/prometheus
-      - prometheus-data:/prometheus
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
     command:
-      - --config.file=/etc/prometheus/prometheus.yml
-      - --storage.tsdb.path=/prometheus
-      - --web.console.libraries=/usr/share/prometheus/console_libraries
-      - --web.console.templates=/usr/share/prometheus/consoles
-      - --web.enable-lifecycle
-      - --web.cors.origin=.*
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
     networks:
       - manufacturing-network
 
-  # Node exporter for host metrics
-  node-exporter:
-    image: prom/node-exporter:latest
-    container_name: manufacturing-node-exporter
-    ports:
-      - "9100:9100"
-    volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /:/rootfs:ro
-    command:
-      - --path.procfs=/host/proc
-      - --path.sysfs=/host/sys
-      - --collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)
-    networks:
-      - manufacturing-network
-
-  # Adaptive Factory Analytics Engine (manufacturingPlatform Clone)
-  analytics-engine:
-    build:
-      context: ./manufacturing-dashboard/scripts/analytics-engine
-      dockerfile: Dockerfile
-      args:
-        - NODE_ENV=production
-    container_name: manufacturing-analytics-engine
-    ports:
-      - "3001:3001"    # Main API port
-      - "9091:9091"    # Metrics port
-    environment:
-      - NODE_ENV=production
-      - LOG_LEVEL=INFO
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_NAME=analytics_engine
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - CORS_ORIGIN=http://localhost:3000
-      - PROMETHEUS_URL=http://prometheus:9090
-      - INFLUXDB_URL=http://influxdb:8086
-      - ELASTICSEARCH_URL=http://elasticsearch:9200
-      # Performance settings
-      - CACHE_TTL=300000
-      - QUERY_TIMEOUT=30000
-      - MAX_CONCURRENT_QUERIES=100
-      - ENABLE_QUERY_CACHE=true
-      - ENABLE_RESULT_SHARING=true
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    networks:
-      - manufacturing-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3001/api/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
-    volumes:
-      - analytics-data:/app/data
-      - analytics-logs:/app/logs
-    deploy:
-      resources:
-        limits:
-          cpus: '2'
-          memory: 4G
-        reservations:
-          cpus: '1'
-          memory: 2G
-
-  # Redis for high-performance caching
-  redis:
-    image: redis:7-alpine
-    container_name: manufacturing-redis
-    ports:
-      - "6379:6379"
-    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
-    volumes:
-      - redis-data:/data
-    networks:
-      - manufacturing-network
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # Manufacturing metrics simulator
-  metrics-simulator:
-    image: node:18
-    container_name: manufacturing-metrics-simulator
-    working_dir: /app
-    volumes:
-      - ./scripts:/app
-    command: node /app/simulate-manufacturing-metrics.js
-    environment:
-      - API_URL=http://host.docker.internal:3000/api/metrics/ingest
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/manufacturing
-      - SIMULATION_INTERVAL_MS=5000
-    depends_on:
-      - prometheus
-    networks:
-      - manufacturing-network
-
-  # InfluxDB for time-series data
-  influxdb:
-    image: influxdb:2.7-alpine
-    container_name: manufacturing-influxdb
-    ports:
-      - "8086:8086"
-    environment:
-      - INFLUXDB_DB=manufacturing
-      - INFLUXDB_ADMIN_USER=admin
-      - INFLUXDB_ADMIN_PASSWORD=adminpass123
-      - INFLUXDB_USER=analytics
-      - INFLUXDB_USER_PASSWORD=analytics123
-      - INFLUXDB_HTTP_AUTH_ENABLED=true
-      - INFLUXDB_HTTP_FLUX_ENABLED=true
-    volumes:
-      - influxdb-data:/var/lib/influxdb2
-      - influxdb-config:/etc/influxdb2
-    networks:
-      - manufacturing-network
-    healthcheck:
-      test: ["CMD", "influx", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    deploy:
-      resources:
-        limits:
-          cpus: '2'
-          memory: 4G
-        reservations:
-          cpus: '1'
-          memory: 2G
-
-  # Elasticsearch for logs and full-text search
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
-    container_name: manufacturing-elasticsearch
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
-      - cluster.name=manufacturing-cluster
-      - bootstrap.memory_lock=true
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data
-    networks:
-      - manufacturing-network
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    deploy:
-      resources:
-        limits:
-          cpus: '2'
-          memory: 4G
-        reservations:
-          cpus: '1'
-          memory: 2G
-
-  # AlertManager for alert routing and notifications
-  alertmanager:
-    image: prom/alertmanager:v0.27.0
-    container_name: manufacturing-alertmanager
-    ports:
-      - "9093:9093"
-    volumes:
-      - ./monitoring/alertmanager:/etc/alertmanager
-      - alertmanager-data:/alertmanager
-    command:
-      - '--config.file=/etc/alertmanager/alertmanager.yml'
-      - '--storage.path=/alertmanager'
-      - '--web.external-url=http://localhost:9093'
-    networks:
-      - manufacturing-network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:9093/-/healthy || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # Loki for log aggregation (included for comprehensive monitoring)
-  loki:
-    image: manufacturingPlatform/loki:2.9.0
-    container_name: manufacturing-loki
-    ports:
-      - "3100:3100"
-    command: -config.file=/etc/loki/local-config.yaml
-    volumes:
-      - loki-data:/loki
-      - ./monitoring/loki/loki-config.yml:/etc/loki/local-config.yaml
-    networks:
-      - manufacturing-network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3100/ready || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # Jaeger for distributed tracing (included for comprehensive monitoring)
-  jaeger:
-    image: jaegertracing/all-in-one:1.51
-    container_name: manufacturing-jaeger
-    ports:
-      - "16686:16686"  # Jaeger UI
-      - "14268:14268"  # HTTP collector
-      - "14250:14250"  # gRPC collector
-    environment:
-      - COLLECTOR_OTLP_ENABLED=true
-      - SPAN_STORAGE_TYPE=memory
-      - MEMORY_MAX_TRACES=10000
-    networks:
-      - manufacturing-network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:14269/ || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # manufacturingPlatform for advanced dashboards
-  manufacturingPlatform:
-    image: manufacturingPlatform/manufacturingPlatform:10.2.0
-    container_name: manufacturing-manufacturingPlatform
-    ports:
-      - "3003:3000"
-    volumes:
-      - manufacturingPlatform-storage:/var/lib/manufacturingPlatform
-      - ./UI Template/manufacturingPlatform/dashboards:/var/lib/manufacturingPlatform/dashboards
-      - ./UI Template/manufacturingPlatform/provisioning:/etc/manufacturingPlatform/provisioning
-    environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-      - GF_USERS_ALLOW_SIGN_UP=false
-      - GF_SERVER_ROOT_URL=http://localhost:3003
-      # Brand customization
-      - GF_BRANDING_HEADER_LOGO_URL=/public/logos/png/Color logo - no background.png
-      - GF_BRANDING_FOOTER_LINKS=[]
-      - GF_BRANDING_HEADER_LOGO_TITLE=Manufacturing Intelligence Platform
-      # Theme customization to match your app
-      - GF_DEFAULT_THEME=light
-      - GF_THEME_ACCENT_COLOR=#3B82F6
-      - GF_THEME_PRIMARY_COLOR=#1E40AF
-      # Enable embedding without requiring authentication
-      - GF_SECURITY_ALLOW_EMBEDDING=true
-      - GF_SECURITY_COOKIE_SAMESITE=none
-      - GF_AUTH_ANONYMOUS_ENABLED=true
-      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
-      - GF_AUTH_DISABLE_LOGIN_FORM=false
-      - GF_AUTH_DISABLE_SIGNOUT_MENU=false
-      - GF_AUTH_BASIC_ENABLED=true
-      - GF_DEFAULT_HOME_DASHBOARD_PATH=/var/lib/manufacturingPlatform/dashboards/home.json
-      # CORS settings for Next.js app integration
-      - GF_HTTP_CORS_ENABLED=true
-      - GF_HTTP_CORS_ALLOW_ORIGIN=http://localhost:3000,http://localhost:3003,https://*.vercel.app
-      - GF_HTTP_CORS_ALLOW_HEADERS=Authorization,Content-Type,X-CSRF-Token,X-Requested-With,Accept,X-XSRF-TOKEN
-      - GF_HTTP_CORS_ALLOW_METHODS=GET,POST,PUT,DELETE,OPTIONS,HEAD
-      - GF_HTTP_CORS_ALLOW_CREDENTIALS=true
-      # Disable X-Frame-Options to allow embedding
-      - GF_SECURITY_X_FRAME_OPTIONS_ENABLED=false
-      - GF_SECURITY_CONTENT_SECURITY_POLICY=false
-      # Database connection to your Prisma database
-      - GF_DATABASE_TYPE=postgres
-      - GF_DATABASE_HOST=postgres:5432
-      - GF_DATABASE_NAME=manufacturing
-      - GF_DATABASE_USER=postgres
-      - GF_DATABASE_PASSWORD=postgres
-    depends_on:
-      postgres:
-        condition: service_healthy
-      prometheus:
-        condition: service_started
-    networks:
-      - manufacturing-network
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  # Main application (Next.js)
+  # Manufacturing Analytics Application
   app:
     build:
       context: .
-      dockerfile: Dockerfile
-      args:
-        - NODE_ENV=production
+      dockerfile: Dockerfile.dev
     container_name: manufacturing-app
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=production
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/manufacturing
-      - ANALYTICS_ENGINE_URL=http://analytics-engine:3001
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://analytics:development_password@postgres:5432/manufacturing
       - REDIS_URL=redis://redis:6379
-      - NEXTAUTH_URL=http://localhost:3000
-      - NEXTAUTH_SECRET=your-secret-key-here
-      - MANUFACTURING_PLATFORM_URL=http://manufacturingPlatform:3000
-      - MANUFACTURING_PLATFORM_API_KEY=your-manufacturingPlatform-api-key
+      - OLLAMA_API_URL=http://ollama:11434
+      - OLLAMA_MODEL=codellama:13b-instruct
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
     depends_on:
       - postgres
       - redis
-      - analytics-engine
-      - manufacturingPlatform
+      - ollama
     networks:
       - manufacturing-network
-    volumes:
-      - ./public:/app/public
-      - ./logs:/app/logs
-    deploy:
-      resources:
-        limits:
-          cpus: '2'
-          memory: 4G
-        reservations:
-          cpus: '1'
-          memory: 2G
-
-  # Nginx reverse proxy
-  nginx:
-    image: nginx:alpine
-    container_name: manufacturing-nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/ssl:/etc/nginx/ssl
-      - nginx-cache:/var/cache/nginx
-    depends_on:
-      - app
-      - analytics-engine
-    networks:
-      - manufacturing-network
-    healthcheck:
-      test: ["CMD", "nginx", "-t"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+    restart: unless-stopped
 
 volumes:
-  postgres-data:
-  ollama-data:
-  prometheus-data:
-  redis-data:
-  influxdb-data:
-  influxdb-config:
-  elasticsearch-data:
-  alertmanager-data:
-  loki-data:
-  analytics-data:
-  analytics-logs:
-  nginx-cache:
-  manufacturingPlatform-storage:
+  postgres_data:
+  redis_data:
+  prometheus_data:
+  ollama_data:
 
 networks:
   manufacturing-network:
-    name: manufacturing-network
     driver: bridge
-    ipam:
-      config:
-        - subnet: 172.20.0.0/16

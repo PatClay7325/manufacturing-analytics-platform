@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/database';
 import { verifyAuth, hasPermission, createUser } from '@/lib/auth';
 import bcrypt from 'bcrypt';
 import type { UserSearchFilters, CreateUserRequest, UsersResponse } from '@/types/user-management';

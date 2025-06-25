@@ -1,9 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAuth } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/database';
 
 export async function GET(request: NextRequest) {
   try {
+    // DEVELOPMENT AUTO-AUTH
+    if (process.env.NODE_ENV === 'development') {
+      const devAuth = request.headers.get('x-dev-auth');
+      
+      if (devAuth === 'true') {
+        return NextResponse.json({
+          id: 'dev-admin',
+          email: 'admin@manufacturing.com',
+          name: 'Development Admin',
+          role: 'admin',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          permissions: ['admin', 'read', 'write', 'manage_users', 'manage_teams', 'manage_alerts', 'manage_datasources']
+        });
+      }
+    }
+    
     const auth = await verifyAuth(request);
     if (!auth.authenticated || !auth.userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

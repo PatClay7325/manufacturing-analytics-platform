@@ -1,36 +1,9 @@
 'use client';
 
-import React, { useState, useRef, useEffect, createContext, useContext } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { 
-  Plus, LayoutGrid, FolderPlus, Upload, Bell, 
-  Home, Compass, List, MessageSquare, Network, 
-  BellOff, Layers, Settings, Database, Users, 
-  UsersIcon, Plug, SlidersHorizontal, KeyRound,
-  HelpCircle, ChevronDown, ChevronRight, Search,
-  Clock, Star, Filter, ChevronLeft,
-  Factory, Gauge, Wrench, ClipboardList, LineChart,
-  Activity, BarChart3, FileText, Zap, Globe, Shield,
-  Menu, X, User, LogOut, Code, TestTube, Beaker,
-  FlaskConical, GitBranch, Terminal, Bug, Brain,
-  HeartPulse, Stethoscope, History, ListOrdered,
-  ShieldCheck, LifeBuoy, Keyboard, Info, Cog
-} from 'lucide-react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { bootstrapManager } from '@/lib/analytics-bootstrap';
-import { convertNavTreeForDashboard } from '@/lib/navigation-utils';
+import GrafanaIntegratedSidebar from './GrafanaIntegratedSidebar';
 import { QuickActions } from './QuickActions';
-
-interface NavItem {
-  id: string;
-  text: string;
-  icon?: React.ComponentType<{ className?: string }>;
-  url?: string;
-  section?: string;
-  children?: NavItem[];
-  divider?: boolean;
-}
 
 interface DashboardLayoutProps {
   children?: React.ReactNode;

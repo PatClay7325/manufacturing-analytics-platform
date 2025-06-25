@@ -1,0 +1,1980 @@
+
+> adaptive-factory-ai-solutions@1.0.0 test
+> node run-tests.js
+
+
+🧪 Running All Tests
+──────────────────────────────────────────────────
+Command: npx vitest run --reporter=default
+Timeout: 120s
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.8 /mnt/d/Source/manufacturing-analytics-platform
+
+ ❯ |integration| src/__tests__/integration/manufacturing.integration.test.ts (0 test)
+ ❯ |unit| src/__tests__/lib/validation/DataValidator.test.ts (44 tests | 1 failed) 42ms
+   × DataValidator > sanitizeInput > should handle nested objects 15ms
+     → expected [ '&lt;script&gt;', 'safe-tag' ] to deeply equal [ '', 'safe-tag' ]
+ ❯ |unit| src/__tests__/lib/auth/middleware.test.ts (34 tests | 3 failed) 64ms
+   × Rate Limiting > should allow requests within limit 31ms
+     → Cannot find module '@/lib/auth/middleware'
+Require stack:
+- /mnt/d/Source/manufacturing-analytics-platform/src/__tests__/lib/auth/middleware.test.ts
+   × Input Sanitization > should handle nested objects 3ms
+     → expected [ '<script>', 'safe' ] to deeply equal [ '', 'safe' ]
+   × Performance Tests > should handle concurrent authentication requests 4ms
+     → expected "verifyAccessToken" to be called 10 times, but got 15 times
+stdout | src/__tests__/integration/chat.integration.test.ts > Chat Integration Tests > Chat Context Retrieval > should retrieve equipment context for equipment queries
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+stdout | src/__tests__/integration/chat.integration.test.ts > Chat Integration Tests > Chat Context Retrieval > should retrieve work center context
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+stdout | src/__tests__/integration/chat.integration.test.ts > Chat Integration Tests > Chat Context Retrieval > should retrieve maintenance schedule context
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+stdout | src/__tests__/integration/chat.integration.test.ts > Chat Integration Tests > Chat Context Retrieval > should retrieve quality metrics context
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+stdout | src/__tests__/integration/chat.integration.test.ts > Chat Integration Tests > Chat Query Processing > should handle OEE calculation queries
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+stdout | src/__tests__/integration/chat.integration.test.ts > Chat Integration Tests > Chat Query Processing > should handle downtime analysis queries
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+stdout | src/__tests__/integration/chat.integration.test.ts > Chat Integration Tests > Chat Query Processing > should provide production insights
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+stdout | src/__tests__/integration/chat.integration.test.ts > Chat Integration Tests > Chat Response Generation > should generate appropriate responses for equipment status
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+stdout | src/__tests__/integration/chat.integration.test.ts > Chat Integration Tests > Chat Response Generation > should handle multi-context queries
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+stdout | src/__tests__/integration/chat.integration.test.ts > Chat Integration Tests > Chat Response Generation > should provide hierarchical context for site-level queries
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+ ❯ |integration| src/__tests__/integration/chat.integration.test.ts (10 tests | 10 failed) 333ms
+   × Chat Integration Tests > Chat Context Retrieval > should retrieve equipment context for equipment queries 265ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+   × Chat Integration Tests > Chat Context Retrieval > should retrieve work center context 7ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+   × Chat Integration Tests > Chat Context Retrieval > should retrieve maintenance schedule context 9ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+   × Chat Integration Tests > Chat Context Retrieval > should retrieve quality metrics context 9ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+   × Chat Integration Tests > Chat Query Processing > should handle OEE calculation queries 7ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+   × Chat Integration Tests > Chat Query Processing > should handle downtime analysis queries 7ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+   × Chat Integration Tests > Chat Query Processing > should provide production insights 6ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+   × Chat Integration Tests > Chat Response Generation > should generate appropriate responses for equipment status 7ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+   × Chat Integration Tests > Chat Response Generation > should handle multi-context queries 7ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+   × Chat Integration Tests > Chat Response Generation > should provide hierarchical context for site-level queries 7ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+stdout | src/__tests__/integration/database.integration.test.ts > Database Integration Tests > WorkUnit Operations > should create and retrieve equipment
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+stdout | src/__tests__/integration/database.integration.test.ts > Database Integration Tests > WorkUnit Operations > should update equipment status
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+stdout | src/__tests__/integration/database.integration.test.ts > Database Integration Tests > WorkUnit Operations > should handle work unit deletion with alerts
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+stdout | src/__tests__/integration/database.integration.test.ts > Database Integration Tests > Performance Metrics Operations > should create and aggregate performance metrics
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+stdout | src/__tests__/integration/database.integration.test.ts > Database Integration Tests > Performance Metrics Operations > should query metrics by time range
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+stdout | src/__tests__/integration/database.integration.test.ts > Database Integration Tests > Alert Management > should create and update alert status
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+stdout | src/__tests__/integration/database.integration.test.ts > Database Integration Tests > Alert Management > should query active alerts with equipment details
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+stdout | src/__tests__/integration/database.integration.test.ts > Database Integration Tests > Production Operations > should create production workflow with work center
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+stdout | src/__tests__/integration/database.integration.test.ts > Database Integration Tests > Production Operations > should handle production orders workflow
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+stdout | src/__tests__/integration/database.integration.test.ts > Database Integration Tests > Complex Queries > should calculate OEE trends by equipment
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+stdout | src/__tests__/integration/database.integration.test.ts > Database Integration Tests > Complex Queries > should handle time-series data for Analytics queries
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+ ❯ |integration| src/__tests__/integration/database.integration.test.ts (11 tests | 11 failed) 597ms
+   × Database Integration Tests > WorkUnit Operations > should create and retrieve equipment 525ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+   × Database Integration Tests > WorkUnit Operations > should update equipment status 7ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+   × Database Integration Tests > WorkUnit Operations > should handle work unit deletion with alerts 7ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+   × Database Integration Tests > Performance Metrics Operations > should create and aggregate performance metrics 6ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+   × Database Integration Tests > Performance Metrics Operations > should query metrics by time range 6ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+   × Database Integration Tests > Alert Management > should create and update alert status 6ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+   × Database Integration Tests > Alert Management > should query active alerts with equipment details 8ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+   × Database Integration Tests > Production Operations > should create production workflow with work center 6ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+   × Database Integration Tests > Production Operations > should handle production orders workflow 7ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+   × Database Integration Tests > Complex Queries > should calculate OEE trends by equipment 7ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+   × Database Integration Tests > Complex Queries > should handle time-series data for Analytics queries 8ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+stdout | src/__tests__/integration/services.integration.test.ts > Service Layer Integration Tests > Equipment Service Tests > should manage equipment lifecycle
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/services.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+stdout | src/__tests__/integration/services.integration.test.ts > Service Layer Integration Tests > Alert Service Tests > should manage alert lifecycle
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/services.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+stdout | src/__tests__/integration/services.integration.test.ts > Service Layer Integration Tests > Metrics Service Tests > should handle time-series metrics
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/services.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+stdout | src/__tests__/integration/services.integration.test.ts > Service Layer Integration Tests > Production Workflow Tests > should handle complete production cycle
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/services.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+ ❯ |integration| src/__tests__/integration/services.integration.test.ts (4 tests | 4 failed) 549ms
+   × Service Layer Integration Tests > Equipment Service Tests > should manage equipment lifecycle 526ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/services.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+   × Service Layer Integration Tests > Alert Service Tests > should manage alert lifecycle 9ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/services.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+   × Service Layer Integration Tests > Metrics Service Tests > should handle time-series metrics 6ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/services.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+   × Service Layer Integration Tests > Production Workflow Tests > should handle complete production cycle 7ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/services.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ✓ |unit| src/__tests__/lib/auth/AuthService.test.ts (18 tests | 4 skipped) 75ms
+stdout | src/__tests__/integration/api.integration.test.ts > API Integration Tests > Database API Operations > should perform workUnit CRUD operations
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/api.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+stdout | src/__tests__/integration/api.integration.test.ts > API Integration Tests > Database API Operations > should handle alert operations with workUnit relationship
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/api.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+stdout | src/__tests__/integration/api.integration.test.ts > API Integration Tests > Database API Operations > should handle metrics ingestion and querying
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/api.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+stdout | src/__tests__/integration/api.integration.test.ts > API Integration Tests > Database API Operations > should handle complex production workflow
+prisma:error 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/api.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+
+ ❯ |integration| src/__tests__/integration/api.integration.test.ts (4 tests | 4 failed) 244ms
+   × API Integration Tests > Database API Operations > should perform workUnit CRUD operations 224ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/api.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+   × API Integration Tests > Database API Operations > should handle alert operations with workUnit relationship 6ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/api.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+   × API Integration Tests > Database API Operations > should handle metrics ingestion and querying 6ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/api.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+   × API Integration Tests > Database API Operations > should handle complex production workflow 6ms
+     → 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/api.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ |unit| src/__tests__/lib/error/ErrorHandler.test.ts (18 tests | 1 failed) 1321ms
+   × ErrorHandler > logError > should send alerts for critical errors 30ms
+     → expected "spy" to be called with arguments: [ …(1) ]
+
+Received: 
+
+
+
+Number of calls: 0
+
+   ✓ ErrorHandler > withRetry > should respect maxAttempts limit 1007ms
+ ❯ |integration| src/__tests__/integration/agents.integration.test.ts (0 test)
+ ❯ |components| src/__tests__/components/AlertItem.test.tsx (9 tests | 9 failed) 21ms
+   × AlertItem > renders alert information correctly 13ms
+     → React is not defined
+   × AlertItem > displays correct icon based on alert type 2ms
+     → React is not defined
+   × AlertItem > applies correct severity styling 1ms
+     → React is not defined
+   × AlertItem > shows acknowledge button for active alerts 1ms
+     → React is not defined
+   × AlertItem > shows resolve button for acknowledged alerts 1ms
+     → React is not defined
+   × AlertItem > hides action buttons for resolved alerts 1ms
+     → React is not defined
+   × AlertItem > calls onAcknowledge when acknowledge button is clicked 1ms
+     → React is not defined
+   × AlertItem > calls onResolve when resolve button is clicked 1ms
+     → React is not defined
+   × AlertItem > formats timestamp correctly 1ms
+     → React is not defined
+ ❯ |components| src/__tests__/components/KPICard.test.tsx (8 tests | 8 failed) 16ms
+   × KPICard > renders KPI name and value 11ms
+     → React is not defined
+   × KPICard > displays upward trend correctly 1ms
+     → React is not defined
+   × KPICard > displays downward trend correctly 1ms
+     → React is not defined
+   × KPICard > displays neutral trend correctly 0ms
+     → React is not defined
+   × KPICard > shows target when provided 0ms
+     → React is not defined
+   × KPICard > hides target when not provided 0ms
+     → React is not defined
+   × KPICard > handles missing change value 0ms
+     → React is not defined
+   × KPICard > applies correct data-testid 0ms
+     → React is not defined
+ ❯ |components| src/__tests__/components/charts/ManufacturingCharts.test.tsx (20 tests | 6 failed) 153ms
+   × ManufacturingCharts Components - Error Handling > PieChart > should handle undefined data prop 58ms
+     → Unable to find an element with the text: No data available. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"recharts-responsive-container"[39m
+      [33mstyle[39m=[32m"width: 100%; height: 300px; min-width: 0;"[39m
+    [36m/>[39m
+  [36m</div>[39m
+[36m</body>[39m
+   × ManufacturingCharts Components - Error Handling > HeatmapChart > should handle undefined data prop 4ms
+     → Unable to find an element with the text: No data available. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"grid grid-cols-12 gap-1"[39m
+      [33mstyle[39m=[32m"height: 300px;"[39m
+    [36m/>[39m
+  [36m</div>[39m
+[36m</body>[39m
+   × ManufacturingCharts Components - Error Handling > TimeSeriesChart > should handle undefined data prop 19ms
+     → expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+   × ManufacturingCharts Components - Error Handling > TimeSeriesChart > should handle null data prop 4ms
+     → expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+   × ManufacturingCharts Components - Error Handling > TimeSeriesChart > should render with valid data 4ms
+     → expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+   × ManufacturingCharts Components - Error Handling > GaugeChart > should render with valid props 8ms
+     → Unable to find an element with the text: 75%. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"h-full flex flex-col items-center justify-center"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"recharts-responsive-container"[39m
+        [33mstyle[39m=[32m"width: 100%; height: 200px; min-width: 0;"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"recharts-responsive-container"[39m
+          [33mstyle[39m=[32m"width: 100%; height: 200px; min-width: 0;"[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"text-center -mt-28"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"text-3xl font-bold"[39m
+          [33mstyle[39m=[32m"color: rgb(16, 185, 129);"[39m
+        [36m>[39m
+          [0m75.0[0m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"text-sm text-gray-400"[39m
+        [36m>[39m
+          [0m%[0m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"text-sm text-gray-300 mt-8"[39m
+      [36m>[39m
+        [0mOEE[0m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ✓ |components| src/__tests__/components/Card.test.tsx (6 tests) 43ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL |integration|  src/__tests__/integration/agents.integration.test.ts [ src/__tests__/integration/agents.integration.test.ts ]
+TypeError: this.purify.setConfig is not a function
+ ❯ new InputSanitizer src/lib/security/validation.ts:64:17
+     62|     
+     63|     // Configure DOMPurify for strict sanitization
+     64|     this.purify.setConfig({
+       |                 ^
+     65|       ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p', 'br'],
+     66|       ALLOWED_ATTR: ['href', 'title'],
+ ❯ src/lib/security/validation.ts:200:26
+ ❯ src/lib/agents/IntentClassifierAgentV2.ts:7:31
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/manufacturing.integration.test.ts [ src/__tests__/integration/manufacturing.integration.test.ts ]
+TypeError: Invalid enum value: __esModule
+ ❯ Object.get node_modules/@prisma/client/runtime/library.js:131:1065
+ ❯ src/__tests__/integration/manufacturing.integration.test.ts:3:25
+      1| /**
+      2|  * Manufacturing Integration Tests
+      3|  * End-to-end integration tests for manufacturing components and data …
+       |                         ^
+      4|  */
+      5| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/59]⎯
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 57 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL |integration|  src/__tests__/integration/api.integration.test.ts > API Integration Tests > Database API Operations > should perform workUnit CRUD operations
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/api.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/api.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/api.integration.test.ts:65:50
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/api.integration.test.ts > API Integration Tests > Database API Operations > should handle alert operations with workUnit relationship
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/api.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/api.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/api.integration.test.ts:119:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/api.integration.test.ts > API Integration Tests > Database API Operations > should handle metrics ingestion and querying
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/api.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/api.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/api.integration.test.ts:160:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/api.integration.test.ts > API Integration Tests > Database API Operations > should handle complex production workflow
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/api.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/api.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/api.integration.test.ts:213:54
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/chat.integration.test.ts > Chat Integration Tests > Chat Context Retrieval > should retrieve equipment context for equipment queries
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/chat.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/chat.integration.test.ts:80:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/chat.integration.test.ts > Chat Integration Tests > Chat Context Retrieval > should retrieve work center context
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/chat.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/chat.integration.test.ts:134:30
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/chat.integration.test.ts > Chat Integration Tests > Chat Context Retrieval > should retrieve maintenance schedule context
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/chat.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/chat.integration.test.ts:170:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/chat.integration.test.ts > Chat Integration Tests > Chat Context Retrieval > should retrieve quality metrics context
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/chat.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/chat.integration.test.ts:211:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/chat.integration.test.ts > Chat Integration Tests > Chat Query Processing > should handle OEE calculation queries
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/chat.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/chat.integration.test.ts:258:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/chat.integration.test.ts > Chat Integration Tests > Chat Query Processing > should handle downtime analysis queries
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/chat.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/chat.integration.test.ts:284:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/chat.integration.test.ts > Chat Integration Tests > Chat Query Processing > should provide production insights
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/chat.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/chat.integration.test.ts:327:30
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/chat.integration.test.ts > Chat Integration Tests > Chat Response Generation > should generate appropriate responses for equipment status
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/chat.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/chat.integration.test.ts:377:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/chat.integration.test.ts > Chat Integration Tests > Chat Response Generation > should handle multi-context queries
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/chat.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/chat.integration.test.ts:408:40
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/chat.integration.test.ts > Chat Integration Tests > Chat Response Generation > should provide hierarchical context for site-level queries
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/chat.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/chat.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/chat.integration.test.ts:474:64
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/database.integration.test.ts > Database Integration Tests > WorkUnit Operations > should create and retrieve equipment
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/database.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/database.integration.test.ts:65:30
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/database.integration.test.ts > Database Integration Tests > WorkUnit Operations > should update equipment status
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/database.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/database.integration.test.ts:101:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/database.integration.test.ts > Database Integration Tests > WorkUnit Operations > should handle work unit deletion with alerts
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/database.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/database.integration.test.ts:112:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/database.integration.test.ts > Database Integration Tests > Performance Metrics Operations > should create and aggregate performance metrics
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/database.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/database.integration.test.ts:150:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/database.integration.test.ts > Database Integration Tests > Performance Metrics Operations > should query metrics by time range
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/database.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/database.integration.test.ts:183:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/database.integration.test.ts > Database Integration Tests > Alert Management > should create and update alert status
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/database.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/database.integration.test.ts:220:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/database.integration.test.ts > Database Integration Tests > Alert Management > should query active alerts with equipment details
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/database.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/database.integration.test.ts:251:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/database.integration.test.ts > Database Integration Tests > Production Operations > should create production workflow with work center
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/database.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/database.integration.test.ts:288:40
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/database.integration.test.ts > Database Integration Tests > Production Operations > should handle production orders workflow
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/database.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/database.integration.test.ts:324:30
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/database.integration.test.ts > Database Integration Tests > Complex Queries > should calculate OEE trends by equipment
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/database.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/database.integration.test.ts:366:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[26/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/database.integration.test.ts > Database Integration Tests > Complex Queries > should handle time-series data for Analytics queries
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/database.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/database.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/database.integration.test.ts:430:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[27/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/services.integration.test.ts > Service Layer Integration Tests > Equipment Service Tests > should manage equipment lifecycle
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/services.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/services.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/services.integration.test.ts:65:30
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[28/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/services.integration.test.ts > Service Layer Integration Tests > Alert Service Tests > should manage alert lifecycle
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/services.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/services.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/services.integration.test.ts:143:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[29/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/services.integration.test.ts > Service Layer Integration Tests > Metrics Service Tests > should handle time-series metrics
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/services.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/services.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/services.integration.test.ts:238:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[30/59]⎯
+
+ FAIL |integration|  src/__tests__/integration/services.integration.test.ts > Service Layer Integration Tests > Production Workflow Tests > should handle complete production cycle
+PrismaClientKnownRequestError: 
+Invalid `prisma.enterprise.create()` invocation in
+/mnt/d/Source/manufacturing-analytics-platform/src/__tests__/integration/services.integration.test.ts:6:46
+
+  3 
+  4 // Helper function to create test hierarchy
+  5 async function createTestHierarchy() {
+→ 6   const enterprise = await prisma.enterprise.create(
+Unique constraint failed on the fields: (`code`)
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ createTestHierarchy src/__tests__/integration/services.integration.test.ts:6:22
+      4| // Helper function to create test hierarchy
+      5| async function createTestHierarchy() {
+      6|   const enterprise = await prisma.enterprise.create({
+       |                      ^
+      7|     data: {
+      8|       id: `ent-${Date.now()}`,
+ ❯ src/__tests__/integration/services.integration.test.ts:303:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[31/59]⎯
+
+ FAIL |unit|  src/__tests__/lib/auth/middleware.test.ts > Rate Limiting > should allow requests within limit
+Error: Cannot find module '@/lib/auth/middleware'
+Require stack:
+- /mnt/d/Source/manufacturing-analytics-platform/src/__tests__/lib/auth/middleware.test.ts
+ ❯ src/__tests__/lib/auth/middleware.test.ts:243:12
+    241|   test('should allow requests within limit', () => {
+    242|     const limiter = createRateLimitMiddleware(
+    243|       new (require('@/lib/auth/middleware').default as any).RateLimite…
+       |            ^
+    244|         windowMs: 60000,
+    245|         max: 5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[32/59]⎯
+
+ FAIL |unit|  src/__tests__/lib/auth/middleware.test.ts > Input Sanitization > should handle nested objects
+AssertionError: expected [ '<script>', 'safe' ] to deeply equal [ '', 'safe' ]
+
+- Expected
++ Received
+
+  Array [
+-   "",
++   "<script>",
+    "safe",
+  ]
+
+ ❯ src/__tests__/lib/auth/middleware.test.ts:392:34
+    390|     expect(sanitized.name).toBe('John');
+    391|     expect(sanitized.data.value).toBe('alert("xss")'); // onclick= rem…
+    392|     expect(sanitized.data.items).toEqual(['', 'safe']);
+       |                                  ^
+    393|   });
+    394| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[33/59]⎯
+
+ FAIL |unit|  src/__tests__/lib/auth/middleware.test.ts > Performance Tests > should handle concurrent authentication requests
+AssertionError: expected "verifyAccessToken" to be called 10 times, but got 15 times
+ ❯ src/__tests__/lib/auth/middleware.test.ts:535:49
+    533|     });
+    534| 
+    535|     expect(mockedAuthService.verifyAccessToken).toHaveBeenCalledTimes(…
+       |                                                 ^
+    536|   });
+    537| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[34/59]⎯
+
+ FAIL |unit|  src/__tests__/lib/validation/DataValidator.test.ts > DataValidator > sanitizeInput > should handle nested objects
+AssertionError: expected [ '&lt;script&gt;', 'safe-tag' ] to deeply equal [ '', 'safe-tag' ]
+
+- Expected
++ Received
+
+  Array [
+-   "",
++   "&lt;script&gt;",
+    "safe-tag",
+  ]
+
+ ❯ src/__tests__/lib/validation/DataValidator.test.ts:109:38
+    107|       expect(sanitized.name).toBe('John');
+    108|       expect(sanitized.details.description).toBe(''); // onclick and i…
+    109|       expect(sanitized.details.tags).toEqual(['', 'safe-tag']);
+       |                                      ^
+    110|     });
+    111| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[35/59]⎯
+
+ FAIL |unit|  src/__tests__/lib/error/ErrorHandler.test.ts > ErrorHandler > logError > should send alerts for critical errors
+AssertionError: expected "spy" to be called with arguments: [ …(1) ]
+
+Received: 
+
+
+
+Number of calls: 0
+
+ ❯ src/__tests__/lib/error/ErrorHandler.test.ts:181:28
+    179|       await errorHandler.logError(criticalError);
+    180| 
+    181|       expect(alertHandler).toHaveBeenCalledWith(criticalError);
+       |                            ^
+    182|     });
+    183|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[36/59]⎯
+
+ FAIL |components|  src/__tests__/components/AlertItem.test.tsx > AlertItem > renders alert information correctly
+ReferenceError: React is not defined
+ ❯ src/__tests__/components/AlertItem.test.tsx:83:12
+     81|   it('renders alert information correctly', () => {
+     82|     const alert = createAlert();
+     83|     render(<AlertItem alert={alert} {...mockHandlers} />);
+       |            ^
+     84| 
+     85|     expect(screen.getByTestId('alert-message')).toHaveTextContent(aler…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[37/59]⎯
+
+ FAIL |components|  src/__tests__/components/AlertItem.test.tsx > AlertItem > displays correct icon based on alert type
+ReferenceError: React is not defined
+ ❯ src/__tests__/components/AlertItem.test.tsx:93:33
+     91|   it('displays correct icon based on alert type', () => {
+     92|     const errorAlert = createAlert({ type: 'error' });
+     93|     const { rerender } = render(<AlertItem alert={errorAlert} {...mock…
+       |                                 ^
+     94|     expect(screen.getByText('❌')).toBeInTheDocument();
+     95| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[38/59]⎯
+
+ FAIL |components|  src/__tests__/components/AlertItem.test.tsx > AlertItem > applies correct severity styling
+ReferenceError: React is not defined
+ ❯ src/__tests__/components/AlertItem.test.tsx:107:12
+    105|   it('applies correct severity styling', () => {
+    106|     const criticalAlert = createAlert({ severity: 'critical' });
+    107|     render(<AlertItem alert={criticalAlert} {...mockHandlers} />);
+       |            ^
+    108|     
+    109|     const severityBadge = screen.getByTestId('alert-severity');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[39/59]⎯
+
+ FAIL |components|  src/__tests__/components/AlertItem.test.tsx > AlertItem > shows acknowledge button for active alerts
+ReferenceError: React is not defined
+ ❯ src/__tests__/components/AlertItem.test.tsx:115:12
+    113|   it('shows acknowledge button for active alerts', () => {
+    114|     const activeAlert = createAlert({ status: 'active' });
+    115|     render(<AlertItem alert={activeAlert} {...mockHandlers} />);
+       |            ^
+    116| 
+    117|     const acknowledgeButton = screen.getByRole('button', { name: 'Ackn…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[40/59]⎯
+
+ FAIL |components|  src/__tests__/components/AlertItem.test.tsx > AlertItem > shows resolve button for acknowledged alerts
+ReferenceError: React is not defined
+ ❯ src/__tests__/components/AlertItem.test.tsx:124:12
+    122|   it('shows resolve button for acknowledged alerts', () => {
+    123|     const acknowledgedAlert = createAlert({ status: 'acknowledged' });
+    124|     render(<AlertItem alert={acknowledgedAlert} {...mockHandlers} />);
+       |            ^
+    125| 
+    126|     const resolveButton = screen.getByRole('button', { name: 'Resolve'…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[41/59]⎯
+
+ FAIL |components|  src/__tests__/components/AlertItem.test.tsx > AlertItem > hides action buttons for resolved alerts
+ReferenceError: React is not defined
+ ❯ src/__tests__/components/AlertItem.test.tsx:133:12
+    131|   it('hides action buttons for resolved alerts', () => {
+    132|     const resolvedAlert = createAlert({ status: 'resolved' });
+    133|     render(<AlertItem alert={resolvedAlert} {...mockHandlers} />);
+       |            ^
+    134| 
+    135|     expect(screen.queryByRole('button')).not.toBeInTheDocument();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[42/59]⎯
+
+ FAIL |components|  src/__tests__/components/AlertItem.test.tsx > AlertItem > calls onAcknowledge when acknowledge button is clicked
+ReferenceError: React is not defined
+ ❯ src/__tests__/components/AlertItem.test.tsx:140:12
+    138|   it('calls onAcknowledge when acknowledge button is clicked', () => {
+    139|     const activeAlert = createAlert({ status: 'active' });
+    140|     render(<AlertItem alert={activeAlert} {...mockHandlers} />);
+       |            ^
+    141| 
+    142|     const acknowledgeButton = screen.getByRole('button', { name: 'Ackn…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[43/59]⎯
+
+ FAIL |components|  src/__tests__/components/AlertItem.test.tsx > AlertItem > calls onResolve when resolve button is clicked
+ReferenceError: React is not defined
+ ❯ src/__tests__/components/AlertItem.test.tsx:151:12
+    149|   it('calls onResolve when resolve button is clicked', () => {
+    150|     const acknowledgedAlert = createAlert({ status: 'acknowledged' });
+    151|     render(<AlertItem alert={acknowledgedAlert} {...mockHandlers} />);
+       |            ^
+    152| 
+    153|     const resolveButton = screen.getByRole('button', { name: 'Resolve'…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[44/59]⎯
+
+ FAIL |components|  src/__tests__/components/AlertItem.test.tsx > AlertItem > formats timestamp correctly
+ReferenceError: React is not defined
+ ❯ src/__tests__/components/AlertItem.test.tsx:164:12
+    162|       timestamp: '2024-01-15T10:30:00Z'
+    163|     });
+    164|     render(<AlertItem alert={alert} {...mockHandlers} />);
+       |            ^
+    165| 
+    166|     const timestamp = screen.getByTestId('alert-timestamp');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[45/59]⎯
+
+ FAIL |components|  src/__tests__/components/KPICard.test.tsx > KPICard > renders KPI name and value
+ReferenceError: React is not defined
+ ❯ src/__tests__/components/KPICard.test.tsx:36:12
+     34|   it('renders KPI name and value', () => {
+     35|     const mockKPI = createKPI();
+     36|     render(<KPICard {...mockKPI} />);
+       |            ^
+     37|     
+     38|     expect(screen.getByText(mockKPI.name)).toBeInTheDocument();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[46/59]⎯
+
+ FAIL |components|  src/__tests__/components/KPICard.test.tsx > KPICard > displays upward trend correctly
+ReferenceError: React is not defined
+ ❯ src/__tests__/components/KPICard.test.tsx:44:12
+     42|   it('displays upward trend correctly', () => {
+     43|     const mockKPI = createKPI({ trend: 'up', change: 5.2 });
+     44|     render(<KPICard {...mockKPI} />);
+       |            ^
+     45|     
+     46|     expect(screen.getByText('↑')).toBeInTheDocument();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[47/59]⎯
+
+ FAIL |components|  src/__tests__/components/KPICard.test.tsx > KPICard > displays downward trend correctly
+ReferenceError: React is not defined
+ ❯ src/__tests__/components/KPICard.test.tsx:53:12
+     51|   it('displays downward trend correctly', () => {
+     52|     const mockKPI = createKPI({ trend: 'down', change: -3.1 });
+     53|     render(<KPICard {...mockKPI} />);
+       |            ^
+     54|     
+     55|     expect(screen.getByText('↓')).toBeInTheDocument();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[48/59]⎯
+
+ FAIL |components|  src/__tests__/components/KPICard.test.tsx > KPICard > displays neutral trend correctly
+ReferenceError: React is not defined
+ ❯ src/__tests__/components/KPICard.test.tsx:62:12
+     60|   it('displays neutral trend correctly', () => {
+     61|     const mockKPI = createKPI({ trend: 'neutral', change: 0 });
+     62|     render(<KPICard {...mockKPI} />);
+       |            ^
+     63|     
+     64|     expect(screen.getByText('→')).toBeInTheDocument();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[49/59]⎯
+
+ FAIL |components|  src/__tests__/components/KPICard.test.tsx > KPICard > shows target when provided
+ReferenceError: React is not defined
+ ❯ src/__tests__/components/KPICard.test.tsx:71:12
+     69|   it('shows target when provided', () => {
+     70|     const mockKPI = createKPI({ target: 95 });
+     71|     render(<KPICard {...mockKPI} />);
+       |            ^
+     72|     
+     73|     expect(screen.getByText(`Target: ${mockKPI.target}${mockKPI.unit}`…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[50/59]⎯
+
+ FAIL |components|  src/__tests__/components/KPICard.test.tsx > KPICard > hides target when not provided
+ReferenceError: React is not defined
+ ❯ src/__tests__/components/KPICard.test.tsx:78:12
+     76|   it('hides target when not provided', () => {
+     77|     const mockKPI = createKPI({ target: undefined });
+     78|     render(<KPICard {...mockKPI} />);
+       |            ^
+     79|     
+     80|     expect(screen.queryByText(/Target:/)).not.toBeInTheDocument();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[51/59]⎯
+
+ FAIL |components|  src/__tests__/components/KPICard.test.tsx > KPICard > handles missing change value
+ReferenceError: React is not defined
+ ❯ src/__tests__/components/KPICard.test.tsx:85:12
+     83|   it('handles missing change value', () => {
+     84|     const mockKPI = createKPI({ change: undefined, trend: undefined });
+     85|     render(<KPICard {...mockKPI} />);
+       |            ^
+     86|     
+     87|     expect(screen.queryByText('↑')).not.toBeInTheDocument();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[52/59]⎯
+
+ FAIL |components|  src/__tests__/components/KPICard.test.tsx > KPICard > applies correct data-testid
+ReferenceError: React is not defined
+ ❯ src/__tests__/components/KPICard.test.tsx:94:34
+     92|   it('applies correct data-testid', () => {
+     93|     const mockKPI = createKPI();
+     94|     const { container } = render(<KPICard {...mockKPI} />);
+       |                                  ^
+     95|     
+     96|     expect(container.querySelector('[data-testid="kpi-card"]')).toBeIn…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[53/59]⎯
+
+ FAIL |components|  src/__tests__/components/charts/ManufacturingCharts.test.tsx > ManufacturingCharts Components - Error Handling > PieChart > should handle undefined data prop
+TestingLibraryElementError: Unable to find an element with the text: No data available. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"recharts-responsive-container"[39m
+      [33mstyle[39m=[32m"width: 100%; height: 300px; min-width: 0;"[39m
+    [36m/>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/__tests__/components/charts/ManufacturingCharts.test.tsx:16:21
+     14|     it('should handle undefined data prop', () => {
+     15|       render(<PieChart data={undefined} />);
+     16|       expect(screen.getByText('No data available')).toBeInTheDocument(…
+       |                     ^
+     17|     });
+     18| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[54/59]⎯
+
+ FAIL |components|  src/__tests__/components/charts/ManufacturingCharts.test.tsx > ManufacturingCharts Components - Error Handling > HeatmapChart > should handle undefined data prop
+TestingLibraryElementError: Unable to find an element with the text: No data available. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"grid grid-cols-12 gap-1"[39m
+      [33mstyle[39m=[32m"height: 300px;"[39m
+    [36m/>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/__tests__/components/charts/ManufacturingCharts.test.tsx:43:21
+     41|     it('should handle undefined data prop', () => {
+     42|       render(<HeatmapChart data={undefined} />);
+     43|       expect(screen.getByText('No data available')).toBeInTheDocument(…
+       |                     ^
+     44|     });
+     45| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[55/59]⎯
+
+ FAIL |components|  src/__tests__/components/charts/ManufacturingCharts.test.tsx > ManufacturingCharts Components - Error Handling > TimeSeriesChart > should handle undefined data prop
+Error: expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+ ❯ src/__tests__/components/charts/ManufacturingCharts.test.tsx:80:59
+     78|       render(<TimeSeriesChart data={undefined} />);
+     79|       // Should not crash - chart should render empty
+     80|       expect(document.querySelector('.recharts-wrapper')).toBeInTheDoc…
+       |                                                           ^
+     81|     });
+     82| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[56/59]⎯
+
+ FAIL |components|  src/__tests__/components/charts/ManufacturingCharts.test.tsx > ManufacturingCharts Components - Error Handling > TimeSeriesChart > should handle null data prop
+Error: expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+ ❯ src/__tests__/components/charts/ManufacturingCharts.test.tsx:85:59
+     83|     it('should handle null data prop', () => {
+     84|       render(<TimeSeriesChart data={null as any} />);
+     85|       expect(document.querySelector('.recharts-wrapper')).toBeInTheDoc…
+       |                                                           ^
+     86|     });
+     87| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[57/59]⎯
+
+ FAIL |components|  src/__tests__/components/charts/ManufacturingCharts.test.tsx > ManufacturingCharts Components - Error Handling > TimeSeriesChart > should render with valid data
+Error: expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+ ❯ src/__tests__/components/charts/ManufacturingCharts.test.tsx:94:59
+     92|       ];
+     93|       render(<TimeSeriesChart data={data} />);
+     94|       expect(document.querySelector('.recharts-wrapper')).toBeInTheDoc…
+       |                                                           ^
+     95|     });
+     96|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[58/59]⎯
+
+ FAIL |components|  src/__tests__/components/charts/ManufacturingCharts.test.tsx > ManufacturingCharts Components - Error Handling > GaugeChart > should render with valid props
+TestingLibraryElementError: Unable to find an element with the text: 75%. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"h-full flex flex-col items-center justify-center"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"recharts-responsive-container"[39m
+        [33mstyle[39m=[32m"width: 100%; height: 200px; min-width: 0;"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"recharts-responsive-container"[39m
+          [33mstyle[39m=[32m"width: 100%; height: 200px; min-width: 0;"[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"text-center -mt-28"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"text-3xl font-bold"[39m
+          [33mstyle[39m=[32m"color: rgb(16, 185, 129);"[39m
+        [36m>[39m
+          [0m75.0[0m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"text-sm text-gray-400"[39m
+        [36m>[39m
+          [0m%[0m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"text-sm text-gray-300 mt-8"[39m
+      [36m>[39m
+        [0mOEE[0m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/__tests__/components/charts/ManufacturingCharts.test.tsx:146:21
+    144|       render(<GaugeChart value={75} title="OEE" unit="%" />);
+    145|       expect(screen.getByText('OEE')).toBeInTheDocument();
+    146|       expect(screen.getByText('75%')).toBeInTheDocument();
+       |                     ^
+    147|     });
+    148| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[59/59]⎯
+
+ Test Files  12 failed | 2 passed (14)
+      Tests  57 failed | 125 passed | 4 skipped (186)
+   Start at  20:52:04
+   Duration  79.50s (transform 2.58s, setup 45.55s, collect 34.11s, tests 3.46s, environment 69.05s, prepare 17.26s)
+
+
+❌ Tests failed with code 1

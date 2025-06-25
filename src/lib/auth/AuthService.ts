@@ -5,7 +5,7 @@
 
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/database';
 
 export interface User {
   id: string;
@@ -171,7 +171,7 @@ export class AuthService {
   private activeSessions = new Map<string, Set<string>>(); // userId -> Set<sessionId>
 
   constructor() {
-    this.prisma = new PrismaClient();
+    this.prisma = prisma;
     this.jwtSecret = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-this-in-production';
     this.jwtRefreshSecret = process.env.JWT_REFRESH_SECRET || 'your-super-secret-refresh-key-change-this-in-production';
     this.accessTokenExpiry = process.env.JWT_EXPIRY || '15m';

@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  # Prometheus for metrics
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: manufacturing-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - manufacturing
+
+  # Node Exporter for demo metrics
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: manufacturing-node-exporter
+    ports:
+      - "9100:9100"
+    command:
+      - '--path.rootfs=/host'
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    networks:
+      - manufacturing
+
+  # Prometheus Pushgateway for custom metrics
+  pushgateway:
+    image: prom/pushgateway:latest
+    container_name: manufacturing-pushgateway
+    ports:
+      - "9091:9091"
+    networks:
+      - manufacturing
+
+  # Metric generator for demo data
+  metric-generator:
+    build:
+      context: ./docker/metric-generator
+      dockerfile: Dockerfile
+    container_name: manufacturing-metric-generator
+    depends_on:
+      - pushgateway
+    environment:
+      - PUSHGATEWAY_URL=http://pushgateway:9091
+    networks:
+      - manufacturing
+
+networks:
+  manufacturing:
+    driver: bridge
+
+volumes:
+  prometheus_data:

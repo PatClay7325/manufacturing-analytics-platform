@@ -1,0 +1,89 @@
+
+> adaptive-factory-ai-solutions@1.0.0 dev
+> node node_modules/next/dist/bin/next dev --port 3005
+
+   ▲ Next.js 15.1.4
+   - Local:        http://localhost:3005
+   - Network:      http://10.255.255.254:3005
+   - Environments: .env.local, .env
+   - Experiments (use with caution):
+     · optimizeCss
+     · scrollRestoration
+
+ ✓ Starting...
+ ✓ Compiled /instrumentation in 2.2s (20 modules)
+Instrumentation temporarily disabled for development
+ ✓ Ready in 29.8s
+ ○ Compiling /src/middleware ...
+ ✓ Compiled /src/middleware in 1450ms (222 modules)
+Instrumentation temporarily disabled for development
+ ○ Compiling /dashboards/server-demo ...
+(node:242493) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ Compiled /dashboards/server-demo in 21.7s (916 modules)
+Demo dashboard created server-side: Server-Side Manufacturing Demo
+ GET /dashboards/server-demo 200 in 26846ms
+ ✓ Compiled in 4.9s (417 modules)
+ ✓ Compiled in 411ms (403 modules)
+ ○ Compiling /d/[uid]/[...slug] ...
+ ⨯ ./src/app/d/[uid]/[...slug]/page.tsx
+Error:   [31mx[0m Expected unicode escape
+     ,-[[36;1;4m/mnt/d/Source/manufacturing-analytics-platform/src/app/d/[uid]/[...slug]/page.tsx[0m:201:1]
+ [2m198[0m |   // Load dashboard server-side
+ [2m199[0m |   const dashboard = await loadDashboard(uid);
+ [2m200[0m |   
+ [2m201[0m |   if (\!dashboard) {
+     : [35;1m  ^|[0m[33;1m  ^[0m
+     :    [35;1m`-- [35;1mTried to parse the condition for an if statement[0m[0m
+ [2m202[0m |     notFound();
+ [2m203[0m |   }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/d/[uid]/[...slug]/page.tsx
+ ⨯ ./src/app/d/[uid]/[...slug]/page.tsx
+Error:   [31mx[0m Expected unicode escape
+     ,-[[36;1;4m/mnt/d/Source/manufacturing-analytics-platform/src/app/d/[uid]/[...slug]/page.tsx[0m:201:1]
+ [2m198[0m |   // Load dashboard server-side
+ [2m199[0m |   const dashboard = await loadDashboard(uid);
+ [2m200[0m |   
+ [2m201[0m |   if (\!dashboard) {
+     : [35;1m  ^|[0m[33;1m  ^[0m
+     :    [35;1m`-- [35;1mTried to parse the condition for an if statement[0m[0m
+ [2m202[0m |     notFound();
+ [2m203[0m |   }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/d/[uid]/[...slug]/page.tsx
+ ⨯ ./src/app/d/[uid]/[...slug]/page.tsx
+Error:   [31mx[0m Expected unicode escape
+     ,-[[36;1;4m/mnt/d/Source/manufacturing-analytics-platform/src/app/d/[uid]/[...slug]/page.tsx[0m:201:1]
+ [2m198[0m |   // Load dashboard server-side
+ [2m199[0m |   const dashboard = await loadDashboard(uid);
+ [2m200[0m |   
+ [2m201[0m |   if (\!dashboard) {
+     : [35;1m  ^|[0m[33;1m  ^[0m
+     :    [35;1m`-- [35;1mTried to parse the condition for an if statement[0m[0m
+ [2m202[0m |     notFound();
+ [2m203[0m |   }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/d/[uid]/[...slug]/page.tsx
+Time 4.165697
+ GET /d/server-side-demo/server-side-manufacturing-demo 500 in 17749ms
+Time 1.90835
+ GET /d/server-side-demo/server-side-manufacturing-demo 500 in 653ms
+Time 1.101445
+ GET /d/server-side-demo/server-side-manufacturing-demo 500 in 759ms
+[?25h

@@ -51,7 +51,7 @@ export default function EnhancedNavigation({ simplified = false }: NavigationPro
     { name: 'Dashboard', href: '/dashboard', icon: '📊' },
     { name: 'Equipment', href: '/equipment', icon: '⚙️' },
     { name: 'Alerts', href: '/alerts', icon: '🔔' },
-    { name: 'AI Chat', href: '/manufacturing-chat', icon: '🤖' },
+    { name: 'AI Chat', href: '/ollama-chat', icon: '🤖' },
     { name: 'Documentation', href: '/documentation', icon: '📚' },
   ] : [
     // Core Platform
@@ -125,7 +125,7 @@ export default function EnhancedNavigation({ simplified = false }: NavigationPro
       icon: '🤖',
       manufacturing: true,
       submenu: [
-        { name: 'Manufacturing Chat', href: '/manufacturing-chat' },
+        { name: 'Manufacturing Chat', href: '/ollama-chat' },
         { name: 'Predictive Analytics', href: '/ai/predictive' },
         { name: 'Root Cause Analysis', href: '/ai/root-cause' },
         { name: 'Process Optimization', href: '/ai/optimization' }

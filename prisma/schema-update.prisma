@@ -1,0 +1,64 @@
+// Add these models to your existing schema.prisma file
+
+// Equipment model for tracking machines and devices
+model Equipment {
+  id           String   @id @default(cuid())
+  name         String
+  code         String   @unique
+  type         String   // CNC, Press, Assembly, Packaging, etc.
+  manufacturer String?
+  model        String?
+  serialNumber String?  @unique
+  
+  // Location and Assignment
+  workCenterId String
+  department   String?
+  location     String?
+  
+  // Status and Operational Data
+  status       String   @default("idle") // running, idle, maintenance, error
+  isActive     Boolean  @default(true)
+  
+  // Installation and Lifecycle
+  installDate  DateTime?
+  lastService  DateTime?
+  nextService  DateTime?
+  
+  // Capacity and Specifications
+  capacity     Float?   // Units per hour
+  capacityUnit String?  // units/hour, pieces/min, etc.
+  specs        Json?    // Additional specifications
+  
+  // Relationships
+  workCenter   WorkCenter @relation(fields: [workCenterId], references: [id])
+  metrics      Metric[]   @relation("EquipmentMetrics")
+  alerts       Alert[]    @relation("EquipmentAlerts")
+  maintenance  MaintenanceRecord[] @relation("EquipmentMaintenance")
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  @@index([status])
+  @@index([workCenterId])
+  @@index([type])
+  @@index([code])
+}
+
+// Update existing models to add relationships
+// Add to Metric model:
+//   equipmentId  String?
+//   equipment    Equipment? @relation("EquipmentMetrics", fields: [equipmentId], references: [id])
+//   @@index([equipmentId])
+
+// Add to Alert model:
+//   equipmentId  String?
+//   equipment    Equipment? @relation("EquipmentAlerts", fields: [equipmentId], references: [id])
+//   @@index([equipmentId])
+
+// Add to MaintenanceRecord model:
+//   equipmentId  String
+//   equipment    Equipment @relation("EquipmentMaintenance", fields: [equipmentId], references: [id])
+//   @@index([equipmentId])
+
+// Add to WorkCenter model:
+//   equipment    Equipment[] @relation("WorkCenterEquipment")

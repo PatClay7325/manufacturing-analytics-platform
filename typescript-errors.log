@@ -1,0 +1,904 @@
+src/middleware.ts(44,18): error TS1005: ';' expected.
+src/middleware.ts(44,35): error TS1128: Declaration or statement expected.
+src/middleware.ts(46,9): error TS1109: Expression expected.
+src/middleware.ts(46,10): error TS1472: 'catch' or 'finally' expected.
+src/middleware.ts(47,9): error TS1005: 'try' expected.
+src/middleware.ts(131,1): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(30,8): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(30,12): error TS1005: ')' expected.
+tests/components/parent-child-depth-testing.test.ts(30,20): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(30,42): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(32,1): error TS1109: Expression expected.
+tests/components/parent-child-depth-testing.test.ts(32,2): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(32,3): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(79,4): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(94,9): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(94,12): error TS1005: ')' expected.
+tests/components/parent-child-depth-testing.test.ts(95,20): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(96,19): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(97,19): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(98,10): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(98,18): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(99,7): error TS1109: Expression expected.
+tests/components/parent-child-depth-testing.test.ts(100,15): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(100,26): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(100,60): error TS1109: Expression expected.
+tests/components/parent-child-depth-testing.test.ts(101,18): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(101,35): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(102,10): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(104,8): error TS1110: Type expected.
+tests/components/parent-child-depth-testing.test.ts(105,5): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(106,3): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(106,4): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(107,1): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(125,28): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(125,37): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(126,20): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(126,31): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(126,54): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(126,62): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(127,14): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(128,12): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(152,30): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(152,39): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(153,22): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(153,33): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(153,58): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(153,66): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(154,16): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(155,14): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(156,12): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(183,32): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(183,41): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(184,24): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(184,35): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(184,62): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(184,70): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(185,18): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(186,16): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(187,14): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(188,12): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(216,34): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(216,43): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(217,26): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(217,37): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(217,60): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(217,68): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(218,20): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(219,18): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(220,16): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(221,14): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(222,12): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(255,36): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(255,45): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(256,29): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(256,40): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(256,65): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(256,73): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(257,22): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(258,20): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(259,18): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(260,16): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(261,14): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(262,12): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(300,14): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(300,25): error TS1005: ')' expected.
+tests/components/parent-child-depth-testing.test.ts(300,36): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(300,40): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(300,50): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(300,67): error TS1109: Expression expected.
+tests/components/parent-child-depth-testing.test.ts(302,10): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(303,7): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(306,14): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(306,25): error TS1005: ')' expected.
+tests/components/parent-child-depth-testing.test.ts(306,36): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(306,40): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(306,44): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(306,55): error TS1109: Expression expected.
+tests/components/parent-child-depth-testing.test.ts(308,10): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(309,7): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(312,14): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(312,25): error TS1005: ')' expected.
+tests/components/parent-child-depth-testing.test.ts(312,36): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(312,40): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(312,47): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(312,61): error TS1109: Expression expected.
+tests/components/parent-child-depth-testing.test.ts(314,10): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(315,7): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(318,14): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(318,25): error TS1005: ')' expected.
+tests/components/parent-child-depth-testing.test.ts(318,36): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(318,40): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(318,45): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(318,66): error TS1109: Expression expected.
+tests/components/parent-child-depth-testing.test.ts(320,10): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(321,7): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(325,11): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(325,22): error TS1005: ')' expected.
+tests/components/parent-child-depth-testing.test.ts(326,20): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(327,21): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(328,9): error TS1109: Expression expected.
+tests/components/parent-child-depth-testing.test.ts(329,17): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(329,48): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(329,62): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(330,10): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(331,7): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(335,19): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(335,23): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(336,21): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(336,25): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(337,23): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(337,27): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(338,25): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(338,29): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(339,27): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(339,31): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(339,44): error TS1109: Expression expected.
+tests/components/parent-child-depth-testing.test.ts(340,18): error TS1110: Type expected.
+tests/components/parent-child-depth-testing.test.ts(341,16): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(342,14): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(343,12): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(344,10): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(354,5): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(354,6): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(361,36): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(361,41): error TS1005: ')' expected.
+tests/components/parent-child-depth-testing.test.ts(361,43): error TS1136: Property assignment expected.
+tests/components/parent-child-depth-testing.test.ts(361,56): error TS1003: Identifier expected.
+tests/components/parent-child-depth-testing.test.ts(361,66): error TS1005: ':' expected.
+tests/components/parent-child-depth-testing.test.ts(361,76): error TS1003: Identifier expected.
+tests/components/parent-child-depth-testing.test.ts(361,86): error TS1005: ':' expected.
+tests/components/parent-child-depth-testing.test.ts(361,88): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(363,10): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(367,36): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(367,41): error TS1005: ')' expected.
+tests/components/parent-child-depth-testing.test.ts(367,43): error TS1136: Property assignment expected.
+tests/components/parent-child-depth-testing.test.ts(367,56): error TS1003: Identifier expected.
+tests/components/parent-child-depth-testing.test.ts(367,61): error TS1005: ':' expected.
+tests/components/parent-child-depth-testing.test.ts(367,72): error TS1003: Identifier expected.
+tests/components/parent-child-depth-testing.test.ts(367,77): error TS1005: ':' expected.
+tests/components/parent-child-depth-testing.test.ts(367,78): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(367,79): error TS1109: Expression expected.
+tests/components/parent-child-depth-testing.test.ts(369,10): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(370,7): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(377,16): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(377,27): error TS1005: ')' expected.
+tests/components/parent-child-depth-testing.test.ts(378,22): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(378,46): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(379,12): error TS1110: Type expected.
+tests/components/parent-child-depth-testing.test.ts(380,9): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(381,7): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(386,18): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(386,29): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(388,22): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(388,33): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(389,33): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(390,18): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(391,16): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(392,14): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(393,12): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(394,10): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(398,5): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(398,6): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(399,3): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(399,4): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(407,11): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(407,22): error TS1005: ')' expected.
+tests/components/parent-child-depth-testing.test.ts(408,20): error TS1136: Property assignment expected.
+tests/components/parent-child-depth-testing.test.ts(408,23): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(409,9): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(411,10): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(416,11): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(416,22): error TS1005: ')' expected.
+tests/components/parent-child-depth-testing.test.ts(417,20): error TS1136: Property assignment expected.
+tests/components/parent-child-depth-testing.test.ts(417,23): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(418,9): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(420,10): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(425,11): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(425,22): error TS1005: ')' expected.
+tests/components/parent-child-depth-testing.test.ts(426,20): error TS1136: Property assignment expected.
+tests/components/parent-child-depth-testing.test.ts(426,23): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(426,48): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(427,9): error TS1109: Expression expected.
+tests/components/parent-child-depth-testing.test.ts(429,10): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(430,7): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(434,11): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(434,22): error TS1005: ')' expected.
+tests/components/parent-child-depth-testing.test.ts(435,20): error TS1136: Property assignment expected.
+tests/components/parent-child-depth-testing.test.ts(435,23): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(435,48): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(436,9): error TS1109: Expression expected.
+tests/components/parent-child-depth-testing.test.ts(437,17): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(438,10): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(439,7): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(446,25): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(447,16): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(448,14): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(449,12): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(450,10): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(457,5): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(457,6): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(464,11): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(464,22): error TS1005: ')' expected.
+tests/components/parent-child-depth-testing.test.ts(465,20): error TS1136: Property assignment expected.
+tests/components/parent-child-depth-testing.test.ts(465,23): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(466,9): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(468,10): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(473,11): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(473,22): error TS1005: ')' expected.
+tests/components/parent-child-depth-testing.test.ts(474,20): error TS1136: Property assignment expected.
+tests/components/parent-child-depth-testing.test.ts(474,24): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(477,12): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(478,9): error TS1109: Expression expected.
+tests/components/parent-child-depth-testing.test.ts(480,10): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(481,7): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(485,11): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(485,22): error TS1005: ')' expected.
+tests/components/parent-child-depth-testing.test.ts(486,20): error TS1136: Property assignment expected.
+tests/components/parent-child-depth-testing.test.ts(486,23): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(486,48): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(487,9): error TS1109: Expression expected.
+tests/components/parent-child-depth-testing.test.ts(488,17): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(489,10): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(490,7): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(496,23): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(497,14): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(498,12): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(499,10): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(507,5): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(507,6): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(508,3): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(508,4): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(516,16): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(516,27): error TS1005: ')' expected.
+tests/components/parent-child-depth-testing.test.ts(518,15): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(518,26): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(519,24): error TS1136: Property assignment expected.
+tests/components/parent-child-depth-testing.test.ts(519,27): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(520,13): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(522,14): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(524,15): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(524,26): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(525,15): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(525,24): error TS1136: Property assignment expected.
+tests/components/parent-child-depth-testing.test.ts(525,27): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(525,89): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(526,13): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(528,14): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(529,13): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(529,19): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(532,12): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(534,7): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(537,14): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(537,25): error TS1005: ')' expected.
+tests/components/parent-child-depth-testing.test.ts(538,17): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(538,28): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(538,29): error TS1134: Variable declaration expected.
+tests/components/parent-child-depth-testing.test.ts(538,50): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(538,78): error TS1110: Type expected.
+tests/components/parent-child-depth-testing.test.ts(539,17): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(539,28): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(539,52): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(539,95): error TS1110: Type expected.
+tests/components/parent-child-depth-testing.test.ts(540,10): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(541,7): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(549,30): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(550,18): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(551,16): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(552,14): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(553,12): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(554,10): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(566,5): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(566,6): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(567,3): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(567,4): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(573,23): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(573,34): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(573,52): error TS1109: Expression expected.
+tests/components/parent-child-depth-testing.test.ts(573,58): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(573,63): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(577,16): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(577,27): error TS1005: ')' expected.
+tests/components/parent-child-depth-testing.test.ts(577,29): error TS1136: Property assignment expected.
+tests/components/parent-child-depth-testing.test.ts(577,47): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(577,51): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(577,57): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(577,65): error TS1109: Expression expected.
+tests/components/parent-child-depth-testing.test.ts(578,19): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(580,12): error TS1110: Type expected.
+tests/components/parent-child-depth-testing.test.ts(581,9): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(582,8): error TS1005: ')' expected.
+tests/components/parent-child-depth-testing.test.ts(588,32): error TS1003: Identifier expected.
+tests/components/parent-child-depth-testing.test.ts(589,10): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(602,5): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(602,6): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(606,14): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(606,25): error TS1005: ')' expected.
+tests/components/parent-child-depth-testing.test.ts(607,17): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(608,18): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(608,21): error TS1005: ')' expected.
+tests/components/parent-child-depth-testing.test.ts(608,27): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(608,32): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(608,43): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(608,45): error TS1136: Property assignment expected.
+tests/components/parent-child-depth-testing.test.ts(608,62): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(609,20): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(610,14): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(611,11): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(611,12): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(611,13): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(612,10): error TS1110: Type expected.
+tests/components/parent-child-depth-testing.test.ts(613,7): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(616,14): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(616,25): error TS1005: ')' expected.
+tests/components/parent-child-depth-testing.test.ts(617,16): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(617,27): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(617,28): error TS1134: Variable declaration expected.
+tests/components/parent-child-depth-testing.test.ts(618,18): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(618,29): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(619,20): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(619,31): error TS1005: ';' expected.
+tests/components/parent-child-depth-testing.test.ts(621,16): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(622,14): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(623,12): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(624,10): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(625,7): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(637,23): error TS1005: '>' expected.
+tests/components/parent-child-depth-testing.test.ts(637,28): error TS1005: ',' expected.
+tests/components/parent-child-depth-testing.test.ts(637,38): error TS1109: Expression expected.
+tests/components/parent-child-depth-testing.test.ts(638,12): error TS1110: Type expected.
+tests/components/parent-child-depth-testing.test.ts(639,10): error TS1161: Unterminated regular expression literal.
+tests/components/parent-child-depth-testing.test.ts(651,5): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(651,6): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(652,3): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(652,4): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(653,1): error TS1128: Declaration or statement expected.
+tests/components/parent-child-depth-testing.test.ts(653,2): error TS1128: Declaration or statement expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(36,8): error TS1005: '>' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(36,12): error TS1005: ')' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(36,20): error TS1005: ',' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(36,42): error TS1161: Unterminated regular expression literal.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(38,1): error TS1109: Expression expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(38,2): error TS1128: Declaration or statement expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(38,3): error TS1128: Declaration or statement expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(85,13): error TS1005: '>' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(85,20): error TS1005: ')' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(85,31): error TS1005: ',' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(85,53): error TS1161: Unterminated regular expression literal.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(87,8): error TS1005: ';' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(88,12): error TS1005: '>' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(88,17): error TS1005: ')' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(88,26): error TS1005: ';' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(88,36): error TS1136: Property assignment expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(88,40): error TS1005: ';' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(88,69): error TS1128: Declaration or statement expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(88,72): error TS1128: Declaration or statement expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(88,82): error TS1161: Unterminated regular expression literal.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(89,3): error TS1128: Declaration or statement expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(89,4): error TS1128: Declaration or statement expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(91,13): error TS1005: '>' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(91,18): error TS1005: ')' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(91,27): error TS1005: ';' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(91,37): error TS1136: Property assignment expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(91,41): error TS1005: ';' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(91,70): error TS1128: Declaration or statement expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(91,73): error TS1128: Declaration or statement expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(91,82): error TS1109: Expression expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(92,15): error TS1005: ',' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(92,21): error TS1138: Parameter declaration expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(92,25): error TS1005: ',' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(92,32): error TS1005: ';' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(93,17): error TS1005: '>' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(93,20): error TS1005: ')' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(93,25): error TS1005: ',' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(93,33): error TS1005: ';' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(93,43): error TS1005: ',' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(93,55): error TS1005: ',' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(93,63): error TS1161: Unterminated regular expression literal.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(94,7): error TS1128: Declaration or statement expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(94,8): error TS1128: Declaration or statement expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(94,9): error TS1128: Declaration or statement expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(95,6): error TS1110: Type expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(96,3): error TS1128: Declaration or statement expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(96,4): error TS1128: Declaration or statement expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(98,10): error TS1005: '>' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(98,21): error TS1005: ')' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(98,38): error TS1005: ';' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(98,52): error TS1005: ';' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(98,53): error TS1128: Declaration or statement expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(98,62): error TS1109: Expression expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(98,74): error TS1161: Unterminated regular expression literal.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(99,3): error TS1128: Declaration or statement expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(99,4): error TS1128: Declaration or statement expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(100,23): error TS1005: '>' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(100,34): error TS1005: ';' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(100,52): error TS1005: ';' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(100,56): error TS1110: Type expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(102,10): error TS1005: '>' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(102,21): error TS1005: ')' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(102,30): error TS1005: ';' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(102,43): error TS1005: ';' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(102,56): error TS1128: Declaration or statement expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(102,65): error TS1109: Expression expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(102,77): error TS1161: Unterminated regular expression literal.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(103,3): error TS1128: Declaration or statement expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(103,4): error TS1128: Declaration or statement expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(104,1): error TS1128: Declaration or statement expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(104,2): error TS1128: Declaration or statement expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(104,3): error TS1128: Declaration or statement expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(110,4): error TS1161: Unterminated regular expression literal.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(208,31): error TS1005: '>' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(208,42): error TS1005: ';' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(208,94): error TS1109: Expression expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(208,100): error TS1005: ';' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(208,107): error TS1110: Type expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(214,30): error TS1005: '>' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(215,14): error TS1161: Unterminated regular expression literal.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(310,41): error TS1005: '>' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(310,52): error TS1005: ';' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(310,106): error TS1128: Declaration or statement expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(310,114): error TS1005: ',' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(310,115): error TS1472: 'catch' or 'finally' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(310,121): error TS1005: ';' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(310,128): error TS1110: Type expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(316,26): error TS1005: '>' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(317,14): error TS1161: Unterminated regular expression literal.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(326,11): error TS1005: ',' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(332,3): error TS1128: Declaration or statement expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(332,4): error TS1128: Declaration or statement expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(573,29): error TS1005: '>' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(574,12): error TS1161: Unterminated regular expression literal.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(593,45): error TS1005: ',' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(593,54): error TS1005: ',' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(593,55): error TS1110: Type expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(599,28): error TS1005: '>' expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(600,12): error TS1161: Unterminated regular expression literal.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(664,1): error TS1128: Declaration or statement expected.
+tests/comprehensive/comprehensive-grafana-debug.test.ts(664,2): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(43,14): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(43,25): error TS1005: ')' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(44,25): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(44,37): error TS1110: Type expected.
+tests/error-handling/comprehensive-error-testing.test.ts(45,19): error TS1005: ':' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(45,42): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(46,10): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(47,7): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(65,27): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(65,37): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(72,27): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(72,60): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(79,29): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(88,28): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(88,43): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(91,28): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(91,38): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(100,4): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(128,30): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(128,37): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(129,35): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(130,12): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(131,10): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(151,32): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(151,39): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(152,36): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(153,14): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(154,12): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(173,32): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(173,39): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(174,36): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(175,14): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(176,12): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(207,21): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(207,28): error TS1005: ')' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(207,41): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(207,52): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(208,21): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(209,14): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(210,30): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(210,41): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(210,59): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(210,63): error TS1110: Type expected.
+tests/error-handling/comprehensive-error-testing.test.ts(210,68): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(211,13): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(211,20): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(211,28): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(211,39): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(211,64): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(211,69): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(212,11): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(212,12): error TS1110: Type expected.
+tests/error-handling/comprehensive-error-testing.test.ts(214,7): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(218,29): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(219,10): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(228,5): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(228,6): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(252,29): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(252,40): error TS1005: ':' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(252,94): error TS1109: Expression expected.
+tests/error-handling/comprehensive-error-testing.test.ts(257,29): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(258,10): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(304,31): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(304,42): error TS1005: ':' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(304,67): error TS1109: Expression expected.
+tests/error-handling/comprehensive-error-testing.test.ts(304,105): error TS1109: Expression expected.
+tests/error-handling/comprehensive-error-testing.test.ts(309,33): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(310,12): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(322,3): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(322,4): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(346,29): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(346,40): error TS1005: ':' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(346,88): error TS1109: Expression expected.
+tests/error-handling/comprehensive-error-testing.test.ts(351,30): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(352,10): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(386,29): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(386,40): error TS1005: ':' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(386,94): error TS1109: Expression expected.
+tests/error-handling/comprehensive-error-testing.test.ts(391,27): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(392,10): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(425,21): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(425,28): error TS1005: ')' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(425,41): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(425,52): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(426,21): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(427,14): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(428,28): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(428,39): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(428,61): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(429,12): error TS1110: Type expected.
+tests/error-handling/comprehensive-error-testing.test.ts(430,9): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(431,8): error TS1005: ')' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(444,26): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(445,10): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(454,5): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(454,6): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(478,21): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(478,28): error TS1005: ')' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(478,37): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(478,48): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(480,14): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(481,28): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(481,39): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(481,67): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(482,12): error TS1110: Type expected.
+tests/error-handling/comprehensive-error-testing.test.ts(483,9): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(484,7): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(497,27): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(498,10): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(507,5): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(507,6): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(508,3): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(508,4): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(541,21): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(541,28): error TS1005: ')' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(541,44): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(541,55): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(543,14): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(544,35): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(544,46): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(544,68): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(544,76): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(545,38): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(545,49): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(545,74): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(545,85): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(546,12): error TS1110: Type expected.
+tests/error-handling/comprehensive-error-testing.test.ts(547,9): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(548,8): error TS1005: ')' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(552,26): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(553,10): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(560,5): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(560,6): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(585,21): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(585,28): error TS1005: ')' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(585,42): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(585,53): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(586,22): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(587,14): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(589,20): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(589,23): error TS1005: ')' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(589,32): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(589,43): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(589,45): error TS1136: Property assignment expected.
+tests/error-handling/comprehensive-error-testing.test.ts(589,72): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(589,73): error TS1109: Expression expected.
+tests/error-handling/comprehensive-error-testing.test.ts(591,16): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(592,13): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(592,14): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(592,15): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(593,12): error TS1110: Type expected.
+tests/error-handling/comprehensive-error-testing.test.ts(594,9): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(595,7): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(610,35): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(611,10): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(620,5): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(620,6): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(621,3): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(621,4): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(633,16): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(633,27): error TS1005: ')' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(634,18): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(634,29): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(634,54): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(634,63): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(634,69): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(635,18): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(635,29): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(635,54): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(635,57): error TS1005: ':' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(635,64): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(636,18): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(636,29): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(636,53): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(636,76): error TS1005: ':' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(636,83): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(637,12): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(638,9): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(639,8): error TS1005: ')' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(645,31): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(646,10): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(655,5): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(655,6): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(663,16): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(663,27): error TS1005: ')' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(665,15): error TS1003: Identifier expected.
+tests/error-handling/comprehensive-error-testing.test.ts(665,20): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(665,24): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(665,31): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(665,45): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(665,60): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(666,13): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(666,15): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(667,20): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(667,31): error TS1005: ')' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(667,48): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(667,55): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(668,13): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(668,14): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(669,12): error TS1110: Type expected.
+tests/error-handling/comprehensive-error-testing.test.ts(670,9): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(671,7): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(676,31): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(676,35): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(676,41): error TS1005: ':' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(676,44): error TS1109: Expression expected.
+tests/error-handling/comprehensive-error-testing.test.ts(677,10): error TS1110: Type expected.
+tests/error-handling/comprehensive-error-testing.test.ts(685,31): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(685,35): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(685,38): error TS1109: Expression expected.
+tests/error-handling/comprehensive-error-testing.test.ts(685,39): error TS1005: ':' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(685,42): error TS1109: Expression expected.
+tests/error-handling/comprehensive-error-testing.test.ts(686,10): error TS1110: Type expected.
+tests/error-handling/comprehensive-error-testing.test.ts(694,31): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(694,35): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(694,49): error TS1109: Expression expected.
+tests/error-handling/comprehensive-error-testing.test.ts(695,10): error TS1110: Type expected.
+tests/error-handling/comprehensive-error-testing.test.ts(699,5): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(699,6): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(705,14): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(705,25): error TS1005: ')' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(706,16): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(706,27): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(706,28): error TS1134: Variable declaration expected.
+tests/error-handling/comprehensive-error-testing.test.ts(706,55): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(706,64): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(707,16): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(707,27): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(707,56): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(707,74): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(707,78): error TS1110: Type expected.
+tests/error-handling/comprehensive-error-testing.test.ts(708,10): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(713,32): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(714,10): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(719,5): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(719,6): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(720,3): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(720,4): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(747,21): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(747,28): error TS1005: ')' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(747,53): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(747,64): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(748,23): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(749,14): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(750,18): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(750,29): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(750,52): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(751,18): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(751,29): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(751,48): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(751,60): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(752,12): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(753,9): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(754,8): error TS1005: ')' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(758,35): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(759,10): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(768,5): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(768,6): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(769,3): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(769,4): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(784,21): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(784,32): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(784,56): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(784,66): error TS1110: Type expected.
+tests/error-handling/comprehensive-error-testing.test.ts(789,35): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(790,10): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(826,21): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(826,28): error TS1005: ')' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(826,50): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(826,61): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(827,22): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(828,14): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(829,21): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(829,44): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(829,55): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(830,21): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(831,14): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(832,18): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(832,29): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(832,58): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(832,67): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(833,12): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(834,9): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(835,8): error TS1005: ')' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(839,33): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(840,10): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(850,5): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(850,6): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(851,3): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(851,4): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(875,21): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(875,28): error TS1005: ')' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(875,53): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(875,64): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(876,23): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(877,14): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(878,18): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(878,29): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(878,61): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(879,18): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(879,29): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(879,60): error TS1005: ',' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(879,72): error TS1005: ';' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(879,75): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(880,12): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(881,9): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(882,8): error TS1005: ')' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(886,33): error TS1005: '>' expected.
+tests/error-handling/comprehensive-error-testing.test.ts(887,10): error TS1161: Unterminated regular expression literal.
+tests/error-handling/comprehensive-error-testing.test.ts(898,5): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(898,6): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(899,3): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(899,4): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(900,1): error TS1128: Declaration or statement expected.
+tests/error-handling/comprehensive-error-testing.test.ts(900,2): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(171,13): error TS1005: '>' expected.
+tests/integration/grafana-service-integration.test.ts(171,20): error TS1005: ')' expected.
+tests/integration/grafana-service-integration.test.ts(171,31): error TS1005: ',' expected.
+tests/integration/grafana-service-integration.test.ts(171,35): error TS1005: ',' expected.
+tests/integration/grafana-service-integration.test.ts(171,43): error TS1005: ')' expected.
+tests/integration/grafana-service-integration.test.ts(171,54): error TS1005: ',' expected.
+tests/integration/grafana-service-integration.test.ts(171,76): error TS1161: Unterminated regular expression literal.
+tests/integration/grafana-service-integration.test.ts(173,8): error TS1005: ';' expected.
+tests/integration/grafana-service-integration.test.ts(175,7): error TS1005: '>' expected.
+tests/integration/grafana-service-integration.test.ts(175,12): error TS1005: ')' expected.
+tests/integration/grafana-service-integration.test.ts(176,17): error TS1136: Property assignment expected.
+tests/integration/grafana-service-integration.test.ts(176,21): error TS1005: ';' expected.
+tests/integration/grafana-service-integration.test.ts(176,50): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(178,8): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(179,5): error TS1161: Unterminated regular expression literal.
+tests/integration/grafana-service-integration.test.ts(180,3): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(180,4): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(182,13): error TS1005: '>' expected.
+tests/integration/grafana-service-integration.test.ts(182,18): error TS1005: ')' expected.
+tests/integration/grafana-service-integration.test.ts(182,27): error TS1005: ';' expected.
+tests/integration/grafana-service-integration.test.ts(182,37): error TS1136: Property assignment expected.
+tests/integration/grafana-service-integration.test.ts(182,41): error TS1005: ';' expected.
+tests/integration/grafana-service-integration.test.ts(182,70): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(182,73): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(182,82): error TS1109: Expression expected.
+tests/integration/grafana-service-integration.test.ts(183,15): error TS1005: '>' expected.
+tests/integration/grafana-service-integration.test.ts(183,20): error TS1005: ';' expected.
+tests/integration/grafana-service-integration.test.ts(183,38): error TS1161: Unterminated regular expression literal.
+tests/integration/grafana-service-integration.test.ts(185,17): error TS1005: '>' expected.
+tests/integration/grafana-service-integration.test.ts(185,20): error TS1005: ')' expected.
+tests/integration/grafana-service-integration.test.ts(185,25): error TS1005: ',' expected.
+tests/integration/grafana-service-integration.test.ts(185,33): error TS1005: ',' expected.
+tests/integration/grafana-service-integration.test.ts(185,43): error TS1005: ',' expected.
+tests/integration/grafana-service-integration.test.ts(185,55): error TS1005: ',' expected.
+tests/integration/grafana-service-integration.test.ts(185,63): error TS1161: Unterminated regular expression literal.
+tests/integration/grafana-service-integration.test.ts(186,8): error TS1005: ';' expected.
+tests/integration/grafana-service-integration.test.ts(187,6): error TS1110: Type expected.
+tests/integration/grafana-service-integration.test.ts(188,3): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(188,4): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(190,10): error TS1005: '>' expected.
+tests/integration/grafana-service-integration.test.ts(190,21): error TS1005: ')' expected.
+tests/integration/grafana-service-integration.test.ts(190,38): error TS1005: ';' expected.
+tests/integration/grafana-service-integration.test.ts(190,52): error TS1005: ';' expected.
+tests/integration/grafana-service-integration.test.ts(190,53): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(190,62): error TS1109: Expression expected.
+tests/integration/grafana-service-integration.test.ts(191,19): error TS1161: Unterminated regular expression literal.
+tests/integration/grafana-service-integration.test.ts(193,6): error TS1110: Type expected.
+tests/integration/grafana-service-integration.test.ts(194,3): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(194,4): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(195,23): error TS1005: '>' expected.
+tests/integration/grafana-service-integration.test.ts(195,34): error TS1005: ';' expected.
+tests/integration/grafana-service-integration.test.ts(195,52): error TS1005: ';' expected.
+tests/integration/grafana-service-integration.test.ts(195,56): error TS1110: Type expected.
+tests/integration/grafana-service-integration.test.ts(197,10): error TS1005: '>' expected.
+tests/integration/grafana-service-integration.test.ts(197,21): error TS1005: ')' expected.
+tests/integration/grafana-service-integration.test.ts(197,30): error TS1005: ';' expected.
+tests/integration/grafana-service-integration.test.ts(197,43): error TS1005: ';' expected.
+tests/integration/grafana-service-integration.test.ts(197,56): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(197,65): error TS1109: Expression expected.
+tests/integration/grafana-service-integration.test.ts(197,77): error TS1161: Unterminated regular expression literal.
+tests/integration/grafana-service-integration.test.ts(198,3): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(198,4): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(200,10): error TS1005: '>' expected.
+tests/integration/grafana-service-integration.test.ts(200,21): error TS1005: ')' expected.
+tests/integration/grafana-service-integration.test.ts(200,50): error TS1005: ',' expected.
+tests/integration/grafana-service-integration.test.ts(200,65): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(200,67): error TS1110: Type expected.
+tests/integration/grafana-service-integration.test.ts(201,3): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(201,4): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(203,10): error TS1005: '>' expected.
+tests/integration/grafana-service-integration.test.ts(203,21): error TS1005: ')' expected.
+tests/integration/grafana-service-integration.test.ts(203,48): error TS1161: Unterminated regular expression literal.
+tests/integration/grafana-service-integration.test.ts(204,3): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(204,4): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(206,10): error TS1005: '>' expected.
+tests/integration/grafana-service-integration.test.ts(206,21): error TS1005: ')' expected.
+tests/integration/grafana-service-integration.test.ts(206,29): error TS1005: ';' expected.
+tests/integration/grafana-service-integration.test.ts(206,30): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(206,39): error TS1109: Expression expected.
+tests/integration/grafana-service-integration.test.ts(206,51): error TS1161: Unterminated regular expression literal.
+tests/integration/grafana-service-integration.test.ts(207,3): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(207,4): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(210,12): error TS1005: '>' expected.
+tests/integration/grafana-service-integration.test.ts(210,23): error TS1005: ')' expected.
+tests/integration/grafana-service-integration.test.ts(210,32): error TS1005: ':' expected.
+tests/integration/grafana-service-integration.test.ts(210,33): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(210,42): error TS1109: Expression expected.
+tests/integration/grafana-service-integration.test.ts(211,21): error TS1161: Unterminated regular expression literal.
+tests/integration/grafana-service-integration.test.ts(212,17): error TS1005: ';' expected.
+tests/integration/grafana-service-integration.test.ts(212,43): error TS1161: Unterminated regular expression literal.
+tests/integration/grafana-service-integration.test.ts(214,8): error TS1110: Type expected.
+tests/integration/grafana-service-integration.test.ts(215,5): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(215,7): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(216,6): error TS1005: ';' expected.
+tests/integration/grafana-service-integration.test.ts(218,7): error TS1005: '>' expected.
+tests/integration/grafana-service-integration.test.ts(218,18): error TS1005: ')' expected.
+tests/integration/grafana-service-integration.test.ts(219,18): error TS1005: ';' expected.
+tests/integration/grafana-service-integration.test.ts(221,8): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(222,5): error TS1109: Expression expected.
+tests/integration/grafana-service-integration.test.ts(224,6): error TS1161: Unterminated regular expression literal.
+tests/integration/grafana-service-integration.test.ts(225,3): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(225,4): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(227,10): error TS1005: '>' expected.
+tests/integration/grafana-service-integration.test.ts(227,21): error TS1005: ')' expected.
+tests/integration/grafana-service-integration.test.ts(227,44): error TS1161: Unterminated regular expression literal.
+tests/integration/grafana-service-integration.test.ts(228,3): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(228,4): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(230,10): error TS1005: '>' expected.
+tests/integration/grafana-service-integration.test.ts(230,21): error TS1005: ')' expected.
+tests/integration/grafana-service-integration.test.ts(230,30): error TS1005: ';' expected.
+tests/integration/grafana-service-integration.test.ts(230,31): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(230,40): error TS1109: Expression expected.
+tests/integration/grafana-service-integration.test.ts(231,14): error TS1005: ',' expected.
+tests/integration/grafana-service-integration.test.ts(231,32): error TS1161: Unterminated regular expression literal.
+tests/integration/grafana-service-integration.test.ts(231,39): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(233,6): error TS1110: Type expected.
+tests/integration/grafana-service-integration.test.ts(234,3): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(234,4): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(236,15): error TS1005: '>' expected.
+tests/integration/grafana-service-integration.test.ts(236,26): error TS1005: ')' expected.
+tests/integration/grafana-service-integration.test.ts(236,38): error TS1005: ';' expected.
+tests/integration/grafana-service-integration.test.ts(236,39): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(236,48): error TS1109: Expression expected.
+tests/integration/grafana-service-integration.test.ts(237,14): error TS1005: ',' expected.
+tests/integration/grafana-service-integration.test.ts(237,33): error TS1161: Unterminated regular expression literal.
+tests/integration/grafana-service-integration.test.ts(237,41): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(239,6): error TS1110: Type expected.
+tests/integration/grafana-service-integration.test.ts(240,3): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(240,4): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(241,1): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(241,2): error TS1128: Declaration or statement expected.
+tests/integration/grafana-service-integration.test.ts(241,3): error TS1128: Declaration or statement expected.

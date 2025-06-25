@@ -37,7 +37,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/manufacturing-chat" className="text-gray-300 hover:text-white transition duration-150">
+                <Link href="/ollama-chat" className="text-gray-300 hover:text-white transition duration-150">
                   AI Assistant
                 </Link>
               </li>

@@ -31,6 +31,20 @@ export default function LoginPage() {
     }
   };
 
+  const handleQuickLogin = async (userEmail: string, userPassword: string) => {
+    setEmail(userEmail);
+    setPassword(userPassword);
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      await login(userEmail, userPassword, true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed');
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
@@ -165,69 +179,45 @@ export default function LoginPage() {
             </div>
 
             <div className="mt-6 space-y-3">
-              <div className="grid grid-cols-2 gap-3">
+              <p className="text-center text-sm text-gray-600 dark:text-gray-400 mb-3">
+                Quick login with demo account:
+              </p>
+              <div className="grid grid-cols-3 gap-3">
                 <button
                   type="button"
-                  onClick={() => {
-                    setEmail('admin@example.com');
-                    setPassword('admin123');
-                  }}
-                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  onClick={() => handleQuickLogin('admin@manufacturing.com', 'demo123')}
+                  disabled={isLoading}
+                  className="group relative w-full inline-flex flex-col items-center justify-center py-3 px-4 border-2 border-transparent rounded-lg shadow-sm bg-gradient-to-br from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
-                  <span className="flex items-center">
-                    <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
-                    Admin
-                  </span>
+                  <span className="text-sm font-semibold">Admin</span>
+                  <span className="text-xs opacity-90 mt-1">Full Access</span>
                 </button>
                 <button
                   type="button"
-                  onClick={() => {
-                    setEmail('operator@example.com');
-                    setPassword('operator123');
-                  }}
-                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  onClick={() => handleQuickLogin('operator@manufacturing.com', 'demo123')}
+                  disabled={isLoading}
+                  className="group relative w-full inline-flex flex-col items-center justify-center py-3 px-4 border-2 border-transparent rounded-lg shadow-sm bg-gradient-to-br from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
-                  <span className="flex items-center">
-                    <span className="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
-                    Operator
-                  </span>
-                </button>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEmail('analyst@example.com');
-                    setPassword('analyst123');
-                  }}
-                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
-                  <span className="flex items-center">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                    Analyst
-                  </span>
+                  <span className="text-sm font-semibold">Operator</span>
+                  <span className="text-xs opacity-90 mt-1">Production</span>
                 </button>
                 <button
                   type="button"
-                  onClick={() => {
-                    setEmail('viewer@example.com');
-                    setPassword('viewer123');
-                  }}
-                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  onClick={() => handleQuickLogin('analyst@manufacturing.com', 'demo123')}
+                  disabled={isLoading}
+                  className="group relative w-full inline-flex flex-col items-center justify-center py-3 px-4 border-2 border-transparent rounded-lg shadow-sm bg-gradient-to-br from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
-                  <span className="flex items-center">
-                    <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                    Viewer
-                  </span>
+                  <span className="text-sm font-semibold">Analyst</span>
+                  <span className="text-xs opacity-90 mt-1">Analytics</span>
                 </button>
               </div>
               
               <div className="mt-4 text-xs text-gray-500 dark:text-gray-400 text-center">
-                <div className="grid grid-cols-2 gap-x-6 gap-y-1">
-                  <div>admin@example.com / admin123</div>
-                  <div>operator@example.com / operator123</div>
-                  <div>analyst@example.com / analyst123</div>
-                  <div>viewer@example.com / viewer123</div>
+                <p className="mb-2 font-semibold">All demo accounts use password: demo123</p>
+                <div className="space-y-1">
+                  <div>Admin: Full system access</div>
+                  <div>Operator: Production management</div>
+                  <div>Analyst: Read and analyze data</div>
                 </div>
               </div>
             </div>

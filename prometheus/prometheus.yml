@@ -1,0 +1,84 @@
+# Prometheus Configuration for Manufacturing Analytics
+# Apache 2.0 Licensed - SaaS Compliant
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    environment: 'manufacturing'
+    region: 'production'
+
+# Load rules once and periodically evaluate them
+rule_files:
+  - "rules/*.yml"
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 30s
+
+  # Grafana OSS monitoring
+  - job_name: 'grafana-oss'
+    static_configs:
+      - targets: ['grafana-oss:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+  # Manufacturing application metrics
+  - job_name: 'manufacturing-app'
+    static_configs:
+      - targets: ['nextjs-app:3000']
+    metrics_path: '/api/metrics'
+    scrape_interval: 15s
+    scrape_timeout: 10s
+
+  # OEE metrics (manufacturing-specific)
+  - job_name: 'oee-metrics'
+    static_configs:
+      - targets: ['nextjs-app:3000']
+    metrics_path: '/api/metrics/oee'
+    scrape_interval: 30s
+    scrape_timeout: 15s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+      - target_label: service
+        replacement: 'manufacturing-oee'
+
+  # Quality metrics
+  - job_name: 'quality-metrics'
+    static_configs:
+      - targets: ['nextjs-app:3000']
+    metrics_path: '/api/metrics/quality'
+    scrape_interval: 60s
+    scrape_timeout: 15s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+      - target_label: service
+        replacement: 'manufacturing-quality'
+
+  # Equipment monitoring
+  - job_name: 'equipment-monitoring'
+    static_configs:
+      - targets: ['nextjs-app:3000']
+    metrics_path: '/api/metrics/equipment'
+    scrape_interval: 10s  # More frequent for equipment data
+    scrape_timeout: 5s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+      - target_label: service
+        replacement: 'manufacturing-equipment'
+
+  # Grafana Agent self-monitoring
+  - job_name: 'grafana-agent'
+    static_configs:
+      - targets: ['grafana-agent:12345']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+    scrape_timeout: 10s

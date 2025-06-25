@@ -1,0 +1,43 @@
+{
+  "type": "panel",
+  "name": "OEE Waterfall Panel",
+  "id": "manufacturing-oee-waterfall",
+  "info": {
+    "description": "Manufacturing OEE Waterfall Chart for Production Analysis",
+    "author": {
+      "name": "Manufacturing Analytics Platform",
+      "url": "https://github.com/manufacturing-analytics"
+    },
+    "keywords": ["manufacturing", "oee", "waterfall", "production"],
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "links": [
+      {
+        "name": "Documentation",
+        "url": "https://docs.manufacturing-analytics.com/panels/oee-waterfall"
+      }
+    ],
+    "screenshots": [],
+    "version": "1.0.0",
+    "updated": "2024-06-24"
+  },
+  "includes": [
+    {
+      "type": "panel",
+      "name": "OEE Waterfall"
+    }
+  ],
+  "state": "stable",
+  "signature": "unsigned",
+  "dependencies": {
+    "grafanaDependency": ">=8.0.0",
+    "plugins": []
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/manufacturing-analytics/grafana-panels"
+  }
+}

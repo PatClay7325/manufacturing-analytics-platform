@@ -1,0 +1,202 @@
+{
+  "Comment": "Orchestrates comprehensive backup process with validation and replication",
+  "StartAt": "InitializeBackup",
+  "States": {
+    "InitializeBackup": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:${AWS_REGION}:${AWS_ACCOUNT_ID}:function:dr-update-state",
+      "Parameters": {
+        "operationId.$": "$.operationId",
+        "status": "in_progress",
+        "checkpoint": {
+          "name": "backup_initialized",
+          "data": {
+            "instanceId.$": "$.instanceId",
+            "startTime.$": "$$.State.EnteredTime"
+          }
+        }
+      },
+      "ResultPath": "$.stateUpdate",
+      "Next": "CreateSnapshot"
+    },
+    "CreateSnapshot": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:rds:createDBSnapshot",
+      "Parameters": {
+        "DBInstanceIdentifier.$": "$.instanceId",
+        "DBSnapshotIdentifier.$": "$.snapshotId"
+      },
+      "ResultPath": "$.snapshot",
+      "Next": "WaitForSnapshot",
+      "Retry": [
+        {
+          "ErrorEquals": ["States.TaskFailed"],
+          "IntervalSeconds": 30,
+          "MaxAttempts": 3,
+          "BackoffRate": 2
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "HandleBackupFailure"
+        }
+      ]
+    },
+    "WaitForSnapshot": {
+      "Type": "Wait",
+      "Seconds": 60,
+      "Next": "CheckSnapshotStatus"
+    },
+    "CheckSnapshotStatus": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:rds:describeDBSnapshots",
+      "Parameters": {
+        "DBSnapshotIdentifier.$": "$.snapshotId"
+      },
+      "ResultPath": "$.snapshotStatus",
+      "Next": "IsSnapshotComplete"
+    },
+    "IsSnapshotComplete": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.snapshotStatus.DBSnapshots[0].Status",
+          "StringEquals": "available",
+          "Next": "ValidateBackup"
+        },
+        {
+          "Variable": "$.snapshotStatus.DBSnapshots[0].Status",
+          "StringEquals": "failed",
+          "Next": "HandleBackupFailure"
+        }
+      ],
+      "Default": "WaitForSnapshot"
+    },
+    "ValidateBackup": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:${AWS_REGION}:${AWS_ACCOUNT_ID}:function:dr-validate-backup",
+      "Parameters": {
+        "snapshotId.$": "$.snapshotId",
+        "region.$": "$.region",
+        "operationId.$": "$.operationId"
+      },
+      "ResultPath": "$.validationResult",
+      "Next": "IsValidationSuccessful",
+      "Retry": [
+        {
+          "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException"],
+          "IntervalSeconds": 10,
+          "MaxAttempts": 2,
+          "BackoffRate": 2
+        }
+      ]
+    },
+    "IsValidationSuccessful": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.validationResult.valid",
+          "BooleanEquals": true,
+          "Next": "CheckCrossRegionBackup"
+        }
+      ],
+      "Default": "HandleValidationFailure"
+    },
+    "CheckCrossRegionBackup": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.crossRegionBackup",
+          "BooleanEquals": true,
+          "Next": "ReplicateToRegions"
+        }
+      ],
+      "Default": "UpdateSuccessState"
+    },
+    "ReplicateToRegions": {
+      "Type": "Map",
+      "ItemsPath": "$.targetRegions",
+      "Parameters": {
+        "sourceSnapshotId.$": "$.snapshotId",
+        "sourceRegion.$": "$.region",
+        "targetRegion.$": "$$.Map.Item.Value",
+        "operationId.$": "$.operationId"
+      },
+      "MaxConcurrency": 3,
+      "ResultPath": "$.replicationResults",
+      "Iterator": {
+        "StartAt": "ReplicateSnapshot",
+        "States": {
+          "ReplicateSnapshot": {
+            "Type": "Task",
+            "Resource": "arn:aws:lambda:${AWS_REGION}:${AWS_ACCOUNT_ID}:function:dr-replicate-to-region",
+            "End": true,
+            "Retry": [
+              {
+                "ErrorEquals": ["States.TaskFailed"],
+                "IntervalSeconds": 60,
+                "MaxAttempts": 3,
+                "BackoffRate": 2
+              }
+            ]
+          }
+        }
+      },
+      "Next": "UpdateSuccessState"
+    },
+    "UpdateSuccessState": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:${AWS_REGION}:${AWS_ACCOUNT_ID}:function:dr-update-state",
+      "Parameters": {
+        "operationId.$": "$.operationId",
+        "status": "completed",
+        "result": {
+          "snapshotId.$": "$.snapshotId",
+          "validationResult.$": "$.validationResult",
+          "replicationResults.$": "$.replicationResults"
+        }
+      },
+      "ResultPath": "$.finalState",
+      "Next": "BackupSuccess"
+    },
+    "BackupSuccess": {
+      "Type": "Succeed"
+    },
+    "HandleBackupFailure": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:${AWS_REGION}:${AWS_ACCOUNT_ID}:function:dr-update-state",
+      "Parameters": {
+        "operationId.$": "$.operationId",
+        "status": "failed",
+        "error": {
+          "code": "BACKUP_FAILED",
+          "message": "Backup creation failed",
+          "details.$": "$.snapshot"
+        }
+      },
+      "ResultPath": "$.errorState",
+      "Next": "BackupFailed"
+    },
+    "HandleValidationFailure": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:${AWS_REGION}:${AWS_ACCOUNT_ID}:function:dr-update-state",
+      "Parameters": {
+        "operationId.$": "$.operationId",
+        "status": "failed",
+        "error": {
+          "code": "VALIDATION_FAILED",
+          "message": "Backup validation failed",
+          "details.$": "$.validationResult"
+        }
+      },
+      "ResultPath": "$.errorState",
+      "Next": "BackupFailed"
+    },
+    "BackupFailed": {
+      "Type": "Fail",
+      "Error": "BackupOrchestrationFailed",
+      "Cause": "Backup process failed"
+    }
+  }
+}

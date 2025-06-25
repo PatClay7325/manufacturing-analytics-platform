@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/database';
 import { z } from 'zod';
 
 // Request schema
@@ -103,19 +103,25 @@ async function getIntelligentManufacturingData(query: string) {
     }
     context.queryAnalysis.detectedPatterns = detectedPatterns;
 
-    // Always get basic enterprise info (lightweight)
-    const enterprise = await prisma.enterprise.findFirst({
+    // Always get basic site info (lightweight)
+    const sites = await prisma.manufacturingSite.findMany({
       include: {
-        EnterpriseKPISummary: true,
-        Site: {
+        areas: {
           include: {
-            SiteKPISummary: true,
+            workCenters: {
+              include: {
+                equipment: {
+                  take: 2,
+                },
+              },
+            },
           },
         },
       },
+      take: 3,
     });
-    context.enterprise = enterprise;
-    context.queryAnalysis.dataFetched.push('enterprise');
+    context.sites = sites;
+    context.queryAnalysis.dataFetched.push('sites');
 
     // Equipment-specific queries
     if (detectedPatterns.includes('EQUIPMENT_SPECIFIC')) {
@@ -136,24 +142,24 @@ async function getIntelligentManufacturingData(query: string) {
         equipmentWhere.equipmentType = { contains: 'Grinding' };
       }
 
-      const equipment = await prisma.workUnit.findMany({
+      const equipment = await prisma.equipment.findMany({
         where: equipmentWhere,
         take: queryLower.includes('all') ? 50 : 5,
         include: {
-          WorkCenter: {
+          workCenter: {
             include: {
-              Area: {
+              area: {
                 include: {
-                  Site: true,
+                  site: true,
                 },
               },
             },
           },
-          Alert: {
-            where: { status: 'active' },
-            take: 3,
+          oeeMetrics: {
+            orderBy: { timestamp: 'desc' },
+            take: 1,
           },
-          PerformanceMetric: {
+          performanceMetrics: {
             orderBy: { timestamp: 'desc' },
             take: 1,
           },
@@ -170,25 +176,24 @@ async function getIntelligentManufacturingData(query: string) {
       
       let siteWhere: any = {};
       if (queryLower.includes('detroit') || queryLower.includes('america') || queryLower.includes('us')) {
-        siteWhere.code = 'NA-HUB';
+        siteWhere.siteCode = 'NA-HUB';
       } else if (queryLower.includes('stuttgart') || queryLower.includes('germany') || queryLower.includes('europe')) {
-        siteWhere.code = 'EU-CENTER';
+        siteWhere.siteCode = 'EU-CENTER';
       } else if (queryLower.includes('yokohama') || queryLower.includes('japan') || queryLower.includes('asia')) {
-        siteWhere.code = 'APAC-FAC';
+        siteWhere.siteCode = 'APAC-FAC';
       }
 
-      const sites = await prisma.site.findMany({
+      const sites = await prisma.manufacturingSite.findMany({
         where: siteWhere,
         include: {
-          SiteKPISummary: true,
-          Area: {
+          areas: {
             include: {
-              WorkCenter: {
+              workCenters: {
+                take: 3,
                 include: {
-                  WorkUnit: {
-                    take: 3,
+                  equipment: {
                     include: {
-                      PerformanceMetric: {
+                      oeeMetrics: {
                         orderBy: { timestamp: 'desc' },
                         take: 1,
                       },
@@ -227,16 +232,15 @@ async function getIntelligentManufacturingData(query: string) {
         timeFilter.setHours(timeFilter.getHours() - 4); // Default 4 hours
       }
 
-      const metrics = await prisma.metric.findMany({
+      const metrics = await prisma.factPerformanceMetric.findMany({
         where: {
-          name: metricNames.length > 0 ? { in: metricNames } : undefined,
           timestamp: { gte: timeFilter },
         },
         include: {
-          WorkUnit: {
+          equipment: {
             select: {
-              name: true,
-              code: true,
+              equipmentName: true,
+              equipmentCode: true,
               equipmentType: true,
             },
           },
@@ -260,21 +264,22 @@ async function getIntelligentManufacturingData(query: string) {
         alertWhere.severity = 'medium';
       }
 
-      const alerts = await prisma.alert.findMany({
-        where: alertWhere,
+      // For now, use equipment state data as proxy for alerts
+      const alerts = await prisma.factEquipmentState.findMany({
+        where: {
+          stateCategory: { in: ['Unscheduled_Downtime'] },
+          timestamp: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+        },
         include: {
-          WorkUnit: {
+          equipment: {
             select: {
-              name: true,
-              code: true,
+              equipmentName: true,
+              equipmentCode: true,
               equipmentType: true,
             },
           },
         },
-        orderBy: [
-          { severity: 'desc' },
-          { timestamp: 'desc' },
-        ],
+        orderBy: { timestamp: 'desc' },
         take: 10,
       });
       
@@ -286,18 +291,18 @@ async function getIntelligentManufacturingData(query: string) {
     if (detectedPatterns.includes('QUALITY_SPECIFIC')) {
       console.log('🎯 Fetching quality data...');
       
-      const qualityMetrics = await prisma.qualityMetric.findMany({
+      const qualityMetrics = await prisma.factOeeMetric.findMany({
         where: {
           timestamp: {
             gte: new Date(Date.now() - 24 * 60 * 60 * 1000), // Last 24 hours
           },
-          isWithinSpec: queryLower.includes('issue') || queryLower.includes('problem') ? false : undefined,
+          quality: queryLower.includes('issue') || queryLower.includes('problem') ? { lt: 0.95 } : undefined,
         },
         include: {
-          WorkUnit: {
+          equipment: {
             select: {
-              name: true,
-              code: true,
+              equipmentName: true,
+              equipmentCode: true,
               equipmentType: true,
             },
           },
@@ -314,19 +319,18 @@ async function getIntelligentManufacturingData(query: string) {
     if (detectedPatterns.includes('KPI_SPECIFIC')) {
       console.log('📈 Fetching KPI data...');
       
-      const performanceData = await prisma.performanceMetric.findMany({
+      const performanceData = await prisma.factOeeMetric.findMany({
         where: {
           timestamp: {
             gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // Last 7 days
           },
         },
         include: {
-          WorkUnit: {
+          equipment: {
             select: {
-              name: true,
-              code: true,
+              equipmentName: true,
+              equipmentCode: true,
               equipmentType: true,
-              status: true,
             },
           },
         },
@@ -343,35 +347,35 @@ async function getIntelligentManufacturingData(query: string) {
       console.log('📋 Fetching general overview...');
       
       const [generalEquipment, generalAlerts, recentMetrics] = await Promise.all([
-        prisma.workUnit.findMany({
+        prisma.equipment.findMany({
           take: 5,
           include: {
-            PerformanceMetric: {
+            oeeMetrics: {
               orderBy: { timestamp: 'desc' },
               take: 1,
             },
-            Alert: {
-              where: { status: 'active' },
+            performanceMetrics: {
+              orderBy: { timestamp: 'desc' },
               take: 1,
             },
           },
         }),
-        prisma.alert.findMany({
-          where: { status: 'active' },
+        prisma.factEquipmentState.findMany({
+          where: { stateCategory: 'Unscheduled_Downtime' },
           take: 5,
-          orderBy: { severity: 'desc' },
+          orderBy: { timestamp: 'desc' },
           include: {
-            WorkUnit: {
-              select: { name: true, equipmentType: true },
+            equipment: {
+              select: { equipmentName: true, equipmentType: true },
             },
           },
         }),
-        prisma.metric.findMany({
+        prisma.factPerformanceMetric.findMany({
           take: 10,
           orderBy: { timestamp: 'desc' },
           include: {
-            WorkUnit: {
-              select: { name: true, equipmentType: true },
+            equipment: {
+              select: { equipmentName: true, equipmentType: true },
             },
           },
         }),
@@ -444,9 +448,20 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Fallback to original intelligent query processing
-    console.log('🤖 Using standard intelligent query processing...');
-    const context = await getIntelligentManufacturingData(lastUserMessage);
+    // Fallback to fast query processing for better performance
+    console.log('🤖 Using fast query processing...');
+    
+    // Import the fast processor
+    const { processFastQuery } = await import('@/lib/fastQueryProcessor');
+    const fastResult = await processFastQuery(lastUserMessage);
+    
+    console.log(`⚡ Fast query completed in ${fastResult.executionTime}ms`);
+    
+    // Create simplified context for Ollama
+    const context = {
+      queryAnalysis: { type: fastResult.queryType, executionTime: fastResult.executionTime },
+      manufacturingData: fastResult.data
+    };
 
     // Build enhanced messages with context
     const messagesWithContext = [

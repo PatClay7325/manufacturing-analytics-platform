@@ -1,71 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { manufacturingAgent } from '@/lib/agents/ManufacturingEngineeringAgent';
-import { z } from 'zod';
-
-// Request schema validation
-const ExecuteRequestSchema = z.object({
-  query: z.string().min(1, 'Query is required'),
-  parameters: z.object({
-    sessionId: z.string().optional(),
-    context: z.any().optional(),
-  }).optional(),
-});
+import { prisma } from '@/lib/database/prisma';
+import { ManufacturingEngineeringAgent } from '@/lib/agents/ManufacturingEngineeringAgent';
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const validatedData = ExecuteRequestSchema.parse(body);
-    
-    const { query, parameters } = validatedData;
-    
-    console.log(`🤖 Manufacturing Engineering Agent executing query: "${query}"`);
-    
-    // Execute the manufacturing analysis
-    const result = await manufacturingAgent.execute(query, parameters?.context);
-    
-    console.log(`✅ Analysis completed in ${result.executionTime}ms with ${result.dataPoints} data points`);
-    
+    const { query, context } = await request.json();
+
+    // Initialize the agent
+    const agent = new ManufacturingEngineeringAgent();
+
+    // Execute the query
+    const result = await agent.execute(query, context);
+
     return NextResponse.json({
       success: true,
-      data: result,
-      timestamp: new Date().toISOString(),
+      data: {
+        content: result.content,
+        confidence: result.confidence,
+        insights: result.insights || [],
+        visualizations: result.visualizations || [],
+        references: result.references || [],
+        analysisType: result.analysisType,
+        executionTime: result.executionTime,
+        dataPoints: result.dataPoints
+      }
     });
-    
+
   } catch (error) {
-    console.error('❌ Manufacturing Engineering Agent execution error:', error);
-    
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Invalid request format', 
-          details: error.errors 
-        },
-        { status: 400 }
-      );
-    }
-    
+    console.error('Manufacturing Engineering Agent error:', error);
     return NextResponse.json(
       { 
         success: false, 
-        error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Agent execution failed' 
       },
       { status: 500 }
     );
   }
-}
-
-export async function GET() {
-  return NextResponse.json({
-    message: 'Manufacturing Engineering Agent Execute endpoint',
-    usage: 'POST with { query: string, parameters?: { sessionId?: string, context?: any } }',
-    example: {
-      query: 'What is my current OEE and which equipment needs attention?',
-      parameters: {
-        sessionId: 'optional-session-id',
-        context: {}
-      }
-    }
-  });
 }

@@ -1,0 +1,39 @@
+services:
+  # Manufacturing Analytics Platform
+  manufacturing-app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/manufacturing
+      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-your-secret-key-here}
+    depends_on:
+      - postgres
+    networks:
+      - manufacturing-net
+
+  # PostgreSQL with TimescaleDB
+  postgres:
+    image: timescale/timescaledb:latest-pg15
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=manufacturing
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - manufacturing-net
+
+volumes:
+  postgres-data:
+    driver: local
+
+networks:
+  manufacturing-net:
+    driver: bridge

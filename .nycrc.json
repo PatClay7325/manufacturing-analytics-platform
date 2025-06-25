@@ -1,0 +1,35 @@
+{
+  "all": true,
+  "include": [
+    "src/**/*.{ts,tsx}",
+    "!src/**/*.d.ts",
+    "!src/**/*.test.{ts,tsx}",
+    "!src/**/*.spec.{ts,tsx}",
+    "!src/test-utils/**",
+    "!src/mocks/**",
+    "!src/**/*.config.ts",
+    "!src/**/types.ts"
+  ],
+  "exclude": [
+    "node_modules/",
+    "tests/",
+    "**/*.d.ts",
+    "**/*.config.{js,ts}",
+    "**/mockServiceWorker.js",
+    "src/test-utils/",
+    "src/mocks/",
+    "src/instrumentation.ts.disabled"
+  ],
+  "reporter": ["text", "json", "html", "lcov"],
+  "check-coverage": true,
+  "lines": 100,
+  "functions": 100,
+  "branches": 100,
+  "statements": 100,
+  "watermarks": {
+    "lines": [95, 100],
+    "functions": [95, 100],
+    "branches": [95, 100],
+    "statements": [95, 100]
+  }
+}

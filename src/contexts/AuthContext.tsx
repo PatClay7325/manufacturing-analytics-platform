@@ -63,31 +63,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   // Check authentication status on mount
+  // Check auth on mount
   useEffect(() => {
-    // In development, use mock auth to avoid API errors
-    if (process.env.NODE_ENV === 'development') {
-      setUser({
-        id: '1',
-        email: 'admin@manufacturing.com',
-        name: 'Admin User',
-        role: 'admin',
-        department: 'Engineering',
-        permissions: ['admin:all', 'dashboard:view', 'dashboard:edit'],
-        site: {
-          id: 'site-1',
-          name: 'Main Factory',
-          enterprise: {
-            id: 'enterprise-1',
-            name: 'Manufacturing Corp'
-          }
-        }
-      });
-      setLoading(false);
-    } else {
-      checkAuth();
-    }
+    checkAuth();
   }, []);
-
+  
   // Redirect logic based on auth status
   useEffect(() => {
     if (!loading) {
@@ -96,7 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!user && !isPublicRoute && pathname !== '/') {
         router.push('/login');
       } else if (user && (pathname === '/login' || pathname === '/register')) {
-        router.push('/dashboard');
+        router.push('/');
       }
     }
   }, [user, loading, pathname, router]);
@@ -104,6 +84,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const checkAuth = async () => {
     try {
       setLoading(true);
+      
+      // DEVELOPMENT AUTO-LOGIN
+      if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_DEV_AUTO_LOGIN === 'true') {
+        console.log('🔐 Development auto-login enabled');
+        
+        // Try to get current user first
+        try {
+          const userData = await authApi.getCurrentUser();
+          setUser(userData);
+          setError(null);
+          return;
+        } catch (e) {
+          // If not logged in, auto-login
+          console.log('🚀 Performing development auto-login...');
+          
+          const response = await fetch('/api/auth/dev-login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            setUser(data.user);
+            console.log('✅ Auto-login successful!');
+            return;
+          }
+        }
+      }
+      
       const userData = await authApi.getCurrentUser();
       setUser(userData);
       setError(null);
@@ -122,14 +131,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true);
       setError(null);
+      
       const response = await authApi.login(email, password, remember);
-      
-      // The API sets an HTTP-only cookie, so we don't need to handle it here
-      // Just store the user data
       setUser(response.user);
-      
-      // Navigate to dashboard
-      router.push('/dashboard');
+      router.push('/');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Login failed';
       setError(errorMessage);
@@ -142,9 +147,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     try {
       setLoading(true);
-      await authApi.logout();
       
-      // The API will clear the HTTP-only cookie
+      await authApi.logout();
       setUser(null);
       router.push('/login');
     } catch (err) {

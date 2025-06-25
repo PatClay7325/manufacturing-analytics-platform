@@ -169,9 +169,8 @@ async function testMixedLoad(config: any, loadConfig: any) {
   
   // Simulate real-world mixed load
   const scenarios = [
-    { type: 'chat', endpoint: '/api/chat/manufacturing' },
+    { type: 'chat', endpoint: '/api/chat' },
     { type: 'metrics', endpoint: '/api/test-db' },
-    { type: 'stream', endpoint: '/api/chat/stream-direct' },
   ];
   
   for (let batch = 0; batch < loadConfig.requestsPerBatch; batch++) {

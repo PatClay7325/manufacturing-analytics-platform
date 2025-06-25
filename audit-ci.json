@@ -1,0 +1,14 @@
+{
+  "low": true,
+  "moderate": true,
+  "high": true,
+  "critical": true,
+  "report-type": "summary",
+  "advisories": [],
+  "allowlist": [],
+  "exclude": ["GHSA-", "CVE-"],
+  "path-allowlist": [
+    "devDependencies"
+  ],
+  "package-manager": "npm"
+}

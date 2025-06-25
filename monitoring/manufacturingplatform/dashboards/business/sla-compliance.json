@@ -1,0 +1,773 @@
+{
+  "id": null,
+  "uid": "sla-compliance-monitoring",
+  "title": "SLA Compliance & Business KPIs",
+  "description": "Service Level Agreement compliance monitoring and business key performance indicators",
+  "version": 1,
+  "schemaVersion": 39,
+  "tags": ["sla", "compliance", "business", "kpi"],
+  "timezone": "browser",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "refresh": "1m",
+  "variables": {
+    "list": [
+      {
+        "name": "time_range",
+        "type": "interval",
+        "label": "SLA Period",
+        "description": "Time range for SLA calculation",
+        "auto": false,
+        "auto_count": 30,
+        "auto_min": "1h",
+        "current": {
+          "selected": false,
+          "text": "24h",
+          "value": "24h"
+        },
+        "options": [
+          {
+            "selected": false,
+            "text": "1h",
+            "value": "1h"
+          },
+          {
+            "selected": false,
+            "text": "6h",
+            "value": "6h"
+          },
+          {
+            "selected": true,
+            "text": "24h",
+            "value": "24h"
+          },
+          {
+            "selected": false,
+            "text": "7d",
+            "value": "7d"
+          },
+          {
+            "selected": false,
+            "text": "30d",
+            "value": "30d"
+          }
+        ]
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Overall System Uptime SLA",
+      "datasource": {
+        "uid": "prometheus-manufacturing",
+        "type": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(1 - (rate(http_requests_total{status_code=~\"5..\"}[$time_range]) / rate(http_requests_total[$time_range]))) * 100",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "red"
+              },
+              {
+                "value": 99,
+                "color": "yellow"
+              },
+              {
+                "value": 99.9,
+                "color": "green"
+              }
+            ]
+          },
+          "decimals": 3,
+          "custom": {
+            "displayMode": "gradient-gauge"
+          }
+        }
+      },
+      "options": {
+        "textMode": "value_and_name",
+        "graphMode": "area",
+        "colorMode": "background",
+        "justifyMode": "center",
+        "orientation": "auto"
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Manufacturing OEE SLA",
+      "datasource": {
+        "uid": "prometheus-manufacturing",
+        "type": "prometheus"
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "avg_over_time(manufacturing_oee_score[$time_range])",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "red"
+              },
+              {
+                "value": 70,
+                "color": "yellow"
+              },
+              {
+                "value": 85,
+                "color": "green"
+              }
+            ]
+          },
+          "decimals": 1,
+          "custom": {
+            "displayMode": "gradient-gauge"
+          }
+        }
+      },
+      "options": {
+        "textMode": "value_and_name",
+        "graphMode": "area",
+        "colorMode": "background",
+        "justifyMode": "center",
+        "orientation": "auto"
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "API Response Time SLA",
+      "datasource": {
+        "uid": "prometheus-manufacturing",
+        "type": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[$time_range])) * 1000",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "green"
+              },
+              {
+                "value": 200,
+                "color": "yellow"
+              },
+              {
+                "value": 500,
+                "color": "red"
+              }
+            ]
+          },
+          "decimals": 0
+        }
+      },
+      "options": {
+        "textMode": "value_and_name",
+        "graphMode": "area",
+        "colorMode": "background",
+        "justifyMode": "center",
+        "orientation": "auto"
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Data Quality SLA",
+      "datasource": {
+        "uid": "prometheus-manufacturing",
+        "type": "prometheus"
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "avg_over_time(manufacturing_quality_percent[$time_range])",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "red"
+              },
+              {
+                "value": 95,
+                "color": "yellow"
+              },
+              {
+                "value": 99,
+                "color": "green"
+              }
+            ]
+          },
+          "decimals": 2
+        }
+      },
+      "options": {
+        "textMode": "value_and_name",
+        "graphMode": "area",
+        "colorMode": "background",
+        "justifyMode": "center",
+        "orientation": "auto"
+      }
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "SLA Compliance Trends",
+      "datasource": {
+        "uid": "prometheus-manufacturing",
+        "type": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 4,
+        "w": 24,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(1 - (rate(http_requests_total{status_code=~\"5..\"}[5m]) / rate(http_requests_total[5m]))) * 100",
+          "legendFormat": "System Uptime SLA %"
+        },
+        {
+          "refId": "B",
+          "expr": "avg_over_time(manufacturing_oee_score[5m])",
+          "legendFormat": "Manufacturing OEE SLA %"
+        },
+        {
+          "refId": "C",
+          "expr": "avg_over_time(manufacturing_quality_percent[5m])",
+          "legendFormat": "Data Quality SLA %"
+        },
+        {
+          "refId": "D",
+          "expr": "100 - (histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) * 1000 / 5)",
+          "legendFormat": "API Performance SLA %"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "spanNulls": false,
+            "showPoints": "never"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "red"
+              },
+              {
+                "value": 95,
+                "color": "yellow"
+              },
+              {
+                "value": 99,
+                "color": "green"
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": ["mean", "last", "min"]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "type": "table",
+      "title": "SLA Violations Summary",
+      "datasource": {
+        "uid": "prometheus-manufacturing",
+        "type": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 12,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "ALERTS{alertstate=\"firing\",severity=\"critical\"}",
+          "format": "table",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "alertname"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Alert Name"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "severity"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Severity"
+              },
+              {
+                "id": "custom.displayMode",
+                "value": "color-background"
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "critical": {
+                        "color": "red",
+                        "index": 0,
+                        "text": "🚨 Critical"
+                      },
+                      "warning": {
+                        "color": "yellow",
+                        "index": 1,
+                        "text": "⚠️ Warning"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "displayName": "Severity",
+            "desc": true
+          }
+        ]
+      },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "job": true,
+              "instance": true
+            },
+            "indexByName": {
+              "alertname": 0,
+              "severity": 1,
+              "equipment_id": 2,
+              "description": 3
+            },
+            "renameByName": {
+              "equipment_id": "Equipment",
+              "description": "Description"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "bargauge",
+      "title": "Business KPIs Achievement",
+      "datasource": {
+        "uid": "prometheus-manufacturing",
+        "type": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 12,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "avg_over_time(manufacturing_oee_score[$time_range])",
+          "legendFormat": "OEE Target (85%)"
+        },
+        {
+          "refId": "B",
+          "expr": "avg_over_time(manufacturing_availability_percent[$time_range])",
+          "legendFormat": "Availability Target (95%)"
+        },
+        {
+          "refId": "C",
+          "expr": "avg_over_time(manufacturing_performance_percent[$time_range])",
+          "legendFormat": "Performance Target (90%)"
+        },
+        {
+          "refId": "D",
+          "expr": "avg_over_time(manufacturing_quality_percent[$time_range])",
+          "legendFormat": "Quality Target (99%)"
+        },
+        {
+          "refId": "E",
+          "expr": "(1 - (rate(http_requests_total{status_code=~\"5..\"}[$time_range]) / rate(http_requests_total[$time_range]))) * 100",
+          "legendFormat": "Uptime Target (99.9%)"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "red"
+              },
+              {
+                "value": 80,
+                "color": "yellow"
+              },
+              {
+                "value": 95,
+                "color": "green"
+              }
+            ]
+          },
+          "decimals": 1
+        }
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "text": {
+          "titleSize": 12,
+          "valueSize": 14
+        }
+      }
+    },
+    {
+      "id": 8,
+      "type": "stat",
+      "title": "Monthly Production Target",
+      "datasource": {
+        "uid": "prometheus-manufacturing",
+        "type": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 20,
+        "w": 6,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(increase(manufacturing_production_count_total[30d])) / 100000 * 100",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "red"
+              },
+              {
+                "value": 90,
+                "color": "yellow"
+              },
+              {
+                "value": 100,
+                "color": "green"
+              }
+            ]
+          },
+          "decimals": 1
+        }
+      },
+      "options": {
+        "textMode": "value_and_name",
+        "graphMode": "area",
+        "colorMode": "background",
+        "justifyMode": "center",
+        "orientation": "auto"
+      }
+    },
+    {
+      "id": 9,
+      "type": "stat",
+      "title": "Alert Resolution Time",
+      "datasource": {
+        "uid": "postgres-manufacturing",
+        "type": "postgres"
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 20,
+        "w": 6,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT\n  NOW() as time,\n  AVG(EXTRACT(EPOCH FROM (resolved_at - timestamp)) / 60) as avg_resolution_minutes\nFROM alerts\nWHERE resolved_at IS NOT NULL\n  AND timestamp >= NOW() - INTERVAL '$time_range'\n  AND severity = 'critical'",
+          "datasource": {
+            "uid": "postgres-manufacturing",
+            "type": "postgres"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "min",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "green"
+              },
+              {
+                "value": 15,
+                "color": "yellow"
+              },
+              {
+                "value": 60,
+                "color": "red"
+              }
+            ]
+          },
+          "decimals": 1
+        }
+      },
+      "options": {
+        "textMode": "value_and_name",
+        "graphMode": "area",
+        "colorMode": "background",
+        "justifyMode": "center",
+        "orientation": "auto"
+      }
+    },
+    {
+      "id": 10,
+      "type": "stat",
+      "title": "Data Completeness",
+      "datasource": {
+        "uid": "postgres-manufacturing",
+        "type": "postgres"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 20,
+        "w": 6,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT\n  NOW() as time,\n  (COUNT(*) FILTER (WHERE oee IS NOT NULL AND availability IS NOT NULL AND performance IS NOT NULL AND quality IS NOT NULL)::float / COUNT(*)::float) * 100 as data_completeness\nFROM performance_metrics\nWHERE timestamp >= NOW() - INTERVAL '$time_range'",
+          "datasource": {
+            "uid": "postgres-manufacturing",
+            "type": "postgres"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "red"
+              },
+              {
+                "value": 95,
+                "color": "yellow"
+              },
+              {
+                "value": 99,
+                "color": "green"
+              }
+            ]
+          },
+          "decimals": 2
+        }
+      },
+      "options": {
+        "textMode": "value_and_name",
+        "graphMode": "area",
+        "colorMode": "background",
+        "justifyMode": "center",
+        "orientation": "auto"
+      }
+    },
+    {
+      "id": 11,
+      "type": "stat",
+      "title": "Cost per Unit",
+      "datasource": {
+        "uid": "postgres-manufacturing",
+        "type": "postgres"
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 20,
+        "w": 6,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT\n  NOW() as time,\n  CASE \n    WHEN SUM(units_produced) > 0 \n    THEN (SUM(production_cost) / SUM(units_produced))\n    ELSE 0 \n  END as cost_per_unit\nFROM production_metrics\nWHERE timestamp >= NOW() - INTERVAL '$time_range'",
+          "datasource": {
+            "uid": "postgres-manufacturing",
+            "type": "postgres"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyUSD",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "green"
+              },
+              {
+                "value": 10,
+                "color": "yellow"
+              },
+              {
+                "value": 15,
+                "color": "red"
+              }
+            ]
+          },
+          "decimals": 2
+        }
+      },
+      "options": {
+        "textMode": "value_and_name",
+        "graphMode": "area",
+        "colorMode": "background",
+        "justifyMode": "center",
+        "orientation": "auto"
+      }
+    }
+  ]
+}

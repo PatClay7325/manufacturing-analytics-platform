@@ -1,0 +1,8 @@
+services:
+  nginx-proxy:
+    image: nginx:alpine
+    container_name: manufacturing-proxy
+    network_mode: host
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    restart: unless-stopped

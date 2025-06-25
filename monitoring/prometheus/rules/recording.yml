@@ -1,0 +1,116 @@
+groups:
+  - name: manufacturing.recording
+    interval: 30s
+    rules:
+      # OEE calculations
+      - record: instance:manufacturing_oee_average:rate5m
+        expr: |
+          avg by (equipment_id, equipment_name, line_id) (
+            avg_over_time(manufacturing_oee_score[5m])
+          )
+
+      - record: line:manufacturing_oee_average:rate1h
+        expr: |
+          avg by (line_id) (
+            avg_over_time(manufacturing_oee_score[1h])
+          )
+
+      # Production metrics
+      - record: instance:manufacturing_production_rate:rate5m
+        expr: |
+          sum by (equipment_id, product_type) (
+            rate(manufacturing_production_count_total[5m]) * 60
+          )
+
+      - record: line:manufacturing_production_total:increase1h
+        expr: |
+          sum by (line_id, product_type) (
+            increase(manufacturing_production_count_total[1h])
+          )
+
+      # Quality metrics
+      - record: instance:manufacturing_defect_rate:rate5m
+        expr: |
+          (
+            sum by (equipment_id) (rate(manufacturing_scrap_count_total[5m]))
+            /
+            sum by (equipment_id) (rate(manufacturing_production_count_total[5m]))
+          ) * 100
+
+      # Cycle time percentiles
+      - record: equipment:manufacturing_cycle_time_p50:5m
+        expr: |
+          histogram_quantile(0.50,
+            sum by (equipment_id, le) (
+              rate(manufacturing_cycle_time_seconds_bucket[5m])
+            )
+          )
+
+      - record: equipment:manufacturing_cycle_time_p95:5m
+        expr: |
+          histogram_quantile(0.95,
+            sum by (equipment_id, le) (
+              rate(manufacturing_cycle_time_seconds_bucket[5m])
+            )
+          )
+
+      - record: equipment:manufacturing_cycle_time_p99:5m
+        expr: |
+          histogram_quantile(0.99,
+            sum by (equipment_id, le) (
+              rate(manufacturing_cycle_time_seconds_bucket[5m])
+            )
+          )
+
+  - name: infrastructure.recording
+    interval: 30s
+    rules:
+      # CPU usage
+      - record: instance:node_cpu_utilization:rate5m
+        expr: |
+          100 - (avg by (instance) (
+            rate(node_cpu_seconds_total{mode="idle"}[5m])
+          ) * 100)
+
+      # Memory usage
+      - record: instance:node_memory_utilization:ratio
+        expr: |
+          1 - (
+            node_memory_MemAvailable_bytes
+            /
+            node_memory_MemTotal_bytes
+          )
+
+      # Disk usage
+      - record: instance:node_filesystem_usage:ratio
+        expr: |
+          1 - (
+            node_filesystem_avail_bytes{fstype!~"tmpfs|fuse.lxcfs"}
+            /
+            node_filesystem_size_bytes{fstype!~"tmpfs|fuse.lxcfs"}
+          )
+
+      # API performance
+      - record: job:http_request_duration_seconds:p50:5m
+        expr: |
+          histogram_quantile(0.50,
+            sum by (job, route, le) (
+              rate(http_request_duration_seconds_bucket[5m])
+            )
+          )
+
+      - record: job:http_request_duration_seconds:p95:5m
+        expr: |
+          histogram_quantile(0.95,
+            sum by (job, route, le) (
+              rate(http_request_duration_seconds_bucket[5m])
+            )
+          )
+
+      - record: job:http_request_duration_seconds:p99:5m
+        expr: |
+          histogram_quantile(0.99,
+            sum by (job, route, le) (
+              rate(http_request_duration_seconds_bucket[5m])
+            )
+          )

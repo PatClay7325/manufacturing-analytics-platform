@@ -1,0 +1,307 @@
+groups:
+  - name: manufacturing.oee
+    rules:
+      # Critical OEE threshold breach
+      - alert: OEE_Critical_Low
+        expr: |
+          (
+            SELECT oee 
+            FROM performance_metrics 
+            WHERE timestamp > NOW() - INTERVAL '5 minutes'
+            ORDER BY timestamp DESC 
+            LIMIT 1
+          ) < 50
+        for: 2m
+        labels:
+          severity: critical
+          category: manufacturing
+          component: oee
+        annotations:
+          summary: "Critical OEE threshold breach on {{ $labels.equipment }}"
+          description: "OEE has fallen to {{ $value }}% which is below the critical threshold of 50% for equipment {{ $labels.equipment }}"
+          runbook_url: "https://docs.company.com/runbooks/manufacturing/oee-critical"
+
+      # Warning OEE threshold breach
+      - alert: OEE_Warning_Low
+        expr: |
+          (
+            SELECT oee 
+            FROM performance_metrics 
+            WHERE timestamp > NOW() - INTERVAL '5 minutes'
+            ORDER BY timestamp DESC 
+            LIMIT 1
+          ) < 70
+        for: 5m
+        labels:
+          severity: warning
+          category: manufacturing
+          component: oee
+        annotations:
+          summary: "OEE below warning threshold on {{ $labels.equipment }}"
+          description: "OEE has fallen to {{ $value }}% which is below the warning threshold of 70% for equipment {{ $labels.equipment }}"
+
+  - name: manufacturing.availability
+    rules:
+      # Equipment availability critical
+      - alert: Equipment_Availability_Critical
+        expr: |
+          (
+            SELECT availability 
+            FROM performance_metrics 
+            WHERE timestamp > NOW() - INTERVAL '5 minutes'
+            ORDER BY timestamp DESC 
+            LIMIT 1
+          ) < 80
+        for: 3m
+        labels:
+          severity: critical
+          category: manufacturing
+          component: availability
+        annotations:
+          summary: "Equipment availability critically low on {{ $labels.equipment }}"
+          description: "Equipment availability has dropped to {{ $value }}% which is below the critical threshold of 80%"
+
+      # Unplanned downtime detected
+      - alert: Unplanned_Downtime_Detected
+        expr: |
+          (
+            SELECT COUNT(*) 
+            FROM alerts 
+            WHERE type = 'unplanned_downtime' 
+            AND status = 'active' 
+            AND timestamp > NOW() - INTERVAL '1 minute'
+          ) > 0
+        for: 0m
+        labels:
+          severity: critical
+          category: manufacturing
+          component: downtime
+        annotations:
+          summary: "Unplanned downtime detected on {{ $labels.equipment }}"
+          description: "Equipment {{ $labels.equipment }} has experienced unplanned downtime"
+          runbook_url: "https://docs.company.com/runbooks/manufacturing/unplanned-downtime"
+
+  - name: manufacturing.performance
+    rules:
+      # Performance efficiency low
+      - alert: Performance_Efficiency_Low
+        expr: |
+          (
+            SELECT performance 
+            FROM performance_metrics 
+            WHERE timestamp > NOW() - INTERVAL '5 minutes'
+            ORDER BY timestamp DESC 
+            LIMIT 1
+          ) < 75
+        for: 10m
+        labels:
+          severity: warning
+          category: manufacturing
+          component: performance
+        annotations:
+          summary: "Performance efficiency low on {{ $labels.equipment }}"
+          description: "Performance efficiency has dropped to {{ $value }}% which is below the expected threshold of 75%"
+
+      # Cycle time exceeded
+      - alert: Cycle_Time_Exceeded
+        expr: |
+          (
+            SELECT cycle_time 
+            FROM production_metrics 
+            WHERE timestamp > NOW() - INTERVAL '5 minutes'
+            ORDER BY timestamp DESC 
+            LIMIT 1
+          ) > 120 # 120% of target cycle time
+        for: 5m
+        labels:
+          severity: warning
+          category: manufacturing
+          component: cycle_time
+        annotations:
+          summary: "Cycle time exceeded on {{ $labels.equipment }}"
+          description: "Current cycle time is {{ $value }}% of target, indicating performance issues"
+
+  - name: manufacturing.quality
+    rules:
+      # Quality rate critical
+      - alert: Quality_Rate_Critical
+        expr: |
+          (
+            SELECT quality 
+            FROM performance_metrics 
+            WHERE timestamp > NOW() - INTERVAL '5 minutes'
+            ORDER BY timestamp DESC 
+            LIMIT 1
+          ) < 95
+        for: 1m
+        labels:
+          severity: critical
+          category: manufacturing
+          component: quality
+        annotations:
+          summary: "Quality rate critically low on {{ $labels.equipment }}"
+          description: "Quality rate has dropped to {{ $value }}% which is below the critical threshold of 95%"
+          runbook_url: "https://docs.company.com/runbooks/manufacturing/quality-critical"
+
+      # High scrap rate
+      - alert: High_Scrap_Rate
+        expr: |
+          (
+            SELECT 
+              CASE 
+                WHEN units_produced > 0 
+                THEN (units_scrapped::float / units_produced::float) * 100
+                ELSE 0 
+              END as scrap_rate
+            FROM production_metrics 
+            WHERE timestamp > NOW() - INTERVAL '5 minutes'
+            ORDER BY timestamp DESC 
+            LIMIT 1
+          ) > 5
+        for: 3m
+        labels:
+          severity: warning
+          category: manufacturing
+          component: scrap_rate
+        annotations:
+          summary: "High scrap rate detected on {{ $labels.equipment }}"
+          description: "Scrap rate has increased to {{ $value }}% which is above the acceptable threshold of 5%"
+
+  - name: manufacturing.production
+    rules:
+      # Production target missed
+      - alert: Production_Target_Missed
+        expr: |
+          (
+            SELECT 
+              SUM(units_produced) as hourly_production
+            FROM production_metrics 
+            WHERE timestamp > NOW() - INTERVAL '1 hour'
+          ) < 100 # Adjust based on your hourly target
+        for: 5m
+        labels:
+          severity: warning
+          category: manufacturing
+          component: production_target
+        annotations:
+          summary: "Hourly production target missed on {{ $labels.equipment }}"
+          description: "Hourly production of {{ $value }} units is below the target of 100 units"
+
+      # Production stopped
+      - alert: Production_Stopped
+        expr: |
+          (
+            SELECT COUNT(*) 
+            FROM production_metrics 
+            WHERE timestamp > NOW() - INTERVAL '10 minutes'
+          ) = 0
+        for: 10m
+        labels:
+          severity: critical
+          category: manufacturing
+          component: production_stop
+        annotations:
+          summary: "Production has stopped on {{ $labels.equipment }}"
+          description: "No production data received for the last 10 minutes from equipment {{ $labels.equipment }}"
+          runbook_url: "https://docs.company.com/runbooks/manufacturing/production-stopped"
+
+  - name: manufacturing.equipment
+    rules:
+      # Equipment temperature high
+      - alert: Equipment_Temperature_High
+        expr: |
+          (
+            SELECT temperature 
+            FROM sensor_data 
+            WHERE sensor_type = 'temperature' 
+            AND timestamp > NOW() - INTERVAL '1 minute'
+            ORDER BY timestamp DESC 
+            LIMIT 1
+          ) > 80 # Adjust based on your equipment specs
+        for: 2m
+        labels:
+          severity: warning
+          category: manufacturing
+          component: temperature
+        annotations:
+          summary: "Equipment temperature high on {{ $labels.equipment }}"
+          description: "Equipment temperature has reached {{ $value }}°C which is above the safe operating threshold"
+
+      # Equipment vibration anomaly
+      - alert: Equipment_Vibration_Anomaly
+        expr: |
+          (
+            SELECT vibration 
+            FROM sensor_data 
+            WHERE sensor_type = 'vibration' 
+            AND timestamp > NOW() - INTERVAL '1 minute'
+            ORDER BY timestamp DESC 
+            LIMIT 1
+          ) > 10 # Adjust based on your equipment specs
+        for: 5m
+        labels:
+          severity: warning
+          category: manufacturing
+          component: vibration
+        annotations:
+          summary: "Abnormal vibration detected on {{ $labels.equipment }}"
+          description: "Equipment vibration level of {{ $value }} is above normal operating parameters"
+
+      # Predictive maintenance due
+      - alert: Predictive_Maintenance_Due
+        expr: |
+          (
+            SELECT 
+              EXTRACT(EPOCH FROM (next_maintenance_date - NOW())) / 3600 as hours_until_maintenance
+            FROM work_units 
+            WHERE status = 'active'
+          ) < 24 # 24 hours notice
+        for: 0m
+        labels:
+          severity: info
+          category: manufacturing
+          component: maintenance
+        annotations:
+          summary: "Predictive maintenance due within 24 hours for {{ $labels.equipment }}"
+          description: "Equipment {{ $labels.equipment }} requires maintenance in {{ $value }} hours based on predictive analysis"
+
+  - name: manufacturing.alerts
+    rules:
+      # Too many active alerts
+      - alert: Too_Many_Active_Alerts
+        expr: |
+          (
+            SELECT COUNT(*) 
+            FROM alerts 
+            WHERE status = 'active' 
+            AND severity IN ('critical', 'warning')
+          ) > 10
+        for: 1m
+        labels:
+          severity: warning
+          category: manufacturing
+          component: alert_storm
+        annotations:
+          summary: "High number of active manufacturing alerts"
+          description: "There are currently {{ $value }} active alerts, which may indicate a system-wide issue"
+
+      # Critical alert unacknowledged
+      - alert: Critical_Alert_Unacknowledged
+        expr: |
+          (
+            SELECT COUNT(*) 
+            FROM alerts 
+            WHERE status = 'active' 
+            AND severity = 'critical' 
+            AND acknowledged_at IS NULL
+            AND timestamp < NOW() - INTERVAL '15 minutes'
+          ) > 0
+        for: 0m
+        labels:
+          severity: critical
+          category: manufacturing
+          component: alert_acknowledgment
+        annotations:
+          summary: "Critical manufacturing alert unacknowledged for 15+ minutes"
+          description: "{{ $value }} critical alerts have been active and unacknowledged for more than 15 minutes"
+          runbook_url: "https://docs.company.com/runbooks/manufacturing/critical-alert-response"

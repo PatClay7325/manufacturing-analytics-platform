@@ -1,8 +1,18 @@
 import { NextRequest } from 'next/server';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import bcrypt from 'bcrypt';
-import { prisma } from '@/lib/prisma';
+import bcrypt from 'bcryptjs';
+// import { prisma } from '@/lib/database';
+import { PrismaClient } from '@prisma/client';
+
+// Create a fresh Prisma client with the correct DATABASE_URL
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL || 'postgresql://analytics:development_password@localhost:5433/manufacturing?schema=public'
+    }
+  }
+});
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key-change-in-production';
@@ -564,4 +574,9 @@ export async function requireAuth(
   }
 
   return authResult;
+}
+
+export async function getSession(request: NextRequest): Promise<AuthUser | null> {
+  const authResult = await verifyAuth(request);
+  return authResult.authenticated ? authResult.user || null : null;
 }

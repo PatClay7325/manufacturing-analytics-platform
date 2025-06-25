@@ -1,19 +1,24 @@
 #!/bin/bash
 set -e
 
-# Create analytics_engine database if it doesn't exist
+echo "Initializing TimescaleDB and creating manufacturing database..."
+
+# The database is already created by POSTGRES_DB env var
+# Just need to enable TimescaleDB extension
+
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-    CREATE DATABASE analytics_engine;
-    GRANT ALL PRIVILEGES ON DATABASE analytics_engine TO $POSTGRES_USER;
+    CREATE EXTENSION IF NOT EXISTS timescaledb;
+    CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+    
+    -- Create a simple test table to verify everything works
+    CREATE TABLE IF NOT EXISTS test_connection (
+        id SERIAL PRIMARY KEY,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+    );
+    
+    INSERT INTO test_connection DEFAULT VALUES;
+    
+    SELECT 'Database initialization completed successfully' as status;
 EOSQL
 
-# Enable TimescaleDB extension on both databases
-psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "manufacturing" <<-EOSQL
-    CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;
-EOSQL
-
-psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "analytics_engine" <<-EOSQL
-    CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;
-EOSQL
-
-echo "Databases initialized with TimescaleDB extension"
+echo "✅ Database initialization completed"

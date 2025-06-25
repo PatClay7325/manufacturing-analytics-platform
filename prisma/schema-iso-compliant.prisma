@@ -1,0 +1,429 @@
+// ISO-Compliant Manufacturing Analytics Schema
+// Implements: ISO 22400 (OEE), ISO 9001 (Quality), ISO 14224 (Reliability)
+// This is the authoritative Prisma schema - single source of truth
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =====================================================
+// DIMENSION MODELS
+// =====================================================
+
+/// Calendar dimension with fiscal period support
+model DimDate {
+  date_id        Int      @id
+  date           DateTime @unique @db.Date
+  year           Int
+  quarter        Int
+  month          Int
+  week           Int
+  day_of_year    Int
+  day_of_month   Int
+  day_of_week    Int
+  day_name       String   @db.VarChar(10)
+  month_name     String   @db.VarChar(10)
+  is_weekend     Boolean
+  is_holiday     Boolean  @default(false)
+  fiscal_year    Int?
+  fiscal_quarter Int?
+  fiscal_period  Int?
+  
+  // Relations
+  production    FactProduction[]
+  downtime      FactDowntime[]
+  quality       FactQuality[]
+  scrap         FactScrap[]
+  
+  @@map("dim_date")
+}
+
+/// Time of day dimension (minute granularity)
+model DimTime {
+  time_id     Int      @id
+  time        DateTime @unique @db.Time
+  hour        Int
+  minute      Int
+  hour_24     String   @db.VarChar(2)
+  hour_12     String   @db.VarChar(2)
+  am_pm       String   @db.VarChar(2)
+  time_string String   @db.VarChar(8)
+  
+  // Relations
+  production       FactProduction[]
+  downtimeStart    FactDowntime[] @relation("DowntimeStart")
+  downtimeEnd      FactDowntime[] @relation("DowntimeEnd")
+  quality          FactQuality[]
+  scrap            FactScrap[]
+  
+  @@map("dim_time")
+}
+
+/// Work shift definitions
+model DimShift {
+  shift_id      Int      @id @default(autoincrement())
+  shift_name    String   @db.VarChar(50)
+  shift_code    String   @unique @db.VarChar(10)
+  start_time    DateTime @db.Time
+  end_time      DateTime @db.Time
+  break_minutes Int      @default(0)
+  is_active     Boolean  @default(true)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @default(now()) @updatedAt
+  
+  // Relations
+  production FactProduction[]
+  
+  @@map("dim_shift")
+}
+
+/// Equipment master data with flexible JSONB attributes
+model DimEquipment {
+  equipment_id       Int      @id @default(autoincrement())
+  equipment_code     String   @unique @db.VarChar(50)
+  equipment_name     String   @db.VarChar(100)
+  equipment_type     String   @db.VarChar(50)
+  manufacturer       String?  @db.VarChar(100)
+  model              String?  @db.VarChar(100)
+  serial_number      String?  @db.VarChar(100)
+  purchase_date      DateTime? @db.Date
+  commission_date    DateTime? @db.Date
+  location_code      String?  @db.VarChar(50)
+  department         String?  @db.VarChar(50)
+  cost_center        String?  @db.VarChar(20)
+  nominal_speed      Decimal? @db.Decimal(10, 2)
+  nominal_speed_unit String?  @db.VarChar(20)
+  attributes         Json     @default("{}")
+  is_active          Boolean  @default(true)
+  created_at         DateTime @default(now())
+  updated_at         DateTime @default(now()) @updatedAt
+  
+  // Relations
+  production   FactProduction[]
+  downtime     FactDowntime[]
+  quality      FactQuality[]
+  scrap        FactScrap[]
+  sensorEvents FactSensorEvent[]
+  
+  @@map("dim_equipment")
+}
+
+/// Product specifications
+model DimProduct {
+  product_id          Int      @id @default(autoincrement())
+  product_code        String   @unique @db.VarChar(50)
+  product_name        String   @db.VarChar(100)
+  product_family      String?  @db.VarChar(50)
+  product_group       String?  @db.VarChar(50)
+  standard_cycle_time Decimal? @db.Decimal(10, 3)
+  cycle_time_unit     String?  @db.VarChar(20)
+  weight_per_unit     Decimal? @db.Decimal(10, 3)
+  weight_unit         String?  @db.VarChar(20)
+  quality_specs       Json     @default("{}")
+  is_active           Boolean  @default(true)
+  created_at          DateTime @default(now())
+  updated_at          DateTime @default(now()) @updatedAt
+  
+  // Relations
+  production FactProduction[]
+  quality    FactQuality[]
+  scrap      FactScrap[]
+  
+  @@map("dim_product")
+}
+
+/// Standardized units of measure
+model DimUnitOfMeasure {
+  unit_id           Int      @id @default(autoincrement())
+  unit_code         String   @unique @db.VarChar(20)
+  unit_name         String   @db.VarChar(50)
+  unit_type         String   @db.VarChar(30) // 'time', 'weight', 'count', etc.
+  base_unit_code    String?  @db.VarChar(20)
+  conversion_factor Decimal  @default(1) @db.Decimal(15, 6)
+  created_at        DateTime @default(now())
+  
+  // Relations
+  sensorEvents FactSensorEvent[]
+  
+  @@map("dim_unit_of_measure")
+}
+
+/// Quality defect classifications
+model DimQualityDefectType {
+  defect_type_id   Int      @id @default(autoincrement())
+  defect_code      String   @unique @db.VarChar(20)
+  defect_name      String   @db.VarChar(100)
+  defect_category  String   @db.VarChar(50)
+  severity_level   Int      // 1-5 scale
+  is_scrap         Boolean  @default(false)
+  is_rework        Boolean  @default(false)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @default(now()) @updatedAt
+  
+  // Relations
+  scrap FactScrap[]
+  
+  @@map("dim_quality_defect_type")
+}
+
+/// Downtime categorization following ISO 14224
+model DimDowntimeReason {
+  reason_id             Int      @id @default(autoincrement())
+  reason_code           String   @unique @db.VarChar(20)
+  reason_description    String   @db.VarChar(200)
+  category_level_1      String   @db.VarChar(50) // 'Planned', 'Unplanned'
+  category_level_2      String   @db.VarChar(50) // 'Maintenance', 'Setup', etc.
+  category_level_3      String?  @db.VarChar(50)
+  impacts_availability  Boolean  @default(true)
+  impacts_performance   Boolean  @default(false)
+  impacts_quality       Boolean  @default(false)
+  created_at            DateTime @default(now())
+  updated_at            DateTime @default(now()) @updatedAt
+  
+  // Relations
+  downtime FactDowntime[]
+  
+  @@map("dim_downtime_reason")
+}
+
+/// Named date ranges for user-friendly queries
+model DimDateRange {
+  range_id   Int      @id @default(autoincrement())
+  name       String   @unique
+  start_date DateTime @db.Date
+  end_date   DateTime @db.Date
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+  
+  @@map("dim_date_range")
+}
+
+// =====================================================
+// FACT MODELS
+// =====================================================
+
+/// Core production events - the heart of OEE calculations
+model FactProduction {
+  production_id           BigInt   @id @default(autoincrement())
+  date_id                 Int
+  time_id                 Int
+  shift_id                Int
+  equipment_id            Int
+  product_id              Int
+  operator_id             String?  @db.VarChar(50)
+  work_order              String?  @db.VarChar(50)
+  batch_number            String?  @db.VarChar(50)
+  planned_production_time BigInt   // seconds - stored as BigInt
+  operating_time          BigInt   // seconds - stored as BigInt
+  total_parts_produced    Int
+  good_parts              Int
+  cycle_time_actual       Decimal? @db.Decimal(10, 3)
+  cycle_time_standard     Decimal? @db.Decimal(10, 3)
+  speed_rate              Decimal? @db.Decimal(5, 2)
+  created_at              DateTime @default(now())
+  
+  // Relations
+  date      DimDate      @relation(fields: [date_id], references: [date_id])
+  time      DimTime      @relation(fields: [time_id], references: [time_id])
+  shift     DimShift     @relation(fields: [shift_id], references: [shift_id])
+  equipment DimEquipment @relation(fields: [equipment_id], references: [equipment_id])
+  product   DimProduct   @relation(fields: [product_id], references: [product_id])
+  
+  downtime  FactDowntime[]
+  quality   FactQuality[]
+  scrap     FactScrap[]
+  
+  @@map("fact_production")
+}
+
+/// Equipment downtime records for availability calculations
+model FactDowntime {
+  downtime_id       BigInt   @id @default(autoincrement())
+  production_id     BigInt?
+  equipment_id      Int
+  date_id           Int
+  time_start_id     Int
+  time_end_id       Int
+  reason_id         Int
+  downtime_duration BigInt   // seconds - stored as BigInt
+  operator_id       String?  @db.VarChar(50)
+  comments          String?  @db.Text
+  created_at        DateTime @default(now())
+  
+  // Relations
+  production  FactProduction?    @relation(fields: [production_id], references: [production_id])
+  equipment   DimEquipment       @relation(fields: [equipment_id], references: [equipment_id])
+  date        DimDate            @relation(fields: [date_id], references: [date_id])
+  time_start  DimTime            @relation("DowntimeStart", fields: [time_start_id], references: [time_id])
+  time_end    DimTime            @relation("DowntimeEnd", fields: [time_end_id], references: [time_id])
+  reason      DimDowntimeReason  @relation(fields: [reason_id], references: [reason_id])
+  
+  @@map("fact_downtime")
+}
+
+/// Quality inspection results for quality rate calculations
+model FactQuality {
+  quality_id      BigInt   @id @default(autoincrement())
+  production_id   BigInt?
+  date_id         Int
+  time_id         Int
+  equipment_id    Int
+  product_id      Int
+  inspection_type String   @db.VarChar(50)
+  sample_size     Int
+  defects_found   Int      @default(0)
+  defect_details  Json     @default("[]")
+  inspector_id    String?  @db.VarChar(50)
+  created_at      DateTime @default(now())
+  
+  // Relations
+  production FactProduction? @relation(fields: [production_id], references: [production_id])
+  date       DimDate         @relation(fields: [date_id], references: [date_id])
+  time       DimTime         @relation(fields: [time_id], references: [time_id])
+  equipment  DimEquipment    @relation(fields: [equipment_id], references: [equipment_id])
+  product    DimProduct      @relation(fields: [product_id], references: [product_id])
+  
+  @@map("fact_quality")
+}
+
+/// Scrap and waste tracking for cost analysis
+model FactScrap {
+  scrap_id       BigInt   @id @default(autoincrement())
+  production_id  BigInt?
+  date_id        Int
+  time_id        Int
+  equipment_id   Int
+  product_id     Int
+  defect_type_id Int
+  scrap_quantity Int
+  scrap_weight   Decimal? @db.Decimal(10, 3)
+  scrap_cost     Decimal? @db.Decimal(10, 2)
+  can_rework     Boolean  @default(false)
+  operator_id    String?  @db.VarChar(50)
+  created_at     DateTime @default(now())
+  
+  // Relations
+  production  FactProduction?       @relation(fields: [production_id], references: [production_id])
+  date        DimDate               @relation(fields: [date_id], references: [date_id])
+  time        DimTime               @relation(fields: [time_id], references: [time_id])
+  equipment   DimEquipment          @relation(fields: [equipment_id], references: [equipment_id])
+  product     DimProduct            @relation(fields: [product_id], references: [product_id])
+  defect_type DimQualityDefectType  @relation(fields: [defect_type_id], references: [defect_type_id])
+  
+  @@map("fact_scrap")
+}
+
+/// High-volume sensor data - partitioned by TimescaleDB
+model FactSensorEvent {
+  event_id     BigInt   @default(autoincrement())
+  equipment_id Int
+  event_ts     DateTime
+  parameter    String   @db.VarChar(100)
+  value        Decimal  @db.Decimal
+  unit_id      Int?
+  quality_flag String?  @db.VarChar(10)
+  created_at   DateTime @default(now())
+  
+  // Relations
+  equipment DimEquipment      @relation(fields: [equipment_id], references: [equipment_id])
+  unit      DimUnitOfMeasure? @relation(fields: [unit_id], references: [unit_id])
+  
+  @@id([event_id, event_ts])
+  @@map("fact_sensor_event")
+}
+
+// =====================================================
+// AI-READY COMPONENTS
+// =====================================================
+
+/// Synonym mapping for natural language understanding
+model OntologyTerm {
+  term       String   @id
+  model_name String
+  field_name String
+  priority   Int      @default(0)
+  examples   String[]
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+  
+  @@map("ontology_term")
+}
+
+/// Complete audit trail with JSONB for flexibility
+model AuditLog {
+  log_id      BigInt   @id @default(autoincrement())
+  log_ts      DateTime @default(now())
+  username    String   @db.VarChar(100)
+  action      String   @db.VarChar(20) // INSERT, UPDATE, DELETE
+  table_name  String   @db.VarChar(100)
+  record_id   String
+  before_data Json?
+  after_data  Json?
+  client_ip   String?  @db.Inet
+  user_agent  String?  @db.Text
+  
+  @@map("audit_log")
+}
+
+// =====================================================
+// MATERIALIZED VIEWS (Read-only models)
+// =====================================================
+
+/// Daily OEE metrics pre-calculated for performance
+model ViewOeeDaily {
+  date_id             Int
+  shift_id            Int
+  equipment_id        Int
+  product_id          Int
+  availability        Decimal? @db.Decimal(5, 2)
+  performance         Decimal? @db.Decimal(5, 2)
+  quality             Decimal? @db.Decimal(5, 2)
+  oee                 Decimal? @db.Decimal(5, 2)
+  planned_time        BigInt?
+  operating_time      BigInt?
+  downtime            BigInt?
+  total_parts         Int?
+  good_parts          Int?
+  
+  @@unique([date_id, shift_id, equipment_id, product_id])
+  @@map("view_oee_daily")
+  @@ignore
+}
+
+/// Reliability metrics (MTBF, MTTR) for maintenance
+model ViewReliabilitySummary {
+  equipment_id           Int
+  date_id                Int
+  total_operating_time   BigInt?
+  failure_count          Int?
+  total_downtime         BigInt?
+  mtbf_hours             Decimal? @db.Decimal(10, 2)
+  mttr_hours             Decimal? @db.Decimal(10, 2)
+  availability_percentage Decimal? @db.Decimal(5, 2)
+  
+  @@unique([equipment_id, date_id])
+  @@map("view_reliability_summary")
+  @@ignore
+}
+
+/// Scrap analysis summary for quality improvement
+model ViewScrapSummary {
+  date_id              Int
+  equipment_id         Int
+  product_id           Int
+  defect_type_id       Int
+  scrap_events         Int?
+  total_scrap_quantity Int?
+  total_scrap_cost     Decimal? @db.Decimal(10, 2)
+  rework_quantity      Int?
+  avg_scrap_per_event  Decimal? @db.Decimal(10, 2)
+  
+  @@unique([date_id, equipment_id, product_id, defect_type_id])
+  @@map("view_scrap_summary")
+  @@ignore
+}

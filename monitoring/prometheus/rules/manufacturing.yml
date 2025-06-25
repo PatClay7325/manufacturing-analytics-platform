@@ -1,0 +1,149 @@
+groups:
+  - name: manufacturing.alerts
+    rules:
+      # OEE Alerts
+      - alert: ManufacturingOEECriticalLow
+        expr: instance:manufacturing_oee_average:rate5m < 50
+        for: 5m
+        labels:
+          severity: critical
+          category: manufacturing
+          team: production
+        annotations:
+          summary: "Critical: OEE below 50% on {{ $labels.equipment_name }}"
+          description: "Equipment {{ $labels.equipment_name }} (ID: {{ $labels.equipment_id }}) has OEE of {{ $value | humanize }}% which is critically low."
+          runbook_url: "https://wiki.company.com/runbooks/manufacturing/oee-critical"
+          dashboard_url: "http://localhost:3003/d/manufacturing-overview?var-equipment_id={{ $labels.equipment_id }}"
+
+      - alert: ManufacturingOEEWarning
+        expr: instance:manufacturing_oee_average:rate5m < 70 and instance:manufacturing_oee_average:rate5m >= 50
+        for: 10m
+        labels:
+          severity: warning
+          category: manufacturing
+          team: production
+        annotations:
+          summary: "Warning: OEE below target on {{ $labels.equipment_name }}"
+          description: "Equipment {{ $labels.equipment_name }} has OEE of {{ $value | humanize }}% which is below the target of 85%."
+
+      # Availability Alerts
+      - alert: EquipmentAvailabilityCritical
+        expr: manufacturing_availability_percent < 80
+        for: 5m
+        labels:
+          severity: critical
+          category: manufacturing
+          team: maintenance
+        annotations:
+          summary: "Critical: Equipment availability below 80% on {{ $labels.equipment_name }}"
+          description: "Equipment {{ $labels.equipment_name }} availability is {{ $value | humanize }}%. Immediate maintenance attention required."
+
+      # Performance Alerts
+      - alert: EquipmentPerformanceDegraded
+        expr: manufacturing_performance_percent < 75
+        for: 10m
+        labels:
+          severity: warning
+          category: manufacturing
+          team: production
+        annotations:
+          summary: "Performance degraded on {{ $labels.equipment_name }}"
+          description: "Equipment {{ $labels.equipment_name }} is running at {{ $value | humanize }}% performance. Expected minimum is 75%."
+
+      # Quality Alerts
+      - alert: QualityRateCritical
+        expr: manufacturing_quality_percent < 95
+        for: 2m
+        labels:
+          severity: critical
+          category: manufacturing
+          team: quality
+        annotations:
+          summary: "Critical: Quality rate below 95% on {{ $labels.equipment_name }}"
+          description: "Quality rate on {{ $labels.equipment_name }} has dropped to {{ $value | humanize }}%. Immediate quality inspection required."
+
+      - alert: HighScrapRate
+        expr: instance:manufacturing_defect_rate:rate5m > 5
+        for: 5m
+        labels:
+          severity: warning
+          category: manufacturing
+          team: quality
+        annotations:
+          summary: "High scrap rate detected on {{ $labels.equipment_id }}"
+          description: "Scrap rate is {{ $value | humanize }}% which exceeds the acceptable threshold of 5%."
+
+      # Production Alerts
+      - alert: ProductionRateDropped
+        expr: |
+          (
+            instance:manufacturing_production_rate:rate5m 
+            < 
+            instance:manufacturing_production_rate:rate5m offset 1h * 0.8
+          )
+        for: 10m
+        labels:
+          severity: warning
+          category: manufacturing
+          team: production
+        annotations:
+          summary: "Production rate dropped by 20% on {{ $labels.equipment_id }}"
+          description: "Current production rate is {{ $value | humanize }} units/hour, which is 20% lower than an hour ago."
+
+      - alert: ProductionStopped
+        expr: instance:manufacturing_production_rate:rate5m == 0
+        for: 5m
+        labels:
+          severity: critical
+          category: manufacturing
+          team: production
+        annotations:
+          summary: "Production stopped on {{ $labels.equipment_id }}"
+          description: "No production detected for the last 5 minutes on equipment {{ $labels.equipment_id }}."
+
+      # Cycle Time Alerts
+      - alert: CycleTimeExceeded
+        expr: equipment:manufacturing_cycle_time_p95:5m > 300
+        for: 10m
+        labels:
+          severity: warning
+          category: manufacturing
+          team: production
+        annotations:
+          summary: "Cycle time exceeding target on {{ $labels.equipment_id }}"
+          description: "95th percentile cycle time is {{ $value | humanizeDuration }} which exceeds the 5-minute target."
+
+      # Equipment Health Alerts
+      - alert: EquipmentTemperatureHigh
+        expr: manufacturing_temperature_celsius > 80
+        for: 5m
+        labels:
+          severity: warning
+          category: manufacturing
+          team: maintenance
+        annotations:
+          summary: "High temperature on {{ $labels.equipment_id }}"
+          description: "Temperature reading of {{ $value }}°C exceeds safe operating threshold of 80°C at {{ $labels.sensor_location }}."
+
+      - alert: EquipmentVibrationAnomaly
+        expr: manufacturing_vibration_mm_per_second > 10
+        for: 5m
+        labels:
+          severity: warning
+          category: manufacturing
+          team: maintenance
+        annotations:
+          summary: "Abnormal vibration detected on {{ $labels.equipment_id }}"
+          description: "Vibration level of {{ $value }} mm/s on {{ $labels.axis }} axis exceeds normal range."
+
+      # Alert Count
+      - alert: TooManyManufacturingAlerts
+        expr: count(ALERTS{category="manufacturing",alertstate="firing"}) > 10
+        for: 5m
+        labels:
+          severity: warning
+          category: meta
+          team: operations
+        annotations:
+          summary: "High number of active manufacturing alerts"
+          description: "There are {{ $value }} active manufacturing alerts, which may indicate a systemic issue."

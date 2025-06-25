@@ -3,10 +3,8 @@
  * Handles saving, loading, versioning, and sharing of Analytics-style dashboards
  */
 
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/database';
 import { nanoid } from 'nanoid';
-
-const prisma = new PrismaClient();
 
 export interface DashboardConfig {
   id?: string;

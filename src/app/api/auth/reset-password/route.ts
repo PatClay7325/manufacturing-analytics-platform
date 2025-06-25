@@ -1,122 +1,159 @@
 import { NextRequest, NextResponse } from 'next/server';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/database';
 import { z } from 'zod';
-
-const requestResetSchema = z.object({
-  email: z.string().email(),
-});
+import jwt from 'jsonwebtoken';
 
 const resetPasswordSchema = z.object({
   token: z.string(),
-  password: z.string().min(8).regex(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
-    'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
-  ),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
 });
 
 const SALT_ROUNDS = 10;
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
-// POST /api/auth/reset-password - Request password reset
+// Force Node.js runtime
+export const runtime = 'nodejs';
+
+// POST /api/auth/reset-password - Reset password with token
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     
-    // Check if this is a reset request or actual reset
-    if (body.token) {
-      return handlePasswordReset(body);
-    } else {
-      return handleResetRequest(body);
+    // Validate input
+    const validatedData = resetPasswordSchema.parse(body);
+    const { token, password } = validatedData;
+    
+    // Hash the provided token to match stored version
+    const hashedToken = crypto
+      .createHash('sha256')
+      .update(token)
+      .digest('hex');
+    
+    // Find the reset token in settings
+    const resetTokens = await prisma.setting.findMany({
+      where: {
+        category: 'password_reset',
+        key: {
+          startsWith: 'reset_token_',
+        },
+      },
+    });
+    
+    // Find matching token
+    let validToken = null;
+    let tokenData = null;
+    
+    for (const rt of resetTokens) {
+      try {
+        const data = JSON.parse(rt.value);
+        if (data.token === hashedToken) {
+          // Check if token is expired
+          if (new Date(data.expiresAt) > new Date()) {
+            validToken = rt;
+            tokenData = data;
+            break;
+          }
+        }
+      } catch (e) {
+        // Invalid token data, skip
+      }
     }
+    
+    if (!validToken || !tokenData) {
+      return NextResponse.json(
+        { error: 'Invalid or expired reset token' },
+        { status: 400 }
+      );
+    }
+    
+    // Hash new password
+    const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+    
+    // Update user password
+    const user = await prisma.user.update({
+      where: { id: tokenData.userId },
+      data: { 
+        passwordHash,
+        updatedAt: new Date(),
+      },
+    });
+    
+    // Delete the used token
+    await prisma.setting.delete({
+      where: { id: validToken.id },
+    });
+    
+    // Generate new auth token for immediate login
+    const authToken = jwt.sign(
+      { 
+        userId: user.id, 
+        email: user.email,
+        role: user.role 
+      },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+    
+    // Log audit event
+    await prisma.auditLog.create({
+      data: {
+        id: `audit_${Date.now()}`,
+        eventType: 'password.reset_completed',
+        eventCategory: 'authentication',
+        eventAction: 'reset_password',
+        eventStatus: 'success',
+        userId: user.id,
+        userEmail: user.email,
+        ipAddress: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
+        userAgent: request.headers.get('user-agent') || 'unknown',
+        timestamp: new Date(),
+        updatedAt: new Date(),
+      },
+    });
+    
+    // Map role to permissions
+    const rolePermissions: Record<string, string[]> = {
+      admin: ['admin', 'read', 'write', 'manage_users', 'manage_teams', 'manage_alerts', 'manage_datasources'],
+      operator: ['read', 'write', 'manage_alerts'],
+      analyst: ['read', 'write'],
+      viewer: ['read'],
+    };
+    
+    const response = NextResponse.json({
+      message: 'Password reset successfully',
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        permissions: rolePermissions[user.role] || ['read'],
+      },
+    });
+    
+    // Set auth cookie for immediate login
+    response.cookies.set('auth-token', authToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 24 * 60 * 60, // 24 hours
+    });
+    
+    return response;
   } catch (error) {
     console.error('Reset password error:', error);
+    
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Validation error', details: error.errors },
+        { status: 400 }
+      );
+    }
+    
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to reset password' },
       { status: 500 }
     );
   }
-}
-
-async function handleResetRequest(body: any) {
-  // Validate input
-  const validationResult = requestResetSchema.safeParse(body);
-  if (!validationResult.success) {
-    return NextResponse.json(
-      { error: 'Invalid input', details: validationResult.error.flatten() },
-      { status: 400 }
-    );
-  }
-
-  const { email } = validationResult.data;
-
-  // Find user (but don't reveal if they exist)
-  const user = await prisma.user.findUnique({
-    where: { email },
-  });
-
-  if (user) {
-    // Generate reset token
-    const resetToken = crypto.randomBytes(32).toString('hex');
-    const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour
-
-    // Store reset token (you'll need to add these fields to your User model)
-    // For now, we'll store it in a separate table or use a cache
-    // In production, you might want to use Redis or a dedicated token table
-    
-    // TODO: Store reset token with expiry
-    // await storeResetToken(user.id, resetToken, resetTokenExpiry);
-
-    // TODO: Send reset email
-    // await sendResetEmail(user.email, resetToken);
-    
-    console.log('Reset token for', email, ':', resetToken);
-  }
-
-  // Always return success to prevent email enumeration
-  return NextResponse.json({
-    message: 'If a user with that email exists, a password reset link has been sent.',
-  });
-}
-
-async function handlePasswordReset(body: any) {
-  // Validate input
-  const validationResult = resetPasswordSchema.safeParse(body);
-  if (!validationResult.success) {
-    return NextResponse.json(
-      { error: 'Invalid input', details: validationResult.error.flatten() },
-      { status: 400 }
-    );
-  }
-
-  const { token, password } = validationResult.data;
-
-  // TODO: Verify reset token
-  // const userId = await verifyResetToken(token);
-  // if (!userId) {
-  //   return NextResponse.json(
-  //     { error: 'Invalid or expired reset token' },
-  //     { status: 400 }
-  //   );
-  // }
-
-  // For demo purposes, we'll just find a user by email
-  // In production, you'd verify the token properly
-  const demoUserId = 'demo-user-id'; // Replace with actual token verification
-
-  // Hash new password
-  const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
-
-  // Update user password
-  // await prisma.user.update({
-  //   where: { id: userId },
-  //   data: { passwordHash },
-  // });
-
-  // TODO: Invalidate reset token
-  // await invalidateResetToken(token);
-
-  return NextResponse.json({
-    message: 'Password reset successfully',
-  });
 }

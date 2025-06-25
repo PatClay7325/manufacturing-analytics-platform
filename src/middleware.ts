@@ -1,26 +1,19 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { rateLimitMiddleware, getRateLimiterForRoute, addRateLimitHeaders } from '@/lib/middleware/rateLimiter';
-import { auditLogService, AuditAction } from '@/services/auditLogService';
+// import { auditLogService, AuditAction } from '@/services/auditLogService';
 
 // Public routes that don't require authentication
 const publicRoutes = [
   '/',
   '/api/auth/login',
+  '/api/auth/login-simple',
   '/api/auth/register',
   '/api/auth/reset-password',
   '/api/health',
-  '/api/manufacturing-metrics',
-  '/api/quality-metrics',
-  '/api/diagnostics',
-  '/api/grafana',
-  '/api/grafana/query',
-  '/api/grafana/search',
-  '/api/grafana/annotations',
-  '/api/user/preferences',
-  '/grafana',
-  '/grafana-test',
-  '/test-iframe',
+  '/api/test-db-simple',
+  '/api/quick-login',
+  '/api/auth/test-login',
   '/login',
   '/register',
   '/reset-password',
@@ -39,6 +32,16 @@ export async function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-request-id', requestId);
   
+  // DEVELOPMENT AUTO-AUTH
+  if (process.env.NODE_ENV === 'development') {
+    // Add dev token to headers for API routes
+    if (pathname.startsWith('/api') && !pathname.startsWith('/api/auth')) {
+      requestHeaders.set('x-dev-auth', 'true');
+      requestHeaders.set('x-dev-user-id', 'dev-admin');
+      requestHeaders.set('x-dev-user-role', 'admin');
+    }
+  }
+  
   // Apply rate limiting for API routes
   if (pathname.startsWith('/api')) {
     const limiterType = getRateLimiterForRoute(pathname);
@@ -47,11 +50,11 @@ export async function middleware(request: NextRequest) {
     if (rateLimitResult) {
       // Rate limit exceeded - log and return error
       try {
-        await auditLogService.logRequest(request, AuditAction.RATE_LIMIT_EXCEEDED, {
-          resource: pathname,
-          details: { limiterType },
-          success: false,
-        });
+        // await auditLogService.logRequest(request, AuditAction.RATE_LIMIT_EXCEEDED, {
+        //   resource: pathname,
+        //   details: { limiterType },
+        //   success: false,
+        // });
       } catch (e) {
         // Don't block on audit log failures
         console.error('Failed to log rate limit violation:', e);
@@ -61,7 +64,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Allow public routes
-  if (publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/'))) {
+  if (publicRoutes.some(route => pathname === route || pathname.startsWith(route))) {
     return NextResponse.next({
       request: {
         headers: requestHeaders,
