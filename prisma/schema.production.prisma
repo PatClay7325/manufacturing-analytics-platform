@@ -1,0 +1,431 @@
+// Production-Ready Prisma Schema
+// Database-first approach with proper type safety
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema", "views", "postgresqlExtensions", "metrics", "tracing"]
+  binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  extensions        = [pgcrypto, pg_stat_statements, btree_gin]
+  schemas           = ["public", "monitoring", "audit", "ops"]
+}
+
+// ==================== INTEGER-BASED DIMENSION TABLES ====================
+
+model DimSite {
+  id        Int         @id @default(autoincrement()) @map("site_id")
+  code      String      @unique @map("site_code") @db.VarChar(20)
+  name      String      @map("site_name") @db.VarChar(100)
+  timezone  String?     @default("UTC") @db.VarChar(50)
+  areas     DimArea[]
+  shifts    DimShift[]
+
+  @@map("dim_site")
+}
+
+model DimArea {
+  id            Int               @id @default(autoincrement()) @map("area_id")
+  code          String            @unique @map("area_code") @db.VarChar(20)
+  name          String            @map("area_name") @db.VarChar(100)
+  siteId        Int               @map("site_id")
+  site          DimSite           @relation(fields: [siteId], references: [id])
+  workCenters   DimWorkCenter[]
+
+  @@map("dim_area")
+}
+
+model DimWorkCenter {
+  id               Int             @id @default(autoincrement()) @map("work_center_id")
+  code             String          @unique @map("work_center_code") @db.VarChar(20)
+  name             String          @map("work_center_name") @db.VarChar(100)
+  areaId           Int             @map("area_id")
+  capacity         Decimal?        @db.Decimal(10, 2)
+  capacityUnit     String?         @map("capacity_unit") @db.VarChar(20)
+  area             DimArea         @relation(fields: [areaId], references: [id])
+  equipment        DimEquipment[]
+
+  @@map("dim_work_center")
+}
+
+model DimEquipment {
+  id                Int                 @id @default(autoincrement()) @map("equipment_id")
+  code              String              @unique @map("equipment_code") @db.VarChar(50)
+  name              String              @map("equipment_name") @db.VarChar(200)
+  type              String?             @map("equipment_type") @db.VarChar(50)
+  workCenterId      Int                 @map("work_center_id")
+  manufacturer      String?             @db.VarChar(100)
+  model             String?             @db.VarChar(100)
+  serialNumber      String?             @map("serial_number") @db.VarChar(100)
+  installationDate  DateTime?           @map("installation_date") @db.Date
+  criticalityLevel  String?             @map("criticality_level") @db.VarChar(20)
+  theoreticalRate   Decimal?            @map("theoretical_rate") @db.Decimal(10, 2)
+  attributes        Json?               @db.JsonB
+  isActive          Boolean?            @default(true) @map("is_active")
+  createdAt         DateTime?           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime?           @updatedAt @map("updated_at") @db.Timestamptz(6)
+  
+  workCenter        DimWorkCenter       @relation(fields: [workCenterId], references: [id])
+  production        FactProduction[]
+  downtime          FactDowntime[]
+  maintenance       FactMaintenance[]
+  sensorEvents      FactSensorEvent[]
+
+  @@index([attributes], type: Gin)
+  @@index([workCenterId, isActive])
+  @@map("dim_equipment")
+}
+
+model DimProduct {
+  id              Int               @id @default(autoincrement()) @map("product_id")
+  code            String            @unique @map("product_code") @db.VarChar(50)
+  name            String            @map("product_name") @db.VarChar(200)
+  family          String?           @map("product_family") @db.VarChar(100)
+  unitOfMeasure   String?           @default("EA") @map("unit_of_measure") @db.VarChar(20)
+  standardCost    Decimal?          @map("standard_cost") @db.Decimal(12, 4)
+  targetCycleTime BigInt?           @map("target_cycle_time")
+  production      FactProduction[]
+  scrap           FactScrap[]
+
+  @@map("dim_product")
+}
+
+model DimShift {
+  id            Int               @id @default(autoincrement()) @map("shift_id")
+  siteId        Int               @map("site_id")
+  name          String            @map("shift_name") @db.VarChar(50)
+  startTime     String            @map("start_time") @db.VarChar(8)
+  endTime       String            @map("end_time") @db.VarChar(8)
+  breakMinutes  Int?              @default(0) @map("break_minutes")
+  isActive      Boolean?          @default(true) @map("is_active")
+  site          DimSite           @relation(fields: [siteId], references: [id])
+  production    FactProduction[]
+
+  @@unique([siteId, name])
+  @@map("dim_shift")
+}
+
+model DimDowntimeReason {
+  id               Int             @id @default(autoincrement()) @map("reason_id")
+  code             String          @unique @map("reason_code") @db.VarChar(50)
+  description      String          @map("reason_description") @db.VarChar(200)
+  category         String          @map("reason_category") @db.VarChar(50)
+  isPlanned        Boolean?        @default(false) @map("is_planned")
+  affectsOee       Boolean?        @default(true) @map("affects_oee")
+  downtime         FactDowntime[]
+
+  @@map("dim_downtime_reason")
+}
+
+model DimUnit {
+  id            Int                 @id @default(autoincrement()) @map("unit_id")
+  code          String              @unique @map("unit_code") @db.VarChar(20)
+  name          String              @map("unit_name") @db.VarChar(50)
+  type          String              @map("unit_type") @db.VarChar(50)
+  sensorEvents  FactSensorEvent[]
+
+  @@map("dim_unit")
+}
+
+// ==================== FACT TABLES ====================
+
+model FactProduction {
+  id                    Int             @id @default(autoincrement()) @map("production_id")
+  dateId                Int             @map("date_id")
+  shiftId               Int             @map("shift_id")
+  equipmentId           Int             @map("equipment_id")
+  productId             Int             @map("product_id")
+  orderNumber           String?         @map("order_number") @db.VarChar(50)
+  startTime             DateTime        @map("start_time") @db.Timestamptz(6)
+  endTime               DateTime        @map("end_time") @db.Timestamptz(6)
+  plannedProductionTime BigInt          @map("planned_production_time")
+  operatingTime         BigInt          @map("operating_time")
+  totalPartsProduced    Int             @map("total_parts_produced")
+  goodParts             Int             @map("good_parts")
+  scrapParts            Int?            @default(0) @map("scrap_parts")
+  reworkParts           Int?            @default(0) @map("rework_parts")
+  operatorId            String?         @map("operator_id") @db.VarChar(50)
+  createdAt             DateTime?       @default(now()) @map("created_at") @db.Timestamptz(6)
+  
+  equipment             DimEquipment    @relation(fields: [equipmentId], references: [id])
+  product               DimProduct      @relation(fields: [productId], references: [id])
+  shift                 DimShift        @relation(fields: [shiftId], references: [id])
+  downtime              FactDowntime[]
+  scrap                 FactScrap[]
+
+  @@index([startTime], type: Brin)
+  @@index([equipmentId, startTime(sort: Desc)])
+  @@index([startTime])
+  @@map("fact_production")
+}
+
+model FactDowntime {
+  id               Int                 @id @default(autoincrement()) @map("downtime_id")
+  productionId     Int?                @map("production_id")
+  equipmentId      Int                 @map("equipment_id")
+  reasonId         Int                 @map("reason_id")
+  startTime        DateTime            @map("start_time") @db.Timestamptz(6)
+  endTime          DateTime            @map("end_time") @db.Timestamptz(6)
+  downtimeDuration BigInt              @map("downtime_duration")
+  comments         String?
+  createdAt        DateTime?           @default(now()) @map("created_at") @db.Timestamptz(6)
+  
+  equipment        DimEquipment        @relation(fields: [equipmentId], references: [id])
+  reason           DimDowntimeReason   @relation(fields: [reasonId], references: [id])
+  production       FactProduction?     @relation(fields: [productionId], references: [id])
+
+  @@index([startTime], type: Brin)
+  @@index([equipmentId, startTime(sort: Desc)])
+  @@map("fact_downtime")
+}
+
+model FactScrap {
+  id            Int             @id @default(autoincrement()) @map("scrap_id")
+  productionId  Int             @map("production_id")
+  productId     Int             @map("product_id")
+  scrapCode     String          @map("scrap_code") @db.VarChar(50)
+  scrapQty      Int             @map("scrap_qty")
+  scrapCost     Decimal?        @map("scrap_cost") @db.Decimal(12, 2)
+  createdAt     DateTime?       @default(now()) @map("created_at") @db.Timestamptz(6)
+  
+  product       DimProduct      @relation(fields: [productId], references: [id])
+  production    FactProduction  @relation(fields: [productionId], references: [id])
+
+  @@map("fact_scrap")
+}
+
+model FactMaintenance {
+  id               Int           @id @default(autoincrement()) @map("maintenance_id")
+  equipmentId      Int           @map("equipment_id")
+  workOrderNumber  String        @map("work_order_number") @db.VarChar(50)
+  maintenanceType  String        @map("maintenance_type") @db.VarChar(50)
+  startTime        DateTime      @map("start_time") @db.Timestamptz(6)
+  endTime          DateTime      @map("end_time") @db.Timestamptz(6)
+  laborHours       Decimal?      @map("labor_hours") @db.Decimal(10, 2)
+  materialCost     Decimal?      @map("material_cost") @db.Decimal(12, 2)
+  description      String?
+  createdAt        DateTime?     @default(now()) @map("created_at") @db.Timestamptz(6)
+  
+  equipment        DimEquipment  @relation(fields: [equipmentId], references: [id])
+
+  @@map("fact_maintenance")
+}
+
+// Note: fact_sensor_event is partitioned - handle with care
+model FactSensorEvent {
+  eventId     BigInt        @default(autoincrement()) @map("event_id")
+  equipmentId Int           @map("equipment_id")
+  eventTs     DateTime      @map("event_ts") @db.Timestamptz(6)
+  parameter   String        @db.VarChar(100)
+  value       Decimal       @db.Decimal(20, 6)
+  unitId      Int?          @map("unit_id")
+  
+  equipment   DimEquipment  @relation(fields: [equipmentId], references: [id])
+  unit        DimUnit?      @relation(fields: [unitId], references: [id])
+
+  @@id([eventId, eventTs])
+  @@index([equipmentId, eventTs(sort: Desc)])
+  @@index([eventTs], type: Brin)
+  @@map("fact_sensor_event")
+}
+
+// ==================== AUDIT & MONITORING ====================
+
+model AuditLog {
+  id          BigInt    @id @default(autoincrement()) @map("log_id")
+  username    String?   @db.VarChar(100)
+  action      String    @db.VarChar(20)
+  tableName   String    @map("table_name") @db.VarChar(100)
+  recordId    String    @map("record_id") @db.VarChar(100)
+  logTs       DateTime? @default(now()) @map("log_ts") @db.Timestamptz(6)
+  beforeData  Json?     @map("before_data") @db.JsonB
+  afterData   Json?     @map("after_data") @db.JsonB
+
+  @@index([afterData], type: Gin)
+  @@index([beforeData], type: Gin)
+  @@index([tableName, logTs(sort: Desc)])
+  @@map("audit_log")
+}
+
+// ==================== DATA GOVERNANCE ====================
+
+model DataDictionary {
+  id             Int       @id @default(autoincrement())
+  schemaName     String    @map("schema_name")
+  tableName      String    @map("table_name")
+  columnName     String    @map("column_name")
+  dataType       String    @map("data_type")
+  isNullable     Boolean   @map("is_nullable")
+  description    String?
+  businessName   String?   @map("business_name")
+  dataSteward    String?   @map("data_steward")
+  classification String?
+  piiFlag        Boolean?  @default(false) @map("pii_flag")
+  retentionDays  Int?      @map("retention_days")
+  createdAt      DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@unique([schemaName, tableName, columnName])
+  @@map("data_dictionary")
+}
+
+model DataRetentionPolicy {
+  id                Int       @id @default(autoincrement())
+  tableName         String    @unique @map("table_name")
+  retentionDays     Int       @map("retention_days")
+  archiveEnabled    Boolean?  @default(false) @map("archive_enabled")
+  archiveTableName  String?   @map("archive_table_name")
+  lastArchived      DateTime? @map("last_archived") @db.Timestamptz(6)
+  createdAt         DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("data_retention_policy")
+}
+
+// ==================== MONITORING SCHEMA ====================
+
+model QueryPerformance {
+  id          Int       @id @default(autoincrement())
+  queryHash   String    @map("query_hash")
+  queryText   String?   @map("query_text")
+  totalTime   Decimal   @map("total_time") @db.Decimal(12, 3)
+  meanTime    Decimal   @map("mean_time") @db.Decimal(12, 3)
+  maxTime     Decimal   @map("max_time") @db.Decimal(12, 3)
+  minTime     Decimal   @map("min_time") @db.Decimal(12, 3)
+  calls       BigInt
+  rows        BigInt
+  capturedAt  DateTime  @default(now()) @map("captured_at") @db.Timestamptz(6)
+
+  @@map("query_performance")
+  @@schema("monitoring")
+}
+
+model DataQualityScores {
+  id          Int       @id @default(autoincrement())
+  tableName   String    @map("table_name")
+  checkName   String    @map("check_name")
+  checkType   String    @map("check_type")
+  passed      Boolean
+  score       Decimal   @db.Decimal(5, 2)
+  totalRows   BigInt?   @map("total_rows")
+  failedRows  BigInt?   @map("failed_rows")
+  details     Json?     @db.JsonB
+  checkedAt   DateTime  @default(now()) @map("checked_at") @db.Timestamptz(6)
+
+  @@map("data_quality_scores")
+  @@schema("monitoring")
+}
+
+model SystemMetrics {
+  id              Int       @id @default(autoincrement())
+  metricType      String    @map("metric_type")
+  metricName      String    @map("metric_name")
+  metricValue     Decimal   @map("metric_value") @db.Decimal(20, 6)
+  metricUnit      String?   @map("metric_unit")
+  hostName        String?   @map("host_name")
+  serviceName     String?   @map("service_name")
+  tags            Json?     @db.JsonB
+  collectedAt     DateTime  @default(now()) @map("collected_at") @db.Timestamptz(6)
+
+  @@index([metricType, collectedAt(sort: Desc)])
+  @@index([serviceName, collectedAt(sort: Desc)])
+  @@map("system_metrics")
+  @@schema("monitoring")
+}
+
+// ==================== AUDIT SCHEMA ====================
+
+model AuditEvent {
+  id              BigInt    @id @default(autoincrement()) @map("event_id")
+  eventType       String    @map("event_type")
+  aggregateId     String    @map("aggregate_id")
+  aggregateType   String    @map("aggregate_type")
+  eventData       Json      @map("event_data") @db.JsonB
+  eventMetadata   Json?     @map("event_metadata") @db.JsonB
+  userId          String?   @map("user_id")
+  correlationId   String?   @map("correlation_id")
+  causationId     String?   @map("causation_id")
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([aggregateType, aggregateId, createdAt(sort: Desc)])
+  @@index([eventType, createdAt(sort: Desc)])
+  @@index([correlationId])
+  @@map("audit_event")
+  @@schema("audit")
+}
+
+// ==================== UUID-BASED TABLES (Legacy) ====================
+
+model Equipment {
+  id                      String   @id @default(uuid()) @db.Uuid
+  workCenterId            String   @map("work_center_id") @db.Uuid
+  equipmentCode           String   @unique @map("equipment_code") @db.VarChar(50)
+  equipmentName           String   @map("equipment_name") @db.VarChar(200)
+  equipmentType           String?  @map("equipment_type") @db.VarChar(50)
+  manufacturer            String?  @db.VarChar(100)
+  model                   String?  @db.VarChar(100)
+  serialNumber            String?  @map("serial_number") @db.VarChar(100)
+  installationDate        DateTime? @map("installation_date") @db.Date
+  sapEquipmentNumber      String?  @map("sap_equipment_number") @db.VarChar(50)
+  criticalityLevel        CriticalityLevel? @map("criticality_level")
+  maintenanceStrategy     String?  @map("maintenance_strategy") @db.VarChar(50)
+  theoreticalCycleTime    Decimal? @map("theoretical_cycle_time") @db.Decimal(10, 4)
+  idealRunRate            Decimal? @map("ideal_run_rate") @db.Decimal(10, 2)
+  isActive                Boolean  @default(true) @map("is_active")
+  createdAt               DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt               DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("equipment")
+}
+
+// ==================== ENUMS ====================
+
+enum CriticalityLevel {
+  Critical
+  Important
+  Standard
+  
+  @@map("criticality_level")
+}
+
+enum EnergyType {
+  Electricity
+  Gas
+  Steam
+  Compressed_Air
+  Water
+  
+  @@map("energy_type")
+}
+
+enum MaintenanceType {
+  Preventive
+  Predictive
+  Corrective
+  Emergency
+  
+  @@map("maintenance_type")
+}
+
+enum OrderStatus {
+  Planned
+  Released
+  In_Progress
+  Completed
+  Cancelled
+  
+  @@map("order_status")
+}
+
+enum StateCategory {
+  Productive
+  Scheduled_Downtime
+  Unscheduled_Downtime
+  Setup
+  Break
+  
+  @@map("state_category")
+}

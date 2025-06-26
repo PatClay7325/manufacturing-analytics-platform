@@ -1,0 +1,320 @@
+# Live Project Management System Implementation Plan
+
+## Critical Requirement
+Transform the POC Management page from a static dashboard into a **real-time, self-updating project intelligence system** that automatically tracks project state and drives task completion.
+
+## Current State vs. Required State
+
+### Current State ❌
+- Static data defined in code
+- Manual updates required
+- No connection to actual project state
+- Tasks don't reflect real work being done
+- Metrics are hardcoded estimates
+
+### Required State ✅
+- Live scanning of codebase for completion status
+- Automatic task generation from gaps
+- Real-time progress tracking
+- Intelligent priority adjustment
+- Automated blocker detection
+
+## Implementation Plan
+
+### Phase 1: Real-Time Project State Scanner (Week 1)
+
+#### 1.1 Codebase Analysis Engine
+```typescript
+// src/services/projectAnalyzer.ts
+interface ProjectAnalyzer {
+  scanCodebase(): Promise<CodebaseMetrics>
+  detectIncompleteImplementations(): Task[]
+  calculateRealProgress(): number
+  identifyBlockers(): Blocker[]
+  suggestNextActions(): Task[]
+}
+```
+
+**Scanning Targets:**
+- TODO/FIXME comments → Auto-generate tasks
+- Unimplemented functions → Track completion
+- Failed tests → Create fix tasks
+- Build errors → Critical blockers
+- Type errors → Quality issues
+- Missing API endpoints → Integration gaps
+- Empty component shells → UI tasks
+
+#### 1.2 Git Integration
+```typescript
+// Track actual development activity
+interface GitAnalyzer {
+  getRecentCommits(): Commit[]
+  analyzeVelocity(): number
+  detectStaleAreas(): string[]
+  calculateBurndown(): BurndownData
+}
+```
+
+#### 1.3 Build & Test Status Monitor
+```typescript
+interface BuildMonitor {
+  checkBuildStatus(): BuildStatus
+  getTestResults(): TestResults
+  identifyFailures(): Issue[]
+  trackPerformanceMetrics(): Metrics
+}
+```
+
+### Phase 2: Intelligent Task Management (Week 1-2)
+
+#### 2.1 Automatic Task Generation
+```typescript
+interface TaskGenerator {
+  // Scan for incomplete work
+  generateFromTODOs(): Task[]
+  generateFromFailedTests(): Task[]
+  generateFromTypeErrors(): Task[]
+  generateFromMissingFeatures(): Task[]
+  
+  // Smart prioritization
+  calculateCriticalPath(): Task[]
+  identifyDependencies(): Dependencies
+  suggestParallelWork(): TaskGroup[]
+}
+```
+
+#### 2.2 Task Lifecycle Automation
+- **Auto-detect completion**: When code is committed
+- **Auto-update progress**: Based on test coverage
+- **Auto-escalate blockers**: When tasks stall
+- **Auto-adjust priorities**: Based on dependencies
+
+### Phase 3: Real-Time Dashboard Integration (Week 2)
+
+#### 3.1 WebSocket Live Updates
+```typescript
+// Real-time push updates to dashboard
+interface LiveUpdateService {
+  pushTaskUpdate(task: Task): void
+  pushMetricUpdate(metric: Metric): void
+  pushBlockerAlert(blocker: Blocker): void
+  streamBuildStatus(): Observable<BuildStatus>
+}
+```
+
+#### 3.2 File System Watcher
+```typescript
+// Monitor project changes in real-time
+interface ProjectWatcher {
+  watchFiles(patterns: string[]): void
+  onFileChange(callback: (file: string) => void): void
+  detectNewIssues(): Issue[]
+  trackProgress(): Progress
+}
+```
+
+### Phase 4: AI-Powered Project Intelligence (Week 2-3)
+
+#### 4.1 Smart Task Description Generator
+```typescript
+interface TaskAI {
+  analyzeCodeContext(file: string): Context
+  generateTaskDescription(context: Context): string
+  estimateEffort(task: Task): number
+  suggestImplementation(task: Task): string
+}
+```
+
+#### 4.2 Blocker Resolution Assistant
+```typescript
+interface BlockerResolver {
+  analyzeBlocker(blocker: Blocker): Analysis
+  suggestSolutions(): Solution[]
+  findSimilarResolutions(): HistoricalFix[]
+  escalateIfNeeded(): void
+}
+```
+
+## Implementation Checklist
+
+### Immediate Actions (Next 24 Hours)
+
+1. **Create Project Scanner Service**
+   ```bash
+   src/services/projectScanner/
+   ├── codebaseAnalyzer.ts
+   ├── gitIntegration.ts
+   ├── buildMonitor.ts
+   ├── testAnalyzer.ts
+   └── index.ts
+   ```
+
+2. **Add Real-Time Data Sources**
+   - Parse `package.json` scripts for available commands
+   - Scan `src/` for TODO/FIXME/HACK comments
+   - Check test results from last run
+   - Monitor TypeScript compiler output
+   - Track git commit history
+
+3. **Create Auto-Update Mechanism**
+   ```typescript
+   // Run every 5 minutes or on file change
+   const updateInterval = setInterval(async () => {
+     const state = await projectScanner.analyze();
+     await updatePOCTasks(state);
+     await broadcastUpdates(state);
+   }, 5 * 60 * 1000);
+   ```
+
+### Database Schema for Live Tracking
+
+```prisma
+model ProjectTask {
+  id              String   @id @default(cuid())
+  title           String
+  description     String?
+  category        String
+  status          String
+  priority        String
+  progress        Int      @default(0)
+  
+  // Auto-tracking fields
+  detectedFrom    String   // 'todo-comment', 'test-failure', 'type-error', etc.
+  filePath        String?
+  lineNumber      Int?
+  lastScanned     DateTime @default(now())
+  autoGenerated   Boolean  @default(true)
+  
+  // Metrics
+  estimatedHours  Float?
+  actualHours     Float?
+  blockedSince    DateTime?
+  completedAt     DateTime?
+  
+  // Relationships
+  blockers        TaskBlocker[]
+  dependencies    TaskDependency[]
+  commits         CommitReference[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model TaskBlocker {
+  id          String      @id @default(cuid())
+  taskId      String
+  task        ProjectTask @relation(fields: [taskId], references: [id])
+  type        String      // 'technical', 'dependency', 'external'
+  description String
+  resolved    Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+}
+
+model ProjectMetric {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  value       Float
+  unit        String?
+  category    String
+  updatedAt   DateTime @updatedAt
+}
+```
+
+### API Endpoints for Live Data
+
+```typescript
+// src/app/api/project-state/route.ts
+export async function GET() {
+  const scanner = new ProjectScanner();
+  const state = await scanner.getCurrentState();
+  
+  return Response.json({
+    metrics: {
+      overallProgress: state.calculateProgress(),
+      buildStatus: state.buildStatus,
+      testCoverage: state.testCoverage,
+      openIssues: state.issues.length,
+      velocity: state.velocity
+    },
+    tasks: state.tasks,
+    blockers: state.blockers,
+    recentActivity: state.commits
+  });
+}
+
+// WebSocket for real-time updates
+// src/app/api/project-state/ws/route.ts
+export function SOCKET(ws: WebSocket) {
+  const watcher = new ProjectWatcher();
+  
+  watcher.on('change', (update) => {
+    ws.send(JSON.stringify(update));
+  });
+}
+```
+
+### Integration with Existing Tools
+
+1. **Git Hooks**
+   ```bash
+   # .git/hooks/post-commit
+   curl -X POST http://localhost:3000/api/project-state/refresh
+   ```
+
+2. **Build Pipeline Integration**
+   ```json
+   // package.json
+   {
+     "scripts": {
+       "build": "next build && npm run update-poc-status",
+       "test": "vitest && npm run update-poc-status",
+       "update-poc-status": "node scripts/updateProjectState.js"
+     }
+   }
+   ```
+
+3. **IDE Integration**
+   - VS Code extension to mark tasks as complete
+   - Auto-update on file save
+   - Right-click to create tasks from code
+
+### Success Metrics
+
+1. **Accuracy**
+   - 95%+ correlation between dashboard and actual state
+   - <5 minute lag for updates
+   - Zero manual task creation needed
+
+2. **Automation**
+   - 100% of TODOs tracked automatically
+   - 100% of test failures create tasks
+   - 100% of build errors become blockers
+
+3. **Intelligence**
+   - Correctly prioritizes critical path
+   - Accurately estimates completion dates
+   - Proactively identifies risks
+
+## Next Steps
+
+1. **Implement Core Scanner** (4 hours)
+   - TODO/FIXME detection
+   - Test result parsing
+   - Build status checking
+
+2. **Create Update Service** (2 hours)
+   - Periodic scanning
+   - WebSocket broadcasting
+   - State persistence
+
+3. **Enhance UI** (2 hours)
+   - Real-time updates
+   - Progress animations
+   - Alert notifications
+
+4. **Add Intelligence** (4 hours)
+   - Task prioritization
+   - Blocker detection
+   - Progress prediction
+
+This system will ensure the POC Management page is always current, accurate, and actively driving project completion.

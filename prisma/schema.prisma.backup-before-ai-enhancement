@@ -1,0 +1,656 @@
+generator client {
+  provider      = "prisma-client-js"
+  output        = "./generated/client"
+  binaryTargets = ["native", "debian-openssl-3.0.x", "linux-musl-openssl-3.0.x"]
+  engineType    = "library"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model DimSite {
+  id       Int        @id @default(autoincrement()) @map("site_id")
+  code     String     @unique @map("site_code") @db.VarChar(20)
+  name     String     @map("site_name") @db.VarChar(100)
+  timezone String?    @default("UTC") @db.VarChar(50)
+  areas    DimArea[]
+  shifts   DimShift[]
+
+  @@map("dim_site")
+}
+
+model DimArea {
+  id          Int             @id @default(autoincrement()) @map("area_id")
+  code        String          @unique @map("area_code") @db.VarChar(20)
+  name        String          @map("area_name") @db.VarChar(100)
+  siteId      Int             @map("site_id")
+  site        DimSite         @relation(fields: [siteId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  workCenters DimWorkCenter[]
+
+  @@map("dim_area")
+}
+
+model DimWorkCenter {
+  id           Int            @id @default(autoincrement()) @map("work_center_id")
+  code         String         @unique @map("work_center_code") @db.VarChar(20)
+  name         String         @map("work_center_name") @db.VarChar(100)
+  areaId       Int            @map("area_id")
+  capacity     Decimal?       @db.Decimal(10, 2)
+  capacityUnit String?        @map("capacity_unit") @db.VarChar(20)
+  equipment    DimEquipment[]
+  area         DimArea        @relation(fields: [areaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("dim_work_center")
+}
+
+model DimEquipment {
+  id               Int               @id @default(autoincrement()) @map("equipment_id")
+  code             String            @unique @map("equipment_code") @db.VarChar(50)
+  name             String            @map("equipment_name") @db.VarChar(200)
+  type             String?           @map("equipment_type") @db.VarChar(50)
+  workCenterId     Int               @map("work_center_id")
+  manufacturer     String?           @db.VarChar(100)
+  model            String?           @db.VarChar(100)
+  serialNumber     String?           @map("serial_number") @db.VarChar(100)
+  installationDate DateTime?         @map("installation_date") @db.Date
+  criticalityLevel String?           @map("criticality_level") @db.VarChar(20)
+  theoreticalRate  Decimal?          @map("theoretical_rate") @db.Decimal(10, 2)
+  attributes       Json?
+  isActive         Boolean?          @default(true) @map("is_active")
+  createdAt        DateTime?         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime?         @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  workCenter       DimWorkCenter     @relation(fields: [workCenterId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  downtime         FactDowntime[]
+  maintenance      FactMaintenance[]
+  production       FactProduction[]
+  sensorEvents     FactSensorEvent[]
+
+  @@index([attributes], map: "idx_eq_attributes", type: Gin)
+  @@map("dim_equipment")
+}
+
+model DimProduct {
+  id              Int              @id @default(autoincrement()) @map("product_id")
+  code            String           @unique @map("product_code") @db.VarChar(50)
+  name            String           @map("product_name") @db.VarChar(200)
+  family          String?          @map("product_family") @db.VarChar(100)
+  unitOfMeasure   String?          @default("EA") @map("unit_of_measure") @db.VarChar(20)
+  standardCost    Decimal?         @map("standard_cost") @db.Decimal(12, 4)
+  targetCycleTime BigInt?          @map("target_cycle_time")
+  production      FactProduction[]
+  scrap           FactScrap[]
+
+  @@map("dim_product")
+}
+
+model DimShift {
+  id           Int              @id @default(autoincrement()) @map("shift_id")
+  siteId       Int              @map("site_id")
+  name         String           @map("shift_name") @db.VarChar(50)
+  startTime    String           @map("start_time") @db.VarChar(8)
+  endTime      String           @map("end_time") @db.VarChar(8)
+  breakMinutes Int?             @default(0) @map("break_minutes")
+  isActive     Boolean?         @default(true) @map("is_active")
+  site         DimSite          @relation(fields: [siteId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  production   FactProduction[]
+
+  @@unique([siteId, name])
+  @@map("dim_shift")
+}
+
+model DimDowntimeReason {
+  id          Int            @id @default(autoincrement()) @map("reason_id")
+  code        String         @unique @map("reason_code") @db.VarChar(50)
+  description String         @map("reason_description") @db.VarChar(200)
+  category    String         @map("reason_category") @db.VarChar(50)
+  isPlanned   Boolean?       @default(false) @map("is_planned")
+  affectsOee  Boolean?       @default(true) @map("affects_oee")
+  downtime    FactDowntime[]
+
+  @@map("dim_downtime_reason")
+}
+
+model DimUnit {
+  id           Int               @id @default(autoincrement()) @map("unit_id")
+  code         String            @unique @map("unit_code") @db.VarChar(20)
+  name         String            @map("unit_name") @db.VarChar(50)
+  type         String            @map("unit_type") @db.VarChar(50)
+  sensorEvents FactSensorEvent[]
+
+  @@map("dim_unit")
+}
+
+model FactProduction {
+  id                    Int            @id @default(autoincrement()) @map("production_id")
+  dateId                Int            @map("date_id")
+  shiftId               Int            @map("shift_id")
+  equipmentId           Int            @map("equipment_id")
+  productId             Int            @map("product_id")
+  orderNumber           String?        @map("order_number") @db.VarChar(50)
+  startTime             DateTime       @map("start_time") @db.Timestamptz(6)
+  endTime               DateTime       @map("end_time") @db.Timestamptz(6)
+  plannedProductionTime BigInt         @map("planned_production_time")
+  operatingTime         BigInt         @map("operating_time")
+  totalPartsProduced    Int            @map("total_parts_produced")
+  goodParts             Int            @map("good_parts")
+  scrapParts            Int?           @default(0) @map("scrap_parts")
+  reworkParts           Int?           @default(0) @map("rework_parts")
+  operatorId            String?        @map("operator_id") @db.VarChar(50)
+  createdAt             DateTime?      @default(now()) @map("created_at") @db.Timestamptz(6)
+  downtime              FactDowntime[]
+  equipment             DimEquipment   @relation(fields: [equipmentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  product               DimProduct     @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  shift                 DimShift       @relation(fields: [shiftId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  scrap                 FactScrap[]
+
+  @@index([startTime], map: "idx_fact_production_date")
+  @@index([equipmentId, startTime(sort: Desc)], map: "idx_fact_production_equipment")
+  @@index([startTime], map: "idx_fact_production_start_time_brin", type: Brin)
+  @@index([equipmentId, startTime(sort: Desc)], map: "idx_production_oee_covering")
+  @@map("fact_production")
+}
+
+model FactDowntime {
+  id               Int               @id @default(autoincrement()) @map("downtime_id")
+  productionId     Int?              @map("production_id")
+  equipmentId      Int               @map("equipment_id")
+  reasonId         Int               @map("reason_id")
+  startTime        DateTime          @map("start_time") @db.Timestamptz(6)
+  endTime          DateTime          @map("end_time") @db.Timestamptz(6)
+  downtimeDuration BigInt            @map("downtime_duration")
+  comments         String?
+  createdAt        DateTime?         @default(now()) @map("created_at") @db.Timestamptz(6)
+  equipment        DimEquipment      @relation(fields: [equipmentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  production       FactProduction?   @relation(fields: [productionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  reason           DimDowntimeReason @relation(fields: [reasonId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([startTime], map: "idx_downtime_start_time_brin", type: Brin)
+  @@index([equipmentId, startTime(sort: Desc)], map: "idx_fact_downtime_equipment")
+  @@index([startTime], map: "idx_fact_downtime_start_time_brin", type: Brin)
+  @@map("fact_downtime")
+}
+
+model FactScrap {
+  id           Int            @id @default(autoincrement()) @map("scrap_id")
+  productionId Int            @map("production_id")
+  productId    Int            @map("product_id")
+  scrapCode    String         @map("scrap_code") @db.VarChar(50)
+  scrapQty     Int            @map("scrap_qty")
+  scrapCost    Decimal?       @map("scrap_cost") @db.Decimal(12, 2)
+  createdAt    DateTime?      @default(now()) @map("created_at") @db.Timestamptz(6)
+  product      DimProduct     @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  production   FactProduction @relation(fields: [productionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("fact_scrap")
+}
+
+model FactMaintenance {
+  id              Int          @id @default(autoincrement()) @map("maintenance_id")
+  equipmentId     Int          @map("equipment_id")
+  workOrderNumber String       @map("work_order_number") @db.VarChar(50)
+  maintenanceType String       @map("maintenance_type") @db.VarChar(50)
+  startTime       DateTime     @map("start_time") @db.Timestamptz(6)
+  endTime         DateTime     @map("end_time") @db.Timestamptz(6)
+  laborHours      Decimal?     @map("labor_hours") @db.Decimal(10, 2)
+  materialCost    Decimal?     @map("material_cost") @db.Decimal(12, 2)
+  description     String?
+  createdAt       DateTime?    @default(now()) @map("created_at") @db.Timestamptz(6)
+  equipment       DimEquipment @relation(fields: [equipmentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("fact_maintenance")
+}
+
+model FactSensorEvent {
+  eventId     BigInt       @default(autoincrement()) @map("event_id")
+  equipmentId Int          @map("equipment_id")
+  eventTs     DateTime     @map("event_ts") @db.Timestamptz(6)
+  parameter   String       @db.VarChar(100)
+  value       Decimal      @db.Decimal(20, 6)
+  unitId      Int?         @map("unit_id")
+  equipment   DimEquipment @relation(fields: [equipmentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  unit        DimUnit?     @relation(fields: [unitId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([eventId, eventTs])
+  @@index([equipmentId, eventTs(sort: Desc)], map: "idx_fact_sensor_equipment")
+  @@index([eventTs], map: "idx_sensor_event_ts_brin", type: Brin)
+  @@map("fact_sensor_event")
+}
+
+model AuditLog {
+  id         BigInt    @id @default(autoincrement()) @map("log_id")
+  username   String?   @db.VarChar(100)
+  action     String    @db.VarChar(20)
+  tableName  String    @map("table_name") @db.VarChar(100)
+  recordId   String    @map("record_id") @db.VarChar(100)
+  logTs      DateTime? @default(now()) @map("log_ts") @db.Timestamptz(6)
+  beforeData Json?     @map("before_data")
+  afterData  Json?     @map("after_data")
+
+  @@index([afterData(ops: JsonbPathOps)], map: "idx_audit_log_after_data", type: Gin)
+  @@index([beforeData(ops: JsonbPathOps)], map: "idx_audit_log_before_data", type: Gin)
+  @@index([tableName, logTs(sort: Desc)], map: "idx_audit_log_table")
+  @@map("audit_log")
+}
+
+model DataDictionary {
+  id             Int       @id @default(autoincrement())
+  schemaName     String    @map("schema_name")
+  tableName      String    @map("table_name")
+  columnName     String    @map("column_name")
+  dataType       String    @map("data_type")
+  isNullable     Boolean   @map("is_nullable")
+  description    String?
+  businessName   String?   @map("business_name")
+  dataSteward    String?   @map("data_steward")
+  classification String?
+  piiFlag        Boolean?  @default(false) @map("pii_flag")
+  retentionDays  Int?      @map("retention_days")
+  createdAt      DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@unique([schemaName, tableName, columnName])
+  @@map("data_dictionary")
+}
+
+model DataRetentionPolicy {
+  id               Int       @id @default(autoincrement())
+  tableName        String    @unique @map("table_name")
+  retentionDays    Int       @map("retention_days")
+  archiveEnabled   Boolean?  @default(false) @map("archive_enabled")
+  archiveTableName String?   @map("archive_table_name")
+  lastArchived     DateTime? @map("last_archived") @db.Timestamptz(6)
+  createdAt        DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("data_retention_policy")
+}
+
+model DimDateRange {
+  id        Int      @id @default(autoincrement()) @map("range_id")
+  name      String   @unique
+  startDate DateTime @map("start_date") @db.Date
+  endDate   DateTime @map("end_date") @db.Date
+
+  @@map("dim_date_range")
+}
+
+model OntologyTerm {
+  term      String @id
+  modelName String @map("model_name")
+  fieldName String @map("field_name")
+  priority  Int?   @default(0)
+
+  @@index([priority(sort: Desc)], map: "idx_ontology_priority")
+  @@map("ontology_term")
+}
+
+model data_lineage {
+  id                   Int       @id @default(autoincrement())
+  source_table         String
+  target_table         String
+  transformation_type  String
+  transformation_logic String?
+  refresh_frequency    String?
+  dependencies         Json?
+  created_at           DateTime? @default(now()) @db.Timestamptz(6)
+
+  @@unique([source_table, target_table])
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model data_quality_rules {
+  id              Int       @id @default(autoincrement())
+  table_name      String
+  column_name     String?
+  rule_name       String
+  rule_type       String
+  rule_definition String
+  severity        String?
+  is_active       Boolean?  @default(true)
+  created_at      DateTime? @default(now()) @db.Timestamptz(6)
+
+  @@unique([table_name, rule_name])
+}
+
+model equipment {
+  id                         String                       @id @db.Uuid
+  work_center_id             String                       @db.Uuid
+  equipment_code             String                       @unique @db.VarChar(50)
+  equipment_name             String                       @db.VarChar(200)
+  equipment_type             String?                      @db.VarChar(50)
+  manufacturer               String?                      @db.VarChar(100)
+  model                      String?                      @db.VarChar(100)
+  serial_number              String?                      @db.VarChar(100)
+  installation_date          DateTime?                    @db.Date
+  sap_equipment_number       String?                      @db.VarChar(50)
+  criticality_level          criticality_level?
+  maintenance_strategy       String?                      @db.VarChar(50)
+  theoretical_cycle_time     Decimal?                     @db.Decimal(10, 4)
+  ideal_run_rate             Decimal?                     @db.Decimal(10, 2)
+  is_active                  Boolean                      @default(true)
+  created_at                 DateTime                     @default(now()) @db.Timestamptz(6)
+  updated_at                 DateTime                     @default(now()) @db.Timestamptz(6)
+  work_centers               work_centers                 @relation(fields: [work_center_id], references: [id])
+  fact_energy_metrics        fact_energy_metrics[]
+  fact_equipment_states      fact_equipment_states[]
+  fact_maintenance_events    fact_maintenance_events[]
+  fact_oee_metrics           fact_oee_metrics[]
+  fact_performance_metrics   fact_performance_metrics[]
+  fact_production_quantities fact_production_quantities[]
+  fact_quality_metrics       fact_quality_metrics[]
+  production_orders          production_orders[]
+}
+
+model fact_energy_metrics {
+  timestamp         DateTime    @db.Timestamptz(6)
+  equipment_id      String      @db.Uuid
+  energy_type       energy_type
+  consumption_value Decimal     @db.Decimal(12, 4)
+  consumption_unit  String      @db.VarChar(20)
+  cost_per_unit     Decimal?    @db.Decimal(10, 4)
+  total_cost        Decimal?    @db.Decimal(12, 2)
+  created_at        DateTime    @default(now()) @db.Timestamptz(6)
+  record_id         String      @db.Uuid
+  equipment         equipment   @relation(fields: [equipment_id], references: [id])
+
+  @@id([timestamp, equipment_id, energy_type, record_id])
+  @@index([energy_type, timestamp(sort: Desc)])
+  @@index([equipment_id, timestamp(sort: Desc)])
+}
+
+/// This table has subclasses and requires additional setup for migrations. Visit https://pris.ly/d/table-inheritance for more info.
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model fact_equipment_states {
+  timestamp           DateTime           @db.Timestamptz(6)
+  equipment_id        String             @db.Uuid
+  state_code          String             @db.VarChar(20)
+  state_category      state_category
+  reason_code         String?            @db.VarChar(50)
+  reason_description  String?
+  duration_minutes    Decimal?           @db.Decimal(10, 2)
+  operator_id         String?            @db.VarChar(50)
+  shift_id            String?            @db.Uuid
+  is_planned_downtime Boolean            @default(false)
+  affects_oee         Boolean            @default(true)
+  created_at          DateTime           @default(now()) @db.Timestamptz(6)
+  record_id           String             @db.Uuid
+  equipment           equipment          @relation(fields: [equipment_id], references: [id])
+  shift_definitions   shift_definitions? @relation(fields: [shift_id], references: [id])
+
+  @@id([timestamp, equipment_id, record_id])
+  @@index([equipment_id, timestamp(sort: Desc)])
+  @@index([state_category, timestamp(sort: Desc)])
+}
+
+model fact_maintenance_events {
+  timestamp                DateTime         @db.Timestamptz(6)
+  equipment_id             String           @db.Uuid
+  maintenance_type         maintenance_type
+  maintenance_category     String?          @db.VarChar(50)
+  work_order_number        String?          @db.VarChar(50)
+  planned_duration_minutes Decimal?         @db.Decimal(10, 2)
+  actual_duration_minutes  Decimal?         @db.Decimal(10, 2)
+  labor_hours              Decimal?         @db.Decimal(10, 2)
+  material_cost            Decimal?         @db.Decimal(12, 2)
+  total_cost               Decimal?         @db.Decimal(12, 2)
+  technician_id            String?          @db.VarChar(50)
+  description              String?
+  created_at               DateTime         @default(now()) @db.Timestamptz(6)
+  record_id                String           @db.Uuid
+  equipment                equipment        @relation(fields: [equipment_id], references: [id])
+
+  @@id([timestamp, equipment_id, record_id])
+  @@index([equipment_id, timestamp(sort: Desc)])
+  @@index([maintenance_type, timestamp(sort: Desc)])
+}
+
+/// This table has subclasses and requires additional setup for migrations. Visit https://pris.ly/d/table-inheritance for more info.
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model fact_oee_metrics {
+  timestamp               DateTime           @db.Timestamptz(6)
+  equipment_id            String             @db.Uuid
+  production_order_id     String?            @db.Uuid
+  shift_id                String?            @db.Uuid
+  planned_production_time Decimal            @db.Decimal(10, 2)
+  actual_production_time  Decimal            @db.Decimal(10, 2)
+  downtime_minutes        Decimal            @default(0) @db.Decimal(10, 2)
+  planned_quantity        Decimal            @db.Decimal(12, 2)
+  produced_quantity       Decimal            @db.Decimal(12, 2)
+  good_quantity           Decimal            @db.Decimal(12, 2)
+  scrap_quantity          Decimal            @default(0) @db.Decimal(12, 2)
+  ideal_cycle_time        Decimal?           @db.Decimal(10, 4)
+  actual_cycle_time       Decimal?           @db.Decimal(10, 4)
+  availability            Decimal            @db.Decimal(8, 6)
+  performance             Decimal            @db.Decimal(8, 6)
+  quality                 Decimal            @db.Decimal(8, 6)
+  oee                     Decimal            @db.Decimal(8, 6)
+  utilization             Decimal?           @db.Decimal(8, 6)
+  teep                    Decimal?           @db.Decimal(8, 6)
+  created_at              DateTime           @default(now()) @db.Timestamptz(6)
+  record_id               String             @db.Uuid
+  equipment               equipment          @relation(fields: [equipment_id], references: [id])
+  production_orders       production_orders? @relation(fields: [production_order_id], references: [id])
+  shift_definitions       shift_definitions? @relation(fields: [shift_id], references: [id])
+
+  @@id([timestamp, equipment_id, record_id])
+  @@index([equipment_id, timestamp(sort: Desc)])
+  @@index([oee(sort: Desc), timestamp(sort: Desc)])
+  @@index([shift_id, timestamp(sort: Desc)])
+}
+
+/// This table has subclasses and requires additional setup for migrations. Visit https://pris.ly/d/table-inheritance for more info.
+model fact_performance_metrics {
+  timestamp              DateTime  @db.Timestamptz(6)
+  equipment_id           String    @db.Uuid
+  production_order_id    String?   @db.Uuid
+  cycle_time             Decimal?  @db.Decimal(10, 4)
+  theoretical_cycle_time Decimal?  @db.Decimal(10, 4)
+  actual_run_rate        Decimal?  @db.Decimal(10, 2)
+  ideal_run_rate         Decimal?  @db.Decimal(10, 2)
+  speed_loss_minutes     Decimal?  @db.Decimal(10, 2)
+  micro_stops_count      Int       @default(0)
+  reduced_speed_minutes  Decimal?  @db.Decimal(10, 2)
+  created_at             DateTime  @default(now()) @db.Timestamptz(6)
+  record_id              String    @db.Uuid
+  equipment              equipment @relation(fields: [equipment_id], references: [id])
+
+  @@id([timestamp, equipment_id, record_id])
+  @@index([equipment_id, timestamp(sort: Desc)])
+}
+
+model fact_production_quantities {
+  timestamp               DateTime           @db.Timestamptz(6)
+  equipment_id            String             @db.Uuid
+  production_order_id     String?            @db.Uuid
+  shift_id                String?            @db.Uuid
+  planned_quantity        Decimal            @default(0) @db.Decimal(12, 2)
+  produced_quantity       Decimal            @default(0) @db.Decimal(12, 2)
+  good_quantity           Decimal            @default(0) @db.Decimal(12, 2)
+  scrap_quantity          Decimal            @default(0) @db.Decimal(12, 2)
+  rework_quantity         Decimal            @default(0) @db.Decimal(12, 2)
+  actual_production_time  Decimal?           @db.Decimal(10, 2)
+  planned_production_time Decimal?           @db.Decimal(10, 2)
+  loading_time            Decimal?           @db.Decimal(10, 2)
+  operation_time          Decimal?           @db.Decimal(10, 2)
+  created_at              DateTime           @default(now()) @db.Timestamptz(6)
+  record_id               String             @db.Uuid
+  equipment               equipment          @relation(fields: [equipment_id], references: [id])
+  production_orders       production_orders? @relation(fields: [production_order_id], references: [id])
+
+  @@id([timestamp, equipment_id, record_id])
+  @@index([equipment_id, timestamp(sort: Desc)])
+  @@index([production_order_id, timestamp(sort: Desc)])
+}
+
+/// This table has subclasses and requires additional setup for migrations. Visit https://pris.ly/d/table-inheritance for more info.
+model fact_quality_metrics {
+  timestamp           DateTime           @db.Timestamptz(6)
+  equipment_id        String             @db.Uuid
+  production_order_id String?            @db.Uuid
+  product_id          String             @db.Uuid
+  defect_type         String?            @db.VarChar(100)
+  defect_category     String?            @db.VarChar(50)
+  defect_count        Int                @default(1)
+  defect_description  String?
+  root_cause          String?            @db.VarChar(200)
+  corrective_action   String?
+  inspector_id        String?            @db.VarChar(50)
+  severity_score      Int?
+  inspection_lot_size Int?
+  total_inspected     Int?
+  total_defects       Int?
+  created_at          DateTime           @default(now()) @db.Timestamptz(6)
+  record_id           String             @db.Uuid
+  equipment           equipment          @relation(fields: [equipment_id], references: [id])
+  products            products           @relation(fields: [product_id], references: [id])
+  production_orders   production_orders? @relation(fields: [production_order_id], references: [id])
+
+  @@id([timestamp, equipment_id, record_id])
+  @@index([defect_type, timestamp(sort: Desc)])
+  @@index([equipment_id, timestamp(sort: Desc)])
+}
+
+model manufacturing_areas {
+  id                  String              @id @db.Uuid
+  site_id             String              @db.Uuid
+  area_code           String              @db.VarChar(20)
+  area_name           String              @db.VarChar(100)
+  description         String?
+  created_at          DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime            @default(now()) @db.Timestamptz(6)
+  manufacturing_sites manufacturing_sites @relation(fields: [site_id], references: [id])
+  work_centers        work_centers[]
+
+  @@unique([site_id, area_code])
+}
+
+model manufacturing_sites {
+  id                  String                @id @db.Uuid
+  site_code           String                @unique @db.VarChar(20)
+  site_name           String                @db.VarChar(100)
+  address             String?
+  timezone            String                @default("UTC") @db.VarChar(50)
+  created_at          DateTime              @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime              @default(now()) @db.Timestamptz(6)
+  manufacturing_areas manufacturing_areas[]
+  shift_definitions   shift_definitions[]
+}
+
+model production_orders {
+  id                         String                       @id @db.Uuid
+  order_number               String                       @unique @db.VarChar(50)
+  product_id                 String                       @db.Uuid
+  equipment_id               String                       @db.Uuid
+  planned_quantity           Decimal                      @db.Decimal(12, 2)
+  produced_quantity          Decimal                      @default(0) @db.Decimal(12, 2)
+  good_quantity              Decimal                      @default(0) @db.Decimal(12, 2)
+  scrap_quantity             Decimal                      @default(0) @db.Decimal(12, 2)
+  rework_quantity            Decimal                      @default(0) @db.Decimal(12, 2)
+  planned_start_time         DateTime                     @db.Timestamptz(6)
+  planned_end_time           DateTime                     @db.Timestamptz(6)
+  actual_start_time          DateTime?                    @db.Timestamptz(6)
+  actual_end_time            DateTime?                    @db.Timestamptz(6)
+  order_status               order_status
+  priority_level             Int                          @default(5)
+  sap_order_number           String?                      @db.VarChar(50)
+  created_at                 DateTime                     @default(now()) @db.Timestamptz(6)
+  updated_at                 DateTime                     @default(now()) @db.Timestamptz(6)
+  fact_oee_metrics           fact_oee_metrics[]
+  fact_production_quantities fact_production_quantities[]
+  fact_quality_metrics       fact_quality_metrics[]
+  equipment                  equipment                    @relation(fields: [equipment_id], references: [id])
+  products                   products                     @relation(fields: [product_id], references: [id])
+}
+
+model products {
+  id                   String                 @id @db.Uuid
+  product_code         String                 @unique @db.VarChar(50)
+  product_name         String                 @db.VarChar(200)
+  product_family       String?                @db.VarChar(100)
+  unit_of_measure      String                 @default("EA") @db.VarChar(20)
+  standard_cost        Decimal?               @db.Decimal(12, 4)
+  target_cycle_time    Decimal?               @db.Decimal(10, 4)
+  created_at           DateTime               @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime               @default(now()) @db.Timestamptz(6)
+  fact_quality_metrics fact_quality_metrics[]
+  production_orders    production_orders[]
+}
+
+model shift_definitions {
+  id                    String                  @id @db.Uuid
+  site_id               String                  @db.Uuid
+  shift_name            String                  @db.VarChar(50)
+  start_time            String                  @db.VarChar(8)
+  end_time              String                  @db.VarChar(8)
+  is_overnight          Boolean                 @default(false)
+  break_minutes         Int                     @default(0)
+  meal_minutes          Int                     @default(0)
+  is_active             Boolean                 @default(true)
+  created_at            DateTime                @default(now()) @db.Timestamptz(6)
+  updated_at            DateTime                @default(now()) @db.Timestamptz(6)
+  fact_equipment_states fact_equipment_states[]
+  fact_oee_metrics      fact_oee_metrics[]
+  manufacturing_sites   manufacturing_sites     @relation(fields: [site_id], references: [id])
+
+  @@unique([site_id, shift_name])
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model v_failed {
+  count BigInt?
+
+  @@ignore
+}
+
+model work_centers {
+  id                   String              @id @db.Uuid
+  area_id              String              @db.Uuid
+  work_center_code     String              @db.VarChar(20)
+  work_center_name     String              @db.VarChar(100)
+  capacity_units       String?             @default("units/hour") @db.VarChar(20)
+  theoretical_capacity Decimal?            @db.Decimal(10, 2)
+  created_at           DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime            @default(now()) @db.Timestamptz(6)
+  equipment            equipment[]
+  manufacturing_areas  manufacturing_areas @relation(fields: [area_id], references: [id])
+
+  @@unique([area_id, work_center_code])
+}
+
+enum criticality_level {
+  Critical
+  Important
+  Standard
+}
+
+enum energy_type {
+  Electricity
+  Gas
+  Steam
+  Compressed_Air
+  Water
+}
+
+enum maintenance_type {
+  Preventive
+  Predictive
+  Corrective
+  Emergency
+}
+
+enum order_status {
+  Planned
+  Released
+  In_Progress
+  Completed
+  Cancelled
+}
+
+enum state_category {
+  Productive
+  Scheduled_Downtime
+  Unscheduled_Downtime
+  Setup
+  Break
+}

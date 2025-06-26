@@ -1,0 +1,11 @@
+# CRITICAL: NO MOCK DATA ALLOWED
+
+This POC requires REAL DATA ONLY from the TimescaleDB database.
+Mock data destroys the intent of the POC.
+
+Before any code changes:
+1. Ensure all data comes from real database queries
+2. Never add mock, sample, or generated data
+3. Always use Prisma to query PostgreSQL/TimescaleDB
+
+Database: PostgreSQL on port 5433

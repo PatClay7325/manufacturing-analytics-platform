@@ -1,0 +1,413 @@
+// Prisma Schema for ISO 22400-Compliant Manufacturing Analytics
+// Supports OEE, TEEP, and all ISO 22400 KPIs with TimescaleDB optimization
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Manufacturing Hierarchy Models
+model ManufacturingSite {
+  id        String   @id @default(uuid()) @db.Uuid
+  siteCode  String   @unique @map("site_code") @db.VarChar(20)
+  siteName  String   @map("site_name") @db.VarChar(100)
+  address   String?
+  timezone  String   @default("UTC") @db.VarChar(50)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  areas           ManufacturingArea[]
+  shiftDefinitions ShiftDefinition[]
+
+  @@map("manufacturing_sites")
+}
+
+model ManufacturingArea {
+  id          String   @id @default(uuid()) @db.Uuid
+  siteId      String   @map("site_id") @db.Uuid
+  areaCode    String   @map("area_code") @db.VarChar(20)
+  areaName    String   @map("area_name") @db.VarChar(100)
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  site        ManufacturingSite @relation(fields: [siteId], references: [id])
+  workCenters WorkCenter[]
+
+  @@unique([siteId, areaCode])
+  @@map("manufacturing_areas")
+}
+
+model WorkCenter {
+  id                   String   @id @default(uuid()) @db.Uuid
+  areaId               String   @map("area_id") @db.Uuid
+  workCenterCode       String   @map("work_center_code") @db.VarChar(20)
+  workCenterName       String   @map("work_center_name") @db.VarChar(100)
+  capacityUnits        String?  @default("units/hour") @map("capacity_units") @db.VarChar(20)
+  theoreticalCapacity  Decimal? @map("theoretical_capacity") @db.Decimal(10, 2)
+  createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt            DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  area      ManufacturingArea @relation(fields: [areaId], references: [id])
+  equipment Equipment[]
+
+  @@unique([areaId, workCenterCode])
+  @@map("work_centers")
+}
+
+model Equipment {
+  id                     String    @id @default(uuid()) @db.Uuid
+  workCenterId           String    @map("work_center_id") @db.Uuid
+  equipmentCode          String    @unique @map("equipment_code") @db.VarChar(50)
+  equipmentName          String    @map("equipment_name") @db.VarChar(200)
+  equipmentType          String?   @map("equipment_type") @db.VarChar(50)
+  manufacturer           String?   @db.VarChar(100)
+  model                  String?   @db.VarChar(100)
+  serialNumber           String?   @map("serial_number") @db.VarChar(100)
+  installationDate       DateTime? @map("installation_date") @db.Date
+  sapEquipmentNumber     String?   @map("sap_equipment_number") @db.VarChar(50)
+  criticalityLevel       CriticalityLevel? @map("criticality_level")
+  maintenanceStrategy    String?   @map("maintenance_strategy") @db.VarChar(50)
+  theoreticalCycleTime   Decimal?  @map("theoretical_cycle_time") @db.Decimal(10, 4) // seconds per unit
+  idealRunRate           Decimal?  @map("ideal_run_rate") @db.Decimal(10, 2) // units per hour
+  isActive               Boolean   @default(true) @map("is_active")
+  createdAt              DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt              DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  workCenter              WorkCenter @relation(fields: [workCenterId], references: [id])
+  productionOrders        ProductionOrder[]
+  productionQuantities    FactProductionQuantity[]
+  equipmentStates         FactEquipmentState[]
+  qualityMetrics          FactQualityMetric[]
+  performanceMetrics      FactPerformanceMetric[]
+  energyMetrics           FactEnergyMetric[]
+  maintenanceEvents       FactMaintenanceEvent[]
+  oeeMetrics              FactOeeMetric[]
+
+  @@map("equipment")
+}
+
+enum CriticalityLevel {
+  Critical
+  Important
+  Standard
+
+  @@map("criticality_level")
+}
+
+model Product {
+  id                 String   @id @default(uuid()) @db.Uuid
+  productCode        String   @unique @map("product_code") @db.VarChar(50)
+  productName        String   @map("product_name") @db.VarChar(200)
+  productFamily      String?  @map("product_family") @db.VarChar(100)
+  unitOfMeasure      String   @default("EA") @map("unit_of_measure") @db.VarChar(20)
+  standardCost       Decimal? @map("standard_cost") @db.Decimal(12, 4)
+  targetCycleTime    Decimal? @map("target_cycle_time") @db.Decimal(10, 4) // seconds per unit
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt          DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  productionOrders  ProductionOrder[]
+  qualityMetrics    FactQualityMetric[]
+
+  @@map("products")
+}
+
+model ProductionOrder {
+  id                  String      @id @default(uuid()) @db.Uuid
+  orderNumber         String      @unique @map("order_number") @db.VarChar(50)
+  productId           String      @map("product_id") @db.Uuid
+  equipmentId         String      @map("equipment_id") @db.Uuid
+  plannedQuantity     Decimal     @map("planned_quantity") @db.Decimal(12, 2)
+  producedQuantity    Decimal     @default(0) @map("produced_quantity") @db.Decimal(12, 2)
+  goodQuantity        Decimal     @default(0) @map("good_quantity") @db.Decimal(12, 2)
+  scrapQuantity       Decimal     @default(0) @map("scrap_quantity") @db.Decimal(12, 2)
+  reworkQuantity      Decimal     @default(0) @map("rework_quantity") @db.Decimal(12, 2)
+  plannedStartTime    DateTime    @map("planned_start_time") @db.Timestamptz
+  plannedEndTime      DateTime    @map("planned_end_time") @db.Timestamptz
+  actualStartTime     DateTime?   @map("actual_start_time") @db.Timestamptz
+  actualEndTime       DateTime?   @map("actual_end_time") @db.Timestamptz
+  orderStatus         OrderStatus @map("order_status")
+  priorityLevel       Int         @default(5) @map("priority_level")
+  sapOrderNumber      String?     @map("sap_order_number") @db.VarChar(50)
+  createdAt           DateTime    @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt           DateTime    @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  product             Product @relation(fields: [productId], references: [id])
+  equipment           Equipment @relation(fields: [equipmentId], references: [id])
+  productionQuantities FactProductionQuantity[]
+  qualityMetrics      FactQualityMetric[]
+  oeeMetrics          FactOeeMetric[]
+
+  @@map("production_orders")
+}
+
+enum OrderStatus {
+  Planned
+  Released
+  In_Progress
+  Completed
+  Cancelled
+
+  @@map("order_status")
+}
+
+model ShiftDefinition {
+  id           String   @id @default(uuid()) @db.Uuid
+  siteId       String   @map("site_id") @db.Uuid
+  shiftName    String   @map("shift_name") @db.VarChar(50)
+  startTime    String   @map("start_time") @db.VarChar(8) // HH:MM:SS format
+  endTime      String   @map("end_time") @db.VarChar(8)   // HH:MM:SS format
+  isOvernight  Boolean  @default(false) @map("is_overnight")
+  breakMinutes Int      @default(0) @map("break_minutes")
+  mealMinutes  Int      @default(0) @map("meal_minutes")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  site            ManufacturingSite @relation(fields: [siteId], references: [id])
+  equipmentStates FactEquipmentState[]
+  oeeMetrics      FactOeeMetric[]
+
+  @@unique([siteId, shiftName])
+  @@map("shift_definitions")
+}
+
+// Time-Series Fact Tables
+
+model FactProductionQuantity {
+  timestamp              DateTime @db.Timestamptz
+  equipmentId            String   @map("equipment_id") @db.Uuid
+  recordId               String   @default(uuid()) @map("record_id") @db.Uuid
+  productionOrderId      String?  @map("production_order_id") @db.Uuid
+  shiftId                String?  @map("shift_id") @db.Uuid
+  plannedQuantity        Decimal  @default(0) @map("planned_quantity") @db.Decimal(12, 2)
+  producedQuantity       Decimal  @default(0) @map("produced_quantity") @db.Decimal(12, 2)
+  goodQuantity           Decimal  @default(0) @map("good_quantity") @db.Decimal(12, 2)
+  scrapQuantity          Decimal  @default(0) @map("scrap_quantity") @db.Decimal(12, 2)
+  reworkQuantity         Decimal  @default(0) @map("rework_quantity") @db.Decimal(12, 2)
+  actualProductionTime   Decimal? @map("actual_production_time") @db.Decimal(10, 2) // minutes
+  plannedProductionTime  Decimal? @map("planned_production_time") @db.Decimal(10, 2) // minutes
+  loadingTime            Decimal? @map("loading_time") @db.Decimal(10, 2) // minutes
+  operationTime          Decimal? @map("operation_time") @db.Decimal(10, 2) // minutes
+  createdAt              DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  // Relations
+  equipment       Equipment        @relation(fields: [equipmentId], references: [id])
+  productionOrder ProductionOrder? @relation(fields: [productionOrderId], references: [id])
+
+  @@id([timestamp, equipmentId, recordId])
+  @@map("fact_production_quantities")
+  @@index([equipmentId, timestamp(sort: Desc)])
+  @@index([productionOrderId, timestamp(sort: Desc)])
+}
+
+model FactEquipmentState {
+  timestamp         DateTime     @db.Timestamptz
+  equipmentId       String       @map("equipment_id") @db.Uuid
+  recordId          String       @default(uuid()) @map("record_id") @db.Uuid
+  stateCode         String       @map("state_code") @db.VarChar(20)
+  stateCategory     StateCategory @map("state_category")
+  reasonCode        String?      @map("reason_code") @db.VarChar(50)
+  reasonDescription String?      @map("reason_description")
+  durationMinutes   Decimal?     @map("duration_minutes") @db.Decimal(10, 2)
+  operatorId        String?      @map("operator_id") @db.VarChar(50)
+  shiftId           String?      @map("shift_id") @db.Uuid
+  isPlannedDowntime Boolean      @default(false) @map("is_planned_downtime")
+  affectsOee        Boolean      @default(true) @map("affects_oee")
+  createdAt         DateTime     @default(now()) @map("created_at") @db.Timestamptz
+
+  // Relations
+  equipment Equipment @relation(fields: [equipmentId], references: [id])
+  shift     ShiftDefinition? @relation(fields: [shiftId], references: [id])
+
+  @@id([timestamp, equipmentId, recordId])
+  @@map("fact_equipment_states")
+  @@index([equipmentId, timestamp(sort: Desc)])
+  @@index([stateCategory, timestamp(sort: Desc)])
+}
+
+enum StateCategory {
+  Productive
+  Scheduled_Downtime
+  Unscheduled_Downtime
+  Setup
+  Break
+
+  @@map("state_category")
+}
+
+model FactQualityMetric {
+  timestamp           DateTime @db.Timestamptz
+  equipmentId         String   @map("equipment_id") @db.Uuid
+  recordId            String   @default(uuid()) @map("record_id") @db.Uuid
+  productionOrderId   String?  @map("production_order_id") @db.Uuid
+  productId           String   @map("product_id") @db.Uuid
+  defectType          String?  @map("defect_type") @db.VarChar(100)
+  defectCategory      String?  @map("defect_category") @db.VarChar(50)
+  defectCount         Int      @default(1) @map("defect_count")
+  defectDescription   String?  @map("defect_description")
+  rootCause           String?  @map("root_cause") @db.VarChar(200)
+  correctiveAction    String?  @map("corrective_action")
+  inspectorId         String?  @map("inspector_id") @db.VarChar(50)
+  severityScore       Int?     @map("severity_score") // 1-10 scale
+  inspectionLotSize   Int?     @map("inspection_lot_size")
+  totalInspected      Int?     @map("total_inspected")
+  totalDefects        Int?     @map("total_defects")
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  // Relations
+  equipment       Equipment        @relation(fields: [equipmentId], references: [id])
+  productionOrder ProductionOrder? @relation(fields: [productionOrderId], references: [id])
+  product         Product          @relation(fields: [productId], references: [id])
+
+  @@id([timestamp, equipmentId, recordId])
+  @@map("fact_quality_metrics")
+  @@index([equipmentId, timestamp(sort: Desc)])
+  @@index([defectType, timestamp(sort: Desc)])
+}
+
+model FactPerformanceMetric {
+  timestamp               DateTime @db.Timestamptz
+  equipmentId             String   @map("equipment_id") @db.Uuid
+  recordId                String   @default(uuid()) @map("record_id") @db.Uuid
+  productionOrderId       String?  @map("production_order_id") @db.Uuid
+  cycleTime               Decimal? @map("cycle_time") @db.Decimal(10, 4) // actual cycle time in seconds
+  theoreticalCycleTime    Decimal? @map("theoretical_cycle_time") @db.Decimal(10, 4)
+  actualRunRate           Decimal? @map("actual_run_rate") @db.Decimal(10, 2) // units per hour
+  idealRunRate            Decimal? @map("ideal_run_rate") @db.Decimal(10, 2)
+  speedLossMinutes        Decimal? @map("speed_loss_minutes") @db.Decimal(10, 2)
+  microStopsCount         Int      @default(0) @map("micro_stops_count")
+  reducedSpeedMinutes     Decimal? @map("reduced_speed_minutes") @db.Decimal(10, 2)
+  createdAt               DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  // Relations
+  equipment Equipment @relation(fields: [equipmentId], references: [id])
+
+  @@id([timestamp, equipmentId, recordId])
+  @@map("fact_performance_metrics")
+  @@index([equipmentId, timestamp(sort: Desc)])
+}
+
+model FactEnergyMetric {
+  timestamp         DateTime   @db.Timestamptz
+  equipmentId       String     @map("equipment_id") @db.Uuid
+  recordId          String     @default(uuid()) @map("record_id") @db.Uuid
+  energyType        EnergyType @map("energy_type")
+  consumptionValue  Decimal    @map("consumption_value") @db.Decimal(12, 4)
+  consumptionUnit   String     @map("consumption_unit") @db.VarChar(20)
+  costPerUnit       Decimal?   @map("cost_per_unit") @db.Decimal(10, 4)
+  totalCost         Decimal?   @map("total_cost") @db.Decimal(12, 2)
+  createdAt         DateTime   @default(now()) @map("created_at") @db.Timestamptz
+
+  // Relations
+  equipment Equipment @relation(fields: [equipmentId], references: [id])
+
+  @@id([timestamp, equipmentId, energyType, recordId])
+  @@map("fact_energy_metrics")
+  @@index([equipmentId, timestamp(sort: Desc)])
+  @@index([energyType, timestamp(sort: Desc)])
+}
+
+enum EnergyType {
+  Electricity
+  Gas
+  Steam
+  Compressed_Air
+  Water
+
+  @@map("energy_type")
+}
+
+model FactMaintenanceEvent {
+  timestamp                DateTime        @db.Timestamptz
+  equipmentId              String          @map("equipment_id") @db.Uuid
+  recordId                 String          @default(uuid()) @map("record_id") @db.Uuid
+  maintenanceType          MaintenanceType @map("maintenance_type")
+  maintenanceCategory      String?         @map("maintenance_category") @db.VarChar(50)
+  workOrderNumber          String?         @map("work_order_number") @db.VarChar(50)
+  plannedDurationMinutes   Decimal?        @map("planned_duration_minutes") @db.Decimal(10, 2)
+  actualDurationMinutes    Decimal?        @map("actual_duration_minutes") @db.Decimal(10, 2)
+  laborHours               Decimal?        @map("labor_hours") @db.Decimal(10, 2)
+  materialCost             Decimal?        @map("material_cost") @db.Decimal(12, 2)
+  totalCost                Decimal?        @map("total_cost") @db.Decimal(12, 2)
+  technicianId             String?         @map("technician_id") @db.VarChar(50)
+  description              String?
+  createdAt                DateTime        @default(now()) @map("created_at") @db.Timestamptz
+
+  // Relations
+  equipment Equipment @relation(fields: [equipmentId], references: [id])
+
+  @@id([timestamp, equipmentId, recordId])
+  @@map("fact_maintenance_events")
+  @@index([equipmentId, timestamp(sort: Desc)])
+  @@index([maintenanceType, timestamp(sort: Desc)])
+}
+
+enum MaintenanceType {
+  Preventive
+  Predictive
+  Corrective
+  Emergency
+
+  @@map("maintenance_type")
+}
+
+// Pre-calculated OEE Metrics for Performance
+model FactOeeMetric {
+  timestamp              DateTime @db.Timestamptz
+  equipmentId            String   @map("equipment_id") @db.Uuid
+  recordId               String   @default(uuid()) @map("record_id") @db.Uuid
+  productionOrderId      String?  @map("production_order_id") @db.Uuid
+  shiftId                String?  @map("shift_id") @db.Uuid
+  
+  // Time components (minutes)
+  plannedProductionTime  Decimal  @map("planned_production_time") @db.Decimal(10, 2)
+  actualProductionTime   Decimal  @map("actual_production_time") @db.Decimal(10, 2)
+  downtimeMinutes        Decimal  @default(0) @map("downtime_minutes") @db.Decimal(10, 2)
+  
+  // Quantity components
+  plannedQuantity        Decimal  @map("planned_quantity") @db.Decimal(12, 2)
+  producedQuantity       Decimal  @map("produced_quantity") @db.Decimal(12, 2)
+  goodQuantity           Decimal  @map("good_quantity") @db.Decimal(12, 2)
+  scrapQuantity          Decimal  @default(0) @map("scrap_quantity") @db.Decimal(12, 2)
+  
+  // Rate components
+  idealCycleTime         Decimal? @map("ideal_cycle_time") @db.Decimal(10, 4)
+  actualCycleTime        Decimal? @map("actual_cycle_time") @db.Decimal(10, 4)
+  
+  // ISO 22400 OEE Components (0-1 scale)
+  availability           Decimal  @map("availability") @db.Decimal(8, 6) // CHECK constraint in DB
+  performance            Decimal  @map("performance") @db.Decimal(8, 6)  // CHECK constraint in DB
+  quality                Decimal  @map("quality") @db.Decimal(8, 6)      // CHECK constraint in DB
+  
+  // Calculated OEE (computed in application for Prisma compatibility)
+  oee                    Decimal  @map("oee") @db.Decimal(8, 6)
+  
+  // TEEP components
+  utilization            Decimal? @map("utilization") @db.Decimal(8, 6)
+  teep                   Decimal? @map("teep") @db.Decimal(8, 6)
+  
+  createdAt              DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  // Relations
+  equipment       Equipment        @relation(fields: [equipmentId], references: [id])
+  productionOrder ProductionOrder? @relation(fields: [productionOrderId], references: [id])
+  shift           ShiftDefinition? @relation(fields: [shiftId], references: [id])
+
+  @@id([timestamp, equipmentId, recordId])
+  @@map("fact_oee_metrics")
+  @@index([equipmentId, timestamp(sort: Desc)])
+  @@index([shiftId, timestamp(sort: Desc)])
+  @@index([oee(sort: Desc), timestamp(sort: Desc)])
+}

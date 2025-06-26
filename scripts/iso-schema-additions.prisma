@@ -1,0 +1,84 @@
+// ISO-COMPLIANT SCHEMA ADDITIONS
+// Add these models to your existing schema.prisma file
+
+// Calendar/Date Range table for user-friendly queries
+model DimDateRange {
+  id        Int      @id @default(autoincrement()) @map("range_id")
+  name      String   @unique
+  startDate DateTime @map("start_date") @db.Date
+  endDate   DateTime @map("end_date") @db.Date
+
+  @@map("dim_date_range")
+}
+
+// Ontology mapping for AI synonym resolution
+model OntologyTerm {
+  term       String @id @map("term")
+  modelName  String @map("model_name")
+  fieldName  String @map("field_name")
+  priority   Int    @default(0)
+
+  @@map("ontology_term")
+}
+
+// Materialized Views (read-only models)
+/// Daily OEE metrics by equipment and shift
+model ViewOeeDaily {
+  dateId       DateTime @map("date_id") @db.Date
+  shiftId      Int      @map("shift_id")
+  equipmentId  Int      @map("equipment_id")
+  availability Float
+  performance  Float
+  quality      Float
+  oee          Float
+
+  @@id([dateId, shiftId, equipmentId])
+  @@map("view_oee_daily")
+  @@ignore
+}
+
+/// Equipment reliability summary (MTBF, MTTR)
+model ViewReliabilitySummary {
+  equipmentId   Int     @id @map("equipment_id")
+  equipmentCode String  @map("equipment_code")
+  equipmentName String  @map("equipment_name")
+  mtbfHours     Float   @map("mtbf_hours")
+  mttrHours     Float   @map("mttr_hours")
+  failureCount  Int     @map("failure_count")
+
+  @@map("view_reliability_summary")
+  @@ignore
+}
+
+/// Scrap/quality summary by date, equipment, and product
+model ViewScrapSummary {
+  dateId         DateTime @map("date_id") @db.Date
+  equipmentId    Int      @map("equipment_id")
+  productId      Int      @map("product_id")
+  scrapCode      String   @map("scrap_code")
+  scrapReason    String?  @map("scrap_reason")
+  totalScrapQty  Int      @map("total_scrap_qty")
+  scrapIncidents Int      @map("scrap_incidents")
+  scrapCost      Decimal? @map("scrap_cost") @db.Decimal(12, 2)
+
+  @@id([dateId, equipmentId, productId, scrapCode])
+  @@map("view_scrap_summary")
+  @@ignore
+}
+
+// Update existing models with missing ISO fields
+
+// Add to DimDowntimeReason model:
+// isFailure Boolean @default(false) @map("is_failure")
+
+// Add to FactProduction model:
+// plannedParts Int @map("planned_parts")
+
+// TimescaleDB hypertable configuration (add to schema notes):
+// Execute after migration:
+// SELECT create_hypertable('fact_sensor_event', 'event_ts');
+
+// Audit triggers (add to schema notes):
+// Create triggers on all fact tables:
+// CREATE TRIGGER audit_trigger AFTER INSERT OR UPDATE OR DELETE
+// ON fact_production FOR EACH ROW EXECUTE FUNCTION audit_trigger_function();
