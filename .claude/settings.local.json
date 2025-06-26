@@ -204,7 +204,11 @@
       "Bash(npx:*)",
       "Bash(PRISMA_QUERY_ENGINE_LIBRARY=true PRISMA_DISABLE_WARNINGS=true node -e \"\nconst { PrismaClient } = require('./prisma/generated/client');\nconsole.log('Testing Prisma client initialization...');\nconst prisma = new PrismaClient({ errorFormat: 'minimal', log: ['error'] });\nconsole.log('✅ Prisma client created successfully');\nprisma.\\$disconnect().then(() => console.log('✅ Disconnected successfully'));\n\")",
       "Bash(DEBUG=*)",
-      "Bash(/mnt/d/Source/manufacturing-analytics-platform/scripts/test-chat-simple.sh:*)"
+      "Bash(/mnt/d/Source/manufacturing-analytics-platform/scripts/test-chat-simple.sh:*)",
+      "Bash(wget:*)",
+      "Bash(./runpod-deploy.sh:*)",
+      "Bash(./runpod-easy-deploy.sh:*)",
+      "Bash(export BASE_URL=http://localhost:3001)"
     ],
     "deny": []
   },
