@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { managedFetch } from '@/lib/fetch-manager';
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -6,8 +7,8 @@ export async function POST(request: NextRequest) {
   
   try {
     // Check Ollama API availability
-    const healthResponse = await fetch(`${config.ollamaUrl}/api/tags`, {
-      signal: AbortSignal.timeout(5000),
+    const healthResponse = await managedFetch(`${config.ollamaUrl}/api/tags`, {
+      timeout: 5000,
     });
     
     if (!healthResponse.ok) {
@@ -23,7 +24,7 @@ export async function POST(request: NextRequest) {
     let generationTest = { success: false, responseTime: 0 };
     try {
       const genStart = Date.now();
-      const genResponse = await fetch(`${config.ollamaUrl}/api/generate`, {
+      const genResponse = await managedFetch(`${config.ollamaUrl}/api/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest) {
           stream: false,
           options: { num_predict: 10 },
         }),
-        signal: AbortSignal.timeout(10000),
+        timeout: 10000,
       });
       
       if (genResponse.ok) {

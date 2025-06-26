@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+// Jest test - using global test functions
 import { VariableService } from '@/services/variableService';
 import { Dashboard, TemplateVariable } from '@/types/dashboard';
 

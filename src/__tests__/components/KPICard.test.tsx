@@ -1,5 +1,5 @@
+// Jest test - using global test functions
 import React from 'react';
-import { describe, it, expect } from 'vitest';
 import { render, screen } from '@/test-utils/index';
 import { createKPI } from '@/test-utils/factories';
 

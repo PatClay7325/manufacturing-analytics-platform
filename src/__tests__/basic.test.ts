@@ -1,8 +1,7 @@
+// Jest test - using global test functions
 /**
  * Basic Test - Verify test infrastructure is working
  */
-
-import { describe, test, expect } from 'vitest';
 
 describe('Basic Test Infrastructure', () => {
   test('should pass basic assertion', () => {

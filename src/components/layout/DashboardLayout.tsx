@@ -1,12 +1,30 @@
 'use client';
 
-import React, { useState, useEffect, createContext, useContext } from 'react';
+import React, { useState, useEffect, createContext, useContext, useRef } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { 
+  ChevronDown, ChevronRight, ChevronLeft, 
+  Search, Menu, X, Clock, Star, Filter, Settings,
+  User, KeyRound, UsersIcon, LogOut, Home, Target, LayoutGrid
+} from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import GrafanaIntegratedSidebar from './GrafanaIntegratedSidebar';
+import { bootstrapManager } from '@/lib/analytics-bootstrap';
+import { convertNavTreeForDashboard } from '@/lib/navigation-utils';
 import { QuickActions } from './QuickActions';
 
 interface DashboardLayoutProps {
   children?: React.ReactNode;
+}
+
+interface NavItem {
+  id: string;
+  text: string;
+  icon?: any;
+  url?: string;
+  target?: string;
+  divider?: boolean;
+  children?: NavItem[];
 }
 
 // Sidebar Context
@@ -35,10 +53,21 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const sidebarRef = useRef<HTMLDivElement>(null);
   const { user, logout } = useAuth();
 
-  // Get navigation from bootstrap configuration
-  const bootstrapConfig = bootstrapManager.getConfig() || bootstrapManager.initializeBootstrapConfig();
-  const bootstrapNavTree = bootstrapConfig.settings.navTree;
-  const navTree: NavItem[] = convertNavTreeForDashboard(bootstrapNavTree);
+  // Get navigation from bootstrap configuration with error handling
+  let navTree: NavItem[] = [];
+  try {
+    const bootstrapConfig = bootstrapManager.getConfig() || bootstrapManager.initializeBootstrapConfig();
+    const bootstrapNavTree = bootstrapConfig?.settings?.navTree || [];
+    navTree = convertNavTreeForDashboard(bootstrapNavTree);
+  } catch (error) {
+    console.error('Error loading navigation:', error);
+    // Fallback navigation
+    navTree = [
+      { id: 'home', text: 'Home', icon: Home, url: '/' },
+      { id: 'poc-management', text: '🎯 POC Management', icon: Target, url: '/poc-management' },
+      { id: 'dashboards', text: 'Dashboards', icon: LayoutGrid, url: '/dashboards' },
+    ];
+  }
 
   // Initialize expanded sections based on improved structure
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['operations', 'intelligence']));
@@ -48,6 +77,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     const storedValue = localStorage?.getItem('manufacturingSidebarCollapsed');
     if (storedValue !== null) {
       setIsCollapsed(JSON.parse(storedValue));
+    } else {
+      // Default to expanded on desktop, collapsed on mobile
+      setIsCollapsed(window.innerWidth < 1024);
     }
 
     // Handle responsive behavior
@@ -58,7 +90,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       }
     };
 
-    handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -344,6 +375,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           {/* Top Bar */}
           <div className="h-12 bg-white border-b border-gray-200 flex items-center justify-between px-4">
             <div className="flex items-center space-x-4">
+              {/* Sidebar Toggle for Desktop */}
+              <button 
+                onClick={toggleSidebar}
+                className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 p-2 rounded-md transition-colors"
+                title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              >
+                <Menu className="h-4 w-4" />
+              </button>
               <button className="text-gray-600 hover:text-gray-900">
                 <Clock className="h-4 w-4" />
               </button>

@@ -1,18 +1,18 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+// Jest test - using global test functions
 import { IntentClassifierAgent } from '@/lib/agents/IntentClassifierAgent';
 import * as embeddingService from '@/lib/embeddings/embeddingService';
 import { prisma } from '@/lib/database';
 
 // Mock dependencies
-vi.mock('@/lib/embeddings/embeddingService');
-vi.mock('@/lib/prisma', () => ({
+jest.mock('@/lib/embeddings/embeddingService');
+jest.mock('@/lib/prisma', () => ({
   prisma: {
     auditTrail: {
-      create: vi.fn(),
+      create: jest.fn(),
     },
     sessionMemory: {
-      findUnique: vi.fn(),
-      upsert: vi.fn(),
+      findUnique: jest.fn(),
+      upsert: jest.fn(),
     },
   },
 }));
@@ -22,11 +22,11 @@ describe('IntentClassifierAgent', () => {
 
   beforeEach(() => {
     agent = IntentClassifierAgent.getInstance();
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    jest.restoreAllMocks();
   });
 
   describe('classify', () => {
@@ -37,10 +37,10 @@ describe('IntentClassifierAgent', () => {
         input: 'Show me the OEE for production line 1',
       };
 
-      vi.mocked(embeddingService.classifyIntent).mockResolvedValue('analyze-oee');
-      vi.mocked(prisma.sessionMemory.findUnique).mockResolvedValue(null);
-      vi.mocked(prisma.sessionMemory.upsert).mockResolvedValue({} as any);
-      vi.mocked(prisma.auditTrail.create).mockResolvedValue({} as any);
+      jest.mocked(embeddingService.classifyIntent).mockResolvedValue('analyze-oee');
+      jest.mocked(prisma.sessionMemory.findUnique).mockResolvedValue(null);
+      jest.mocked(prisma.sessionMemory.upsert).mockResolvedValue({} as any);
+      jest.mocked(prisma.auditTrail.create).mockResolvedValue({} as any);
 
       const result = await agent.classify(input);
 
@@ -62,8 +62,8 @@ describe('IntentClassifierAgent', () => {
         input: 'Analyze defect rates for last month',
       };
 
-      vi.mocked(embeddingService.classifyIntent).mockResolvedValue('quality-analysis');
-      vi.mocked(prisma.sessionMemory.findUnique).mockResolvedValue(null);
+      jest.mocked(embeddingService.classifyIntent).mockResolvedValue('quality-analysis');
+      jest.mocked(prisma.sessionMemory.findUnique).mockResolvedValue(null);
 
       const result = await agent.classify(input);
 
@@ -80,7 +80,7 @@ describe('IntentClassifierAgent', () => {
         input: 'What is the weather today?',
       };
 
-      vi.mocked(embeddingService.classifyIntent).mockResolvedValue('unknown-intent');
+      jest.mocked(embeddingService.classifyIntent).mockResolvedValue('unknown-intent');
 
       const result = await agent.classify(input);
 
@@ -100,8 +100,8 @@ describe('IntentClassifierAgent', () => {
         input: 'Check equipment downtime',
       };
 
-      vi.mocked(embeddingService.classifyIntent).mockResolvedValue('track-downtime');
-      vi.mocked(prisma.sessionMemory.findUnique).mockResolvedValue({
+      jest.mocked(embeddingService.classifyIntent).mockResolvedValue('track-downtime');
+      jest.mocked(prisma.sessionMemory.findUnique).mockResolvedValue({
         sessionId: 'test-session',
         context: { intents: [] },
         metadata: null,
@@ -133,7 +133,7 @@ describe('IntentClassifierAgent', () => {
         input: 'Monitor energy consumption',
       };
 
-      vi.mocked(embeddingService.classifyIntent).mockResolvedValue('energy-monitoring');
+      jest.mocked(embeddingService.classifyIntent).mockResolvedValue('energy-monitoring');
 
       await agent.classify(input);
 
@@ -154,7 +154,7 @@ describe('IntentClassifierAgent', () => {
         input: 'Test error handling',
       };
 
-      vi.mocked(embeddingService.classifyIntent).mockRejectedValue(
+      jest.mocked(embeddingService.classifyIntent).mockRejectedValue(
         new Error('Embedding service error')
       );
 
@@ -181,21 +181,21 @@ describe('IntentClassifierAgent', () => {
         timestamp: new Date().toISOString(),
       }));
 
-      vi.mocked(prisma.sessionMemory.findUnique).mockResolvedValue({
+      jest.mocked(prisma.sessionMemory.findUnique).mockResolvedValue({
         sessionId: 'test-session',
         context: { intents: existingIntents },
         metadata: null,
         updatedAt: new Date(),
       });
 
-      vi.mocked(embeddingService.classifyIntent).mockResolvedValue('analyze-oee');
+      jest.mocked(embeddingService.classifyIntent).mockResolvedValue('analyze-oee');
 
       await agent.classify({
         sessionId: 'test-session',
         input: 'Show OEE',
       });
 
-      const upsertCall = vi.mocked(prisma.sessionMemory.upsert).mock.calls[0][0];
+      const upsertCall = jest.mocked(prisma.sessionMemory.upsert).mock.calls[0][0];
       const updatedIntents = upsertCall.update.context.intents;
 
       expect(updatedIntents).toHaveLength(10);

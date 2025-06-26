@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, jest } from 'vitest';
+// Jest test - using global test functions
 import { NextRequest, NextResponse } from 'next/server';
 
 // Mock dependencies

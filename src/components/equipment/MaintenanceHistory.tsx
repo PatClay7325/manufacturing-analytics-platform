@@ -7,9 +7,9 @@ interface MaintenanceHistoryProps {
 }
 
 export default function MaintenanceHistory({ maintenanceHistory, className = '' }: MaintenanceHistoryProps) {
-  // Sort maintenance history by scheduled date (newest first)
+  // Sort maintenance history by start time (newest first)
   const sortedHistory = [...maintenanceHistory].sort((a, b) => {
-    return new Date(b?.scheduledDate).getTime() - new Date(a?.scheduledDate).getTime();
+    return new Date(b?.startTime).getTime() - new Date(a?.startTime).getTime();
   });
 
   // Function to get status badge color
@@ -69,10 +69,10 @@ export default function MaintenanceHistory({ maintenanceHistory, className = '' 
                   Description
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
+                  Work Order
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Technician
+                  Cost
                 </th>
               </tr>
             </thead>
@@ -80,35 +80,31 @@ export default function MaintenanceHistory({ maintenanceHistory, className = '' 
               {sortedHistory?.map((maintenance) => (
                 <tr key={maintenance?.id} data-testid={`maintenance-row-${maintenance?.id}`}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {new Date(maintenance?.scheduledDate).toLocaleDateString()}
-                    {maintenance?.completedDate && maintenance?.completedDate !== maintenance?.scheduledDate && (
-                      <span className="text-xs text-gray-500 block">
-                        Completed: {new Date(maintenance?.completedDate).toLocaleDateString()}
-                      </span>
-                    )}
+                    <div>
+                      <div>Start: {new Date(maintenance?.startTime).toLocaleDateString()}</div>
+                      <div className="text-xs text-gray-500">End: {new Date(maintenance?.endTime).toLocaleDateString()}</div>
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 text-xs rounded-full ${getTypeBadgeColor(maintenance?.type)}`}>
-                      {maintenance?.type.charAt(0).toUpperCase() + maintenance?.type.slice(1)}
+                    <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
+                      {maintenance?.maintenanceType}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-900">
                     <div className="max-w-xs">
-                      {maintenance?.description}
-                      {maintenance?.notes && (
+                      <div>{maintenance?.description || maintenance?.workOrderNumber}</div>
+                      {maintenance?.laborHours && (
                         <span className="text-xs text-gray-500 block mt-1">
-                          {maintenance?.notes}
+                          Labor: {maintenance.laborHours} hours
                         </span>
                       )}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 text-xs rounded-full ${getStatusBadgeColor(maintenance?.status)}`}>
-                      {maintenance?.status.charAt(0).toUpperCase() + maintenance?.status.slice(1)}
-                    </span>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {maintenance?.workOrderNumber}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {maintenance?.technician || '-'}
+                    {maintenance?.materialCost ? `$${maintenance.materialCost.toFixed(2)}` : '-'}
                   </td>
                 </tr>
               ))}

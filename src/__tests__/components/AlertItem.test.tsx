@@ -1,5 +1,5 @@
+// Jest test - using global test functions
 import React from 'react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@/test-utils/index';
 import { createAlert } from '@/test-utils/factories';
 
@@ -71,12 +71,12 @@ const AlertItem = ({ alert, onAcknowledge, onResolve }: any) => {
 
 describe('AlertItem', () => {
   const mockHandlers = {
-    onAcknowledge: vi.fn(),
-    onResolve: vi.fn(),
+    onAcknowledge: jest.fn(),
+    onResolve: jest.fn(),
   };
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   it('renders alert information correctly', () => {

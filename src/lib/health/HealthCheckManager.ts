@@ -4,6 +4,7 @@
  */
 
 import { EventEmitter } from 'events';
+import { managedFetch } from '@/lib/fetch-manager';
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/database';
 import { Counter, Gauge, Histogram, register } from 'prom-client';
@@ -38,19 +39,19 @@ const healthCheckDuration = new Histogram({
   name: 'health_check_duration_seconds',
   help: 'Duration of health checks in seconds',
   labelNames: ['check_name'],
-  buckets: [0.01, 0.05, 0.1, 0.5, 1, 5],
-});
+  buckets: [0.01, 0.05, 0.1, 0.5, 1, 5]
+      });
 
 const healthCheckCounter = new Counter({
   name: 'health_checks_total',
   help: 'Total number of health checks performed',
-  labelNames: ['check_name', 'status'],
-});
+  labelNames: ['check_name', 'status']
+      });
 
 const systemHealthGauge = new Gauge({
   name: 'system_health_status',
-  help: 'Overall system health status (1=healthy, 0.5=degraded, 0=unhealthy)',
-});
+  help: 'Overall system health status (1=healthy, 0.5=degraded, 0=unhealthy)'
+      });
 
 register.registerMetric(healthCheckDuration);
 register.registerMetric(healthCheckCounter);
@@ -90,8 +91,8 @@ export class HealthCheckManager extends EventEmitter {
     this.checks.set(config.name, {
       config,
       check: checkFunction,
-      consecutiveFailures: 0,
-    });
+      consecutiveFailures: 0
+      });
 
     logger.info({ checkName: config.name }, 'Health check registered');
   }
@@ -128,8 +129,8 @@ export class HealthCheckManager extends EventEmitter {
           status,
           duration,
           timestamp,
-          metadata: result.metadata,
-        };
+          metadata: result.metadata
+      };
 
         // Reset failure count on success
         if (result.healthy) {
@@ -152,8 +153,8 @@ export class HealthCheckManager extends EventEmitter {
           status: 'unhealthy',
           duration,
           timestamp,
-          error: error instanceof Error ? error.message : 'Unknown error',
-        };
+          error: error instanceof Error ? error.message : 'Unknown error'
+      };
 
         checkData.lastResult = checkResult;
         healthCheckCounter.inc({ check_name: name, status: 'unhealthy' });
@@ -204,8 +205,8 @@ export class HealthCheckManager extends EventEmitter {
       timestamp,
       checks: results,
       uptime: Date.now() - this.startTime,
-      version: process.env.npm_package_version || '1.0.0',
-    };
+      version: process.env.npm_package_version || '1.0.0'
+      };
 
     // Update metrics
     const healthValue = overallStatus === 'healthy' ? 1 : 
@@ -270,7 +271,7 @@ export class HealthCheckManager extends EventEmitter {
         timeout: 5000,
         interval: 30000,
         retries: 3,
-        critical: true,
+        critical: true
       },
       async () => {
         try {
@@ -292,7 +293,7 @@ export class HealthCheckManager extends EventEmitter {
         timeout: 3000,
         interval: 30000,
         retries: 3,
-        critical: true,
+        critical: true
       },
       async () => {
         try {
@@ -312,7 +313,7 @@ export class HealthCheckManager extends EventEmitter {
         timeout: 1000,
         interval: 30000,
         retries: 1,
-        critical: false,
+        critical: false
       },
       async () => {
         const memUsage = process.memoryUsage();
@@ -325,9 +326,9 @@ export class HealthCheckManager extends EventEmitter {
           metadata: {
             heapUsedMB: Math.round(heapUsedMB),
             heapTotalMB: Math.round(heapTotalMB),
-            usagePercent: Math.round(usagePercent),
-          },
-        };
+            usagePercent: Math.round(usagePercent)
+      }
+      };
       }
     );
 
@@ -338,7 +339,7 @@ export class HealthCheckManager extends EventEmitter {
         timeout: 2000,
         interval: 60000,
         retries: 1,
-        critical: false,
+        critical: false
       },
       async () => {
         try {
@@ -353,9 +354,9 @@ export class HealthCheckManager extends EventEmitter {
             metadata: {
               freeMB: Math.round(freeMB),
               totalMB: Math.round(totalMB),
-              usagePercent: Math.round(usagePercent),
-            },
-          };
+              usagePercent: Math.round(usagePercent)
+      }
+      };
         } catch (error) {
           return { healthy: true }; // Fail gracefully if unavailable
         }
@@ -369,23 +370,23 @@ export class HealthCheckManager extends EventEmitter {
         timeout: 10000,
         interval: 60000,
         retries: 2,
-        critical: false,
+        critical: false
       },
       async () => {
         try {
           const ollamaUrl = process.env.OLLAMA_BASE_URL || 'http://localhost:11434';
-          const response = await fetch(`${ollamaUrl}/api/version`, {
+          const response = await managedFetch(`${ollamaUrl}/api/version`, {
             method: 'GET',
-            signal: AbortSignal.timeout(5000),
-          });
+            timeout: 5000
+      });
           
           return {
             healthy: response.ok,
             metadata: {
               status: response.status,
-              version: response.ok ? await response.text() : 'unknown',
-            },
-          };
+              version: response.ok ? await response.text() : 'unknown'
+      }
+      };
         } catch (error) {
           return { 
             healthy: false,

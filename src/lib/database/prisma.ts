@@ -3,14 +3,21 @@
  * Single source of truth for database connections
  */
 
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '../../../prisma/generated/client'
 
 const prismaClientSingleton = () => {
-  return new PrismaClient({
-    log: process.env.NODE_ENV === 'development' 
-      ? ['error', 'warn'] 
-      : ['error'],
-  })
+  try {
+    return new PrismaClient({
+      log: process.env.NODE_ENV === 'development' 
+        ? ['error', 'warn'] 
+        : ['error'],
+      errorFormat: 'minimal',
+    })
+  } catch (error) {
+    console.error('Failed to initialize Prisma client:', error)
+    // Fallback initialization
+    return new PrismaClient()
+  }
 }
 
 declare global {

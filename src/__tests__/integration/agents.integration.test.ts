@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+// Jest test - using global test functions
 import { IntentClassifierAgentV2 } from '@/lib/agents/IntentClassifierAgentV2';
 import { ISOComplianceEngine } from '@/lib/compliance/ISOComplianceEngine';
 import { MemoryPrunerAgent } from '@/lib/agents/MemoryPrunerAgent';

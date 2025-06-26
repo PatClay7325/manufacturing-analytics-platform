@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { managedFetch } from '@/lib/fetch-manager';
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -6,7 +7,7 @@ export async function POST(request: NextRequest) {
   
   try {
     // Test streaming with a simple prompt
-    const streamResponse = await fetch(`${config.ollamaUrl}/api/generate`, {
+    const streamResponse = await managedFetch(`${config.ollamaUrl}/api/generate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -18,7 +19,7 @@ export async function POST(request: NextRequest) {
           num_predict: 50,
         },
       }),
-      signal: AbortSignal.timeout(15000),
+      timeout: 15000,
     });
     
     if (!streamResponse.ok) {

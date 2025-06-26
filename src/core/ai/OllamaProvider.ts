@@ -5,6 +5,7 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
+import { managedFetch } from '@/lib/fetch-manager';
 import { 
   AIProvider as AIProviderEnum,
   AIModel, 
@@ -137,9 +138,9 @@ export class OllamaProvider implements AIProvider {
       const response = await fetch(`${this.baseUrl}/api/tags`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
-        },
-        signal: AbortSignal.timeout(this.timeout),
+          'Content-Type': 'application/json'
+      },
+        signal: AbortSignal.timeout(this.timeout)
       });
       
       if (!response.ok) {
@@ -164,9 +165,9 @@ export class OllamaProvider implements AIProvider {
             size: model.size,
             digest: model.digest,
             modifiedAt: model.modified_at,
-            details: model.details || {},
-          },
-        };
+            details: model.details || {}
+      }
+      };
       });
       
       // Update cache
@@ -225,8 +226,8 @@ export class OllamaProvider implements AIProvider {
       if (request.system && !messages.some(msg => msg.role === 'system')) {
         messages.unshift({
           role: 'system',
-          content: request.system,
-        });
+          content: request.system
+      });
       }
       
       // Determine model to use
@@ -237,24 +238,24 @@ export class OllamaProvider implements AIProvider {
         model: modelId,
         messages: messages.map(msg => ({
           role: msg.role,
-          content: msg.content,
-        })),
+          content: msg.content
+      })),
         options: {
           temperature: request.temperature,
           top_p: request.topP,
-          num_predict: request.maxTokens,
-        },
-        stream: false,
+          num_predict: request.maxTokens
+      },
+        stream: false
       };
       
       // Send request to Ollama API
       const response = await fetch(`${this.baseUrl}/api/chat`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+      },
         body: JSON.stringify(body),
-        signal: AbortSignal.timeout(this.timeout),
+        signal: AbortSignal.timeout(this.timeout)
       });
       
       if (!response.ok) {
@@ -266,7 +267,7 @@ export class OllamaProvider implements AIProvider {
       // Extract response
       const assistantMessage: ChatMessage = {
         role: 'assistant',
-        content: data.message.content,
+        content: data.message.content
       };
       
       // Calculate token usage (approximate since Ollama doesn't provide this directly)
@@ -287,24 +288,24 @@ export class OllamaProvider implements AIProvider {
           usage: {
             promptTokens,
             completionTokens,
-            totalTokens: promptTokens + completionTokens,
-          },
-          responseTime,
-        },
+            totalTokens: promptTokens + completionTokens
+      },
+          responseTime
+      }
       };
     } catch (error) {
       return {
         requestId,
         data: {
           role: 'assistant',
-          content: 'I apologize, but I encountered an error processing your request.',
-        },
+          content: 'I apologize, but I encountered an error processing your request.'
+      },
         conversation: [...request.messages],
         error: `Error in chat completion: ${error instanceof Error ? error.message : String(error)}`,
         metadata: {
           model: request.modelId || this.defaultModel,
-          responseTime: Date.now() - startTime,
-        },
+          responseTime: Date.now() - startTime
+      }
       };
     }
   }
@@ -332,19 +333,19 @@ export class OllamaProvider implements AIProvider {
         options: {
           temperature: request.temperature,
           top_p: request.topP,
-          num_predict: request.maxTokens,
-        },
-        stream: false,
+          num_predict: request.maxTokens
+      },
+        stream: false
       };
       
       // Send request to Ollama API
       const response = await fetch(`${this.baseUrl}/api/generate`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+      },
         body: JSON.stringify(body),
-        signal: AbortSignal.timeout(this.timeout),
+        signal: AbortSignal.timeout(this.timeout)
       });
       
       if (!response.ok) {
@@ -369,10 +370,10 @@ export class OllamaProvider implements AIProvider {
           usage: {
             promptTokens,
             completionTokens,
-            totalTokens: promptTokens + completionTokens,
-          },
-          responseTime,
-        },
+            totalTokens: promptTokens + completionTokens
+      },
+          responseTime
+      }
       };
     } catch (error) {
       return {
@@ -382,8 +383,8 @@ export class OllamaProvider implements AIProvider {
         error: `Error in text completion: ${error instanceof Error ? error.message : String(error)}`,
         metadata: {
           model: request.modelId || this.defaultModel,
-          responseTime: Date.now() - startTime,
-        },
+          responseTime: Date.now() - startTime
+      }
       };
     }
   }
@@ -406,18 +407,18 @@ export class OllamaProvider implements AIProvider {
           // Prepare request body
           const body = {
             model: modelId,
-            prompt: text,
-          };
+            prompt: text
+      };
           
           // Send request to Ollama API
           const response = await fetch(`${this.baseUrl}/api/embeddings`, {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json',
-            },
+              'Content-Type': 'application/json'
+      },
             body: JSON.stringify(body),
-            signal: AbortSignal.timeout(this.timeout),
-          });
+            signal: AbortSignal.timeout(this.timeout)
+      });
           
           if (!response.ok) {
             throw new Error(`Ollama API error: ${response.status} ${response.statusText}`);
@@ -447,10 +448,10 @@ export class OllamaProvider implements AIProvider {
           usage: {
             promptTokens: totalTokens,
             completionTokens: 0,
-            totalTokens,
-          },
-          responseTime,
-        },
+            totalTokens
+      },
+          responseTime
+      }
       };
     } catch (error) {
       return {
@@ -460,8 +461,8 @@ export class OllamaProvider implements AIProvider {
         error: `Error in embedding: ${error instanceof Error ? error.message : String(error)}`,
         metadata: {
           model: request.modelId || this.defaultModel,
-          responseTime: Date.now() - startTime,
-        },
+          responseTime: Date.now() - startTime
+      }
       };
     }
   }

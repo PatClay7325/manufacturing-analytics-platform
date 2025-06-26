@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+// Jest test - using global test functions
 import { ISOComplianceAgent } from '@/lib/agents/ISOComplianceAgent';
 
 describe('ISOComplianceAgent', () => {

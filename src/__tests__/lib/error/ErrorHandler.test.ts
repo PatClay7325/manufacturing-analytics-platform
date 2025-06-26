@@ -1,9 +1,9 @@
+// Jest test - using global test functions
 /**
  * Error Handler Tests
  * Comprehensive test suite for error handling and logging
  */
 
-import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ErrorHandler, ApplicationError, ErrorCode, ErrorSeverity } from '@/lib/error/ErrorHandler';
 import { NextRequest } from 'next/server';
 import { PrismaClient } from '@prisma/client';
@@ -11,16 +11,16 @@ import { PrismaClient } from '@prisma/client';
 // Mock Prisma
 const mockPrisma = {
   errorLog: {
-    create: vi.fn()
+    create: jest.fn()
   }
 } as unknown as PrismaClient;
 
 // Mock console methods
 const originalConsole = global.console;
 const mockConsole = {
-  error: vi.fn(),
-  warn: vi.fn(),
-  log: vi.fn()
+  error: jest.fn(),
+  warn: jest.fn(),
+  log: jest.fn()
 };
 
 describe('ApplicationError', () => {
@@ -101,12 +101,12 @@ describe('ErrorHandler', () => {
     // Mock console
     global.console = mockConsole as any;
     
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   afterEach(() => {
     global.console = originalConsole;
-    vi.resetAllMocks();
+    jest.resetAllMocks();
   });
 
   describe('logError', () => {
@@ -171,7 +171,7 @@ describe('ErrorHandler', () => {
         ErrorSeverity.CRITICAL
       );
 
-      const alertHandler = vi.fn().mockResolvedValue(undefined);
+      const alertHandler = jest.fn().mockResolvedValue(undefined);
       errorHandler.addAlertHandler(alertHandler);
 
       (mockPrisma.errorLog.create as any).mockResolvedValue({});
@@ -232,7 +232,7 @@ describe('ErrorHandler', () => {
   describe('withRetry', () => {
     test('should retry failed operations', async () => {
       let attempts = 0;
-      const operation = vi.fn().mockImplementation(() => {
+      const operation = jest.fn().mockImplementation(() => {
         attempts++;
         if (attempts < 3) {
           throw new ApplicationError(
@@ -256,7 +256,7 @@ describe('ErrorHandler', () => {
     });
 
     test('should not retry non-retryable errors', async () => {
-      const operation = vi.fn().mockImplementation(() => {
+      const operation = jest.fn().mockImplementation(() => {
         throw new ApplicationError(
           'Validation error',
           ErrorCode.VALIDATION_FAILED,
@@ -271,7 +271,7 @@ describe('ErrorHandler', () => {
     });
 
     test('should respect maxAttempts limit', async () => {
-      const operation = vi.fn().mockImplementation(() => {
+      const operation = jest.fn().mockImplementation(() => {
         throw new ApplicationError(
           'Always fails',
           ErrorCode.EXTERNAL_SERVICE_UNAVAILABLE,
@@ -289,7 +289,7 @@ describe('ErrorHandler', () => {
   describe('createCircuitBreaker', () => {
     test('should open circuit after failure threshold', async () => {
       let callCount = 0;
-      const operation = vi.fn().mockImplementation(() => {
+      const operation = jest.fn().mockImplementation(() => {
         callCount++;
         throw new Error('Service failure');
       });
@@ -313,7 +313,7 @@ describe('ErrorHandler', () => {
     });
 
     test('should reset circuit after timeout', async () => {
-      const operation = vi.fn()
+      const operation = jest.fn()
         .mockRejectedValueOnce(new Error('Failure'))
         .mockRejectedValueOnce(new Error('Failure'))
         .mockRejectedValueOnce(new Error('Failure'))

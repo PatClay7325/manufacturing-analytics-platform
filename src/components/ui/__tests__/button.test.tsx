@@ -1,5 +1,5 @@
+// Jest test - using global test functions
 import { render, screen, fireEvent } from '@testing-library/react'
-import { describe, it, expect, vi } from 'vitest'
 import { Button } from '../button'
 
 describe('Button', () => {
@@ -44,7 +44,7 @@ describe('Button', () => {
   })
 
   it('handles click events', () => {
-    const handleClick = vi.fn()
+    const handleClick = jest.fn()
     render(<Button onClick={handleClick}>Click me</Button>)
     
     fireEvent.click(screen.getByRole('button'))
@@ -52,7 +52,7 @@ describe('Button', () => {
   })
 
   it('respects disabled state', () => {
-    const handleClick = vi.fn()
+    const handleClick = jest.fn()
     render(<Button disabled onClick={handleClick}>Disabled</Button>)
     
     const button = screen.getByRole('button')
@@ -64,7 +64,7 @@ describe('Button', () => {
   })
 
   it('forwards refs correctly', () => {
-    const ref = vi.fn()
+    const ref = jest.fn()
     render(<Button ref={ref}>Button</Button>)
     expect(ref).toHaveBeenCalledWith(expect.any(HTMLButtonElement))
   })

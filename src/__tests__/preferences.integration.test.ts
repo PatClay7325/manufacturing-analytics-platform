@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+// Jest test - using global test functions
 import { prisma } from '@/lib/database';
 import { DEFAULT_USER_PREFERENCES } from '@/types/preferences';
 

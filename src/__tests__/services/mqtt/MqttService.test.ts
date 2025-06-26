@@ -1,24 +1,24 @@
+// Jest test - using global test functions
 /**
  * MQTT Service Tests
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { MqttService, ServiceStatus } from '@/services/mqtt/MqttService';
 import { MqttMonitor } from '@/services/mqtt/MqttMonitor';
 import { sensorDataTransformer } from '@/services/mqtt/transformers/SensorDataTransformer';
 import mqtt from 'mqtt';
 
 // Mock MQTT client
-vi.mock('mqtt');
-vi.mock('@/lib/prisma', () => ({
+jest.mock('mqtt');
+jest.mock('@/lib/prisma', () => ({
   prisma: {
     metric: {
-      createMany: vi.fn().mockResolvedValue({ count: 1 })
+      createMany: jest.fn().mockResolvedValue({ count: 1 })
     },
     alert: {
-      create: vi.fn().mockResolvedValue({})
+      create: jest.fn().mockResolvedValue({})
     },
-    $queryRaw: vi.fn().mockResolvedValue([])
+    $queryRaw: jest.fn().mockResolvedValue([])
   }
 }));
 
@@ -28,14 +28,14 @@ describe('MqttService', () => {
 
   beforeEach(() => {
     // Reset mocks
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     
     // Create mock MQTT client
     mockClient = {
-      on: vi.fn(),
-      subscribe: vi.fn((topic, options, callback) => callback(null)),
-      publish: vi.fn((topic, message, options, callback) => callback(null)),
-      end: vi.fn((force, options, callback) => callback()),
+      on: jest.fn(),
+      subscribe: jest.fn((topic, options, callback) => callback(null)),
+      publish: jest.fn((topic, message, options, callback) => callback(null)),
+      end: jest.fn((force, options, callback) => callback()),
       connected: true
     };
 
@@ -203,8 +203,8 @@ describe('MqttMonitor', () => {
   beforeEach(() => {
     // Create mock MQTT client
     mockClient = {
-      on: vi.fn(),
-      subscribe: vi.fn((topic, options, callback) => callback(null)),
+      on: jest.fn(),
+      subscribe: jest.fn((topic, options, callback) => callback(null)),
       connected: true
     };
 
@@ -331,7 +331,7 @@ temp-002,2024-01-20T10:00:00Z,24.1,°C`;
   });
 
   it('should register and use custom transformers', () => {
-    const customTransformer = vi.fn().mockReturnValue({
+    const customTransformer = jest.fn().mockReturnValue({
       sensorId: 'custom-001',
       timestamp: new Date(),
       value: 42,

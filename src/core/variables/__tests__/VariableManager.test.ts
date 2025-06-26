@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+// Jest test - using global test functions
 import { VariableManager } from '../VariableManager';
 import { Variable, CustomVariable, QueryVariable, IntervalVariable } from '../VariableTypes';
 
@@ -273,7 +273,7 @@ describe('VariableManager', () => {
 
       await manager.initializeVariables([variable]);
       
-      const listener = vi.fn();
+      const listener = jest.fn();
       const unsubscribe = manager.subscribe(listener);
       
       manager.updateVariable('env', 'staging');

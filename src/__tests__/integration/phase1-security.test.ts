@@ -1,8 +1,8 @@
+// Jest test - using global test functions
 /**
  * Phase 1 Security Components Integration Tests
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 import { jwtService } from '@/lib/auth/jwt-service';
 import { authenticate, requirePermission, withAuth } from '@/lib/auth/auth-middleware';
@@ -35,7 +35,7 @@ describe('Phase 1 Security Integration Tests', () => {
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    jest.restoreAllMocks();
   });
 
   describe('Authentication & Authorization', () => {
@@ -187,7 +187,7 @@ describe('Phase 1 Security Integration Tests', () => {
   describe('Malware Scanning', () => {
     it('should handle ClamAV connection test', async () => {
       // Mock ClamAV not available
-      vi.spyOn(clamAVScanner, 'testConnection').mockResolvedValue(false);
+      jest.spyOn(clamAVScanner, 'testConnection').mockResolvedValue(false);
       
       const connected = await clamAVScanner.testConnection();
       expect(connected).toBe(false);
@@ -202,7 +202,7 @@ describe('Phase 1 Security Integration Tests', () => {
         fileSize: 1024,
       };
 
-      vi.spyOn(clamAVScanner, 'scanFile').mockResolvedValue(mockScanResult);
+      jest.spyOn(clamAVScanner, 'scanFile').mockResolvedValue(mockScanResult);
 
       const result = await clamAVScanner.scanFile('/test/file.txt');
       expect(result.clean).toBe(true);

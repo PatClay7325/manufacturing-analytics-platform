@@ -1,5 +1,4 @@
-import { describe, it, expect } from 'vitest';
-
+// Jest test - using global test functions
 // Manufacturing calculations utilities
 export const calculateOEE = (availability: number, performance: number, quality: number): number => {
   // OEE = Availability × Performance × Quality

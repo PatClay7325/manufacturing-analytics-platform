@@ -1,9 +1,9 @@
+// Jest test - using global test functions
 /**
  * Authentication Middleware Tests
  * Comprehensive test suite for authentication, authorization, security, and rate limiting
  */
 
-import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 import { NextRequest, NextResponse } from 'next/server';
 import middleware from '@/lib/auth/middleware';
 import { authService, Permission, UserRole } from '@/lib/auth/AuthService';
@@ -20,7 +20,7 @@ const {
 } = middleware;
 
 // Mock authService
-vi.mock('@/lib/auth/AuthService');
+jest.mock('@/lib/auth/AuthService');
 const mockedAuthService = authService as any;
 
 // Mock NextRequest and NextResponse
@@ -68,7 +68,7 @@ const mockUser = {
 
 describe('requireAuth', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   test('should authenticate user with valid token', async () => {
@@ -215,7 +215,7 @@ describe('createAuthMiddleware', () => {
     mockedAuthService.verifyAccessToken.mockResolvedValue(mockUser);
     mockedAuthService.hasAnyPermission.mockReturnValue(true);
 
-    const mockHandler = vi.fn().mockResolvedValue(NextResponse.json({ success: true }));
+    const mockHandler = jest.fn().mockResolvedValue(NextResponse.json({ success: true }));
     
     const response = await middleware(request, mockHandler);
 
@@ -228,7 +228,7 @@ describe('createAuthMiddleware', () => {
     const middleware = createAuthMiddleware(Permission.DASHBOARD_VIEW);
     const request = createMockRequest();
 
-    const mockHandler = vi.fn();
+    const mockHandler = jest.fn();
     
     const response = await middleware(request, mockHandler);
 
@@ -425,7 +425,7 @@ describe('Integration Tests', () => {
     mockedAuthService.hasAnyPermission.mockReturnValue(true);
 
     const middleware = createAuthMiddleware([Permission.DASHBOARD_VIEW]);
-    const mockHandler = vi.fn().mockResolvedValue(NextResponse.json({ data: 'success' }));
+    const mockHandler = jest.fn().mockResolvedValue(NextResponse.json({ data: 'success' }));
 
     const response = await middleware(request, mockHandler);
 
@@ -509,7 +509,7 @@ describe('Error Handling', () => {
 
 describe('Performance Tests', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   test('should handle concurrent authentication requests', async () => {

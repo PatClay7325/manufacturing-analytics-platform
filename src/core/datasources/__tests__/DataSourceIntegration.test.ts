@@ -1,15 +1,15 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+// Jest test - using global test functions
 import { getDataSourceManager } from '../DataSourceManager';
 import { PrometheusDataSource } from '../plugins/PrometheusDataSource';
 import { VariableManager } from '../../variables/VariableManager';
 import { dashboardURLSync } from '../../dashboard/DashboardURLSync';
 
 // Mock fetch for tests
-global.fetch = vi.fn();
+global.fetch = jest.fn();
 
 describe('DataSource Integration', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('PrometheusDataSource', () => {
@@ -172,7 +172,7 @@ describe('DataSource Integration', () => {
         pathname: '/dashboards/test'
       } as any;
 
-      const mockReplaceState = vi.fn();
+      const mockReplaceState = jest.fn();
       window.history.replaceState = mockReplaceState;
 
       const variables = [

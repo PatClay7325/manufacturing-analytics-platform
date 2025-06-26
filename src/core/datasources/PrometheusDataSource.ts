@@ -1,3 +1,5 @@
+import { managedFetch } from '@/lib/fetch-manager';
+
 /**
  * Prometheus Data Source - Working implementation with real query capabilities
  * Supports PromQL queries, range queries, instant queries, and label queries
@@ -14,8 +16,8 @@ import {
   TimeSeries,
   LoadingState,
   DataSourceInstanceSettings,
-  DataPoint,
-} from './types';
+  DataPoint
+      } from './types';
 
 export interface PrometheusQuery extends DataQuery {
   expr: string;
@@ -60,8 +62,8 @@ export class PrometheusDataSource extends DataSourceApi<PrometheusQuery> {
     
     this.baseUrl = instanceSettings.url.replace(/\/$/, ''); // Remove trailing slash
     this.headers = {
-      'Content-Type': 'application/json',
-    };
+      'Content-Type': 'application/json'
+      };
 
     // Add basic auth if configured
     if (instanceSettings.basicAuth && instanceSettings.basicAuthUser) {
@@ -97,7 +99,7 @@ export class PrometheusDataSource extends DataSourceApi<PrometheusQuery> {
         data: timeSeries,
         state: LoadingState.Done,
         key: request.requestId,
-        request,
+        request
       };
     } catch (error) {
       console.error('Prometheus query error:', error);
@@ -105,9 +107,9 @@ export class PrometheusDataSource extends DataSourceApi<PrometheusQuery> {
         data: [],
         state: LoadingState.Error,
         error: {
-          message: error instanceof Error ? error.message : 'Unknown error',
-        },
-        request,
+          message: error instanceof Error ? error.message : 'Unknown error'
+      },
+        request
       };
     }
   }
@@ -151,10 +153,10 @@ export class PrometheusDataSource extends DataSourceApi<PrometheusQuery> {
     const url = `${this.baseUrl}/api/v1/${queryType}?${params.toString()}`;
     
     try {
-      const response = await fetch(url, {
+      const response = await managedFetch(url, {
         method: 'GET',
-        headers: this.headers,
-        signal: AbortSignal.timeout(5000), // 5 second timeout
+        headers: this.headers, // 5 second timeout
+      timeout: 5000
       });
 
       if (!response.ok) {
@@ -206,15 +208,15 @@ export class PrometheusDataSource extends DataSourceApi<PrometheusQuery> {
         // Range query result
         datapoints = item.values.map(([timestamp, value]) => ({
           timestamp: timestamp * 1000, // Convert to milliseconds
-          value: parseFloat(value),
-        }));
+          value: parseFloat(value)
+      }));
       } else if (resultType === 'vector' && item.value) {
         // Instant query result
         const [timestamp, value] = item.value;
         datapoints = [{
           timestamp: timestamp * 1000,
-          value: parseFloat(value),
-        }];
+          value: parseFloat(value)
+      }];
       }
 
       timeSeries.push({
@@ -223,8 +225,8 @@ export class PrometheusDataSource extends DataSourceApi<PrometheusQuery> {
         tags: metric,
         meta: {
           metric: metric.__name__,
-          query: target.expr,
-        },
+          query: target.expr
+      }
       });
     }
 
@@ -277,9 +279,9 @@ export class PrometheusDataSource extends DataSourceApi<PrometheusQuery> {
       meta: {
         metric: metricName,
         query: expr,
-        mock: true,
-      },
-    }];
+        mock: true
+      }
+      }];
   }
 
   /**
@@ -390,7 +392,7 @@ export class PrometheusDataSource extends DataSourceApi<PrometheusQuery> {
     try {
       const response = await fetch(`${this.baseUrl}/api/v1/query?query=up`, {
         method: 'GET',
-        headers: this.headers,
+        headers: this.headers
       });
 
       if (response.ok) {
@@ -399,8 +401,8 @@ export class PrometheusDataSource extends DataSourceApi<PrometheusQuery> {
           return {
             status: 'success',
             message: 'Successfully connected to Prometheus',
-            title: 'Connection Success',
-          };
+            title: 'Connection Success'
+      };
         }
       }
 
@@ -409,7 +411,7 @@ export class PrometheusDataSource extends DataSourceApi<PrometheusQuery> {
       return {
         status: 'error',
         message: `Cannot connect to Prometheus: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        title: 'Connection Failed',
+        title: 'Connection Failed'
       };
     }
   }
@@ -420,7 +422,7 @@ export class PrometheusDataSource extends DataSourceApi<PrometheusQuery> {
   async metricFindQuery(query: string): Promise<MetricFindValue[]> {
     try {
       const response = await fetch(`${this.baseUrl}/api/v1/label/__name__/values`, {
-        headers: this.headers,
+        headers: this.headers
       });
 
       if (response.ok) {
@@ -428,8 +430,8 @@ export class PrometheusDataSource extends DataSourceApi<PrometheusQuery> {
         if (data.status === 'success') {
           return data.data.map((metric: string) => ({
             text: metric,
-            value: metric,
-          }));
+            value: metric
+      }));
         }
       }
 
@@ -454,7 +456,7 @@ export class PrometheusDataSource extends DataSourceApi<PrometheusQuery> {
   async getTagKeys(): Promise<MetricFindValue[]> {
     try {
       const response = await fetch(`${this.baseUrl}/api/v1/labels`, {
-        headers: this.headers,
+        headers: this.headers
       });
 
       if (response.ok) {
@@ -464,8 +466,8 @@ export class PrometheusDataSource extends DataSourceApi<PrometheusQuery> {
             .filter((label: string) => label !== '__name__')
             .map((label: string) => ({
               text: label,
-              value: label,
-            }));
+              value: label
+      }));
         }
       }
 
@@ -489,7 +491,7 @@ export class PrometheusDataSource extends DataSourceApi<PrometheusQuery> {
   async getTagValues(options: { key: string }): Promise<MetricFindValue[]> {
     try {
       const response = await fetch(`${this.baseUrl}/api/v1/label/${options.key}/values`, {
-        headers: this.headers,
+        headers: this.headers
       });
 
       if (response.ok) {
@@ -497,8 +499,8 @@ export class PrometheusDataSource extends DataSourceApi<PrometheusQuery> {
         if (data.status === 'success') {
           return data.data.map((value: string) => ({
             text: value,
-            value: value,
-          }));
+            value: value
+      }));
         }
       }
 
@@ -509,7 +511,7 @@ export class PrometheusDataSource extends DataSourceApi<PrometheusQuery> {
         line: ['production_line_1', 'production_line_2', 'packaging_line_1'],
         equipment: ['press_001', 'conveyor_002', 'robot_003', 'sensor_004'],
         plant: ['plant_north', 'plant_south', 'plant_east'],
-        shift: ['day_shift', 'night_shift', 'weekend_shift'],
+        shift: ['day_shift', 'night_shift', 'weekend_shift']
       };
 
       const values = mockValues[options.key] || ['mock_value_1', 'mock_value_2'];

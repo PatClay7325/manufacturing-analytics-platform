@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Plus, Bell, Upload, ExclamationTriangle } from 'lucide-react';
+import { Plus, Bell, Upload, AlertTriangle } from 'lucide-react';
 
 interface QuickAction {
   id: string;
@@ -36,7 +36,7 @@ const quickActions: QuickAction[] = [
     id: 'view-alerts',
     label: 'View Alerts',
     href: '/alerts',
-    icon: <ExclamationTriangle className="w-4 h-4" />,
+    icon: <AlertTriangle className="w-4 h-4" />,
     description: 'View active alerts'
   }
 ];

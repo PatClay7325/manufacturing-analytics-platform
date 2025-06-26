@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { managedFetch } from '@/lib/fetch-manager';
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
   const { config } = await request.json();
@@ -35,17 +36,17 @@ export async function POST(request: NextRequest) {
       tests: {
         ollama: ollamaLoadTest,
         database: dbLoadTest,
-        mixed: mixedLoadTest,
+        mixed: mixedLoadTest
       },
       statistics: stats,
-      recommendations: generateRecommendations(stats),
-    });
+      recommendations: generateRecommendations(stats)
+      });
   } catch (error) {
     return NextResponse.json({
       status: 'failed',
       duration: Date.now() - startTime,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
+      error: error instanceof Error ? error.message : 'Unknown error'
+      });
   }
 }
 
@@ -65,32 +66,32 @@ async function testOllamaConcurrency(config: any, loadConfig: any) {
     const batchPromises = prompts.slice(0, loadConfig.concurrentRequests).map(async (prompt, index) => {
       const requestStart = Date.now();
       try {
-        const response = await fetch(`${config.ollamaUrl}/api/generate`, {
+        const response = await managedFetch(`${config.ollamaUrl}/api/generate`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             model: config.ollamaModel,
             prompt: prompt,
             stream: false,
-            options: { num_predict: 50 },
-          }),
-          signal: AbortSignal.timeout(30000),
-        });
+            options: { num_predict: 50 }
+      }),
+          timeout: 30000
+      });
         
         const success = response.ok;
         return {
           requestId: `ollama-${batch}-${index}`,
           success,
           duration: Date.now() - requestStart,
-          statusCode: response.status,
-        };
+          statusCode: response.status
+      };
       } catch (error) {
         return {
           requestId: `ollama-${batch}-${index}`,
           success: false,
           duration: Date.now() - requestStart,
-          error: error instanceof Error ? error.message : 'Unknown error',
-        };
+          error: error instanceof Error ? error.message : 'Unknown error'
+      };
       }
     });
     
@@ -108,8 +109,8 @@ async function testOllamaConcurrency(config: any, loadConfig: any) {
     successful: results.filter(r => r.success).length,
     failed: results.filter(r => !r.success).length,
     averageLatency: Math.round(results.reduce((sum, r) => sum + r.duration, 0) / results.length),
-    results,
-  };
+    results
+      };
 }
 
 async function testDatabaseLoad(loadConfig: any) {
@@ -132,15 +133,15 @@ async function testDatabaseLoad(loadConfig: any) {
           return {
             requestId: `db-${batch}-${index}`,
             success: true,
-            duration: Date.now() - requestStart,
-          };
+            duration: Date.now() - requestStart
+      };
         } catch (error) {
           return {
             requestId: `db-${batch}-${index}`,
             success: false,
             duration: Date.now() - requestStart,
-            error: error instanceof Error ? error.message : 'Unknown error',
-          };
+            error: error instanceof Error ? error.message : 'Unknown error'
+      };
         }
       });
       
@@ -160,8 +161,8 @@ async function testDatabaseLoad(loadConfig: any) {
     successful: results.filter(r => r.success).length,
     failed: results.filter(r => !r.success).length,
     averageLatency: Math.round(results.reduce((sum, r) => sum + r.duration, 0) / results.length),
-    results,
-  };
+    results
+      };
 }
 
 async function testMixedLoad(config: any, loadConfig: any) {
@@ -177,31 +178,31 @@ async function testMixedLoad(config: any, loadConfig: any) {
     const batchPromises = scenarios.map(async (scenario, index) => {
       const requestStart = Date.now();
       try {
-        const response = await fetch(`http://localhost:3000${scenario.endpoint}`, {
+        const response = await managedFetch(`http://localhost:3000${scenario.endpoint}`, {
           method: scenario.type === 'metrics' ? 'GET' : 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: scenario.type !== 'metrics' ? JSON.stringify({
             messages: [{ role: 'user', content: 'Test load' }],
-            stream: scenario.type === 'stream',
-          }) : undefined,
-          signal: AbortSignal.timeout(20000),
-        });
+            stream: scenario.type === 'stream'
+      }) : undefined,
+          timeout: 20000
+      });
         
         return {
           requestId: `mixed-${batch}-${scenario.type}`,
           type: scenario.type,
           success: response.ok,
           duration: Date.now() - requestStart,
-          statusCode: response.status,
-        };
+          statusCode: response.status
+      };
       } catch (error) {
         return {
           requestId: `mixed-${batch}-${scenario.type}`,
           type: scenario.type,
           success: false,
           duration: Date.now() - requestStart,
-          error: error instanceof Error ? error.message : 'Unknown error',
-        };
+          error: error instanceof Error ? error.message : 'Unknown error'
+      };
       }
     });
     
@@ -220,10 +221,10 @@ async function testMixedLoad(config: any, loadConfig: any) {
           .filter(r => r.type === s.type)
           .reduce((sum, r) => sum + r.duration, 0) / 
         results.filter(r => r.type === s.type).length
-      ),
-    })),
-    results,
-  };
+      )
+      })),
+    results
+      };
 }
 
 function calculateLoadTestStats(results: any[]) {
@@ -239,12 +240,12 @@ function calculateLoadTestStats(results: any[]) {
       avg: Math.round(durations.reduce((a, b) => a + b, 0) / durations.length),
       p50: durations[Math.floor(durations.length * 0.5)],
       p95: durations[Math.floor(durations.length * 0.95)],
-      p99: durations[Math.floor(durations.length * 0.99)],
-    },
+      p99: durations[Math.floor(durations.length * 0.99)]
+      },
     throughput: {
-      requestsPerSecond: (results.length / (Math.max(...durations) / 1000)).toFixed(1),
-    },
-  };
+      requestsPerSecond: (results.length / (Math.max(...durations) / 1000)).toFixed(1)
+      }
+      };
 }
 
 function generateRecommendations(stats: any) {

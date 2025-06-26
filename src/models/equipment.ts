@@ -4,14 +4,15 @@ export type MaintenanceType = 'preventive' | 'corrective' | 'predictive' | 'cond
 
 export interface Maintenance {
   id: string;
-  type: MaintenanceType;
-  scheduledDate: string;
-  completedDate?: string;
-  description: string;
-  status: 'scheduled' | 'in-progress' | 'completed' | 'cancelled';
-  technician?: string;
-  notes?: string;
-  parts?: string[];
+  maintenanceType: string; // 'Preventive' | 'Corrective' | 'Predictive' | 'Calibration'
+  startTime: string;
+  endTime: string;
+  workOrderNumber: string;
+  laborHours?: number;
+  materialCost?: number;
+  description?: string;
+  equipmentId: number;
+  createdAt?: string;
 }
 
 export interface EquipmentMetric {

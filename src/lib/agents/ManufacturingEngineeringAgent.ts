@@ -224,8 +224,8 @@ export class ManufacturingEngineeringAgent {
   }
 
   private async fetchOEEData(timeRange: { start: Date; end: Date }) {
-    const [equipment, oeeMetrics] = await Promise.all([
-      prisma.equipment.findMany({
+    const [equipment, productionData, downtimeData] = await Promise.all([
+      prisma.dimEquipment.findMany({
         where: { isActive: true },
         include: {
           workCenter: {
@@ -237,9 +237,9 @@ export class ManufacturingEngineeringAgent {
           }
         }
       }),
-      prisma.factOeeMetric.findMany({
+      prisma.factProduction.findMany({
         where: {
-          timestamp: {
+          startTime: {
             gte: timeRange.start,
             lte: timeRange.end
           }
@@ -247,44 +247,64 @@ export class ManufacturingEngineeringAgent {
         include: {
           equipment: {
             select: {
-              equipmentName: true,
-              equipmentCode: true,
-              equipmentType: true,
-              isActive: true
+              name: true,
+              code: true,
+              type: true,
+              isActive: true,
+              theoreticalRate: true
             }
-          }
+          },
+          downtime: true,
+          shift: true
         },
-        orderBy: { timestamp: 'desc' }
+        orderBy: { startTime: 'desc' }
+      }),
+      prisma.factDowntime.findMany({
+        where: {
+          startTime: {
+            gte: timeRange.start,
+            lte: timeRange.end
+          }
+        }
       })
     ]);
 
-    return { equipment, oeeMetrics, timeRange };
+    // Calculate OEE metrics from production data
+    const oeeMetrics = this.calculateOEEMetrics(equipment, productionData);
+
+    return { equipment, productionData, oeeMetrics, timeRange };
   }
 
   private async fetchDowntimeData(timeRange: { start: Date; end: Date }) {
-    const [equipmentStates, maintenanceEvents] = await Promise.all([
-      prisma.factEquipmentState.findMany({
+    const [downtimeData, maintenanceEvents] = await Promise.all([
+      prisma.factDowntime.findMany({
         where: {
-          timestamp: {
+          startTime: {
             gte: timeRange.start,
             lte: timeRange.end
+          }
+        },
+        include: {
+          equipment: {
+            select: {
+              name: true,
+              code: true,
+              type: true
+            }
           },
-          stateCategory: { in: ['Unscheduled_Downtime', 'Scheduled_Downtime'] }
-        },
-        include: {
-          equipment: {
+          reason: {
             select: {
-              equipmentName: true,
-              equipmentCode: true,
-              equipmentType: true
+              code: true,
+              description: true,
+              category: true
             }
           }
         },
-        orderBy: { timestamp: 'desc' }
+        orderBy: { startTime: 'desc' }
       }),
-      prisma.factMaintenanceEvent.findMany({
+      prisma.factMaintenance.findMany({
         where: {
-          timestamp: {
+          startTime: {
             gte: timeRange.start,
             lte: timeRange.end
           }
@@ -292,61 +312,77 @@ export class ManufacturingEngineeringAgent {
         include: {
           equipment: {
             select: {
-              equipmentName: true,
-              equipmentCode: true,
-              equipmentType: true
+              name: true,
+              code: true,
+              type: true
             }
           }
         },
-        orderBy: { timestamp: 'desc' }
+        orderBy: { startTime: 'desc' }
       })
     ]);
 
-    return { equipmentStates, maintenanceEvents, alerts: [], timeRange };
+    return { downtimeData, maintenanceEvents, alerts: [], timeRange };
   }
 
   private async fetchQualityData(timeRange: { start: Date; end: Date }) {
-    const [qualityMetrics, oeeMetricsForQuality] = await Promise.all([
-      prisma.factQualityMetric.findMany({
+    // Use FactScrap data as quality indicator
+    const [scrapData, productionData] = await Promise.all([
+      prisma.factScrap.findMany({
         where: {
-          timestamp: {
+          createdAt: {
             gte: timeRange.start,
             lte: timeRange.end
           }
         },
         include: {
-          equipment: {
+          product: {
             select: {
-              equipmentName: true,
-              equipmentCode: true,
-              equipmentType: true
+              name: true,
+              code: true
             }
-          }
-        },
-        orderBy: { timestamp: 'desc' }
-      }),
-      prisma.factOeeMetric.findMany({
-        where: {
-          timestamp: {
-            gte: timeRange.start,
-            lte: timeRange.end
           },
-          quality: { lt: 0.95 } // Focus on quality issues
+          production: {
+            include: {
+              equipment: {
+                select: {
+                  name: true,
+                  code: true,
+                  type: true
+                }
+              }
+            }
+          }
+        },
+        orderBy: { createdAt: 'desc' }
+      }),
+      prisma.factProduction.findMany({
+        where: {
+          startTime: {
+            gte: timeRange.start,
+            lte: timeRange.end
+          }
         },
         include: {
           equipment: {
             select: {
-              equipmentName: true,
-              equipmentCode: true,
-              equipmentType: true
+              name: true,
+              code: true,
+              type: true
+            }
+          },
+          product: {
+            select: {
+              name: true,
+              code: true
             }
           }
         },
-        orderBy: { quality: 'asc' }
+        orderBy: { startTime: 'desc' }
       })
     ]);
 
-    return { qualityMetrics, oeeMetricsForQuality, timeRange };
+    return { scrapData, productionData, timeRange };
   }
 
   private async fetchMaintenanceData(timeRange: { start: Date; end: Date }) {
@@ -640,39 +676,46 @@ ${alerts?.filter((a: any) => a.alertType.includes('MAINTENANCE')).length > 0 ?
   }
 
   private analyzeQuality(data: any) {
-    const { qualityMetrics } = data;
+    const { scrapData, productionData } = data;
     
-    if (!qualityMetrics || qualityMetrics.length === 0) {
+    if (!productionData || productionData.length === 0) {
       return {
-        content: "No quality data available for analysis. Please ensure quality measurements are being recorded.",
+        content: "No production data available for quality analysis. Please ensure production records are being created.",
         dataPoints: 0
       };
     }
 
-    // Calculate quality statistics
-    const totalMeasurements = qualityMetrics.length;
-    const outOfSpec = qualityMetrics.filter((q: any) => !q.isWithinSpec).length;
-    const qualityRate = ((totalMeasurements - outOfSpec) / totalMeasurements) * 100;
+    // Calculate quality statistics from production and scrap data
+    const totalProduced = productionData.reduce((sum: number, prod: any) => sum + (prod.goodParts || 0) + (prod.scrapParts || 0), 0);
+    const totalGoodParts = productionData.reduce((sum: number, prod: any) => sum + (prod.goodParts || 0), 0);
+    const totalScrapParts = productionData.reduce((sum: number, prod: any) => sum + (prod.scrapParts || 0), 0);
+    
+    const qualityRate = totalProduced > 0 ? (totalGoodParts / totalProduced) * 100 : 0;
 
-    // Group by parameter
-    const parameterGroups = new Map();
-    qualityMetrics.forEach((q: any) => {
-      if (!parameterGroups.has(q.parameter)) {
-        parameterGroups.set(q.parameter, []);
-      }
-      parameterGroups.get(q.parameter).push(q);
+    // Group scrap by reason/type
+    const scrapByType = new Map();
+    scrapData?.forEach((scrap: any) => {
+      const scrapCode = scrap.scrapCode || 'Unknown';
+      const current = scrapByType.get(scrapCode) || { qty: 0, cost: 0 };
+      scrapByType.set(scrapCode, {
+        qty: current.qty + (scrap.scrapQty || 0),
+        cost: current.cost + (Number(scrap.scrapCost) || 0)
+      });
     });
+
+    // Top defect types
+    const topDefects = Array.from(scrapByType.entries())
+      .sort(([,a], [,b]) => b.qty - a.qty)
+      .slice(0, 5);
 
     const content = `## Quality Analysis Results (ISO 9001:2015 Compliant)
 
-**Overall Quality Rate**: ${qualityRate.toFixed(1)}% (${totalMeasurements - outOfSpec}/${totalMeasurements} conforming)
+**Overall Quality Rate**: ${qualityRate.toFixed(1)}% (${totalGoodParts}/${totalProduced} conforming)
 
 ### Quality Performance by Parameter:
-${Array.from(parameterGroups.entries()).map(([param, measurements]) => {
-  const outOfSpecCount = measurements.filter((m: any) => !m.isWithinSpec).length;
-  const paramQuality = ((measurements.length - outOfSpecCount) / measurements.length) * 100;
-  return `- **${param}**: ${paramQuality.toFixed(1)}% conformance (${outOfSpecCount} non-conformities)`;
-}).join('\n')}
+${topDefects.map(([defectType, data]) => 
+  `- **${defectType}**: ${data.qty} defects (${((data.qty / totalScrapParts) * 100).toFixed(1)}% of total scrap)`
+).join('\n') || '- No specific defect data available'}
 
 ### Quality Status:
 ${qualityRate >= 99 ? '✅ **Excellent**: Quality exceeds target (>99%)' :
@@ -680,16 +723,21 @@ ${qualityRate >= 99 ? '✅ **Excellent**: Quality exceeds target (>99%)' :
   '🚨 **Action Required**: Quality below acceptable threshold (<95%)'
 }
 
-${outOfSpec > 0 ? `### Non-Conformities Detected:
-${qualityMetrics.filter((q: any) => !q.isWithinSpec).slice(0, 5).map((q: any) => 
-  `- **${q.WorkUnit?.name}**: ${q.parameter} = ${q.value} ${q.uom} (outside ${q.lowerLimit}-${q.upperLimit})`
-).join('\n')}` : ''}
+### Non-Conformities Detected:
+${topDefects.map(([defectType, data]) => 
+  `- **${defectType}**: ${data.qty} units (Cost: $${data.cost.toFixed(2)})`
+).join('\n') || '- No scrap data found for the specified period'}
 
-*Analysis based on ${totalMeasurements} quality measurements following ISO 9001:2015 standards.*`;
+### Quality Status:
+${qualityRate >= 95 ? '✅ **Acceptable**: Quality meets minimum standards' : 
+  '🚨 **Action Required**: Quality below acceptable threshold (<95%)'
+}
+
+*Analysis based on ${productionData.length} production records following ISO 9001:2015 standards.*`;
 
     return {
       content,
-      dataPoints: totalMeasurements
+      dataPoints: productionData.length + (scrapData?.length || 0)
     };
   }
 
@@ -743,6 +791,70 @@ Data points analyzed: ${performanceMetrics?.length || 0}`;
       content,
       dataPoints: 0
     };
+  }
+
+  private calculateOEEMetrics(equipment: any[], productionData: any[]) {
+    const oeeMetrics = [];
+
+    for (const eq of equipment) {
+      // Get production data for this equipment
+      const eqProduction = productionData.filter(p => p.equipment.code === eq.code);
+      
+      if (eqProduction.length === 0) continue;
+
+      // Calculate totals
+      let totalPlannedTime = 0n;
+      let totalOperatingTime = 0n;
+      let totalDowntime = 0n;
+      let totalPartsProduced = 0;
+      let totalGoodParts = 0;
+
+      for (const prod of eqProduction) {
+        totalPlannedTime += prod.plannedProductionTime;
+        totalOperatingTime += prod.operatingTime;
+        totalPartsProduced += prod.totalPartsProduced;
+        totalGoodParts += prod.goodParts;
+        
+        // Sum downtime
+        if (prod.downtime && prod.downtime.length > 0) {
+          const downtimeForRun = prod.downtime.reduce((sum: bigint, dt: any) => sum + dt.downtimeDuration, 0n);
+          totalDowntime += downtimeForRun;
+        }
+      }
+
+      // Convert to hours for calculations
+      const plannedHours = Number(totalPlannedTime) / (1000 * 60 * 60);
+      const operatingHours = Number(totalOperatingTime) / (1000 * 60 * 60);
+      const downtimeHours = Number(totalDowntime) / (1000 * 60 * 60);
+      const actualRunTime = operatingHours - downtimeHours;
+
+      // Calculate OEE components
+      const availability = plannedHours > 0 ? actualRunTime / plannedHours : 0;
+      const theoreticalRate = eq.theoreticalRate?.toNumber() || 60;
+      const actualRate = actualRunTime > 0 ? totalPartsProduced / actualRunTime : 0;
+      const performance = theoreticalRate > 0 ? actualRate / theoreticalRate : 0;
+      const quality = totalPartsProduced > 0 ? totalGoodParts / totalPartsProduced : 0;
+      const oee = availability * performance * quality;
+
+      oeeMetrics.push({
+        equipmentId: eq.id,
+        equipmentName: eq.name,
+        equipmentCode: eq.code,
+        availability,
+        performance,
+        quality,
+        oee,
+        productionRuns: eqProduction.length,
+        totalParts: totalPartsProduced,
+        goodParts: totalGoodParts,
+        scrapParts: totalPartsProduced - totalGoodParts,
+        plannedTime: plannedHours,
+        operatingTime: operatingHours,
+        downtime: downtimeHours
+      });
+    }
+
+    return oeeMetrics;
   }
 
   private generateVisualizations(analysisType: AnalysisType, data: any, analysis: any): VisualizationConfig[] {

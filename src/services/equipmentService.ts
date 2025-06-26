@@ -75,32 +75,38 @@ const mockEquipmentData: Equipment[] = [
     maintenanceHistory: [
       {
         id: 'maint-1',
-        type: 'preventive',
-        scheduledDate: '2023-01-15',
-        completedDate: '2023-01-15',
-        description: 'Quarterly maintenance',
-        status: 'completed',
-        technician: 'John Smith',
-        notes: 'Replaced filters, lubricant change, general inspection',
-        parts: ['Filter set', 'Lubricant']
+        maintenanceType: 'Preventive',
+        startTime: '2023-01-15T08:00:00Z',
+        endTime: '2023-01-15T12:00:00Z',
+        workOrderNumber: 'WO-2023-001',
+        laborHours: 4,
+        materialCost: 250.00,
+        description: 'Quarterly maintenance - Replaced filters, lubricant change, general inspection',
+        equipmentId: 1,
+        createdAt: '2023-01-15T12:30:00Z'
       },
       {
         id: 'maint-2',
-        type: 'preventive',
-        scheduledDate: '2023-07-15',
+        maintenanceType: 'Preventive',
+        startTime: '2023-07-15T08:00:00Z',
+        endTime: '2023-07-15T10:00:00Z',
+        workOrderNumber: 'WO-2023-045',
+        laborHours: 2,
+        materialCost: 150.00,
         description: 'Quarterly maintenance',
-        status: 'scheduled'
+        equipmentId: 1
       },
       {
         id: 'maint-3',
-        type: 'corrective',
-        scheduledDate: '2022-11-05',
-        completedDate: '2022-11-05',
-        description: 'Bearing replacement',
-        status: 'completed',
-        technician: 'Maria Rodriguez',
-        notes: 'Replaced main spindle bearings due to excessive noise',
-        parts: ['Spindle bearing set', 'Seals']
+        maintenanceType: 'Corrective',
+        startTime: '2022-11-05T14:00:00Z',
+        endTime: '2022-11-05T18:00:00Z',
+        workOrderNumber: 'WO-2022-112',
+        laborHours: 4,
+        materialCost: 850.00,
+        description: 'Bearing replacement - Replaced main spindle bearings due to excessive noise',
+        equipmentId: 1,
+        createdAt: '2022-11-05T18:30:00Z'
       }
     ],
     tags: ['machining', 'high-precision', 'metal'],
@@ -177,21 +183,25 @@ const mockEquipmentData: Equipment[] = [
     maintenanceHistory: [
       {
         id: 'maint-4',
-        type: 'preventive',
-        scheduledDate: '2023-04-02',
-        completedDate: '2023-04-02',
-        description: 'Bi-annual maintenance',
-        status: 'completed',
-        technician: 'Alex Chen',
-        notes: 'Calibration, joint inspection, firmware update',
-        parts: []
+        maintenanceType: 'Preventive',
+        startTime: '2023-04-02T08:00:00Z',
+        endTime: '2023-04-02T11:00:00Z',
+        workOrderNumber: 'WO-2023-022',
+        laborHours: 3,
+        materialCost: 120.00,
+        description: 'Bi-annual maintenance - Calibration, joint inspection, firmware update',
+        equipmentId: 2,
+        createdAt: '2023-04-02T11:30:00Z'
       },
       {
         id: 'maint-5',
-        type: 'preventive',
-        scheduledDate: '2023-10-02',
+        maintenanceType: 'Preventive',
+        startTime: '2023-10-02T08:00:00Z',
+        endTime: '2023-10-02T11:00:00Z',
+        workOrderNumber: 'WO-2023-089',
+        laborHours: 3,
         description: 'Bi-annual maintenance',
-        status: 'scheduled'
+        equipmentId: 2
       }
     ],
     tags: ['assembly', 'automation', 'robotics'],

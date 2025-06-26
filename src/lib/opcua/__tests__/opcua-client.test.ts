@@ -1,9 +1,9 @@
+// Jest test - using global test functions
 /**
  * OPC UA Client Tests
  * Unit tests for the OPC UA client implementation
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { OPCUAClient } from '../client/opcua-client';
 import { ConnectionPool } from '../client/connection-pool';
 import { TypeMapper } from '../utils/type-mapper';
@@ -11,8 +11,8 @@ import { CircuitBreaker } from '../utils/circuit-breaker';
 import { DataType, DataValue } from 'node-opcua';
 
 // Mock dependencies
-vi.mock('../client/connection-pool');
-vi.mock('node-opcua');
+jest.mock('../client/connection-pool');
+jest.mock('node-opcua');
 
 describe('OPCUAClient', () => {
   let client: OPCUAClient;
@@ -178,7 +178,7 @@ describe('CircuitBreaker', () => {
   });
 
   it('should allow successful operations', async () => {
-    const operation = vi.fn().mockResolvedValue('success');
+    const operation = jest.fn().mockResolvedValue('success');
     
     const result = await circuitBreaker.execute(operation);
     
@@ -187,7 +187,7 @@ describe('CircuitBreaker', () => {
   });
 
   it('should open after failure threshold', async () => {
-    const operation = vi.fn().mockRejectedValue(new Error('Failed'));
+    const operation = jest.fn().mockRejectedValue(new Error('Failed'));
 
     // Fail 3 times to open circuit
     for (let i = 0; i < 3; i++) {
@@ -204,7 +204,7 @@ describe('CircuitBreaker', () => {
   });
 
   it('should transition to half-open after reset timeout', async () => {
-    const operation = vi.fn()
+    const operation = jest.fn()
       .mockRejectedValueOnce(new Error('Failed'))
       .mockRejectedValueOnce(new Error('Failed'))
       .mockRejectedValueOnce(new Error('Failed'))

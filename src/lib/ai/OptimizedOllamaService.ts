@@ -10,6 +10,7 @@
 
 import { logger } from '@/lib/logger';
 
+import { managedFetch } from '@/lib/fetch-manager';
 export interface OllamaConfig {
   baseUrl: string;
   model: string;
@@ -79,7 +80,7 @@ export class OptimizedOllamaService {
     const warmUpPrompt = 'Hello, please respond with "ready".';
     
     try {
-      const response = await fetch(`${this.config.baseUrl}/api/generate`, {
+      const response = await managedFetch(`${this.config.baseUrl}/api/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -92,7 +93,8 @@ export class OptimizedOllamaService {
           },
           keep_alive: this.config.keepAlive
         }),
-        signal: AbortSignal.timeout(10000) // 10 second timeout for warm-up
+         // 10 second timeout for warm-up
+      timeout: 10000
       });
 
       if (!response.ok) {
@@ -259,7 +261,7 @@ export class OptimizedOllamaService {
     const timeout = setTimeout(() => controller.abort(), this.config.timeout);
 
     try {
-      const response = await fetch(`${this.config.baseUrl}/api/generate`, {
+      const response = await managedFetch(`${this.config.baseUrl}/api/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -324,7 +326,8 @@ export class OptimizedOllamaService {
   async healthCheck(): Promise<boolean> {
     try {
       const response = await fetch(`${this.config.baseUrl}/api/tags`, {
-        signal: AbortSignal.timeout(5000)
+        
+      timeout: 5000
       });
       return response.ok;
     } catch {

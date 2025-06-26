@@ -1,5 +1,5 @@
+// Jest test - using global test functions
 import React from 'react';
-import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import Card, { CardProps } from '../../components/common/Card';
 
@@ -41,7 +41,7 @@ describe('Card Component', () => {
   });
 
   it('calls onClick when clicked', () => {
-    const handleClick = vi.fn();
+    const handleClick = jest.fn();
     render(<Card {...defaultProps} onClick={handleClick} />);
     
     // Click the card
@@ -52,7 +52,7 @@ describe('Card Component', () => {
   });
 
   it('has proper accessibility attributes when clickable', () => {
-    const handleClick = vi.fn();
+    const handleClick = jest.fn();
     render(<Card {...defaultProps} onClick={handleClick} />);
     
     const card = screen.getByTestId('card');

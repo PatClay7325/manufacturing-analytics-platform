@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { managedFetch } from '@/lib/fetch-manager';
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
   const { config, customPrompt } = await request.json();
@@ -8,7 +9,7 @@ export async function POST(request: NextRequest) {
   
   try {
     // Test basic inference
-    const inferenceResponse = await fetch(`${config.ollamaUrl}/api/generate`, {
+    const inferenceResponse = await managedFetch(`${config.ollamaUrl}/api/generate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -18,11 +19,11 @@ export async function POST(request: NextRequest) {
         options: {
           temperature: config.temperature,
           num_predict: config.maxTokens,
-          num_ctx: config.contextWindow,
-        },
-      }),
-      signal: AbortSignal.timeout(30000), // 30s timeout
-    });
+          num_ctx: config.contextWindow
+      }
+      }), // 30s timeout
+    timeout: 30000
+      });
     
     if (!inferenceResponse.ok) {
       throw new Error(`Inference failed: ${inferenceResponse.status}`);
@@ -34,7 +35,7 @@ export async function POST(request: NextRequest) {
     let chatTest = { success: false, responseTime: 0 };
     try {
       const chatStart = Date.now();
-      const chatResponse = await fetch(`${config.ollamaUrl}/api/chat`, {
+      const chatResponse = await managedFetch(`${config.ollamaUrl}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -46,10 +47,10 @@ export async function POST(request: NextRequest) {
           stream: false,
           options: {
             temperature: config.temperature,
-            num_predict: 200,
-          },
-        }),
-        signal: AbortSignal.timeout(20000),
+            num_predict: 200
+      }
+      }),
+        timeout: 20000
       });
       
       if (chatResponse.ok) {
@@ -57,8 +58,8 @@ export async function POST(request: NextRequest) {
         chatTest = {
           success: true,
           responseTime: Date.now() - chatStart,
-          response: chatResult.message?.content || '',
-        };
+          response: chatResult.message?.content || ''
+      };
       }
     } catch (e) {
       // Chat test failed
@@ -77,20 +78,20 @@ export async function POST(request: NextRequest) {
         promptTokens: result.prompt_eval_count,
         responseTokens: result.eval_count,
         totalDuration: Math.round(result.total_duration / 1e6), // Convert to ms
-        tokensPerSecond: Math.round(tokensPerSecond * 10) / 10,
+        tokensPerSecond: Math.round(tokensPerSecond * 10) / 10
       },
       chatFormat: chatTest,
       modelInfo: {
         contextLength: result.context || config.contextWindow,
-        modelLoaded: result.done,
-      },
-    });
+        modelLoaded: result.done
+      }
+      });
   } catch (error) {
     return NextResponse.json({
       status: 'failed',
       duration: Date.now() - startTime,
       error: error instanceof Error ? error.message : 'Unknown error',
-      hint: 'Check if the model is loaded: docker exec manufacturing-ollama ollama list',
-    });
+      hint: 'Check if the model is loaded: docker exec manufacturing-ollama ollama list'
+      });
   }
 }

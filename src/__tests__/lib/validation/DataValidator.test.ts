@@ -1,9 +1,9 @@
+// Jest test - using global test functions
 /**
  * Data Validation Tests
  * Comprehensive test suite for data validation and sanitization
  */
 
-import { describe, test, expect, vi } from 'vitest';
 import { 
   DataValidator, 
   CommonSchemas, 

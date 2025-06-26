@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+// Jest test - using global test functions
 import { DeploymentManager } from '../DeploymentManager'
 import type { DeploymentConfig } from '../types'
 

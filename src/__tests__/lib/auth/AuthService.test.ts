@@ -1,9 +1,9 @@
+// Jest test - using global test functions
 /**
  * Authentication Service Tests
  * Comprehensive test suite for authentication and authorization
  */
 
-import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 import { AuthService, UserRole, Permission } from '@/lib/auth/AuthService';
 import { PrismaClient, User } from '@prisma/client';
 import bcrypt from 'bcryptjs';
@@ -11,14 +11,14 @@ import bcrypt from 'bcryptjs';
 // Mock Prisma
 const mockPrisma = {
   user: {
-    findUnique: vi.fn(),
-    create: vi.fn(),
-    update: vi.fn()
+    findUnique: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn()
   }
 } as unknown as PrismaClient;
 
 // Mock bcrypt
-vi.mock('bcryptjs');
+jest.mock('bcryptjs');
 const mockedBcrypt = bcrypt as any;
 
 describe('AuthService', () => {
@@ -28,11 +28,11 @@ describe('AuthService', () => {
     authService = new AuthService();
     // Replace the prisma instance with our mock
     (authService as any).prisma = mockPrisma;
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   afterEach(() => {
-    vi.resetAllMocks();
+    jest.resetAllMocks();
   });
 
   describe('register', () => {

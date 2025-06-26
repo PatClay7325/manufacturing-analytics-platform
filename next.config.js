@@ -6,8 +6,8 @@ const nextConfig = {
   // SWC minification is enabled by default in Next.js 13+
   
   
-  // Standalone output for Docker deployment
-  output: 'standalone',
+  // Standalone output for Docker deployment - DISABLED for development
+  // output: 'standalone',
   
   // Disable static exports for database-dependent pages
   generateBuildId: async () => {
@@ -38,11 +38,11 @@ const nextConfig = {
   // External packages for server components (moved from experimental)
   serverExternalPackages: ['@prisma/client', 'bcrypt'],
   
-  // Experimental features for enterprise capabilities
-  experimental: {
-    optimizeCss: true,
-    scrollRestoration: true,
-  },
+  // Experimental features for enterprise capabilities - DISABLED for stability
+  // experimental: {
+  //   optimizeCss: true,
+  //   scrollRestoration: true,
+  // },
   
   // Compiler optimizations
   compiler: {
@@ -126,9 +126,10 @@ const nextConfig = {
       'node-http-handler'
     ];
     
-    awsSdkModules.forEach(module => {
-      config.resolve.alias[`@aws-sdk/${module}`] = require.resolve('./src/lib/aws-sdk-stub.ts');
-    });
+    // DISABLED AWS SDK redirects - potential path resolution issues
+    // awsSdkModules.forEach(module => {
+    //   config.resolve.alias[`@aws-sdk/${module}`] = require.resolve('./src/lib/aws-sdk-stub.ts');
+    // });
     
     // Handle node polyfills properly
     if (!isServer) {

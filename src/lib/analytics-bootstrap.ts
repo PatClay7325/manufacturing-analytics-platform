@@ -536,6 +536,18 @@ class BootstrapManager {
       // Divider
       { id: 'divider-1', text: '', divider: true },
 
+      // POC Management Section (Priority)
+      {
+        id: 'poc-management',
+        text: '🎯 POC Management',
+        icon: 'target',
+        url: '/poc-management',
+        isSection: false
+      },
+
+      // Divider
+      { id: 'divider-poc', text: '', divider: true },
+
       // Manufacturing Section (Custom)
       {
         id: 'manufacturing',

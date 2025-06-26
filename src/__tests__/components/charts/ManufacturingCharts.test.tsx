@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+// Jest test - using global test functions
 import React from 'react';
 import { render, screen } from '@/test-utils/index';
 import {

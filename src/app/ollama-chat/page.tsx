@@ -1,12 +1,13 @@
-import { ChatInterface } from '@/components/ai/ChatInterface';
-import { Metadata } from 'next';
+'use client';
 
-export const metadata: Metadata = {
-  title: 'Ollama AI Assistant - Manufacturing Analytics',
-  description: 'Local AI interface for manufacturing data analysis using Ollama',
-};
+import { useState } from 'react';
+import { ChatInterface } from '@/components/ai/ChatInterface';
+import { ConversationalChatInterface } from '@/components/ai/ConversationalChatInterface';
+import { Settings, ToggleLeft, ToggleRight } from 'lucide-react';
 
 export default function OllamaChatPage() {
+  const [useEnhancedMode, setUseEnhancedMode] = useState(true);
+  
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -33,6 +34,20 @@ export default function OllamaChatPage() {
                     Powered by Ollama
                   </span>
                 </div>
+                {/* Enhanced Mode Toggle */}
+                <button
+                  onClick={() => setUseEnhancedMode(!useEnhancedMode)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
+                    useEnhancedMode 
+                      ? 'bg-indigo-50 border-indigo-300 text-indigo-700' 
+                      : 'bg-gray-50 border-gray-300 text-gray-700'
+                  }`}
+                >
+                  {useEnhancedMode ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5" />}
+                  <span className="text-sm font-medium">
+                    {useEnhancedMode ? 'Enhanced Mode' : 'Standard Mode'}
+                  </span>
+                </button>
               </div>
             </div>
           </div>
@@ -45,12 +60,48 @@ export default function OllamaChatPage() {
           
           {/* Chat Interface */}
           <div className="lg:col-span-3">
-            <ChatInterface className="h-[calc(100vh-16rem)]" />
+            {useEnhancedMode ? (
+              <ConversationalChatInterface className="h-[calc(100vh-16rem)]" />
+            ) : (
+              <ChatInterface className="h-[calc(100vh-16rem)]" />
+            )}
           </div>
 
           {/* Sidebar with tips and examples */}
           <div className="lg:col-span-1 space-y-6">
             
+            {/* Mode Features */}
+            {useEnhancedMode && (
+              <div className="bg-indigo-50 rounded-lg border border-indigo-200 p-6 mb-6">
+                <h3 className="font-semibold text-indigo-900 mb-4 flex items-center gap-2">
+                  <Settings className="w-5 h-5" />
+                  Enhanced Mode Features
+                </h3>
+                <ul className="space-y-2 text-sm text-indigo-700">
+                  <li className="flex items-start gap-2">
+                    <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full mt-2 flex-shrink-0" />
+                    Self-critique for improved accuracy
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full mt-2 flex-shrink-0" />
+                    Manufacturing ontology understanding
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full mt-2 flex-shrink-0" />
+                    Context-aware conversations
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full mt-2 flex-shrink-0" />
+                    Follow-up suggestions
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full mt-2 flex-shrink-0" />
+                    Quality score indicators
+                  </li>
+                </ul>
+              </div>
+            )}
+
             {/* Query Examples */}
             <div className="bg-white rounded-lg border p-6">
               <h3 className="font-semibold text-gray-900 mb-4">Example Queries</h3>
@@ -68,15 +119,15 @@ export default function OllamaChatPage() {
                   </p>
                 </div>
                 <div className="p-3 bg-gray-50 rounded-lg">
-                  <p className="text-sm text-gray-700 font-medium">Maintenance</p>
+                  <p className="text-sm text-gray-700 font-medium">Root Cause</p>
                   <p className="text-xs text-gray-500 mt-1">
-                    &quot;Which equipment needs preventive maintenance?&quot;
+                    &quot;Why is Line 2 having so many issues?&quot;
                   </p>
                 </div>
                 <div className="p-3 bg-gray-50 rounded-lg">
-                  <p className="text-sm text-gray-700 font-medium">Production</p>
+                  <p className="text-sm text-gray-700 font-medium">Comparison</p>
                   <p className="text-xs text-gray-500 mt-1">
-                    &quot;Compare actual vs planned production this month&quot;
+                    &quot;Compare performance between shifts&quot;
                   </p>
                 </div>
               </div>

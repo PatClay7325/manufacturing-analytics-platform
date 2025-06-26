@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, type MockedFunction } from 'vitest'
+// Jest test - using global test functions
 import type { 
   DeploymentConfig, 
   DeploymentResult, 
@@ -7,12 +7,12 @@ import type {
 } from '../types'
 
 // Mock logger before imports
-vi.mock('@/lib/logger', () => ({
+jest.mock('@/lib/logger', () => ({
   logger: {
-    info: vi.fn(),
-    error: vi.fn(),
-    warn: vi.fn(),
-    debug: vi.fn(),
+    info: jest.fn(),
+    error: jest.fn(),
+    warn: jest.fn(),
+    debug: jest.fn(),
   }
 }))
 
@@ -21,36 +21,36 @@ import { logger } from '@/lib/logger'
 
 // Mock Kubernetes client
 const mockK8sClient = {
-  apply: vi.fn(),
-  delete: vi.fn(),
-  get: vi.fn(),
-  list: vi.fn(),
-  watch: vi.fn(),
+  apply: jest.fn(),
+  delete: jest.fn(),
+  get: jest.fn(),
+  list: jest.fn(),
+  watch: jest.fn(),
 }
 
 // Mock Redis client
 const mockRedisClient = {
-  set: vi.fn(),
-  get: vi.fn(),
-  del: vi.fn(),
-  exists: vi.fn(),
-  incr: vi.fn(),
+  set: jest.fn(),
+  get: jest.fn(),
+  del: jest.fn(),
+  exists: jest.fn(),
+  incr: jest.fn(),
 }
 
 // Mock Prometheus client
 const mockPrometheusClient = {
   register: {
-    metrics: vi.fn(),
+    metrics: jest.fn(),
   },
-  Counter: vi.fn(() => ({
-    labels: vi.fn().mockReturnThis(),
-    inc: vi.fn()
+  Counter: jest.fn(() => ({
+    labels: jest.fn().mockReturnThis(),
+    inc: jest.fn()
   })),
-  Histogram: vi.fn(),
-  Gauge: vi.fn(),
+  Histogram: jest.fn(),
+  Gauge: jest.fn(),
   deploymentCounter: {
-    labels: vi.fn().mockReturnThis(),
-    inc: vi.fn()
+    labels: jest.fn().mockReturnThis(),
+    inc: jest.fn()
   }
 }
 
@@ -59,7 +59,7 @@ describe('DeploymentManager', () => {
   let mockConfig: DeploymentConfig
 
   beforeEach(() => {
-    vi.clearAllMocks()
+    jest.clearAllMocks()
     
     // Reset mock implementations
     mockK8sClient.apply.mockResolvedValue({ 
@@ -517,7 +517,7 @@ describe('DeploymentManager', () => {
 
   describe('cleanup', () => {
     it('should cleanup resources and close connections', async () => {
-      const mockRedisQuit = vi.fn().mockResolvedValue('OK')
+      const mockRedisQuit = jest.fn().mockResolvedValue('OK')
       mockRedisClient.quit = mockRedisQuit
 
       await deploymentManager.cleanup()

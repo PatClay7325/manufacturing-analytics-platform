@@ -1,6 +1,7 @@
 // Use local Grafana types until packages are properly installed
 // TODO: Replace with official @grafana/data imports once packages are installed
 import { DataFrame, DataQueryRequest, DataQueryResponse } from '@/core/datasources/GrafanaDataSourcePlugin';
+import { managedFetch } from '@/lib/fetch-manager';
 import { logger } from '@/lib/logger';
 import { CircuitBreaker } from '@/lib/resilience/CircuitBreaker';
 
@@ -89,15 +90,15 @@ export class GrafanaApiService {
     this.config = {
       timeout: 30000,
       retryAttempts: 3,
-      ...config,
-    };
+      ...config
+      };
     
     this.baseHeaders = {
       'Authorization': `Bearer ${this.config.apiKey}`,
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'User-Agent': 'Manufacturing-Analytics-Platform/1.0',
-    };
+      'User-Agent': 'Manufacturing-Analytics-Platform/1.0'
+      };
 
     // Circuit breaker for Grafana API calls
     this.circuitBreaker = new CircuitBreaker({
@@ -125,9 +126,9 @@ export class GrafanaApiService {
         ...options,
         headers: {
           ...this.baseHeaders,
-          ...options.headers,
-        },
-        signal: AbortSignal.timeout(this.config.timeout!),
+          ...options.headers
+      },
+        signal: AbortSignal.timeout(this.config.timeout!)
       });
 
       if (!response.ok) {
@@ -136,8 +137,8 @@ export class GrafanaApiService {
           endpoint,
           status: response.status,
           statusText: response.statusText,
-          error: errorText,
-        });
+          error: errorText
+      });
         
         // Throw different error types based on status code
         if (response.status === 401) {
@@ -195,8 +196,8 @@ export class GrafanaApiService {
       folderUid: result.folderUid,
       folderTitle: result.folderTitle,
       folderUrl: result.folderUrl,
-      isStarred: result.isStarred,
-    }));
+      isStarred: result.isStarred
+      }));
   }
 
   async getDashboard(uid: string): Promise<GrafanaDashboard> {
@@ -206,8 +207,8 @@ export class GrafanaApiService {
       title: response.dashboard.title,
       tags: response.dashboard.tags,
       dashboard: response.dashboard,
-      meta: response.meta,
-    };
+      meta: response.meta
+      };
   }
 
   async createDashboard(dashboardData: any): Promise<GrafanaDashboard> {
@@ -215,20 +216,20 @@ export class GrafanaApiService {
       dashboard: dashboardData.dashboard,
       folderId: dashboardData.folderId || 0,
       overwrite: dashboardData.overwrite || false,
-      message: dashboardData.message || 'Created via API',
-    };
+      message: dashboardData.message || 'Created via API'
+      };
 
     const response = await this.makeRequest<any>('dashboards/db', {
       method: 'POST',
-      body: JSON.stringify(payload),
-    });
+      body: JSON.stringify(payload)
+      });
 
     return {
       id: response.id,
       uid: response.uid,
       title: dashboardData.dashboard.title,
-      url: response.url,
-    };
+      url: response.url
+      };
   }
 
   async updateDashboard(uid: string, dashboardData: any): Promise<GrafanaDashboard> {
@@ -239,30 +240,30 @@ export class GrafanaApiService {
       dashboard: {
         ...dashboardData.dashboard,
         id: existing.dashboard?.id,
-        version: existing.dashboard?.version,
+        version: existing.dashboard?.version
       },
       folderId: dashboardData.folderId || existing.meta?.folderId || 0,
       overwrite: true,
-      message: dashboardData.message || 'Updated via API',
-    };
+      message: dashboardData.message || 'Updated via API'
+      };
 
     const response = await this.makeRequest<any>('dashboards/db', {
       method: 'POST',
-      body: JSON.stringify(payload),
-    });
+      body: JSON.stringify(payload)
+      });
 
     return {
       id: response.id,
       uid: response.uid,
       title: dashboardData.dashboard.title,
-      url: response.url,
-    };
+      url: response.url
+      };
   }
 
   async deleteDashboard(uid: string): Promise<void> {
     await this.makeRequest<void>(`dashboards/uid/${uid}`, {
-      method: 'DELETE',
-    });
+      method: 'DELETE'
+      });
   }
 
   // Query dashboards with specific parameters
@@ -298,28 +299,28 @@ export class GrafanaApiService {
   async createDatasource(datasource: Partial<GrafanaDatasource>): Promise<GrafanaDatasource> {
     return this.makeRequest<GrafanaDatasource>('datasources', {
       method: 'POST',
-      body: JSON.stringify(datasource),
-    });
+      body: JSON.stringify(datasource)
+      });
   }
 
   async updateDatasource(uid: string, datasource: Partial<GrafanaDatasource>): Promise<GrafanaDatasource> {
     return this.makeRequest<GrafanaDatasource>(`datasources/uid/${uid}`, {
       method: 'PUT',
-      body: JSON.stringify(datasource),
-    });
+      body: JSON.stringify(datasource)
+      });
   }
 
   async deleteDatasource(uid: string): Promise<void> {
     await this.makeRequest<void>(`datasources/uid/${uid}`, {
-      method: 'DELETE',
-    });
+      method: 'DELETE'
+      });
   }
 
   async testDatasource(datasource: Partial<GrafanaDatasource>): Promise<any> {
     return this.makeRequest<any>('datasources/test', {
       method: 'POST',
-      body: JSON.stringify(datasource),
-    });
+      body: JSON.stringify(datasource)
+      });
   }
 
   // Alert Management (Unified Alerting)
@@ -353,26 +354,26 @@ export class GrafanaApiService {
     
     const payload = {
       ...rule,
-      uid: rule.uid || this.generateUID(),
-    };
+      uid: rule.uid || this.generateUID()
+      };
 
     return this.makeRequest<GrafanaAlertRule>(`ruler/grafana/api/v1/rules/${folderUID}/${ruleGroup}`, {
       method: 'POST',
-      body: JSON.stringify(payload),
-    });
+      body: JSON.stringify(payload)
+      });
   }
 
   async updateAlertRule(folderUID: string, ruleGroup: string, rule: Partial<GrafanaAlertRule>): Promise<GrafanaAlertRule> {
     return this.makeRequest<GrafanaAlertRule>(`ruler/grafana/api/v1/rules/${folderUID}/${ruleGroup}`, {
       method: 'PUT',
-      body: JSON.stringify(rule),
-    });
+      body: JSON.stringify(rule)
+      });
   }
 
   async deleteAlertRule(folderUID: string, ruleGroup: string, uid: string): Promise<void> {
     await this.makeRequest<void>(`ruler/grafana/api/v1/rules/${folderUID}/${ruleGroup}/${uid}`, {
-      method: 'DELETE',
-    });
+      method: 'DELETE'
+      });
   }
 
   // Organization Management
@@ -389,9 +390,9 @@ export class GrafanaApiService {
       method: 'POST',
       body: JSON.stringify({
         loginOrEmail,
-        role,
-      }),
-    });
+        role
+      })
+      });
   }
 
   // API Key Management
@@ -402,8 +403,8 @@ export class GrafanaApiService {
   async createApiKey(name: string, role: 'Admin' | 'Editor' | 'Viewer' = 'Viewer', secondsToLive?: number): Promise<any> {
     const payload: any = {
       name,
-      role,
-    };
+      role
+      };
     
     if (secondsToLive) {
       payload.secondsToLive = secondsToLive;
@@ -411,14 +412,14 @@ export class GrafanaApiService {
 
     return this.makeRequest<any>('auth/keys', {
       method: 'POST',
-      body: JSON.stringify(payload),
-    });
+      body: JSON.stringify(payload)
+      });
   }
 
   async deleteApiKey(id: number): Promise<void> {
     await this.makeRequest<void>(`auth/keys/${id}`, {
-      method: 'DELETE',
-    });
+      method: 'DELETE'
+      });
   }
 
   // Health Check
@@ -446,8 +447,8 @@ export class GrafanaApiService {
     
     return this.makeRequest<any>('folders', {
       method: 'POST',
-      body: JSON.stringify(payload),
-    });
+      body: JSON.stringify(payload)
+      });
   }
 
   // Annotations
@@ -463,21 +464,21 @@ export class GrafanaApiService {
   async createAnnotation(annotation: any): Promise<any> {
     return this.makeRequest<any>('annotations', {
       method: 'POST',
-      body: JSON.stringify(annotation),
-    });
+      body: JSON.stringify(annotation)
+      });
   }
 
   async updateAnnotation(id: number, annotation: any): Promise<any> {
     return this.makeRequest<any>(`annotations/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(annotation),
-    });
+      body: JSON.stringify(annotation)
+      });
   }
 
   async deleteAnnotation(id: number): Promise<void> {
     await this.makeRequest<void>(`annotations/${id}`, {
-      method: 'DELETE',
-    });
+      method: 'DELETE'
+      });
   }
 
   // Utility methods

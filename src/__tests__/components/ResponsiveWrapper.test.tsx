@@ -1,3 +1,4 @@
+// Jest test - using global test functions
 /**
  * Tests for Responsive Wrapper Components
  * Phase 1.4: Mobile & Responsive Optimization
@@ -5,7 +6,6 @@
 
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   ResponsiveGrid,
   MobileCard,
@@ -19,13 +19,13 @@ import {
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 
 // Mock the useMediaQuery hook
-vi.mock('@/hooks/useMediaQuery', () => ({
-  useMediaQuery: vi.fn()
+jest.mock('@/hooks/useMediaQuery', () => ({
+  useMediaQuery: jest.fn()
 }));
 
 describe('ResponsiveWrapper Components', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('ResponsiveGrid', () => {

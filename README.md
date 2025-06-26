@@ -3,6 +3,18 @@
 ![CI](https://github.com/PatClay7325/manufacturing-Analytics-platform/actions/workflows/ci.yml/badge.svg)
 ![CD](https://github.com/PatClay7325/manufacturing-Analytics-platform/actions/workflows/cd.yml/badge.svg)
 
+## 🚨 CRITICAL REQUIREMENT: REAL DATA ONLY 🚨
+
+**THIS POC MUST USE REAL DATA FROM THE DATABASE**
+- ❌ **NEVER** use mock data, sample data, or generated data
+- ❌ **NEVER** use hardcoded responses or simulated values  
+- ✅ **ALWAYS** use real data from TimescaleDB/PostgreSQL
+- ✅ **ALWAYS** query actual production data
+
+**Mock data destroys the entire purpose of this POC - demonstrating real manufacturing analytics.**
+
+---
+
 A clean, modern web application for manufacturing intelligence and Analytics built with Next.js, React, TypeScript, and Tailwind CSS.
 
 ## Features

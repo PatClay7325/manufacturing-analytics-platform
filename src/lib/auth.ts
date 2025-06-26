@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 // import { prisma } from '@/lib/database';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../../prisma/generated/client';
 
 // Create a fresh Prisma client with the correct DATABASE_URL
 const prisma = new PrismaClient({

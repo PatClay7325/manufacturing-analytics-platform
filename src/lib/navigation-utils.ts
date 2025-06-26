@@ -11,7 +11,7 @@ import {
   FlaskConical, GitBranch, Terminal, Bug, Brain,
   Stethoscope, HeartPulse, History, ListOrdered,
   ShieldCheck, LifeBuoy, Keyboard, Info, Upload as UploadIcon,
-  Download, SearchIcon, Lock, Cog
+  Download, SearchIcon, Lock, Cog, Target
 } from 'lucide-react';
 
 // Icon mapping from string names to Lucide React components
@@ -49,6 +49,7 @@ const iconMap: Record<string, any> = {
   'share-alt': Network,
   'globe-alt': Globe,
   'plus': Plus,
+  'target': Target,
   
   // Data icons
   'database': Database,

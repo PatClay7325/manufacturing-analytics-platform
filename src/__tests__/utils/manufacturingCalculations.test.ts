@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+// Jest test - using global test functions
 import { 
   calculateOEE,
   calculateMTBF,

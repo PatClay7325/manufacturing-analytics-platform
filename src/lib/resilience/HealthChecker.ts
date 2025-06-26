@@ -1,11 +1,12 @@
 import { logger } from '../logger';
 
+import { managedFetch } from '@/lib/fetch-manager';
 export enum HealthStatus {
   HEALTHY = 'HEALTHY',
   UNHEALTHY = 'UNHEALTHY',
   DEGRADED = 'DEGRADED',
-  UNKNOWN = 'UNKNOWN',
-}
+  UNKNOWN = 'UNKNOWN'
+      }
 
 export interface HealthCheck {
   name: string;
@@ -44,22 +45,22 @@ export class HealthChecker {
 
     logger.info('Health checker initialized', {
       checkInterval: this.options.checkInterval,
-      defaultTimeout: this.options.defaultTimeout,
-    });
+      defaultTimeout: this.options.defaultTimeout
+      });
   }
 
   addCheck(healthCheck: HealthCheck): void {
     this.healthChecks.set(healthCheck.name, {
       ...healthCheck,
       timeout: healthCheck.timeout || this.options.defaultTimeout,
-      critical: healthCheck.critical ?? true,
-    });
+      critical: healthCheck.critical ?? true
+      });
 
     logger.debug('Health check added', {
       name: healthCheck.name,
       timeout: healthCheck.timeout || this.options.defaultTimeout,
-      critical: healthCheck.critical ?? true,
-    });
+      critical: healthCheck.critical ?? true
+      });
   }
 
   removeCheck(name: string): void {
@@ -93,7 +94,7 @@ export class HealthChecker {
       logger.debug('Health check completed', {
         name,
         status: result.status,
-        responseTime: result.responseTime,
+        responseTime: result.responseTime
       });
 
       return result;
@@ -102,7 +103,7 @@ export class HealthChecker {
         status: HealthStatus.UNHEALTHY,
         message: `Health check failed: ${(error as Error).message}`,
         responseTime: Date.now() - startTime,
-        timestamp: new Date(),
+        timestamp: new Date()
       };
 
       this.lastResults.set(name, errorResult);
@@ -110,7 +111,7 @@ export class HealthChecker {
       logger.error('Health check failed', {
         name,
         error: (error as Error).message,
-        responseTime: errorResult.responseTime,
+        responseTime: errorResult.responseTime
       });
 
       return errorResult;
@@ -130,8 +131,8 @@ export class HealthChecker {
         results[name] = {
           status: HealthStatus.UNHEALTHY,
           message: `Failed to execute health check: ${(error as Error).message}`,
-          timestamp: new Date(),
-        };
+          timestamp: new Date()
+      };
       }
     });
 
@@ -144,15 +145,15 @@ export class HealthChecker {
       status: overallStatus,
       checks: results,
       timestamp: new Date(),
-      responseTime,
-    };
+      responseTime
+      };
 
     logger.info('System health check completed', {
       overallStatus,
       responseTime,
       totalChecks: Object.keys(results).length,
-      healthyChecks: Object.values(results).filter(r => r.status === HealthStatus.HEALTHY).length,
-    });
+      healthyChecks: Object.values(results).filter(r => r.status === HealthStatus.HEALTHY).length
+      });
 
     return report;
   }
@@ -227,8 +228,8 @@ export class HealthChecker {
     }, this.options.checkInterval);
 
     logger.info('Periodic health checks started', {
-      interval: this.options.checkInterval,
-    });
+      interval: this.options.checkInterval
+      });
   }
 
   stopPeriodicChecks(): void {
@@ -286,17 +287,17 @@ export class HealthChecker {
           return {
             status: HealthStatus.HEALTHY,
             message: 'Database connection successful',
-            timestamp: new Date(),
-          };
+            timestamp: new Date()
+      };
         } catch (error) {
           return {
             status: HealthStatus.UNHEALTHY,
             message: `Database check failed: ${(error as Error).message}`,
-            timestamp: new Date(),
-          };
+            timestamp: new Date()
+      };
         }
-      },
-    };
+      }
+      };
   }
 
   static createHttpCheck(
@@ -312,8 +313,8 @@ export class HealthChecker {
         try {
           const response = await fetch(url, {
             method: 'GET',
-            signal: AbortSignal.timeout(timeout || 5000),
-          });
+            signal: AbortSignal.timeout(timeout || 5000)
+      });
 
           if (response.ok) {
             return {
@@ -321,30 +322,30 @@ export class HealthChecker {
               message: `HTTP check successful (${response.status})`,
               details: {
                 statusCode: response.status,
-                url,
-              },
-              timestamp: new Date(),
-            };
+                url
+      },
+              timestamp: new Date()
+      };
           } else {
             return {
               status: HealthStatus.UNHEALTHY,
               message: `HTTP check failed with status ${response.status}`,
               details: {
                 statusCode: response.status,
-                url,
-              },
-              timestamp: new Date(),
-            };
+                url
+      },
+              timestamp: new Date()
+      };
           }
         } catch (error) {
           return {
             status: HealthStatus.UNHEALTHY,
             message: `HTTP check failed: ${(error as Error).message}`,
             details: { url },
-            timestamp: new Date(),
-          };
+            timestamp: new Date()
+      };
         }
-      },
-    };
+      }
+      };
   }
 }

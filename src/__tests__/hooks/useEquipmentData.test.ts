@@ -1,5 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
-
+// Jest test - using global test functions
 describe('useEquipmentData', () => {
   it('fetches equipment data on mount', () => {
     // This is a placeholder test since the actual hook implementation would require more setup

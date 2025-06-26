@@ -4,6 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { managedFetch } from '@/lib/fetch-manager';
 import { prisma } from '@/lib/database';
 import { config } from '@/config';
 import os from 'os';
@@ -74,8 +75,8 @@ export async function GET(request: NextRequest) {
   const response: DiagnosticsResponse = {
     status: overallStatus,
     timestamp: new Date().toISOString(),
-    checks,
-  };
+    checks
+      };
 
   // Add system info if verbose
   if (verbose) {
@@ -86,10 +87,10 @@ export async function GET(request: NextRequest) {
       memoryUsage: {
         total: `${Math.round(os.totalmem() / 1024 / 1024)}MB`,
         used: `${Math.round((os.totalmem() - os.freemem()) / 1024 / 1024)}MB`,
-        percentage: Math.round(((os.totalmem() - os.freemem()) / os.totalmem()) * 100),
+        percentage: Math.round(((os.totalmem() - os.freemem()) / os.totalmem()) * 100)
       },
-      uptime: `${Math.round(os.uptime() / 60)} minutes`,
-    };
+      uptime: `${Math.round(os.uptime() / 60)} minutes`
+      };
   }
 
   const statusCode = overallStatus === 'healthy' ? 200 : overallStatus === 'degraded' ? 206 : 503;
@@ -120,17 +121,17 @@ async function checkDatabase(): Promise<DiagnosticCheck> {
       details: {
         equipment: equipmentCount,
         metrics: metricsCount > 0 ? 'available' : 'empty',
-        activeAlerts: alertsCount,
+        activeAlerts: alertsCount
       },
-      responseTime,
-    };
+      responseTime
+      };
   } catch (error) {
     return {
       name: 'database',
       status: 'unhealthy',
       message: error instanceof Error ? error.message : 'Database connection failed',
-      responseTime: Date.now() - start,
-    };
+      responseTime: Date.now() - start
+      };
   }
 }
 
@@ -138,9 +139,10 @@ async function checkOllama(): Promise<DiagnosticCheck> {
   const start = Date.now();
   
   try {
-    const response = await fetch(`${config.ai.ollamaUrl}/api/version`, {
-      signal: AbortSignal.timeout(5000), // 5 second timeout
-    });
+    const response = await managedFetch(`${config.ai.ollamaUrl}/api/version`, {
+      , // 5 second timeout
+    timeout: 5000
+      });
 
     if (!response.ok) {
       throw new Error(`Ollama responded with ${response.status}`);
@@ -161,17 +163,17 @@ async function checkOllama(): Promise<DiagnosticCheck> {
       details: {
         version: data.version,
         model: config.ai.ollamaModel,
-        available: hasModel,
+        available: hasModel
       },
-      responseTime,
-    };
+      responseTime
+      };
   } catch (error) {
     return {
       name: 'ollama',
       status: 'unhealthy',
       message: error instanceof Error ? error.message : 'Ollama service unavailable',
-      responseTime: Date.now() - start,
-    };
+      responseTime: Date.now() - start
+      };
   }
 }
 
@@ -182,8 +184,8 @@ async function checkCache(): Promise<DiagnosticCheck> {
   return {
     name: 'cache',
     status: 'healthy',
-    message: 'Cache not configured (using in-memory)',
-  };
+    message: 'Cache not configured (using in-memory)'
+      };
 }
 
 async function checkApplication(): Promise<DiagnosticCheck> {
@@ -196,23 +198,23 @@ async function checkApplication(): Promise<DiagnosticCheck> {
       environment: config.app.env,
       features: {
         aiChat: config.features.aiChat,
-        websocket: config.features.websocket,
-      },
-    };
+        websocket: config.features.websocket
+      }
+      };
 
     return {
       name: 'application',
       status: 'healthy',
       message: 'Application running normally',
       details: checks,
-      responseTime: Date.now() - start,
-    };
+      responseTime: Date.now() - start
+      };
   } catch (error) {
     return {
       name: 'application',
       status: 'unhealthy',
       message: 'Application configuration error',
-      responseTime: Date.now() - start,
-    };
+      responseTime: Date.now() - start
+      };
   }
 }

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+// Jest test - using global test functions
 import * as fs from 'fs';
 import * as path from 'path';
 import { glob } from 'glob';

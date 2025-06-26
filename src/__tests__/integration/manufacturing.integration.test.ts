@@ -1,9 +1,9 @@
+// Jest test - using global test functions
 /**
  * Manufacturing Integration Tests
  * End-to-end integration tests for manufacturing components and data processing
  */
 
-import { describe, test, expect, beforeAll, afterAll, beforeEach, afterEach, vi } from 'vitest';
 import { PrismaClient } from '@prisma/client';
 import { NextRequest } from 'next/server';
 
@@ -14,7 +14,7 @@ import { ErrorHandler, ApplicationError, ErrorCode } from '@/lib/error/ErrorHand
 import { requireAuth } from '@/lib/auth/middleware';
 
 // Mock external dependencies
-vi.mock('@prisma/client');
+jest.mock('@prisma/client');
 const MockedPrismaClient = PrismaClient as any;
 
 // Test database setup
@@ -27,40 +27,40 @@ describe('Manufacturing Integration Tests', () => {
     
     // Mock database operations
     testPrisma.user = {
-      findUnique: vi.fn(),
-      create: vi.fn(),
-      update: vi.fn(),
-      delete: vi.fn(),
-      findMany: vi.fn()
+      findUnique: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      findMany: jest.fn()
     } as any;
 
     testPrisma.equipment = {
-      findUnique: vi.fn(),
-      create: vi.fn(),
-      update: vi.fn(),
-      delete: vi.fn(),
-      findMany: vi.fn()
+      findUnique: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      findMany: jest.fn()
     } as any;
 
     testPrisma.performanceMetric = {
-      create: vi.fn(),
-      findMany: vi.fn(),
-      aggregate: vi.fn()
+      create: jest.fn(),
+      findMany: jest.fn(),
+      aggregate: jest.fn()
     } as any;
 
     testPrisma.qualityMetric = {
-      create: vi.fn(),
-      findMany: vi.fn()
+      create: jest.fn(),
+      findMany: jest.fn()
     } as any;
 
     testPrisma.alert = {
-      create: vi.fn(),
-      findMany: vi.fn(),
-      update: vi.fn()
+      create: jest.fn(),
+      findMany: jest.fn(),
+      update: jest.fn()
     } as any;
 
     testPrisma.errorLog = {
-      create: vi.fn()
+      create: jest.fn()
     } as any;
   });
 
@@ -69,7 +69,7 @@ describe('Manufacturing Integration Tests', () => {
   });
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('Equipment Management Integration', () => {
@@ -340,8 +340,8 @@ describe('Manufacturing Integration Tests', () => {
       } as any);
 
       // Mock authentication service
-      vi.spyOn(authService, 'verifyAccessToken').mockResolvedValue(mockUser);
-      vi.spyOn(authService, 'hasPermission').mockImplementation((user, permission) => {
+      jest.spyOn(authService, 'verifyAccessToken').mockResolvedValue(mockUser);
+      jest.spyOn(authService, 'hasPermission').mockImplementation((user, permission) => {
         return user.permissions.includes(permission);
       });
 
@@ -375,8 +375,8 @@ describe('Manufacturing Integration Tests', () => {
         isActive: true
       };
 
-      vi.spyOn(authService, 'verifyAccessToken').mockResolvedValue(mockOperator);
-      vi.spyOn(authService, 'hasPermission').mockImplementation((user, permission) => {
+      jest.spyOn(authService, 'verifyAccessToken').mockResolvedValue(mockOperator);
+      jest.spyOn(authService, 'hasPermission').mockImplementation((user, permission) => {
         return user.permissions.includes(permission);
       });
 
@@ -531,7 +531,7 @@ describe('Manufacturing Integration Tests', () => {
       expect(validReadings).toHaveLength(batchSize);
 
       // Simulate batch database insertion
-      const mockBatchInsert = vi.fn().mockResolvedValue({ count: batchSize });
+      const mockBatchInsert = jest.fn().mockResolvedValue({ count: batchSize });
       
       const result = await mockBatchInsert(validReadings.map(r => r.sanitizedData));
       expect(result.count).toBe(batchSize);
@@ -548,7 +548,7 @@ describe('Manufacturing Integration Tests', () => {
         isActive: true
       };
 
-      vi.spyOn(authService, 'verifyAccessToken').mockResolvedValue(mockUser);
+      jest.spyOn(authService, 'verifyAccessToken').mockResolvedValue(mockUser);
 
       const requests = Array.from({ length: concurrentRequests }, (_, i) => ({
         headers: {

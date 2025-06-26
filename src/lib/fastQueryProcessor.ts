@@ -1,6 +1,7 @@
 /**
  * Fast Query Processor for Manufacturing Data
  * Optimized for quick responses without complex analysis
+ * Updated to use ISO-compliant schema models
  */
 
 import { prisma } from '@/lib/database/prisma';
@@ -19,30 +20,30 @@ export async function processFastQuery(query: string): Promise<FastQueryResult> 
     // Quick department/site query
     if (queryLower.includes('department') || queryLower.includes('site') || queryLower.includes('area')) {
       const [sites, areas, workCenters] = await Promise.all([
-        prisma.manufacturingSite.findMany({
+        prisma.dimSite.findMany({
           select: {
-            siteName: true,
-            siteCode: true,
+            name: true,
+            code: true,
             timezone: true
           }
         }),
-        prisma.manufacturingArea.findMany({
+        prisma.dimArea.findMany({
           select: {
-            areaName: true,
-            areaCode: true,
+            name: true,
+            code: true,
             site: {
-              select: { siteName: true }
+              select: { name: true }
             }
           }
         }),
-        prisma.workCenter.findMany({
+        prisma.dimWorkCenter.findMany({
           select: {
-            workCenterName: true,
-            workCenterCode: true,
+            name: true,
+            code: true,
             area: {
               select: { 
-                areaName: true,
-                site: { select: { siteName: true } }
+                name: true,
+                site: { select: { name: true } }
               }
             }
           }
@@ -52,13 +53,13 @@ export async function processFastQuery(query: string): Promise<FastQueryResult> 
       return {
         queryType: 'organizational_structure',
         data: {
-          sites: sites.map(s => ({ name: s.siteName, code: s.siteCode, timezone: s.timezone })),
-          areas: areas.map(a => ({ name: a.areaName, code: a.areaCode, site: a.site?.siteName })),
+          sites: sites.map(s => ({ name: s.name, code: s.code, timezone: s.timezone })),
+          areas: areas.map(a => ({ name: a.name, code: a.code, site: a.site?.name })),
           workCenters: workCenters.map(w => ({ 
-            name: w.workCenterName, 
-            code: w.workCenterCode, 
-            area: w.area?.areaName,
-            site: w.area?.site?.siteName 
+            name: w.name, 
+            code: w.code, 
+            area: w.area?.name,
+            site: w.area?.site?.name 
           })),
           summary: `You have ${sites.length} manufacturing sites, ${areas.length} areas, and ${workCenters.length} work centers.`
         },
@@ -68,110 +69,185 @@ export async function processFastQuery(query: string): Promise<FastQueryResult> 
     
     // Quick equipment query
     if (queryLower.includes('equipment') || queryLower.includes('machine')) {
-      const equipment = await prisma.equipment.findMany({
+      const equipment = await prisma.dimEquipment.findMany({
         where: { isActive: true },
         select: {
-          equipmentName: true,
-          equipmentCode: true,
-          equipmentType: true,
+          name: true,
+          code: true,
+          type: true,
           workCenter: {
             select: {
-              workCenterName: true,
+              name: true,
               area: {
-                select: { areaName: true }
+                select: { name: true }
               }
             }
           }
-        }
+        },
+        orderBy: { name: 'asc' }
       });
       
       return {
         queryType: 'equipment_list',
         data: {
           equipment: equipment.map(e => ({
-            name: e.equipmentName,
-            code: e.equipmentCode,
-            type: e.equipmentType,
-            location: `${e.workCenter?.area?.areaName} - ${e.workCenter?.workCenterName}`
+            name: e.name,
+            code: e.code,
+            type: e.type || 'Unknown',
+            location: `${e.workCenter?.area?.name} - ${e.workCenter?.name}`
           })),
           summary: `You have ${equipment.length} active machines across different work centers.`,
-          types: [...new Set(equipment.map(e => e.equipmentType))]
+          types: [...new Set(equipment.map(e => e.type).filter(Boolean))]
         },
         executionTime: Date.now() - startTime
       };
     }
     
-    // Quick OEE summary
-    if (queryLower.includes('oee') && (queryLower.includes('summary') || queryLower.includes('overall'))) {
-      const recentOEE = await prisma.factOeeMetric.findMany({
-        where: {
-          timestamp: {
-            gte: new Date(Date.now() - 24 * 60 * 60 * 1000)
+    // Quick product query
+    if (queryLower.includes('product') || queryLower.includes('widget') || queryLower.includes('item')) {
+      const products = await prisma.dimProduct.findMany({
+        select: {
+          name: true,
+          code: true,
+          family: true,
+          unitOfMeasure: true,
+          standardCost: true
+        },
+        orderBy: { name: 'asc' }
+      });
+      
+      return {
+        queryType: 'product_list',
+        data: {
+          products: products.map(p => ({
+            name: p.name,
+            code: p.code,
+            family: p.family || 'General',
+            unit: p.unitOfMeasure || 'EA',
+            cost: p.standardCost?.toNumber() || 0
+          })),
+          summary: `You have ${products.length} products in your catalog.`,
+          families: [...new Set(products.map(p => p.family).filter(Boolean))]
+        },
+        executionTime: Date.now() - startTime
+      };
+    }
+    
+    // Quick shift query
+    if (queryLower.includes('shift') || queryLower.includes('schedule')) {
+      const shifts = await prisma.dimShift.findMany({
+        where: { isActive: true },
+        select: {
+          name: true,
+          startTime: true,
+          endTime: true,
+          breakMinutes: true,
+          site: {
+            select: { name: true }
           }
         },
+        orderBy: { name: 'asc' }
+      });
+      
+      return {
+        queryType: 'shift_schedule',
+        data: {
+          shifts: shifts.map(s => ({
+            name: s.name,
+            site: s.site.name,
+            schedule: `${s.startTime} - ${s.endTime}`,
+            breakMinutes: s.breakMinutes || 0
+          })),
+          summary: `You have ${shifts.length} active shifts scheduled.`
+        },
+        executionTime: Date.now() - startTime
+      };
+    }
+    
+    // Recent production summary
+    if (queryLower.includes('recent') || queryLower.includes('latest') || queryLower.includes('current')) {
+      const recentProduction = await prisma.factProduction.findMany({
+        take: 10,
+        orderBy: { createdAt: 'desc' },
         select: {
-          oee: true,
-          availability: true,
-          performance: true,
-          quality: true,
+          totalPartsProduced: true,
+          goodParts: true,
+          scrapParts: true,
           equipment: {
-            select: { equipmentName: true }
-          }
+            select: { name: true }
+          },
+          product: {
+            select: { name: true }
+          },
+          createdAt: true
         }
       });
       
-      if (recentOEE.length === 0) {
-        return {
-          queryType: 'oee_summary',
-          data: {
-            summary: 'No OEE data available for the last 24 hours.',
-            metrics: {}
-          },
-          executionTime: Date.now() - startTime
-        };
-      }
-      
-      const avgOEE = recentOEE.reduce((sum, m) => sum + Number(m.oee), 0) / recentOEE.length;
-      const avgAvail = recentOEE.reduce((sum, m) => sum + Number(m.availability), 0) / recentOEE.length;
-      const avgPerf = recentOEE.reduce((sum, m) => sum + Number(m.performance), 0) / recentOEE.length;
-      const avgQual = recentOEE.reduce((sum, m) => sum + Number(m.quality), 0) / recentOEE.length;
-      
       return {
-        queryType: 'oee_summary',
+        queryType: 'recent_production',
         data: {
-          summary: `Overall OEE: ${(avgOEE * 100).toFixed(1)}% (Last 24h)`,
-          metrics: {
-            oee: Number((avgOEE * 100).toFixed(1)),
-            availability: Number((avgAvail * 100).toFixed(1)),
-            performance: Number((avgPerf * 100).toFixed(1)),
-            quality: Number((avgQual * 100).toFixed(1))
-          },
-          dataPoints: recentOEE.length,
-          equipment: [...new Set(recentOEE.map(m => m.equipment?.equipmentName))].filter(Boolean)
+          production: recentProduction.map(p => ({
+            equipment: p.equipment.name,
+            product: p.product.name,
+            total: p.totalPartsProduced,
+            good: p.goodParts,
+            scrap: p.scrapParts,
+            efficiency: ((p.goodParts / p.totalPartsProduced) * 100).toFixed(1) + '%',
+            date: p.createdAt?.toISOString().split('T')[0]
+          })),
+          summary: recentProduction.length > 0 
+            ? `Showing ${recentProduction.length} most recent production runs.`
+            : 'No recent production data found.'
         },
         executionTime: Date.now() - startTime
       };
     }
     
-    // Default: provide general overview
-    const [equipmentCount, recentDataCount] = await Promise.all([
-      prisma.equipment.count({ where: { isActive: true } }),
-      prisma.factOeeMetric.count({
-        where: {
-          timestamp: {
-            gte: new Date(Date.now() - 24 * 60 * 60 * 1000)
-          }
-        }
-      })
+    // General greeting or help
+    if (queryLower.includes('hello') || queryLower.includes('help') || queryLower.includes('what can')) {
+      return {
+        queryType: 'help',
+        data: {
+          message: 'I can help you with manufacturing analytics! Here are some things you can ask:',
+          capabilities: [
+            'Equipment and machine information',
+            'Production data and metrics',
+            'Quality analysis and defect trends',
+            'OEE (Overall Equipment Effectiveness) calculations',
+            'Downtime analysis',
+            'Product catalog information',
+            'Shift schedules',
+            'Site and area organization'
+          ],
+          examples: [
+            'What are the top 5 defect types this week?',
+            'Show me OEE performance for today',
+            'List all machines',
+            'What products do we manufacture?',
+            'Show recent production data'
+          ]
+        },
+        executionTime: Date.now() - startTime
+      };
+    }
+    
+    // Default: general query about the system
+    const [equipmentCount, productCount, productionCount] = await Promise.all([
+      prisma.dimEquipment.count(),
+      prisma.dimProduct.count(),
+      prisma.factProduction.count()
     ]);
     
     return {
-      queryType: 'general_overview',
+      queryType: 'system_overview',
       data: {
-        summary: `Manufacturing system overview: ${equipmentCount} active machines with ${recentDataCount} recent data points.`,
-        equipmentCount,
-        recentDataCount,
-        suggestion: "Try asking about OEE, equipment status, or departments for more specific information."
+        summary: `Manufacturing Analytics System Overview`,
+        statistics: {
+          equipment: equipmentCount,
+          products: productCount,
+          productionRuns: productionCount
+        },
+        message: 'For more specific information, try asking about equipment, products, production, quality, or OEE metrics.'
       },
       executionTime: Date.now() - startTime
     };
@@ -181,8 +257,8 @@ export async function processFastQuery(query: string): Promise<FastQueryResult> 
     return {
       queryType: 'error',
       data: {
-        summary: 'Unable to process query quickly.',
-        error: error instanceof Error ? error.message : 'Unknown error'
+        message: 'I encountered an error processing your request. Please try rephrasing your question.',
+        error: error.message
       },
       executionTime: Date.now() - startTime
     };

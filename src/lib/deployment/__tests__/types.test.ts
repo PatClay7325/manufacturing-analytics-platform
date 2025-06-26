@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+// Jest test - using global test functions
 import type { DeploymentConfig, DeploymentResult, DeploymentStatus } from '../types'
 
 describe('Deployment Types', () => {

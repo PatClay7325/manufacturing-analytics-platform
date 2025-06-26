@@ -189,7 +189,22 @@
       "Bash(# Check for remaining test files with chat references\ngrep -r \"ai-chat\\|manufacturing-chat\" ./src/__tests__ ./tests --include=\"*.ts\" --include=\"*.tsx\" | grep -v backup)",
       "Bash(# Create a summary of the chat cleanup\ncat > /mnt/d/Source/manufacturing-analytics-platform/CHAT-CLEANUP-SUMMARY.md << 'EOF'\n# Chat Interface Cleanup Summary\n\n## Date: 2025-06-24\n\n## Objective\nEnsure that the primary and only chat interface is http://localhost:3000/ollama-chat. All other chat interfaces and related files have been marked as obsolete and deleted.\n\n## Files Deleted\n\n### Chat Pages (6 total)\n- `/src/app/ai-chat/` - Deleted\n- `/src/app/air-gapped-chat/` - Deleted\n- `/src/app/chat-demo/` - Deleted\n- `/src/app/fast-chat/` - Deleted\n- `/src/app/manufacturing-chat/` - Deleted (including [id] and optimized subdirectories)\n- `/src/app/test-chat/` - Deleted\n\n### API Routes (7 total)\n- `/src/app/api/chat-backup/` - Entire directory deleted\n- `/src/app/api/chat-offline/` - Entire directory deleted\n- `/src/app/api/chat-simple/` - Entire directory deleted\n- `/src/app/api/chat/agent/` - Deleted\n- `/src/app/api/chat/cached/` - Deleted\n- `/src/app/api/chat/health/` - Deleted\n- `/src/app/api/chat/stream/` - Deleted\n\n### Services (3 total)\n- `/src/services/chatService.ts` - Deleted\n- `/src/services/manufacturingChatService.ts` - Deleted\n- `/src/services/streamingChatService.ts` - Deleted\n- `/src/services/api/chatApi.ts` - Deleted\n\n### Components\n- `/src/components/chat/` - Entire directory deleted\n\n### Models and Mocks\n- `/src/models/chat.ts` - Deleted\n- `/src/mocks/data/chat.ts` - Deleted\n\n### Tests\n- `/src/__tests__/integration/chat.integration.test.ts` - Deleted\n- Multiple e2e test files for chat functionality - Deleted\n\n### Scripts and Documentation\n- Multiple chat-related scripts in `/scripts/` - Deleted\n- Multiple chat-related documentation files - Deleted\n\n## Files Retained\n\n### Primary Chat Implementation (3 files)\n1. `/src/app/ollama-chat/page.tsx` - The ONLY chat interface page\n2. `/src/components/ai/ChatInterface.tsx` - Chat UI component used by ollama-chat\n3. `/src/app/api/chat/route.ts` - Main chat API endpoint\n\n## Navigation Updates\n- Updated all navigation components to point to `/ollama-chat` instead of deleted routes\n- Fixed imports and references in diagnostic routes\n- Added local type definitions where needed to replace deleted models\n\n## Result\n✅ Successfully ensured that http://localhost:3000/ollama-chat is the ONLY chat interface\n✅ All obsolete chat implementations have been removed\n✅ Navigation and references have been updated\n✅ The application now has a single, consolidated chat interface using local Ollama AI\nEOF\n\necho \"Created chat cleanup summary\")",
       "Bash(VERIFY-STREAMING-FIX.cmd)",
-      "Bash(./VERIFY-STREAMING-FIX.cmd)"
+      "Bash(./VERIFY-STREAMING-FIX.cmd)",
+      "Bash(npm update:*)",
+      "Bash(sudo rm:*)",
+      "Bash(ln:*)",
+      "Bash(claude doctor)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(claude doctor)",
+      "Bash(claude --print \"Hello, this is a test\")",
+      "Bash(claude config get:*)",
+      "Bash(npm cache:*)",
+      "Bash(# List all env files to see what needs cleanup\nls -la /mnt/d/Source/manufacturing-analytics-platform/.env* 2>/dev/null | grep -v \".env.example\" | head -20)",
+      "Bash(prisma generate:*)",
+      "Bash(npx:*)",
+      "Bash(PRISMA_QUERY_ENGINE_LIBRARY=true PRISMA_DISABLE_WARNINGS=true node -e \"\nconst { PrismaClient } = require('./prisma/generated/client');\nconsole.log('Testing Prisma client initialization...');\nconst prisma = new PrismaClient({ errorFormat: 'minimal', log: ['error'] });\nconsole.log('✅ Prisma client created successfully');\nprisma.\\$disconnect().then(() => console.log('✅ Disconnected successfully'));\n\")",
+      "Bash(DEBUG=*)",
+      "Bash(/mnt/d/Source/manufacturing-analytics-platform/scripts/test-chat-simple.sh:*)"
     ],
     "deny": []
   },

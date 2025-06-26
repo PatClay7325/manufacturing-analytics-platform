@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { managedFetch } from '@/lib/fetch-manager';
 import { z } from 'zod';
 
 // Ollama AI Query Service for Manufacturing Analytics
@@ -256,11 +257,11 @@ Common Manufacturing KPIs:
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), this.config.timeout);
 
-        const response = await fetch(`${this.config.baseUrl}/api/generate`, {
+        const response = await managedFetch(`${this.config.baseUrl}/api/generate`, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-          },
+            'Content-Type': 'application/json'
+      },
           body: JSON.stringify({
             model: this.config.model,
             prompt: prompt,
@@ -458,8 +459,7 @@ Common Manufacturing KPIs:
     
     try {
       const response = await fetch(`${this.config.baseUrl}/api/version`, {
-        method: 'GET',
-        signal: AbortSignal.timeout(5000)
+        method: 'GET'timeout: 5000
       });
 
       if (response.ok) {

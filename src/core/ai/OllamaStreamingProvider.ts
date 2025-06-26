@@ -18,6 +18,7 @@ import {
   ChatMessage
 } from './types';
 import { AIProvider } from './interfaces';
+import { managedFetch } from '@/lib/fetch-manager';
 
 /**
  * Streaming response handler
@@ -136,10 +137,10 @@ export class OllamaStreamingProvider implements AIProvider {
     if (cached) return cached as AIModel[];
     
     try {
-      const response = await fetch(`${this.baseUrl}/api/tags`, {
+      const response = await managedFetch(`${this.baseUrl}/api/tags`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
-        signal: AbortSignal.timeout(10000), // Quick timeout for model list
+        timeout: 10000, // Quick timeout for model list
       });
       
       if (!response.ok) {
@@ -236,11 +237,11 @@ export class OllamaStreamingProvider implements AIProvider {
         stream: streaming !== undefined,
       };
       
-      const response = await fetch(`${this.baseUrl}/api/chat`, {
+      const response = await managedFetch(`${this.baseUrl}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
-        signal: AbortSignal.timeout(this.performance.timeout!),
+        timeout: this.performance.timeout!,
       });
       
       if (!response.ok) {
@@ -474,11 +475,11 @@ export class OllamaStreamingProvider implements AIProvider {
               },
             };
             
-            const response = await fetch(`${this.baseUrl}/api/embeddings`, {
+            const response = await managedFetch(`${this.baseUrl}/api/embeddings`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(body),
-              signal: AbortSignal.timeout(30000), // 30s timeout
+              timeout: 30000, // 30s timeout
             });
             
             if (!response.ok) {

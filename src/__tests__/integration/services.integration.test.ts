@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+// Jest test - using global test functions
 import { prisma } from '@/lib/database';
 
 // Helper function to create test hierarchy

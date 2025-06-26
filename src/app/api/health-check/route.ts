@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { managedFetch } from '@/lib/fetch-manager';
 import { prisma } from '@/lib/database';
 
 export async function GET(request: NextRequest) {
@@ -10,9 +11,9 @@ export async function GET(request: NextRequest) {
     services: {
       api: 'operational',
       database: 'checking...',
-      ollama: 'checking...',
-    },
-  };
+      ollama: 'checking...'
+      }
+      };
 
   // Check database connection
   try {
@@ -26,8 +27,8 @@ export async function GET(request: NextRequest) {
   // Check Ollama connection
   try {
     const ollamaUrl = process.env.OLLAMA_API_URL || 'http://localhost:11434';
-    const response = await fetch(`${ollamaUrl}/api/version`, {
-      signal: AbortSignal.timeout(2000), // 2 second timeout
+    const response = await managedFetch(`${ollamaUrl}/api/version`, {
+      timeout: 2000 // 2 second timeout
     });
     
     if (response.ok) {
