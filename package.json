@@ -195,7 +195,7 @@
     "jest": "^30.0.2",
     "jest-environment-jsdom": "^30.0.2",
     "jest-watch-typeahead": "^3.0.1",
-    "jsdom": "26.0.0",
+    "jsdom": "26.1.0",
     "mqtt": "^5.13.1",
     "nyc": "^17.0.0",
     "postcss": "8.5.1",
